@@ -37,6 +37,7 @@ export default ({ config }: any) => {
       // Expo 플러그인 목록
       plugins: [
         "expo-router", // 파일 기반 라우팅 지원
+        "expo-font",
         [
           "expo-splash-screen",
           {
