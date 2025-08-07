@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import Button from "../common/Button";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 
-const PhoneInput = ({ onNext }: { onNext: () => void }) => {
+import Button from "@/components/common/Button";
+import { useRouter } from "expo-router";
+
+const signUpPage = () => {
   const [phone, setPhone] = useState("");
   const isValid = phone.length >= 10;
-
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>휴대폰 번호를 입력해 주세요</Text>
@@ -30,20 +32,21 @@ const PhoneInput = ({ onNext }: { onNext: () => void }) => {
           color="#FF6F3C"
           textColor="#fff"
           disabled={!isValid}
-          onPress={onNext}
           style={styles.button}
+          onPress={() => router.push("/(signUp)/VerifyCodeInputPage")}
         />
       </View>
     </View>
   );
 };
 
-export default PhoneInput;
+export default signUpPage;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "white",
   },
   title: {
     fontSize: 22,

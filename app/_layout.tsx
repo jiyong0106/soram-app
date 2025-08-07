@@ -13,11 +13,10 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
-            name="signUp"
+            name="(signUp)"
             options={{
               headerStyle: {
                 backgroundColor: "white",
-                
               },
               headerLeft: () => (
                 <TouchableOpacity

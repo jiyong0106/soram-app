@@ -1,26 +1,25 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import Button from "../common/Button";
+import Button from "@/components/common/Button";
+import { useRouter } from "expo-router";
 
-const ProfileInput = ({
-  onNext,
-  onBack,
-}: {
-  onNext: () => void;
-  onBack: () => void;
-}) => {
-  const [birth, setBirth] = useState("");
-  const isValid = birth.length === 6;
+const VerifyCodeInputPage = () => {
+  const [code, setCode] = useState("");
+  const isValid = code.length === 6;
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>생년월일을 입력해 주세요</Text>
+      <Text style={styles.title}>인증 번호를 입력해 주세요</Text>
+      <Text style={styles.desc}>
+        인증 번호가 전송됐어요. 받은 번호를 입력하면 인증이 완료돼요.
+      </Text>
       <TextInput
         style={styles.input}
-        placeholder="YYMMDD"
+        placeholder="6자리 숫자"
         keyboardType="number-pad"
-        value={birth}
-        onChangeText={setBirth}
+        value={code}
+        onChangeText={setCode}
         maxLength={6}
       />
       <View style={{ marginTop: "auto" }}>
@@ -29,7 +28,7 @@ const ProfileInput = ({
           color="#FF6F3C"
           textColor="#fff"
           disabled={!isValid}
-          onPress={onNext}
+          onPress={() => router.push("/(signUp)/ProfileInputPage")}
           style={styles.button}
         />
       </View>
@@ -37,7 +36,7 @@ const ProfileInput = ({
   );
 };
 
-export default ProfileInput;
+export default VerifyCodeInputPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +56,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
+  },
+  desc: {
+    color: "#888",
+    marginBottom: 32,
   },
   input: {
     borderBottomWidth: 1,

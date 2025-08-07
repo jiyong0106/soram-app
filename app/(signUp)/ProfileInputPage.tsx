@@ -1,29 +1,20 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import Button from "../common/Button";
+import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import Button from "@/components/common/Button";
 
-const VerifyCodeInput = ({
-  onNext,
-  onBack,
-}: {
-  onNext: () => void;
-  onBack: () => void;
-}) => {
-  const [code, setCode] = useState("");
-  const isValid = code.length === 6;
+const ProfileInputPage = () => {
+  const [birth, setBirth] = useState("");
+  const isValid = birth.length === 6;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>인증 번호를 입력해 주세요</Text>
-      <Text style={styles.desc}>
-        인증 번호가 전송됐어요. 받은 번호를 입력하면 인증이 완료돼요.
-      </Text>
+      <Text style={styles.title}>생년월일을 입력해 주세요</Text>
       <TextInput
         style={styles.input}
-        placeholder="6자리 숫자"
+        placeholder="YYMMDD"
         keyboardType="number-pad"
-        value={code}
-        onChangeText={setCode}
+        value={birth}
+        onChangeText={setBirth}
         maxLength={6}
       />
       <View style={{ marginTop: "auto" }}>
@@ -32,7 +23,7 @@ const VerifyCodeInput = ({
           color="#FF6F3C"
           textColor="#fff"
           disabled={!isValid}
-          onPress={onNext}
+          onPress={() => Alert.alert("끝!")}
           style={styles.button}
         />
       </View>
@@ -40,7 +31,7 @@ const VerifyCodeInput = ({
   );
 };
 
-export default VerifyCodeInput;
+export default ProfileInputPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -60,10 +51,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
-  },
-  desc: {
-    color: "#888",
-    marginBottom: 32,
   },
   input: {
     borderBottomWidth: 1,
