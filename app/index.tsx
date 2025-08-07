@@ -8,18 +8,16 @@ import WelcomeImage from "../components/index/WelcomeImage";
 
 const Index = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.wrapper}>
-        <LogoHeader />
-        <View style={styles.body}>
-          <WelcomeImage />
-          <Description />
-          <TermsNotice />
-          <StartButton />
-          <LoginButton />
-        </View>
+    <View style={styles.container}>
+      <LogoHeader />
+      <View style={styles.body}>
+        <WelcomeImage />
+        <Description />
+        <TermsNotice />
+        <StartButton />
+        <LoginButton />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -28,12 +26,10 @@ export default Index;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  wrapper: {
-    flex: 1,
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 20,
+    backgroundColor: "white",
   },
   body: {
     flex: 1,
