@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
-
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 
 const signUpPage = () => {
   const [phone, setPhone] = useState("");
-  const isValid = phone.length >= 10;
+  const isValid = phone.length >= 0;
   const router = useRouter();
   return (
     <View style={styles.container}>
@@ -46,7 +45,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "white",
   },
   title: {
     fontSize: 22,

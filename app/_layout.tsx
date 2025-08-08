@@ -12,27 +12,7 @@ export default function RootLayout() {
       <QueryProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="(signUp)"
-            options={{
-              headerStyle: {
-                backgroundColor: "white",
-              },
-              headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => router.back()}
-                  activeOpacity={0.8}
-                >
-                  <MaterialCommunityIcons
-                    name="keyboard-backspace"
-                    size={24}
-                    color="black"
-                  />
-                </TouchableOpacity>
-              ),
-              headerTitle: "",
-            }}
-          />
+          <Stack.Screen name="(signUp)" options={{ headerShown: false }} />
         </Stack>
       </QueryProvider>
     </SafeAreaView>
