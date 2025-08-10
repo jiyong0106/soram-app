@@ -8,11 +8,11 @@ type SearchBarProps = {
   placeholder?: string;
 };
 
-export default function SearchBar({
+const SearchBar = ({
   value,
   onChangeText,
   placeholder = "검색",
-}: SearchBarProps) {
+}: SearchBarProps) => {
   return (
     <View style={styles.searchWrap}>
       <TextInput
@@ -30,18 +30,20 @@ export default function SearchBar({
       />
     </View>
   );
-}
+};
+
+export default SearchBar;
 
 const styles = StyleSheet.create({
   searchWrap: {
-    height: 44,
+    height: 40,
     borderRadius: 22,
     borderWidth: 1,
     borderColor: "#DADCE0",
     paddingLeft: 16,
     paddingRight: 40,
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 10,
   },
   searchInput: {
     fontSize: 16,

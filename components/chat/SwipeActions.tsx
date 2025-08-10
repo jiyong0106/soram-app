@@ -6,7 +6,7 @@ type Props = {
   onDelete?: () => void;
 };
 
-export default function SwipeActions({ onPin, onDelete }: Props) {
+const SwipeActions = ({ onPin, onDelete }: Props) => {
   return (
     <View style={styles.actionsContainer}>
       <Pressable
@@ -23,7 +23,9 @@ export default function SwipeActions({ onPin, onDelete }: Props) {
       </Pressable>
     </View>
   );
-}
+};
+
+export default SwipeActions;
 
 const styles = StyleSheet.create({
   actionsContainer: {

@@ -9,12 +9,6 @@ import ChatListItem, {
 import SwipeActions from "@/components/chat/SwipeActions";
 import PageContainer from "@/components/common/PageContainer";
 
-type ChatPreview = {
-  id: string;
-  name: string;
-  lastMessage: string;
-};
-
 const SAMPLE_CHATS: ChatPreviewItem[] = [
   {
     id: "1",

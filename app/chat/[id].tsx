@@ -24,7 +24,15 @@ const SAMPLE_MESSAGES: Message[] = [
   { id: "3", text: "가나다라가나다라마", isMine: true },
   { id: "4", text: "가나다라마", isMine: false },
   { id: "5", text: "가나다라가나다라마", isMine: true },
-  { id: "6", text: "가나다라마", isMine: false },
+  { id: "7", text: "가나다라마", isMine: false },
+  { id: "8", text: "가나다라마", isMine: false },
+  { id: "9", text: "가나다라마", isMine: false },
+  { id: "10", text: "가나다라마", isMine: true },
+  { id: "11", text: "가나다라마", isMine: true },
+  { id: "12", text: "가나다라마", isMine: false },
+  { id: "13", text: "가나다라마", isMine: true },
+  { id: "14", text: "가나다라마", isMine: false },
+  { id: "16", text: "가나다라마", isMine: true },
 ];
 
 export default function ChatDetailPage() {
@@ -40,10 +48,11 @@ export default function ChatDetailPage() {
   );
 
   return (
-    <PageContainer edges={["top", "bottom"]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: headerTitle,
+          headerShown: true,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
               <Ionicons name="call-outline" size={22} />
@@ -56,14 +65,18 @@ export default function ChatDetailPage() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={90}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
-          contentContainerStyle={{ padding: 16, gap: 12 }}
+          contentContainerStyle={{
+            padding: 15,
+            gap: 12,
+            // backgroundColor: "red",
+          }}
           showsVerticalScrollIndicator={false}
         />
 

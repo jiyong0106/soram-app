@@ -1,5 +1,5 @@
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 type Props = {
@@ -28,7 +28,7 @@ export default function MessageInputBar({
         />
       </View>
       <TouchableOpacity style={styles.sendBtn} onPress={onSend}>
-        <Ionicons name="send-outline" size={22} />
+        <Feather name="send" size={22} />
       </TouchableOpacity>
     </View>
   );
