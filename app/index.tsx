@@ -1,23 +1,26 @@
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Description from "../components/index/Description";
 import LoginButton from "../components/index/LoginButton";
 import LogoHeader from "../components/index/LogoHeader";
 import StartButton from "../components/index/StartButton";
 import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
+import PageContainer from "@/components/common/PageContainer";
 
 const Index = () => {
   return (
-    <View style={styles.container}>
-      <LogoHeader />
-      <View style={styles.body}>
-        <WelcomeImage />
-        <Description />
-        <TermsNotice />
-        <StartButton />
-        <LoginButton />
+    <PageContainer edges={["top", "bottom"]}>
+      <View style={styles.container}>
+        <LogoHeader />
+        <View style={styles.body}>
+          <WelcomeImage />
+          <Description />
+          <TermsNotice />
+          <StartButton />
+          <LoginButton />
+        </View>
       </View>
-    </View>
+    </PageContainer>
   );
 };
 
@@ -27,9 +30,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    backgroundColor: "white",
   },
   body: {
     flex: 1,

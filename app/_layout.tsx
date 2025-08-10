@@ -1,20 +1,22 @@
 import QueryProvider from "@/libs/QueryProvider";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import React from "react";
-import { TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
-  const router = useRouter();
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <GestureHandlerRootView>
       <QueryProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(signUp)" options={{ headerShown: false }} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(signUp)" />
+          <Stack.Screen name="(tabs)" />
         </Stack>
       </QueryProvider>
-    </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }

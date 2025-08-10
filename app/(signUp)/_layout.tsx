@@ -1,14 +1,14 @@
 import { Stack, usePathname } from "expo-router";
 import {
-  View,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
 import SignUpHeader from "@/components/signUp/SignUpHeader";
+import PageContainer from "@/components/common/PageContainer";
 
-export default function SignUpLayout() {
+const SignUpLayout = () => {
   const pathname = usePathname();
   const isRoot = pathname === "/(signUp)";
 
@@ -19,7 +19,7 @@ export default function SignUpLayout() {
       keyboardVerticalOffset={40}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={{ flex: 1, backgroundColor: "white" }}>
+        <PageContainer edges={["top", "bottom"]} padded={false}>
           <SignUpHeader showBack={!isRoot} />
           <Stack
             screenOptions={{
@@ -31,8 +31,10 @@ export default function SignUpLayout() {
             <Stack.Screen name="VerifyCodeInputPage" />
             <Stack.Screen name="ProfileInputPage" />
           </Stack>
-        </View>
+        </PageContainer>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default SignUpLayout;

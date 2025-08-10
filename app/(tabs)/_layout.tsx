@@ -1,34 +1,36 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
 
 const TabLayout = () => {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#FF6F3C" }}>
+    <Tabs
+      screenOptions={{ tabBarActiveTintColor: "#FF6F3C", headerShown: false }}
+    >
       <Tabs.Screen
         name="chatList"
         options={{
-          title: "Home",
-          // tabBarIcon: ({ color }) => (
-          //   <FontAwesome size={28} name="home" color={color} />
-          // ),
+          title: "채팅",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="chatbox-ellipses-outline" size={28} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="connect"
         options={{
-          title: "Settings",
-          // tabBarIcon: ({ color }) => (
-          //   <FontAwesome size={28} name="cog" color={color} />
-          // ),
+          title: "연결",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="rocket-outline" size={28} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Settings",
-          // tabBarIcon: ({ color }) => (
-          //   <FontAwesome size={28} name="cog" color={color} />
-          // ),
+          title: "프로필",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-outline" size={28} color={color} />
+          ),
         }}
       />
     </Tabs>
