@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -47,6 +48,10 @@ export default function ChatDetailPage() {
     <MessageBubble text={item.text} isMine={item.isMine} />
   );
 
+  const onSend = () => {
+    Alert.alert("메세지 전송");
+  };
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -75,12 +80,11 @@ export default function ChatDetailPage() {
           contentContainerStyle={{
             padding: 15,
             gap: 12,
-            // backgroundColor: "red",
           }}
           showsVerticalScrollIndicator={false}
         />
 
-        <MessageInputBar value={text} onChangeText={setText} />
+        <MessageInputBar value={text} onChangeText={setText} onSend={onSend} />
       </KeyboardAvoidingView>
     </PageContainer>
   );
