@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 20,
-    backgroundColor: "white",
   },
   body: {
     flex: 1,

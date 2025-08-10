@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-const ChatListLayout = () => {
+const ProfileLayout = () => {
   return (
     <Stack
       screenOptions={{
@@ -12,4 +12,4 @@ const ChatListLayout = () => {
     </Stack>
   );
 };
-export default ChatListLayout;
+export default ProfileLayout;
