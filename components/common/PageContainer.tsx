@@ -20,7 +20,7 @@ export default function PageContainer({
     <SafeAreaView
       edges={edges}
       style={[
-        { flex: 1, backgroundColor, paddingHorizontal: padded ? 10 : 0 },
+        { flex: 1, backgroundColor, paddingHorizontal: padded ? 15 : 0 },
         style,
       ]}
     >

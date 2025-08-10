@@ -6,7 +6,7 @@ import {
   Keyboard,
 } from "react-native";
 import SignUpHeader from "@/components/signUp/SignUpHeader";
-import { SafeAreaView } from "react-native-safe-area-context";
+import PageContainer from "@/components/common/PageContainer";
 
 const SignUpLayout = () => {
   const pathname = usePathname();
@@ -19,7 +19,7 @@ const SignUpLayout = () => {
       keyboardVerticalOffset={40}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <PageContainer edges={["top", "bottom"]} padded={false}>
           <SignUpHeader showBack={!isRoot} />
           <Stack
             screenOptions={{
@@ -31,7 +31,7 @@ const SignUpLayout = () => {
             <Stack.Screen name="VerifyCodeInputPage" />
             <Stack.Screen name="ProfileInputPage" />
           </Stack>
-        </SafeAreaView>
+        </PageContainer>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
