@@ -15,7 +15,7 @@ export default ({ config }: any) => {
 
       // iOS 관련 설정
       ios: {
-        bundleIdentifier: "app.soram.soram",
+        bundleIdentifier: "team.soram.soram",
         supportsTablet: false, // 태블릿 지원 여부 (false면 iPad 레이아웃 제한)
         icon: "./assets/icons/logos/012.png",
         infoPlist: {
