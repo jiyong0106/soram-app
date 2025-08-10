@@ -16,6 +16,16 @@ export default ({ config }: any) => {
       // iOS 관련 설정
       ios: {
         supportsTablet: false, // 태블릿 지원 여부 (false면 iPad 레이아웃 제한)
+        icon: "./assets/icons/logos/012.png",
+        infoPlist: {
+          CFBundleDevelopmentRegion: "ko", //앱 기본 언어를 한국어로 지정.
+          ITSAppUsesNonExemptEncryption: false, // 암호화 사용 x
+        },
+        splash: {
+          image: "./assets/icons/logos/012.png",
+          resizeMode: "cover",
+          backgroundColor: "#ffffff",
+        },
       },
 
       // Android 관련 설정
