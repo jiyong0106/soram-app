@@ -1,23 +1,26 @@
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Description from "../components/index/Description";
 import LoginButton from "../components/index/LoginButton";
 import LogoHeader from "../components/index/LogoHeader";
 import StartButton from "../components/index/StartButton";
 import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
   return (
-    <View style={styles.container}>
-      <LogoHeader />
-      <View style={styles.body}>
-        <WelcomeImage />
-        <Description />
-        <TermsNotice />
-        <StartButton />
-        <LoginButton />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={styles.container}>
+        <LogoHeader />
+        <View style={styles.body}>
+          <WelcomeImage />
+          <Description />
+          <TermsNotice />
+          <StartButton />
+          <LoginButton />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
