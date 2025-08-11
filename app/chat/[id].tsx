@@ -8,6 +8,7 @@ import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import useSafeArea from "@/hooks/useSafeArea";
 
 type Message = {
   id: string;
@@ -48,6 +49,7 @@ const ChatDetailPage = () => {
   const flatListRef = useRef<FlatList<Message>>(null);
   const [inputBarHeight, setInputBarHeight] = useState(40);
   const { height } = useReanimatedKeyboardAnimation();
+  const { bottom } = useSafeArea();
 
   const animatedListStyle = useAnimatedStyle(() => {
     return { transform: [{ translateY: height.value }] };
@@ -68,7 +70,7 @@ const ChatDetailPage = () => {
   }, [inputBarHeight]);
 
   return (
-    <PageContainer edges={["bottom"]} padded={false}>
+    <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
           title: headerTitle,
@@ -92,7 +94,8 @@ const ChatDetailPage = () => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               paddingHorizontal: 15,
-              paddingVertical: 15,
+              paddingTop: 15,
+              paddingBottom: bottom,
               gap: 12,
             }}
             showsVerticalScrollIndicator={false}
@@ -103,8 +106,9 @@ const ChatDetailPage = () => {
         </Animated.View>
 
         <StickyBottom
-          style={{ backgroundColor: "#fff" }}
+          style={{ backgroundColor: "white" }}
           onHeightChange={setInputBarHeight}
+          bottomInset={bottom}
         >
           <MessageInputBar
             value={text}
