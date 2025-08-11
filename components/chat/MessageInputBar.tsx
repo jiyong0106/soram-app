@@ -36,6 +36,7 @@ const MessageInputBar = ({
           value={value}
           onChangeText={onChangeText}
           placeholderTextColor="#A5A8AE"
+          multiline
         />
       </View>
       <TouchableOpacity style={styles.sendBtn} onPress={onSend}>

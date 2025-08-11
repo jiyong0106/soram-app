@@ -5,12 +5,14 @@ import { KeyboardStickyView } from "react-native-keyboard-controller";
 type StickyBottomProps = PropsWithChildren<{
   style?: ViewStyle;
   onHeightChange?: (height: number) => void;
+  bottomInset?: number;
 }>;
 
 const StickyBottom = ({
   children,
   style,
   onHeightChange,
+  bottomInset = 0,
 }: StickyBottomProps) => {
   const handleLayout = (e: LayoutChangeEvent) => {
     onHeightChange?.(e.nativeEvent.layout.height);
@@ -18,7 +20,7 @@ const StickyBottom = ({
 
   return (
     <KeyboardStickyView
-      offset={{ closed: 0, opened: 0 }}
+      offset={{ closed: 0, opened: bottomInset }}
       style={style}
       onLayout={handleLayout}
     >
