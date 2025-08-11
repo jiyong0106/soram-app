@@ -64,6 +64,7 @@ const ChatDetailPage = () => {
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
                 activeOpacity={0.5}
+                onPress={() => router.back()}
               >
                 <Ionicons name="ellipsis-vertical" size={22} />
               </TouchableOpacity>
