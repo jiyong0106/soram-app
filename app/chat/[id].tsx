@@ -1,17 +1,12 @@
 import React, { useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import StickyBottom from "@/components/common/StickyBottom";
 
 type Message = {
   id: string;
@@ -41,6 +36,8 @@ const ChatDetailPage = () => {
   const [text, setText] = useState("");
   const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
   const flatListRef = useRef<FlatList<Message>>(null);
+  const insets = useSafeAreaInsets();
+  const [inputBarHeight, setInputBarHeight] = useState(60);
 
   const headerTitle = useMemo(() => "가나다라마바사", [id]);
 
@@ -53,7 +50,7 @@ const ChatDetailPage = () => {
   };
 
   return (
-    <PageContainer edges={["bottom"]} padded={false}>
+    <PageContainer padded={false}>
       <Stack.Screen
         options={{
           title: headerTitle,
@@ -67,25 +64,33 @@ const ChatDetailPage = () => {
         }}
       />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={90}
-      >
+      <View style={{ flex: 1 }}>
         <FlatList
           ref={flatListRef}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
-            padding: 15,
+            paddingHorizontal: 15,
+            paddingTop: 15,
+            // paddingBottom: 15 + inputBarHeight + insets.bottom,
             gap: 12,
           }}
           showsVerticalScrollIndicator={false}
         />
 
-        <MessageInputBar value={text} onChangeText={setText} onSend={onSend} />
-      </KeyboardAvoidingView>
+        <StickyBottom
+          style={{ backgroundColor: "#fff" }}
+          onHeightChange={setInputBarHeight}
+        >
+          <MessageInputBar
+            value={text}
+            onChangeText={setText}
+            onSend={onSend}
+          />
+        </StickyBottom>
+      </View>
     </PageContainer>
   );
 };

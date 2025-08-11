@@ -1,20 +1,31 @@
 import React from "react";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  LayoutChangeEvent,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type MessageInputBarProps = {
   value: string;
   onChangeText: (t: string) => void;
   onSend?: () => void;
+  onLayoutHeightChange?: (h: number) => void;
 };
 
 const MessageInputBar = ({
   value,
   onChangeText,
   onSend,
+  onLayoutHeightChange,
 }: MessageInputBarProps) => {
+  const handleLayout = (e: LayoutChangeEvent) => {
+    onLayoutHeightChange?.(e.nativeEvent.layout.height);
+  };
   return (
-    <View style={styles.inputBarWrap}>
+    <View style={styles.inputBarWrap} onLayout={handleLayout}>
       <TouchableOpacity style={styles.addBtn}>
         <Ionicons name="add" size={20} color="#C4C4C4" />
       </TouchableOpacity>
