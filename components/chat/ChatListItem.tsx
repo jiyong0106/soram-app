@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 export type ChatPreview = {
   id: string;
@@ -20,7 +20,10 @@ const ChatListItem = ({
   renderRightActions,
 }: ChatListItemProps) => {
   return (
-    <Swipeable renderRightActions={renderRightActions} overshootRight={false}>
+    <ReanimatedSwipeable
+      renderRightActions={renderRightActions}
+      overshootRight={false}
+    >
       <Pressable style={styles.row} onPress={() => onPress(item.id)}>
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
@@ -32,7 +35,7 @@ const ChatListItem = ({
           </Text>
         </View>
       </Pressable>
-    </Swipeable>
+    </ReanimatedSwipeable>
   );
 };
 
