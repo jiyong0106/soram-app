@@ -1,20 +1,31 @@
 import React from "react";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  LayoutChangeEvent,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-type Props = {
+type MessageInputBarProps = {
   value: string;
   onChangeText: (t: string) => void;
   onSend?: () => void;
+  onLayoutHeightChange?: (h: number) => void;
 };
 
-export default function MessageInputBar({
+const MessageInputBar = ({
   value,
   onChangeText,
   onSend,
-}: Props) {
+  onLayoutHeightChange,
+}: MessageInputBarProps) => {
+  const handleLayout = (e: LayoutChangeEvent) => {
+    onLayoutHeightChange?.(e.nativeEvent.layout.height);
+  };
   return (
-    <View style={styles.inputBarWrap}>
+    <View style={styles.inputBarWrap} onLayout={handleLayout}>
       <TouchableOpacity style={styles.addBtn}>
         <Ionicons name="add" size={20} color="#C4C4C4" />
       </TouchableOpacity>
@@ -25,6 +36,7 @@ export default function MessageInputBar({
           value={value}
           onChangeText={onChangeText}
           placeholderTextColor="#A5A8AE"
+          multiline
         />
       </View>
       <TouchableOpacity style={styles.sendBtn} onPress={onSend}>
@@ -32,7 +44,9 @@ export default function MessageInputBar({
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default MessageInputBar;
 
 const styles = StyleSheet.create({
   inputBarWrap: {
@@ -59,6 +73,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 15,
+    textAlignVertical: "top",
   },
   sendBtn: {
     width: 32,

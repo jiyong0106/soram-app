@@ -9,13 +9,13 @@ type PageContainerProps = PropsWithChildren<{
   backgroundColor?: string;
 }>;
 
-export default function PageContainer({
+const PageContainer = ({
   children,
   edges = ["top"],
   style,
   padded = true,
   backgroundColor = "white",
-}: PageContainerProps) {
+}: PageContainerProps) => {
   return (
     <SafeAreaView
       edges={edges}
@@ -27,4 +27,5 @@ export default function PageContainer({
       {children}
     </SafeAreaView>
   );
-}
+};
+export default PageContainer;

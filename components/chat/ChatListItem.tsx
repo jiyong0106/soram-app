@@ -8,17 +8,17 @@ export type ChatPreview = {
   lastMessage: string;
 };
 
-type Props = {
+type ChatListItemProps = {
   item: ChatPreview;
   onPress: (id: string) => void;
   renderRightActions?: () => ReactNode;
 };
 
-export default function ChatListItem({
+const ChatListItem = ({
   item,
   onPress,
   renderRightActions,
-}: Props) {
+}: ChatListItemProps) => {
   return (
     <Swipeable renderRightActions={renderRightActions} overshootRight={false}>
       <Pressable style={styles.row} onPress={() => onPress(item.id)}>
@@ -34,7 +34,9 @@ export default function ChatListItem({
       </Pressable>
     </Swipeable>
   );
-}
+};
+
+export default ChatListItem;
 
 const styles = StyleSheet.create({
   row: {

@@ -1,46 +1,29 @@
-import React, { useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
+import StickyBottom from "@/components/common/StickyBottom";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import useSafeArea from "@/hooks/useSafeArea";
+import { Message, SAMPLE_MESSAGES } from "@/dummy/test";
 
-type Message = {
-  id: string;
-  text: string;
-  isMine: boolean;
-};
-
-const SAMPLE_MESSAGES: Message[] = [
-  { id: "1", text: "가나다라마", isMine: false },
-  { id: "2", text: "가나다라마", isMine: true },
-  { id: "3", text: "가나다라가나다라마", isMine: true },
-  { id: "4", text: "가나다라마", isMine: false },
-  { id: "5", text: "가나다라가나다라마", isMine: true },
-  { id: "7", text: "가나다라마", isMine: false },
-  { id: "8", text: "가나다라마", isMine: false },
-  { id: "9", text: "가나다라마", isMine: false },
-  { id: "10", text: "가나다라마", isMine: true },
-  { id: "11", text: "가나다라마", isMine: true },
-  { id: "12", text: "가나다라마", isMine: false },
-  { id: "13", text: "가나다라마", isMine: true },
-  { id: "14", text: "가나다라마", isMine: false },
-  { id: "16", text: "가나다라마", isMine: true },
-];
-
-export default function ChatDetailPage() {
+const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+  //채팅 유저의 id
   const [text, setText] = useState("");
   const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
   const flatListRef = useRef<FlatList<Message>>(null);
+  const [inputBarHeight, setInputBarHeight] = useState(40);
+  const { height } = useReanimatedKeyboardAnimation();
+  const { bottom } = useSafeArea();
+
+  const animatedListStyle = useAnimatedStyle(() => {
+    return { transform: [{ translateY: height.value }] };
+  });
 
   const headerTitle = useMemo(() => "가나다라마바사", [id]);
 
@@ -52,8 +35,12 @@ export default function ChatDetailPage() {
     Alert.alert("메세지 전송");
   };
 
+  useEffect(() => {
+    flatListRef.current?.scrollToEnd({ animated: false });
+  }, [inputBarHeight]);
+
   return (
-    <PageContainer edges={["bottom"]} padded={false}>
+    <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
           title: headerTitle,
@@ -67,27 +54,43 @@ export default function ChatDetailPage() {
         }}
       />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={90}
-      >
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(m) => m.id}
-          renderItem={renderItem}
-          contentContainerStyle={{
-            padding: 15,
-            gap: 12,
-          }}
-          showsVerticalScrollIndicator={false}
-        />
+      <View style={{ flex: 1 }}>
+        <Animated.View style={[{ flex: 1 }, animatedListStyle]}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(m) => m.id}
+            renderItem={renderItem}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              paddingHorizontal: 15,
+              paddingTop: 15,
+              paddingBottom: bottom,
+              gap: 12,
+            }}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              flatListRef.current?.scrollToEnd({ animated: false });
+            }}
+          />
+        </Animated.View>
 
-        <MessageInputBar value={text} onChangeText={setText} onSend={onSend} />
-      </KeyboardAvoidingView>
+        <StickyBottom
+          style={{ backgroundColor: "white" }}
+          onHeightChange={setInputBarHeight}
+          bottomInset={bottom}
+        >
+          <MessageInputBar
+            value={text}
+            onChangeText={setText}
+            onSend={onSend}
+          />
+        </StickyBottom>
+      </View>
     </PageContainer>
   );
-}
+};
+
+export default ChatDetailPage;
 
 const styles = StyleSheet.create({});
