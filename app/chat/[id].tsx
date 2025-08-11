@@ -36,7 +36,7 @@ const SAMPLE_MESSAGES: Message[] = [
   { id: "16", text: "가나다라마", isMine: true },
 ];
 
-export default function ChatDetailPage() {
+const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [text, setText] = useState("");
   const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
@@ -88,6 +88,8 @@ export default function ChatDetailPage() {
       </KeyboardAvoidingView>
     </PageContainer>
   );
-}
+};
+
+export default ChatDetailPage;
 
 const styles = StyleSheet.create({});

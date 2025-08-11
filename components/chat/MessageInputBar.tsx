@@ -2,17 +2,17 @@ import React from "react";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
-type Props = {
+type MessageInputBarProps = {
   value: string;
   onChangeText: (t: string) => void;
   onSend?: () => void;
 };
 
-export default function MessageInputBar({
+const MessageInputBar = ({
   value,
   onChangeText,
   onSend,
-}: Props) {
+}: MessageInputBarProps) => {
   return (
     <View style={styles.inputBarWrap}>
       <TouchableOpacity style={styles.addBtn}>
@@ -32,7 +32,9 @@ export default function MessageInputBar({
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default MessageInputBar;
 
 const styles = StyleSheet.create({
   inputBarWrap: {

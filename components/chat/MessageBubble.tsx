@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
-type Props = {
+type MessageBubbleProps = {
   text: string;
   isMine?: boolean;
   style?: ViewStyle;
 };
 
-export default function MessageBubble({ text, isMine = false, style }: Props) {
+const MessageBubble = ({ text, isMine = false, style }: MessageBubbleProps) => {
   return (
     <View
       style={[
@@ -21,7 +21,9 @@ export default function MessageBubble({ text, isMine = false, style }: Props) {
       </Text>
     </View>
   );
-}
+};
+
+export default MessageBubble;
 
 const styles = StyleSheet.create({
   bubble: {
