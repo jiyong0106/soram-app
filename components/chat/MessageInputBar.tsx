@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 15,
+    textAlignVertical: "top",
   },
   sendBtn: {
     width: 32,

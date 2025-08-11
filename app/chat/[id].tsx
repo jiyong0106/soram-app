@@ -6,7 +6,6 @@ import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
-import useSafeArea from "@/hooks/useSafeArea";
 
 type Message = {
   id: string;
@@ -44,7 +43,6 @@ const ChatDetailPage = () => {
   const [text, setText] = useState("");
   const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
   const flatListRef = useRef<FlatList<Message>>(null);
-  const { bottom } = useSafeArea();
   const [inputBarHeight, setInputBarHeight] = useState(40);
 
   const headerTitle = useMemo(() => "가나다라마바사", [id]);
@@ -97,7 +95,6 @@ const ChatDetailPage = () => {
         <StickyBottom
           style={{ backgroundColor: "#fff" }}
           onHeightChange={setInputBarHeight}
-          bottomInset={bottom}
         >
           <MessageInputBar
             value={text}
