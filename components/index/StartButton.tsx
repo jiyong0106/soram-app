@@ -1,7 +1,17 @@
+import { useRouter } from "expo-router";
 import Button from "../common/Button";
 
 const StartButton = () => {
-  return <Button label="시작하기" color="#FF6F3C" textColor="#fff" />;
+  const router = useRouter();
+
+  return (
+    <Button
+      label="시작하기"
+      color="#FF6F3C"
+      textColor="#fff"
+      onPress={() => router.push("/(signUp)")}
+    />
+  );
 };
 
 export default StartButton;

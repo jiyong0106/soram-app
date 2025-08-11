@@ -5,7 +5,9 @@ interface ButtonProps {
   color?: string;
   textColor?: string;
   borderColor?: string;
+  onPress?: () => void;
   style?: ViewStyle;
+  disabled?: any;
 }
 
 const Button = ({
@@ -14,17 +16,34 @@ const Button = ({
   textColor = "#222",
   borderColor,
   style,
+  disabled,
+  onPress,
 }: ButtonProps) => {
+  // disabled 상태일 때 색상 지정
+  const disabledBg = "#eee";
+  const disabledText = "#aaa";
+  const disabledBorder = "#eee";
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        { backgroundColor: color, borderColor: borderColor || color },
+        {
+          backgroundColor: disabled ? disabledBg : color,
+          borderColor: disabled ? disabledBorder : borderColor || color,
+        },
         style,
+        // disabled && styles.disabled,
       ]}
+      disabled={disabled}
       activeOpacity={0.8}
+      onPress={onPress}
     >
-      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
+      <Text
+        style={[styles.label, { color: disabled ? disabledText : textColor }]}
+      >
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 };
