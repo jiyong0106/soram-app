@@ -40,7 +40,7 @@ const MessageInputBar = ({
         />
       </View>
       <TouchableOpacity style={styles.sendBtn} onPress={onSend}>
-        <Feather name="send" size={22} />
+        <Feather name="send" size={22} color="#FF6B6B" />
       </TouchableOpacity>
     </View>
   );

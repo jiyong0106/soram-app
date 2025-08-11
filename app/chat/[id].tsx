@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
@@ -20,6 +26,7 @@ const ChatDetailPage = () => {
   const [inputBarHeight, setInputBarHeight] = useState(40);
   const { height } = useReanimatedKeyboardAnimation();
   const { bottom } = useSafeArea();
+  const router = useRouter();
 
   const animatedListStyle = useAnimatedStyle(() => {
     return { transform: [{ translateY: height.value }] };
@@ -45,11 +52,32 @@ const ChatDetailPage = () => {
         options={{
           title: headerTitle,
           headerShown: true,
+          headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
-              <Ionicons name="call-outline" size={22} />
-              <Ionicons name="ellipsis-vertical" size={20} />
+              <TouchableOpacity
+                style={{ flexDirection: "row" }}
+                activeOpacity={0.5}
+              >
+                <Ionicons name="call-outline" size={22} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ flexDirection: "row" }}
+                activeOpacity={0.5}
+                onPress={() => router.back()}
+              >
+                <Ionicons name="ellipsis-vertical" size={22} />
+              </TouchableOpacity>
             </View>
+          ),
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ flexDirection: "row" }}
+              activeOpacity={0.5}
+              onPress={() => router.back()}
+            >
+              <Ionicons name="chevron-back-outline" size={24} color="black" />
+            </TouchableOpacity>
           ),
         }}
       />
