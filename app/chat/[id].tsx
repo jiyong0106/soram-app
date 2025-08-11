@@ -6,6 +6,8 @@ import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 
 type Message = {
   id: string;
@@ -40,10 +42,16 @@ const SAMPLE_MESSAGES: Message[] = [
 
 const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+  //채팅 유저의 id
   const [text, setText] = useState("");
   const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
   const flatListRef = useRef<FlatList<Message>>(null);
   const [inputBarHeight, setInputBarHeight] = useState(40);
+  const { height } = useReanimatedKeyboardAnimation();
+
+  const animatedListStyle = useAnimatedStyle(() => {
+    return { transform: [{ translateY: height.value }] };
+  });
 
   const headerTitle = useMemo(() => "가나다라마바사", [id]);
 
@@ -75,22 +83,24 @@ const ChatDetailPage = () => {
       />
 
       <View style={{ flex: 1 }}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(m) => m.id}
-          renderItem={renderItem}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{
-            paddingHorizontal: 15,
-            paddingVertical: 15,
-            gap: 12,
-          }}
-          showsVerticalScrollIndicator={false}
-          onContentSizeChange={() => {
-            flatListRef.current?.scrollToEnd({ animated: false });
-          }}
-        />
+        <Animated.View style={[{ flex: 1 }, animatedListStyle]}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(m) => m.id}
+            renderItem={renderItem}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              paddingHorizontal: 15,
+              paddingVertical: 15,
+              gap: 12,
+            }}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              flatListRef.current?.scrollToEnd({ animated: false });
+            }}
+          />
+        </Animated.View>
 
         <StickyBottom
           style={{ backgroundColor: "#fff" }}
