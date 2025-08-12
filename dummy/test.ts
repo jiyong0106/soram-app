@@ -28,3 +28,44 @@ export const SAMPLE_MESSAGES: Message[] = [
   { id: "14", text: "가나다라마", isMine: false },
   { id: "16", text: "가나다라마", isMine: true },
 ];
+
+export const SAMPLE_CHATS = [
+  { id: "1", name: "에렌 예거", lastMessage: "벽 밖이 어떤지 직접 보고 싶어." },
+  {
+    id: "2",
+    name: "미카사 아커만",
+    lastMessage: "조심해. 항상 등 뒤도 신경 써.",
+  },
+  {
+    id: "3",
+    name: "아르민 알레르트",
+    lastMessage: "새로운 작전 아이디어가 있어.",
+  },
+  {
+    id: "4",
+    name: "리바이 아커만",
+    lastMessage: "정리하고 와. 시간 낭비는 싫다.",
+  },
+  { id: "5", name: "한지 조에", lastMessage: "거인 샘플 데이터 정리했어!" },
+  {
+    id: "6",
+    name: "사샤 브라우스",
+    lastMessage: "감자… 아니, 간식 좀 가져갈게.",
+  },
+  {
+    id: "7",
+    name: "코니 스프링어",
+    lastMessage: "오늘 훈련 끝나고 잠깐 볼래?",
+  },
+  {
+    id: "8",
+    name: "장 키르슈타인",
+    lastMessage: "현실적으로 판단하자고, 에렌.",
+  },
+  { id: "9", name: "히스토리아 레이스", lastMessage: "괜찮아. 내가 책임질게." },
+  {
+    id: "10",
+    name: "애니 레온하트",
+    lastMessage: "시간 낭비하지 말고 바로 해.",
+  },
+];

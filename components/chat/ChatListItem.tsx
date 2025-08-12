@@ -1,7 +1,11 @@
-import React, { ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import SwipeActions from "./SwipeActions";
 
+import { SharedValue } from "react-native-reanimated";
+
+//채팅 목록 컴포넌트
 export type ChatPreview = {
   id: string;
   name: string;
@@ -11,20 +15,22 @@ export type ChatPreview = {
 type ChatListItemProps = {
   item: ChatPreview;
   onPress: (id: string) => void;
-  renderRightActions?: () => ReactNode;
 };
 
-const ChatListItem = ({
-  item,
-  onPress,
-  renderRightActions,
-}: ChatListItemProps) => {
+const ChatListItem = ({ item, onPress }: ChatListItemProps) => {
   return (
     <ReanimatedSwipeable
-      renderRightActions={renderRightActions}
+      friction={2} //얼마나 무겁게(저항 있게) 움직일지
+      enableTrackpadTwoFingerGesture
+      rightThreshold={40}
       overshootRight={false}
+      renderRightActions={(
+        prog: SharedValue<number>,
+        drag: SharedValue<number>
+      ) => <SwipeActions prog={prog} drag={drag} />}
     >
-      <Pressable style={styles.row} onPress={() => onPress(item.id)}>
+      {/* <Pressable style={styles.row} onPress={() => onPress(item.id)}> */}
+      <View style={styles.row}>
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
           <Text style={styles.rowTitle} numberOfLines={1}>
@@ -34,7 +40,7 @@ const ChatListItem = ({
             {item.lastMessage}
           </Text>
         </View>
-      </Pressable>
+      </View>
     </ReanimatedSwipeable>
   );
 };
@@ -45,8 +51,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingVertical: 15,
+    paddingHorizontal: 15,
   },
   avatar: {
     width: 44,

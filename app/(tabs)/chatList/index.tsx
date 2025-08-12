@@ -6,31 +6,8 @@ import SearchBar from "@/components/chat/SearchBar";
 import ChatListItem, {
   ChatPreview as ChatPreviewItem,
 } from "@/components/chat/ChatListItem";
-import SwipeActions from "@/components/chat/SwipeActions";
 import PageContainer from "@/components/common/PageContainer";
-
-const SAMPLE_CHATS: ChatPreviewItem[] = [
-  {
-    id: "1",
-    name: "가나다라마바사",
-    lastMessage: "가나다라마바사아자차카타파하가나다라",
-  },
-  {
-    id: "2",
-    name: "가나다라마바사",
-    lastMessage: "가나다라마바사아자차카타파하가나다라",
-  },
-  {
-    id: "3",
-    name: "가나다라마바사",
-    lastMessage: "가나다라마바사아자차카타파하가나다라",
-  },
-  {
-    id: "4",
-    name: "가나다라마바사",
-    lastMessage: "가나다라마바사아자차카타파하가나다라",
-  },
-];
+import { SAMPLE_CHATS } from "@/dummy/test";
 
 const ChatListPage = () => {
   const [query, setQuery] = useState("");
@@ -44,26 +21,23 @@ const ChatListPage = () => {
     [query]
   );
 
-  const renderActions = () => <SwipeActions />;
-
   const renderItem = ({ item }: { item: ChatPreviewItem }) => (
     <ChatListItem
       item={item}
       onPress={(id) => router.push({ pathname: "/chat/[id]", params: { id } })}
-      renderRightActions={renderActions}
     />
   );
 
   return (
-    <PageContainer>
-      <Text style={styles.title}>채팅</Text>
-      <SearchBar value={query} onChangeText={setQuery} />
+    <PageContainer edges={["top"]} padded={false}>
+      <View style={styles.header}>
+        <Text style={styles.title}>채팅</Text>
+        <SearchBar value={query} onChangeText={setQuery} />
+      </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         showsVerticalScrollIndicator={false}
       />
     </PageContainer>
@@ -73,12 +47,23 @@ const ChatListPage = () => {
 export default ChatListPage;
 
 const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: 15,
+  },
   title: {
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 16,
   },
-  rowTextWrap: { flex: 1 },
-  rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
-  rowSubtitle: { color: "#8A8F98" },
+  rowTextWrap: {
+    flex: 1,
+  },
+  rowTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  rowSubtitle: {
+    color: "#8A8F98",
+  },
 });
