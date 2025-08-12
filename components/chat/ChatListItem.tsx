@@ -1,12 +1,5 @@
 import React, { useRef } from "react";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 
 import SearchBar from "@/components/chat/SearchBar";
@@ -7,7 +7,7 @@ import ChatListItem, {
   ChatPreview as ChatPreviewItem,
 } from "@/components/chat/ChatListItem";
 import PageContainer from "@/components/common/PageContainer";
-import { SAMPLE_CHATS } from "@/dummy/test";
+import { SAMPLE_CHATS } from "@/utils/dummy/test";
 
 const ChatListPage = () => {
   const [query, setQuery] = useState("");
