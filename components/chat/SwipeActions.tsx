@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Reanimated, {
   SharedValue,
   useAnimatedStyle,
@@ -7,6 +7,7 @@ import Reanimated, {
   Extrapolation,
   useDerivedValue,
 } from "react-native-reanimated";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 type SwipeActionsProps = {
   prog: SharedValue<number>;
@@ -27,35 +28,21 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
   });
 
   // 두 버튼 모두 같은 비율로 커지게 (각각 reveal/2, 최대 ACTION_WIDTH)
-  const pinStyle = useAnimatedStyle(() => {
+  const buttonStyle = useAnimatedStyle(() => {
     const w = Math.min(reveal.value / 2, ACTION_WIDTH);
-    const opacity = interpolate(
-      w,
-      [8, ACTION_WIDTH],
-      [0, 1],
-      Extrapolation.CLAMP
-    );
-    return { width: w, opacity };
-  });
-
-  const delStyle = useAnimatedStyle(() => {
-    const w = Math.min(reveal.value / 2, ACTION_WIDTH);
-    const opacity = interpolate(
-      w,
-      [8, ACTION_WIDTH],
-      [0, 1],
-      Extrapolation.CLAMP
-    );
-    return { width: w, opacity };
+    return { width: w };
   });
 
   return (
     <Reanimated.View style={styles.actionsContainer}>
-      <Reanimated.View style={[styles.actionButton, styles.pin, pinStyle]}>
-        <Text style={styles.actionText}>고정</Text>
+      <Reanimated.View style={[styles.actionButton, styles.noti, buttonStyle]}>
+        {/* <Ionicons name="notifications-off-outline" size={26} color="white" /> */}
+        <Ionicons name="notifications-outline" size={26} color="white" />
       </Reanimated.View>
-      <Reanimated.View style={[styles.actionButton, styles.delete, delStyle]}>
-        <Text style={styles.actionText}>삭제</Text>
+      <Reanimated.View
+        style={[styles.actionButton, styles.delete, buttonStyle]}
+      >
+        <AntDesign name="delete" size={26} color="white" />
       </Reanimated.View>
     </Reanimated.View>
   );
@@ -76,7 +63,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  pin: { backgroundColor: "#9AA0A6" },
-  delete: { backgroundColor: "#FF6F6F" },
-  actionText: { color: "#fff", fontWeight: "700" },
+  noti: {
+    backgroundColor: "#FF6B6B",
+  },
+  delete: {
+    backgroundColor: "#9AA0A6",
+  },
+  actionText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
 });
