@@ -1,10 +1,8 @@
 import React from "react";
-import { Alert, StyleSheet, Touchable, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 import Reanimated, {
   SharedValue,
   useAnimatedStyle,
-  interpolate,
-  Extrapolation,
   useDerivedValue,
 } from "react-native-reanimated";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
