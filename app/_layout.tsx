@@ -1,4 +1,4 @@
-import QueryProvider from "@/libs/QueryProvider";
+import QueryProvider from "@/utils/libs/QueryProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack } from "expo-router";
 import React from "react";

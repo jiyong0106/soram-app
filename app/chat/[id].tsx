@@ -14,9 +14,9 @@ import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
-import useSafeArea from "@/hooks/useSafeArea";
-import { Message, SAMPLE_MESSAGES } from "@/dummy/test";
+import useSafeArea from "@/utils/hooks/useSafeArea";
 import ChatActionModal from "@/components/chat/ChatActionModal";
+import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
 
 const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
