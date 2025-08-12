@@ -14,8 +14,9 @@ import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
-import useSafeArea from "@/hooks/useSafeArea";
-import { Message, SAMPLE_MESSAGES } from "@/dummy/test";
+import useSafeArea from "@/utils/hooks/useSafeArea";
+import ChatActionModal from "@/components/chat/ChatActionModal";
+import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
 
 const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,6 +28,7 @@ const ChatDetailPage = () => {
   const { height } = useReanimatedKeyboardAnimation();
   const { bottom } = useSafeArea();
   const router = useRouter();
+  const actionModalRef = useRef<any>(null);
 
   const animatedListStyle = useAnimatedStyle(() => {
     return { transform: [{ translateY: height.value }] };
@@ -64,7 +66,7 @@ const ChatDetailPage = () => {
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
                 activeOpacity={0.5}
-                onPress={() => router.back()}
+                onPress={() => actionModalRef.current?.present?.()}
               >
                 <Ionicons name="ellipsis-vertical" size={22} />
               </TouchableOpacity>
@@ -114,6 +116,14 @@ const ChatDetailPage = () => {
             onSend={onSend}
           />
         </StickyBottom>
+
+        <ChatActionModal
+          ref={actionModalRef}
+          onReport={() => {}}
+          onBlock={() => {}}
+          onLeave={() => {}}
+          onMute={() => {}}
+        />
       </View>
     </PageContainer>
   );
