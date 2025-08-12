@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Alert,
   Pressable,
@@ -24,18 +24,47 @@ type ChatListItemProps = {
 };
 
 const ChatListItem = ({ item, onPress }: ChatListItemProps) => {
+  const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
+  const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
+
+  // 스와이프 직후 잠깐(예: 150ms) 탭 무시
+  const blockTapBriefly = () => {
+    isSwipingRef.current = true;
+    setTimeout(() => {
+      isSwipingRef.current = false;
+    }, 150);
+  };
+
+  const handleRowPress = () => {
+    if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
+    onPress(item.id);
+  };
   return (
     <ReanimatedSwipeable
-      friction={2} //얼마나 무겁게움직일지
+      friction={2}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
       overshootRight={false}
+      // 스와이프 시작/닫힘 제스처 중엔 탭 블록
+      onSwipeableWillOpen={blockTapBriefly}
+      onSwipeableWillClose={blockTapBriefly}
+      // // 열림 상태 추적(원하면 탭 막기용)
+      onSwipeableOpen={() => {
+        isOpenRef.current = true;
+      }}
+      onSwipeableClose={() => {
+        isOpenRef.current = false;
+      }}
       renderRightActions={(
         prog: SharedValue<number>,
         drag: SharedValue<number>
       ) => <SwipeActions prog={prog} drag={drag} />}
     >
-      <TouchableOpacity style={styles.row} onPress={() => onPress(item.id)}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={handleRowPress}
+        activeOpacity={0.5}
+      >
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
           <Text style={styles.rowTitle} numberOfLines={1}>
