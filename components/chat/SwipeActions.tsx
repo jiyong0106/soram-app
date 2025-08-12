@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet, Touchable, TouchableOpacity } from "react-native";
 import Reanimated, {
   SharedValue,
   useAnimatedStyle,
@@ -37,12 +37,22 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
     <Reanimated.View style={styles.actionsContainer}>
       <Reanimated.View style={[styles.actionButton, styles.noti, buttonStyle]}>
         {/* <Ionicons name="notifications-off-outline" size={26} color="white" /> */}
-        <Ionicons name="notifications-outline" size={26} color="white" />
+        <TouchableOpacity
+          onPress={() => Alert.alert("알림 끄기")}
+          activeOpacity={0.5}
+        >
+          <Ionicons name="notifications-outline" size={26} color="white" />
+        </TouchableOpacity>
       </Reanimated.View>
       <Reanimated.View
         style={[styles.actionButton, styles.delete, buttonStyle]}
       >
-        <AntDesign name="delete" size={26} color="white" />
+        <TouchableOpacity
+          onPress={() => Alert.alert("삭제 완료")}
+          activeOpacity={0.5}
+        >
+          <AntDesign name="delete" size={26} color="white" />
+        </TouchableOpacity>
       </Reanimated.View>
     </Reanimated.View>
   );
