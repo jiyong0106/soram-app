@@ -17,7 +17,7 @@ const SignUpLayout = () => {
       >
         <Stack.Screen name="index" />
         <Stack.Screen name="VerifyCodeInputPage" />
-        <Stack.Screen name="ProfileInputPage" />
+        <Stack.Screen name="PhoneNumberPage" />
       </Stack>
     </PageContainer>
   );
