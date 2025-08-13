@@ -25,9 +25,9 @@ const VerifyCodeInputPage = () => {
 
       // 1. 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {
-        setSignupToken(res.signupToken);
+        // setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
-        // router.replace("/(signUp)/ProfileInputPage");
+        router.replace("/");
         return;
       }
 
@@ -50,6 +50,7 @@ const VerifyCodeInputPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <ScreenWithStickyAction
       action={
