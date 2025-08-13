@@ -58,6 +58,7 @@ export default ({ config }: any) => {
             backgroundColor: "#ffffff", // 스플래시 배경색
           },
         ],
+        ["expo-secure-store", { configureAndroidBackup: true }],
       ],
 
       // 실험적 기능 활성화
