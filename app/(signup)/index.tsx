@@ -12,6 +12,7 @@ const signupPage = () => {
   const [loading, setLoading] = useState(false);
   const isValid = /^010\d{8}$/.test(phoneNumber);
   const router = useRouter();
+  //라우터
 
   const hadnlePress = async () => {
     if (!isValid || loading) return;
