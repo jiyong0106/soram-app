@@ -3,15 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-type SignUpHeaderProps = {
+type SignupHeaderProps = {
   title?: string;
   showBack?: boolean;
 };
 
-export default function SignUpHeader({
+export default function SignupHeader({
   title = "",
   showBack = false,
-}: SignUpHeaderProps) {
+}: SignupHeaderProps) {
   const router = useRouter();
 
   return (

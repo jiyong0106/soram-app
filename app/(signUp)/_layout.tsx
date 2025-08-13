@@ -1,14 +1,14 @@
 import { Stack, usePathname } from "expo-router";
-import SignUpHeader from "@/components/signUp/SignUpHeader";
+import SignupHeader from "@/components/signup/SignupHeader";
 import PageContainer from "@/components/common/PageContainer";
 
-const SignUpLayout = () => {
+const SignupLayout = () => {
   const pathname = usePathname();
-  const isRoot = pathname === "/(signUp)";
+  const isRoot = pathname === "/(signup)";
 
   return (
     <PageContainer edges={["top", "bottom"]} padded={false}>
-      <SignUpHeader showBack={!isRoot} />
+      <SignupHeader showBack={!isRoot} />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -23,4 +23,4 @@ const SignUpLayout = () => {
   );
 };
 
-export default SignUpLayout;
+export default SignupLayout;

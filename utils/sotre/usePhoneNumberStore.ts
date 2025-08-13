@@ -8,6 +8,6 @@ interface PhoneNumberState {
 
 export const usePhoneNumberStore = create<PhoneNumberState>((set) => ({
   phoneNumber: "",
-  setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
+  setPhoneNumber: (n) => set({ phoneNumber: n }),
   clear: () => set({ phoneNumber: "" }),
 }));

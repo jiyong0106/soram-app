@@ -3,36 +3,53 @@ import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postVerifyOtp } from "@/utils/api/signUpPageApi";
+import { postVerifyOtp } from "@/utils/api/signupPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
-import { AxiosError } from "axios";
-import { isServerError } from "@/utils/api/axiosError";
+import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
   const [loading, setLoading] = useState(false);
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const clearPhoneNumber = usePhoneNumberStore((s) => s.clear);
+  const setSignupToken = useSignupTokenStore((s) => s.setSignupToken);
 
   const isValid = otp.length === 4;
   const router = useRouter();
-  console.log("넘겨받은 핸드폰 번호==>", phoneNumber);
 
   const handlePress = async () => {
     if (!isValid || loading) return;
     try {
       setLoading(true);
       const res = await postVerifyOtp({ phoneNumber, otp });
-      Alert.alert("인증되었습니다.");
-      clearPhoneNumber();
-    } catch (e) {
-      if (isServerError(e) && e.response && e.response.status === 404) {
-        Alert.alert("이메일이나 비밀번호를 확인해 주세요");
+
+      // 1. 토큰 메모리 저장 후 프로필 입력으로
+      if (res.signupToken) {
+        setSignupToken(res.signupToken);
+        clearPhoneNumber(); // PII 정리
+        // router.replace("/(signUp)/ProfileInputPage");
         return;
       }
+
+      // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
+      if (res.accessToken) {
+        // await saveAccessToken(res.accessToken);
+        clearPhoneNumber();
+        router.replace("/(tabs)/chatList");
+        return;
+      }
+
+      //  둘 다 없으면 예외 처리
+      Alert.alert("오류", "응답이 올바르지 않습니다. 다시 시도해 주세요.");
+    } catch (e: any) {
+      if (e) {
+        Alert.alert(e.response.data.message);
+        return;
+      }
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <ScreenWithStickyAction
       action={
@@ -40,7 +57,7 @@ const VerifyCodeInputPage = () => {
           label="계속하기"
           color="#FF6F3C"
           textColor="#fff"
-          disabled={!isValid}
+          disabled={!isValid || loading}
           onPress={handlePress}
           style={styles.button}
         />
@@ -53,11 +70,11 @@ const VerifyCodeInputPage = () => {
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="6자리 숫자"
+          placeholder="4자리 숫자"
           keyboardType="number-pad"
           value={otp}
           onChangeText={setotp}
-          maxLength={6}
+          maxLength={4}
         />
       </View>
     </ScreenWithStickyAction>
