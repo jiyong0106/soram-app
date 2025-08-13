@@ -1,52 +1,47 @@
 import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "@/components/common/Button";
+import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 
-const ProfileInputPage = () => {
+const PhoneNumberPage = () => {
   const [birth, setBirth] = useState("");
   const isValid = birth.length === 6;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>생년월일을 입력해 주세요</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="YYMMDD"
-        keyboardType="number-pad"
-        value={birth}
-        onChangeText={setBirth}
-        maxLength={6}
-      />
-      <View style={{ marginTop: "auto" }}>
+    <ScreenWithStickyAction
+      action={
         <Button
           label="계속하기"
           color="#FF6F3C"
           textColor="#fff"
           disabled={!isValid}
-          onPress={() => Alert.alert("끝!")}
+          onPress={() => Alert.alert("끝")}
           style={styles.button}
         />
+      }
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>생년월일을 입력해 주세요</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="YYMMDD"
+          keyboardType="number-pad"
+          value={birth}
+          onChangeText={setBirth}
+          maxLength={6}
+        />
       </View>
-    </View>
+    </ScreenWithStickyAction>
   );
 };
 
-export default ProfileInputPage;
+export default PhoneNumberPage;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
   },
-  backBtn: {
-    position: "absolute",
-    left: 16,
-    top: 16,
-    zIndex: 10,
-  },
-  backIcon: {
-    fontSize: 24,
-  },
+
   title: {
     fontSize: 22,
     fontWeight: "bold",
