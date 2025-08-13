@@ -1,13 +1,33 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
+import { postRequestOtp } from "@/utils/api/signUpPageApi";
+import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 
 const signUpPage = () => {
-  const [phone, setPhone] = useState("");
-  const isValid = phone.length >= 0;
+  const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
+  const setPhoneNumber = usePhoneNumberStore((s) => s.setPhoneNumber);
+  const [loading, setLoading] = useState(false);
+  const isValid = /^010\d{8}$/.test(phoneNumber);
   const router = useRouter();
+
+  const hadnlePress = async () => {
+    if (!isValid || loading) return;
+    try {
+      setLoading(true);
+      const res = await postRequestOtp({ phoneNumber });
+      Alert.alert(res.message);
+      router.push({
+        pathname: "/(signUp)/VerifyCodeInputPage",
+        params: { phoneNumber },
+      });
+    } catch (e) {
+      console.error("");
+    }
+  };
+
   return (
     <ScreenWithStickyAction
       action={
@@ -17,7 +37,7 @@ const signUpPage = () => {
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(signUp)/VerifyCodeInputPage")}
+          onPress={hadnlePress}
         />
       }
     >
@@ -33,8 +53,8 @@ const signUpPage = () => {
             style={styles.input}
             placeholder="휴대폰 번호"
             keyboardType="number-pad"
-            value={phone}
-            onChangeText={setPhone}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
             maxLength={11}
           />
         </View>
