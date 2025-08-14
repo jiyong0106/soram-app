@@ -1,4 +1,4 @@
-import QueryProvider from "@/libs/QueryProvider";
+import QueryProvider from "@/utils/libs/QueryProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack } from "expo-router";
 import React from "react";
@@ -17,7 +17,8 @@ export default function RootLayout() {
               }}
             >
               <Stack.Screen name="index" />
-              <Stack.Screen name="(signUp)" />
+              <Stack.Screen name="(signup)" />
+              <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="(tabs)" />
             </Stack>
           </KeyboardProvider>

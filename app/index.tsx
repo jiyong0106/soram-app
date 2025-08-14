@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import Description from "../components/index/Description";
 import LoginButton from "../components/index/LoginButton";
 import LogoHeader from "../components/index/LogoHeader";
@@ -6,8 +6,10 @@ import StartButton from "../components/index/StartButton";
 import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
 import PageContainer from "@/components/common/PageContainer";
+import { useRouter } from "expo-router";
 
 const Index = () => {
+  const router = useRouter();
   return (
     <PageContainer edges={["top", "bottom"]}>
       <View style={styles.container}>
@@ -18,6 +20,10 @@ const Index = () => {
           <TermsNotice />
           <StartButton />
           <LoginButton />
+          <Button
+            title="온보디 들어가기"
+            onPress={() => router.push("/(onboarding)")}
+          />
         </View>
       </View>
     </PageContainer>
