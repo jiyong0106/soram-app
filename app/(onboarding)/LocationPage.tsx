@@ -11,9 +11,9 @@ import LocationActionModal, {
 
 const LocationPage = () => {
   const router = useRouter();
-  const location = useOnboardingStore((s) => s.draft.location);
-  const patch = useOnboardingStore((s) => s.patch);
-  const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
+  // const location = useOnboardingStore((s) => s.draft.location);
+  // const patch = useOnboardingStore((s) => s.patch);
+  // const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
 
   return (
     <ScreenWithStickyAction
@@ -38,13 +38,13 @@ const LocationPage = () => {
         <TouchableOpacity
           style={styles.locationBox}
           activeOpacity={0.5}
-          onPress={() => actionModalRef.current?.present?.()}
+          // onPress={() => actionModalRef.current?.present?.()}
         >
           <Ionicons name="map-outline" size={24} color="black" />
           <Text style={styles.locationText}>지역</Text>
         </TouchableOpacity>
       </View>
-      <LocationActionModal ref={actionModalRef} />
+      {/* <LocationActionModal ref={actionModalRef} /> */}
     </ScreenWithStickyAction>
   );
 };

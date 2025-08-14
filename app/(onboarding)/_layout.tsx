@@ -16,11 +16,11 @@ const OnboardingLayout = () => {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="BirthdatePage" />
         <Stack.Screen name="GenderPage" />
-        <Stack.Screen name="InterestsPage" />
+        <Stack.Screen name="BirthdatePage" />
         <Stack.Screen name="LocationPage" />
-        <Stack.Screen name="PersonalityPage" />
+        {/* <Stack.Screen name="InterestsPage" /> */}
+        {/* <Stack.Screen name="PersonalityPage" /> */}
       </Stack>
     </PageContainer>
   );
