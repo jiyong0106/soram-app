@@ -9,7 +9,7 @@ const StartButton = () => {
       label="시작하기"
       color="#ff6b6b"
       textColor="#fff"
-      onPress={() => router.push("/(signup)")}
+      onPress={() => router.push("/(auth)")}
     />
   );
 };

@@ -3,10 +3,10 @@ import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postRequestOtp } from "@/utils/api/signupPageApi";
+import { postRequestOtp } from "@/utils/api/auth";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 
-const signupPage = () => {
+const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const setPhoneNumber = usePhoneNumberStore((s) => s.setPhoneNumber);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const signupPage = () => {
       const res = await postRequestOtp({ phoneNumber });
       Alert.alert(res.message);
       router.push({
-        pathname: "/(signup)/VerifyCodeInputPage",
+        pathname: "/(auth)/VerifyCodeInputPage",
         params: { phoneNumber },
       });
     } catch (e) {
@@ -66,7 +66,7 @@ const signupPage = () => {
   );
 };
 
-export default signupPage;
+export default AuthPage;
 
 const styles = StyleSheet.create({
   container: {
