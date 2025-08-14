@@ -4,15 +4,15 @@ import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
+import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 import LocationActionModal, {
   LocationActionModalRef,
-} from "@/components/onboarding/LocationActionModal";
+} from "@/components/signup/LocationActionModal";
 
 const LocationPage = () => {
   const router = useRouter();
-  // const location = useOnboardingStore((s) => s.draft.location);
-  // const patch = useOnboardingStore((s) => s.patch);
+  // const location = useSignupDraftStore((s) => s.draft.location);
+  // const patch = useSignupDraftStore((s) => s.patch);
   // const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
 
   return (
@@ -24,7 +24,7 @@ const LocationPage = () => {
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(onboarding)/InterestsPage")}
+          onPress={() => router.push("/(signup)/InterestsPage")}
         />
       }
     >

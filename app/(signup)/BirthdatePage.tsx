@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
+import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 
 // 유틸
 const onlyDigits = (s: string, max: number) =>
@@ -35,8 +35,8 @@ type FieldKey = "year" | "month" | "day";
 
 const BirthdatePage = () => {
   const router = useRouter();
-  const draftBirthdate = useOnboardingStore((s) => s.draft.birthdate);
-  const patch = useOnboardingStore((s) => s.patch);
+  const draftBirthdate = useSignupDraftStore((s) => s.draft.birthdate);
+  const patch = useSignupDraftStore((s) => s.patch);
 
   // 하나의 객체 상태로 관리
   const [date, setDate] = useState(() => parseBirth(draftBirthdate));
@@ -52,7 +52,7 @@ const BirthdatePage = () => {
     const mm = date.month.padStart(2, "0");
     const dd = date.day.padStart(2, "0");
     patch({ birthdate: `${date.year}-${mm}-${dd}` });
-    router.push("/(onboarding)/LocationPage");
+    // router.push("/(signup)/LocationPage");
   };
 
   const FIELDS: Array<{

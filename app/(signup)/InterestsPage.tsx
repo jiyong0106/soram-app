@@ -14,7 +14,7 @@ const InterestsPage = () => {
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(onboarding)/PersonalityPage")}
+          onPress={() => router.push("/(signup)/PersonalityPage")}
         />
       }
     >

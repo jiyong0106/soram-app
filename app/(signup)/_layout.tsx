@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
 
-const OnboardingLayout = () => {
+const SignupLayout = () => {
   return (
     <PageContainer edges={["top", "bottom"]} padded={false}>
       <Stack
@@ -21,4 +21,4 @@ const OnboardingLayout = () => {
   );
 };
 
-export default OnboardingLayout;
+export default SignupLayout;

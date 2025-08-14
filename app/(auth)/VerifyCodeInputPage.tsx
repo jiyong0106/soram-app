@@ -27,7 +27,7 @@ const VerifyCodeInputPage = () => {
       if (res.signupToken) {
         // setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
-        router.replace("/(onboarding)");
+        router.replace("/(signup)");
         return;
       }
 

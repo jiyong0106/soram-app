@@ -3,14 +3,14 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
+import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 
 const MAX_LEN = 10;
 
-const Index = () => {
+const SignupPage = () => {
   const router = useRouter();
-  const nickname = useOnboardingStore((s) => s.draft.nickname);
-  const patch = useOnboardingStore((s) => s.patch);
+  const nickname = useSignupDraftStore((s) => s.draft.nickname);
+  const patch = useSignupDraftStore((s) => s.patch);
   const [focused, setFocused] = useState(false);
 
   const isValid = nickname.trim().length > 0;
@@ -18,7 +18,7 @@ const Index = () => {
   const handlePress = () => {
     if (!isValid) return;
     // 이미 스토어에 들어가 있으므로 별도 저장 없이 이동
-    router.push("/(onboarding)/GenderPage");
+    router.push("/(signup)/GenderPage");
   };
 
   return (
@@ -63,7 +63,7 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default SignupPage;
 
 const styles = StyleSheet.create({
   container: {

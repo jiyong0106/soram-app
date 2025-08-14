@@ -1,4 +1,3 @@
-// components/onboarding/LocationActionModal.tsx
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { View, Text } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";

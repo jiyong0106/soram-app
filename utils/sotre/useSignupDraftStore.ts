@@ -1,10 +1,9 @@
-// store/useOnboardingStore.ts
 import { create } from "zustand";
 
 export type Gender = "MALE" | "FEMALE";
 export type AuthProvider = "kakao" | "apple" | "google" | "naver" | "email";
 
-export type OnboardingDraft = {
+export type SignupDraftType = {
   nickname: string;
   gender: Gender | ""; // 아직 미선택이면 ""
   birthdate: string; // "YYYY-MM-DD"
@@ -15,21 +14,21 @@ export type OnboardingDraft = {
   providerId?: string | null; // 소셜의 UID 등
 };
 
-type OnboardingStore = {
-  draft: OnboardingDraft;
+type SignupDraftStore = {
+  draft: SignupDraftType;
   /** 부분 업데이트(페이지별로 누적 저장) */
-  patch: (p: Partial<OnboardingDraft>) => void;
+  patch: (p: Partial<SignupDraftType>) => void;
   /** 제출/취소 시 초기화 */
   reset: () => void;
   /** 서버 전송 페이로드 만들기 (외부의 signupToken 주입) */
   buildPayload: (
     signupToken: string
-  ) => { signupToken: string } & OnboardingDraft;
+  ) => { signupToken: string } & SignupDraftType;
   /** 필수값 채움 여부 (UI 버튼 활성화 등에 활용) */
   isReadyToSubmit: () => boolean;
 };
 
-const EMPTY: OnboardingDraft = {
+const EMPTY: SignupDraftType = {
   nickname: "",
   gender: "",
   birthdate: "",
@@ -39,7 +38,7 @@ const EMPTY: OnboardingDraft = {
   providerId: null,
 };
 
-export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
+export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
   draft: { ...EMPTY },
 
   patch: (p) => set({ draft: { ...get().draft, ...p } }),

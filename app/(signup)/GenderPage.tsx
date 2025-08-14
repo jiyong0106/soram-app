@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { useOnboardingStore, Gender } from "@/utils/sotre/useOnboardingStore";
+import { useSignupDraftStore, Gender } from "@/utils/sotre/useSignupDraftStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const OPTIONS: Array<{ key: Gender; label: string }> = [
@@ -12,8 +12,8 @@ const OPTIONS: Array<{ key: Gender; label: string }> = [
 
 const GenderPage = () => {
   const router = useRouter();
-  const gender = useOnboardingStore((s) => s.draft.gender);
-  const patch = useOnboardingStore((s) => s.patch);
+  const gender = useSignupDraftStore((s) => s.draft.gender);
+  const patch = useSignupDraftStore((s) => s.patch);
 
   return (
     <ScreenWithStickyAction
@@ -24,7 +24,7 @@ const GenderPage = () => {
           textColor="#fff"
           disabled={!gender}
           style={styles.button}
-          onPress={() => router.push("/(onboarding)/BirthdatePage")}
+          onPress={() => router.push("/(signup)/BirthdatePage")}
         />
       }
     >
