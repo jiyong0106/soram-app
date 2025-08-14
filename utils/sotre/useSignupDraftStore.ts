@@ -1,18 +1,5 @@
 import { create } from "zustand";
-
-export type Gender = "MALE" | "FEMALE";
-export type AuthProvider = "kakao" | "apple" | "google" | "naver" | "email";
-
-export type SignupDraftType = {
-  nickname: string;
-  gender: Gender | ""; // 아직 미선택이면 ""
-  birthdate: string; // "YYYY-MM-DD"
-  // 선택값(필수 아님) → 기본 null 로 서버 전송
-  location?: string | null;
-  bio?: string | null;
-  authProvider?: AuthProvider | null; // 소셜 연결 시 사용
-  providerId?: string | null; // 소셜의 UID 등
-};
+import { SignupDraftType } from "../types/signup";
 
 type SignupDraftStore = {
   draft: SignupDraftType;

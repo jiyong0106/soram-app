@@ -16,7 +16,7 @@ const AuthLayout = () => {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="VerifyCodeInputPage" />
+        <Stack.Screen name="VerifyCode" />
       </Stack>
     </PageContainer>
   );

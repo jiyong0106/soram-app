@@ -25,7 +25,7 @@ const VerifyCodeInputPage = () => {
 
       // 1. 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {
-        // setSignupToken(res.signupToken);
+        setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
         router.replace("/(signup)");
         return;
@@ -33,7 +33,6 @@ const VerifyCodeInputPage = () => {
 
       // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
       if (res.accessToken) {
-        // await saveAccessToken(res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/chatList");
         return;

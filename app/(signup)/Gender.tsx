@@ -2,8 +2,9 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSignupDraftStore, Gender } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Gender } from "@/utils/types/signup";
 
 const OPTIONS: Array<{ key: Gender; label: string }> = [
   { key: "MALE", label: "남자" },
@@ -24,7 +25,7 @@ const GenderPage = () => {
           textColor="#fff"
           disabled={!gender}
           style={styles.button}
-          onPress={() => router.push("/(signup)/BirthdatePage")}
+          onPress={() => router.push("/(signup)/Birthdate")}
         />
       }
     >
