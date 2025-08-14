@@ -5,13 +5,13 @@ import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 
-type ChatActionModalProps = {
+interface ChatActionModalProps {
   snapPoints?: ReadonlyArray<string | number>;
   onReport?: () => void;
   onBlock?: () => void;
   onLeave?: () => void;
   onMute?: () => void;
-};
+}
 
 const ChatActionModal = (
   { snapPoints, onReport, onBlock, onLeave, onMute }: ChatActionModalProps,

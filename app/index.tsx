@@ -22,7 +22,7 @@ const Index = () => {
           <LoginButton />
           <Button
             title="온보디 들어가기"
-            onPress={() => router.push("/(onboarding)")}
+            onPress={() => router.push("/(signup)")}
           />
         </View>
       </View>

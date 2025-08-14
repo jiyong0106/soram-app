@@ -1,12 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function LogoHeader() {
+const LogoHeader = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Soram</Text>
     </View>
   );
-}
+};
+
+export default LogoHeader;
 
 const styles = StyleSheet.create({
   container: {

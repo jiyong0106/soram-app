@@ -3,15 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-type SignupHeaderProps = {
+type AuthHeaderProps = {
   title?: string;
   showBack?: boolean;
 };
 
-export default function SignupHeader({
-  title = "",
-  showBack = false,
-}: SignupHeaderProps) {
+const AuthHeader = ({ title = "", showBack = false }: AuthHeaderProps) => {
   const router = useRouter();
 
   return (
@@ -37,7 +34,8 @@ export default function SignupHeader({
       <View style={styles.right} />
     </View>
   );
-}
+};
+export default AuthHeader;
 
 const styles = StyleSheet.create({
   container: {
