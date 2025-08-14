@@ -8,8 +8,9 @@ export type OnboardingDraft = {
   nickname: string;
   gender: Gender | ""; // 아직 미선택이면 ""
   birthdate: string; // "YYYY-MM-DD"
-  location: string;
-  bio: string;
+  // 선택값(필수 아님) → 기본 null 로 서버 전송
+  location?: string | null;
+  bio?: string | null;
   authProvider?: AuthProvider | null; // 소셜 연결 시 사용
   providerId?: string | null; // 소셜의 UID 등
 };
@@ -32,8 +33,8 @@ const EMPTY: OnboardingDraft = {
   nickname: "",
   gender: "",
   birthdate: "",
-  location: "",
-  bio: "",
+  location: null,
+  bio: null,
   authProvider: null,
   providerId: null,
 };
@@ -49,12 +50,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
 
   isReadyToSubmit: () => {
     const d = get().draft;
+    // 필수값만 검증: nickname, gender, birthdate
     return (
       d.nickname.trim().length > 0 &&
       !!d.gender &&
-      d.birthdate.trim().length > 0 &&
-      d.location.trim().length > 0 &&
-      d.bio.trim().length > 0
+      d.birthdate.trim().length > 0
     );
   },
 }));
