@@ -24,7 +24,7 @@ const LocationPage = () => {
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(signup)/Interests")}
+          onPress={() => router.push("/(signup)/interests")}
         />
       }
     >
