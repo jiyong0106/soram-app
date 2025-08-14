@@ -3,6 +3,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useOnboardingStore, Gender } from "@/utils/sotre/useOnboardingStore";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const OPTIONS: Array<{ key: Gender; label: string }> = [
   { key: "MALE", label: "남자" },
@@ -19,7 +20,7 @@ const GenderPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!gender}
           style={styles.button}
@@ -28,16 +29,11 @@ const GenderPage = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.heroRow}>
-          <Image
-            source={require("@/assets/images/test.png")}
-            style={styles.heroImage}
-            resizeMode="contain"
-          />
-          <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>안녕!</Text>
-          </View>
-        </View>
+        <Image
+          source={require("@/assets/images/test.png")}
+          style={styles.heroImage}
+          resizeMode="contain"
+        />
 
         <Text style={styles.title}>OO님의 성별을 알려주세요</Text>
 
@@ -58,7 +54,13 @@ const GenderPage = () => {
               </Text>
               <View
                 style={[styles.radio, gender === key && styles.radioChecked]}
-              />
+              >
+                <Ionicons
+                  name="checkmark"
+                  size={20}
+                  color={gender === key ? "#ff6b6b" : "#D0D0D0"}
+                />
+              </View>
             </Pressable>
           ))}
         </View>
@@ -76,15 +78,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 32,
   },
-  heroRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-    marginBottom: 16,
-  },
+
   heroImage: {
-    width: 56,
-    height: 56,
+    width: 150,
+    height: 150,
   },
   speechBubble: {
     marginLeft: 8,
@@ -93,12 +90,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     borderRadius: 12,
   },
-  speechText: {
-    fontSize: 12,
-    color: "#555",
-  },
   title: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: "700",
     marginBottom: 12,
     color: "#222",
@@ -118,26 +111,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   selected: {
-    borderColor: "#FF6F3C",
+    backgroundColor: "#ff6b6b",
+    borderWidth: 0,
   },
   selectLabel: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#444",
   },
   selectedLabel: {
-    color: "#222",
+    color: "white",
     fontWeight: "700",
   },
   radio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 2,
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    borderWidth: 1,
     borderColor: "#DADADA",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
   },
   radioChecked: {
-    borderColor: "#FF6F3C",
-    backgroundColor: "#FF6F3C",
+    borderColor: "#ff6b6b",
+    backgroundColor: "white",
   },
 });
