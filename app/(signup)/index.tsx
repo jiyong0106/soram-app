@@ -18,7 +18,7 @@ const SignupPage = () => {
   const handlePress = () => {
     if (!isValid) return;
     // 이미 스토어에 들어가 있으므로 별도 저장 없이 이동
-    router.push("/(signup)/Gender");
+    router.push("/(signup)/gender");
   };
 
   return (

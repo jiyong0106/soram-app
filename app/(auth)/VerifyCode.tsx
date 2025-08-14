@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postVerifyOtp } from "@/utils/api/auth";
+import { postVerifyOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 

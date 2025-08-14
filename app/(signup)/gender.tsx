@@ -25,7 +25,7 @@ const GenderPage = () => {
           textColor="#fff"
           disabled={!gender}
           style={styles.button}
-          onPress={() => router.push("/(signup)/Birthdate")}
+          onPress={() => router.push("/(signup)/birthdate")}
         />
       }
     >

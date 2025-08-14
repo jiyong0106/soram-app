@@ -27,7 +27,7 @@ const BirthdatePage = () => {
     const dd = date.day.padStart(2, "0");
     const birthdate = `${date.year}-${mm}-${dd}`;
     patch({ birthdate: birthdate });
-    router.push("/(signup)/Finish");
+    router.push("/(signup)/finish");
   };
 
   return (
