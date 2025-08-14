@@ -1,6 +1,6 @@
 import { Image, StyleSheet, View } from "react-native";
 
-export default function WelcomeImage() {
+const WelcomeImage = () => {
   return (
     <View style={styles.container}>
       <Image
@@ -9,7 +9,9 @@ export default function WelcomeImage() {
       />
     </View>
   );
-}
+};
+
+export default WelcomeImage;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,34 +1,24 @@
-import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
+import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postRequestOtp } from "@/utils/api/signupPageApi";
-import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
+import React, { useState } from "react";
+import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 
-const signupPage = () => {
-  const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
-  const setPhoneNumber = usePhoneNumberStore((s) => s.setPhoneNumber);
-  const [loading, setLoading] = useState(false);
-  const isValid = /^010\d{8}$/.test(phoneNumber);
+const MAX_LEN = 10;
+
+const SignupPage = () => {
   const router = useRouter();
-  //라우터
+  const nickname = useSignupDraftStore((s) => s.draft.nickname);
+  const patch = useSignupDraftStore((s) => s.patch);
+  const [focused, setFocused] = useState(false);
 
-  const hadnlePress = async () => {
-    if (!isValid || loading) return;
-    try {
-      setLoading(true);
-      const res = await postRequestOtp({ phoneNumber });
-      Alert.alert(res.message);
-      router.push({
-        pathname: "/(signup)/VerifyCodeInputPage",
-        params: { phoneNumber },
-      });
-    } catch (e) {
-      console.error("");
-    } finally {
-      setLoading(true);
-    }
+  const isValid = nickname.trim().length > 0;
+
+  const handlePress = () => {
+    if (!isValid) return;
+    // 이미 스토어에 들어가 있으므로 별도 저장 없이 이동
+    router.push("/(signup)/GenderPage");
   };
 
   return (
@@ -36,68 +26,90 @@ const signupPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}
-          onPress={hadnlePress}
+          onPress={handlePress}
         />
       }
     >
       <View style={styles.container}>
-        <Text style={styles.title}>휴대폰 번호를 입력해 주세요</Text>
-        <Text style={styles.desc}>
-          허위/중복 가입을 막고, 악성 사용자를 제재하는데 사용해요. 입력한
-          번호는 절대 공개되지 않아요.
-        </Text>
-        <View style={styles.inputRow}>
-          <Text style={styles.countryCode}>+82</Text>
+        <Image
+          source={require("@/assets/images/test.png")}
+          style={styles.heroImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>닉네임을 설정해 주세요</Text>
+        <View style={styles.inputWrap}>
           <TextInput
-            style={styles.input}
-            placeholder="휴대폰 번호"
-            keyboardType="number-pad"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            maxLength={11}
+            style={[styles.input, focused && styles.inputFocused]}
+            placeholder="공백 · 특수문자 없이 1~10자"
+            value={nickname}
+            onChangeText={(t) => patch({ nickname: t.slice(0, MAX_LEN) })}
+            maxLength={MAX_LEN}
+            returnKeyType="done"
+            autoCapitalize="none"
+            autoCorrect={false}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
+          <Text style={styles.counter}>
+            {nickname.length}/{MAX_LEN}
+          </Text>
         </View>
       </View>
     </ScreenWithStickyAction>
   );
 };
 
-export default signupPage;
+export default SignupPage;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  desc: {
-    color: "#888",
-    marginBottom: 32,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  countryCode: {
-    fontSize: 18,
-    color: "#222",
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    borderBottomWidth: 1,
-    fontSize: 18,
-    padding: 8,
-  },
   button: {
     marginTop: 32,
+  },
+
+  heroImage: {
+    width: 150,
+    height: 150,
+  },
+  speechBubble: {
+    marginLeft: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: "#222",
+  },
+  inputWrap: {
+    position: "relative",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#F1C0B5",
+    borderRadius: 10,
+    height: 55,
+    paddingHorizontal: 12,
+    backgroundColor: "#FFF",
+    fontSize: 14,
+  },
+  inputFocused: {
+    borderColor: "#ff6b6b",
+  },
+  counter: {
+    position: "absolute",
+    right: 10,
+    bottom: -18,
+    fontSize: 12,
+    color: "#999",
   },
 });

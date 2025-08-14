@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postVerifyOtp } from "@/utils/api/signupPageApi";
+import { postVerifyOtp } from "@/utils/api/auth";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 
@@ -27,7 +27,7 @@ const VerifyCodeInputPage = () => {
       if (res.signupToken) {
         // setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
-        router.replace("/(onboarding)");
+        router.replace("/(signup)");
         return;
       }
 
@@ -56,7 +56,7 @@ const VerifyCodeInputPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid || loading}
           onPress={handlePress}

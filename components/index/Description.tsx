@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Description() {
+const Description = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>내 기준에 꼭 맞는</Text>
@@ -8,7 +8,9 @@ export default function Description() {
       <Text style={styles.text}>인연 큐레이터 소람</Text>
     </View>
   );
-}
+};
+
+export default Description;
 
 const styles = StyleSheet.create({
   container: {
