@@ -1,14 +1,19 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useRef } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
+import LocationActionModal, {
+  LocationActionModalRef,
+} from "@/components/onboarding/LocationActionModal";
 
 const LocationPage = () => {
   const router = useRouter();
-  const [location, setLocation] = useState("");
-  const isValid = useMemo(() => location.trim().length > 0, [location]);
+  const location = useOnboardingStore((s) => s.draft.location);
+  const patch = useOnboardingStore((s) => s.patch);
+  const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
 
   return (
     <ScreenWithStickyAction
@@ -17,7 +22,7 @@ const LocationPage = () => {
           label="계속하기"
           color="#ff6b6b"
           textColor="#fff"
-          disabled={!isValid}
+          // disabled={!isValid}
           style={styles.button}
           onPress={() => router.push("/(onboarding)/InterestsPage")}
         />
@@ -30,11 +35,16 @@ const LocationPage = () => {
           resizeMode="contain"
         />
         <Text style={styles.title}>거주지를 알려주세요</Text>
-        <TouchableOpacity style={styles.locationBox} activeOpacity={0.5}>
+        <TouchableOpacity
+          style={styles.locationBox}
+          activeOpacity={0.5}
+          onPress={() => actionModalRef.current?.present?.()}
+        >
           <Ionicons name="map-outline" size={24} color="black" />
           <Text style={styles.locationText}>지역</Text>
         </TouchableOpacity>
       </View>
+      <LocationActionModal ref={actionModalRef} />
     </ScreenWithStickyAction>
   );
 };
