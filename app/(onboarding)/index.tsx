@@ -1,6 +1,7 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
 import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
 
@@ -10,6 +11,7 @@ const Index = () => {
   const router = useRouter();
   const nickname = useOnboardingStore((s) => s.draft.nickname);
   const patch = useOnboardingStore((s) => s.patch);
+  const [focused, setFocused] = useState(false);
 
   const isValid = nickname.trim().length > 0;
 
@@ -41,15 +43,16 @@ const Index = () => {
         <Text style={styles.title}>닉네임을 설정해 주세요</Text>
         <View style={styles.inputWrap}>
           <TextInput
-            style={styles.input}
-            placeholder="공백·특수문자 없이 1~10자"
+            style={[styles.input, focused && styles.inputFocused]}
+            placeholder="공백 · 특수문자 없이 1~10자"
             value={nickname}
             onChangeText={(t) => patch({ nickname: t.slice(0, MAX_LEN) })}
             maxLength={MAX_LEN}
             returnKeyType="done"
-            onSubmitEditing={handlePress}
             autoCapitalize="none"
             autoCorrect={false}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
           <Text style={styles.counter}>
             {nickname.length}/{MAX_LEN}
@@ -98,6 +101,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#FFF",
     fontSize: 14,
+  },
+  inputFocused: {
+    borderColor: "#ff6b6b",
   },
   counter: {
     position: "absolute",
