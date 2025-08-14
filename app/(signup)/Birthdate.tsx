@@ -4,34 +4,8 @@ import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
-
-// 유틸
-const onlyDigits = (s: string, max: number) =>
-  s.replace(/\D/g, "").slice(0, max);
-const parseBirth = (v?: string) => {
-  if (!v) return { year: "", month: "", day: "" };
-  const [y = "", m = "", d = ""] = v.split("-");
-  return { year: y, month: m, day: d };
-};
-const validBirth = ({
-  year,
-  month,
-  day,
-}: {
-  year: string;
-  month: string;
-  day: string;
-}) => {
-  if (year.length !== 4 || month.length === 0 || day.length === 0) return false;
-  const y = +year,
-    m = +month,
-    d = +day;
-  if (!y || m < 1 || m > 12) return false;
-  const dim = new Date(y, m, 0).getDate();
-  return d >= 1 && d <= dim;
-};
-
-type FieldKey = "year" | "month" | "day";
+import { FieldKey } from "@/utils/types/signup";
+import { FIELDS, onlyDigits, parseBirth, validBirth } from "@/utils/util";
 
 const BirthdatePage = () => {
   const router = useRouter();
@@ -51,20 +25,10 @@ const BirthdatePage = () => {
     if (!isValid) return;
     const mm = date.month.padStart(2, "0");
     const dd = date.day.padStart(2, "0");
-    patch({ birthdate: `${date.year}-${mm}-${dd}` });
-    // router.push("/(signup)/LocationPage");
+    const birthdate = `${date.year}-${mm}-${dd}`;
+    patch({ birthdate: birthdate });
+    router.push("/(signup)/Finish");
   };
-
-  const FIELDS: Array<{
-    key: FieldKey;
-    ph: string;
-    max: number;
-    width: number;
-  }> = [
-    { key: "year", ph: "YYYY", max: 4, width: 100 },
-    { key: "month", ph: "MM", max: 2, width: 80 },
-    { key: "day", ph: "DD", max: 2, width: 80 },
-  ];
 
   return (
     <ScreenWithStickyAction

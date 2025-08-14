@@ -11,11 +11,12 @@ const SignupLayout = () => {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="GenderPage" />
-        <Stack.Screen name="BirthdatePage" />
-        {/* <Stack.Screen name="LocationPage" /> */}
-        {/* <Stack.Screen name="InterestsPage" /> */}
-        {/* <Stack.Screen name="PersonalityPage" /> */}
+        <Stack.Screen name="Gender" />
+        <Stack.Screen name="Birthdate" />
+        <Stack.Screen name="Location" />
+        <Stack.Screen name="Interests" />
+        <Stack.Screen name="Personality" />
+        <Stack.Screen name="Finish" />
       </Stack>
     </PageContainer>
   );

@@ -21,7 +21,7 @@ const AuthPage = () => {
       const res = await postRequestOtp({ phoneNumber });
       Alert.alert(res.message);
       router.push({
-        pathname: "/(auth)/VerifyCodeInputPage",
+        pathname: "/(auth)/VerifyCode",
         params: { phoneNumber },
       });
     } catch (e) {
