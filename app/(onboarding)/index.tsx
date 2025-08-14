@@ -1,10 +1,24 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { View, Text, StyleSheet } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
+import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import { useOnboardingStore } from "@/utils/sotre/useOnboardingStore";
+
+const MAX_LEN = 10;
 
 const Index = () => {
   const router = useRouter();
+  const nickname = useOnboardingStore((s) => s.draft.nickname);
+  const patch = useOnboardingStore((s) => s.patch);
+
+  const isValid = nickname.trim().length > 0;
+
+  const handlePress = () => {
+    if (!isValid) return;
+    // 이미 스토어에 들어가 있으므로 별도 저장 없이 이동
+    router.push("/(onboarding)/GenderPage");
+  };
+
   return (
     <ScreenWithStickyAction
       action={
@@ -12,15 +26,35 @@ const Index = () => {
           label="계속하기"
           color="#FF6F3C"
           textColor="#fff"
-          // disabled={!isValid}
+          disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(onboarding)/GenderPage")}
+          onPress={handlePress}
         />
       }
     >
       <View style={styles.container}>
-        <Text>Index</Text>
-        <Text>여긴 닉네임 페이지지</Text>
+        <Image
+          source={require("@/assets/images/test.png")}
+          style={styles.heroImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>닉네임을 설정해 주세요</Text>
+        <View style={styles.inputWrap}>
+          <TextInput
+            style={styles.input}
+            placeholder="공백·특수문자 없이 1~10자"
+            value={nickname}
+            onChangeText={(t) => patch({ nickname: t.slice(0, MAX_LEN) })}
+            maxLength={MAX_LEN}
+            returnKeyType="done"
+            onSubmitEditing={handlePress}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Text style={styles.counter}>
+            {nickname.length}/{MAX_LEN}
+          </Text>
+        </View>
       </View>
     </ScreenWithStickyAction>
   );
@@ -34,5 +68,42 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
+  },
+
+  heroImage: {
+    width: 150,
+    height: 150,
+  },
+  speechBubble: {
+    marginLeft: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: "#222",
+  },
+  inputWrap: {
+    position: "relative",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#F1C0B5",
+    borderRadius: 10,
+    height: 55,
+    paddingHorizontal: 12,
+    backgroundColor: "#FFF",
+    fontSize: 14,
+  },
+  counter: {
+    position: "absolute",
+    right: 10,
+    bottom: -18,
+    fontSize: 12,
+    color: "#999",
   },
 });

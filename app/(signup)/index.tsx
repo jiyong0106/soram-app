@@ -35,7 +35,7 @@ const signupPage = () => {
     <ScreenWithStickyAction
       action={
         <Button
-          label="계속하기"
+          label="인증번호 전송"
           color="#FF6F3C"
           textColor="#fff"
           disabled={!isValid}
