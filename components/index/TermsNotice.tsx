@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function TermsNotice() {
+const TermsNotice = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.notice}>
@@ -9,7 +9,9 @@ export default function TermsNotice() {
       </Text>
     </View>
   );
-}
+};
+
+export default TermsNotice;
 
 const styles = StyleSheet.create({
   container: {

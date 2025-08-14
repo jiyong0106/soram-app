@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
-import { postVerifyOtp } from "@/utils/api/signupPageApi";
+import { postVerifyOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 
@@ -25,15 +25,14 @@ const VerifyCodeInputPage = () => {
 
       // 1. 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {
-        // setSignupToken(res.signupToken);
+        setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
-        router.replace("/");
+        router.replace("/(signup)");
         return;
       }
 
       // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
       if (res.accessToken) {
-        // await saveAccessToken(res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/chatList");
         return;
@@ -56,7 +55,7 @@ const VerifyCodeInputPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid || loading}
           onPress={handlePress}
