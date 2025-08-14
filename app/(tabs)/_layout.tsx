@@ -4,7 +4,7 @@ import { Tabs } from "expo-router";
 const TabLayout = () => {
   return (
     <Tabs
-      screenOptions={{ tabBarActiveTintColor: "#FF6F3C", headerShown: false }}
+      screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}
     >
       <Tabs.Screen
         name="chatList"

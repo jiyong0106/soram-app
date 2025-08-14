@@ -14,7 +14,7 @@ const LocationPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: "#FF6F3C",
+    backgroundColor: "#ff6b6b",
   },
   input: {
     flex: 1,

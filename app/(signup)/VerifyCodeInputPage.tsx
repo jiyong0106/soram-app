@@ -56,7 +56,7 @@ const VerifyCodeInputPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid || loading}
           onPress={handlePress}

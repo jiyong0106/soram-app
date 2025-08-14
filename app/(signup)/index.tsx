@@ -36,7 +36,7 @@ const signupPage = () => {
       action={
         <Button
           label="인증번호 전송"
-          color="#FF6F3C"
+          color="#ff6b6b"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}

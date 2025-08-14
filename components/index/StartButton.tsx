@@ -7,7 +7,7 @@ const StartButton = () => {
   return (
     <Button
       label="시작하기"
-      color="#FF6F3C"
+      color="#ff6b6b"
       textColor="#fff"
       onPress={() => router.push("/(signup)")}
     />
