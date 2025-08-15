@@ -7,7 +7,7 @@ const SignupLayout = () => {
     <PageContainer edges={["top", "bottom"]} padded={false}>
       <Stack
         screenOptions={{
-          contentStyle: { backgroundColor: "white" },
+          contentStyle: { backgroundColor: "#fff" },
           title: "",
           headerLeft: () => <BackButton />,
         }}

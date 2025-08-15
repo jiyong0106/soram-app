@@ -43,7 +43,7 @@ const Button = ({
       onPress={onPress}
     >
       {loading ? (
-        <LoadingSpinner color="white" />
+        <LoadingSpinner color="#fff" />
       ) : (
         <Text
           style={[

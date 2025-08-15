@@ -99,7 +99,7 @@ const ChatDetailPage = () => {
         </Animated.View>
 
         <StickyBottom
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#fff" }}
           onHeightChange={setInputBarHeight}
           bottomInset={bottom}
         >

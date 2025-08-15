@@ -14,7 +14,7 @@ const PageContainer = ({
   edges = ["top"],
   style,
   padded = true,
-  backgroundColor = "white",
+  backgroundColor = "#fff",
 }: PageContainerProps) => {
   return (
     <SafeAreaView

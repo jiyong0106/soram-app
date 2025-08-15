@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     color: "#444",
   },
   selectedLabel: {
-    color: "white",
+    color: "#fff",
     fontWeight: "700",
   },
   radio: {
@@ -124,12 +124,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     borderColor: "#DADADA",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
   radioChecked: {
     borderColor: "#ff6b6b",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
   },
 });
