@@ -11,6 +11,7 @@ const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const setPhoneNumber = usePhoneNumberStore((s) => s.setPhoneNumber);
   const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState(false);
   const isValid = /^010\d{8}$/.test(phoneNumber);
   const router = useRouter();
   //라우터
@@ -55,12 +56,14 @@ const AuthPage = () => {
         <View style={styles.inputRow}>
           <Text style={styles.countryCode}>+82</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, focused && styles.inputFocused]}
             placeholder="휴대폰 번호"
             keyboardType="number-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             maxLength={11}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
         </View>
       </View>
@@ -98,8 +101,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     fontSize: 18,
     padding: 8,
+    borderColor: "#E6E6E6",
   },
   button: {
     marginTop: 32,
+  },
+  inputFocused: {
+    borderColor: "#ff6b6b",
   },
 });
