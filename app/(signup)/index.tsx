@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 
 const MAX_LEN = 10;
@@ -35,12 +35,12 @@ const SignupPage = () => {
       }
     >
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/test.png")}
-          style={styles.heroImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>닉네임을 설정해 주세요</Text>
+        <View style={styles.headerTitle}>
+          <Text style={styles.title}>닉네임을 설정해 주세요</Text>
+          <Text style={styles.subtitle}>
+            사용 할 닉네임을 알려주세요, 언제든 바꿀 수 있어요!
+          </Text>
+        </View>
         <View style={styles.inputWrap}>
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
@@ -72,23 +72,19 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 32,
   },
-
-  heroImage: {
-    width: 150,
-    height: 150,
-  },
-  speechBubble: {
-    marginLeft: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
+  headerTitle: {
+    marginBottom: 30,
+    gap: 10,
+    marginTop: 15,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: "600",
     color: "#222",
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#666666",
   },
   inputWrap: {
     position: "relative",

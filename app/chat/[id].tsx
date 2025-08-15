@@ -17,6 +17,7 @@ import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller
 import useSafeArea from "@/utils/hooks/useSafeArea";
 import ChatActionModal from "@/components/chat/ChatActionModal";
 import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
+import { BackButton } from "@/components/common/backbutton";
 
 const ChatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -72,15 +73,7 @@ const ChatDetailPage = () => {
               </TouchableOpacity>
             </View>
           ),
-          headerLeft: () => (
-            <TouchableOpacity
-              style={{ flexDirection: "row" }}
-              activeOpacity={0.5}
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back-outline" size={24} color="black" />
-            </TouchableOpacity>
-          ),
+          headerLeft: () => <BackButton />,
         }}
       />
 

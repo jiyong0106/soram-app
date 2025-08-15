@@ -1,16 +1,18 @@
 import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
+import { BackButton, backHeaderOptions } from "@/components/common/backbutton";
 
 const SignupLayout = () => {
   return (
     <PageContainer edges={["top", "bottom"]} padded={false}>
       <Stack
         screenOptions={{
-          headerShown: false,
           contentStyle: { backgroundColor: "white" },
+          title: "",
+          headerLeft: () => <BackButton />,
         }}
       >
-        <Stack.Screen name="index" />
+        <Stack.Screen name="index" options={{ headerLeft: undefined }} />
         <Stack.Screen name="gender" />
         <Stack.Screen name="birthdate" />
         <Stack.Screen name="location" />
