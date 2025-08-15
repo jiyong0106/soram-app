@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import useAlert from "@/utils/hooks/useAlert";
 
 const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
@@ -14,14 +14,20 @@ const AuthPage = () => {
   const [focused, setFocused] = useState(false);
   const isValid = /^010\d{8}$/.test(phoneNumber);
   const router = useRouter();
+  const { showAlert } = useAlert();
   //라우터
 
   const hadnlePress = async () => {
     if (!isValid || loading) return;
     try {
       setLoading(true);
-      const res = await postRequestOtp({ phoneNumber });
-      Alert.alert(res.message);
+      // const res = await postRequestOtp({ phoneNumber });
+      // showAlert(res.message, () =>
+      // router.push({
+      //   pathname: "/(auth)/VerifyCode",
+      //   params: { phoneNumber },
+      // })
+      // );
       router.push({
         pathname: "/(auth)/VerifyCode",
         params: { phoneNumber },
@@ -29,7 +35,7 @@ const AuthPage = () => {
     } catch (e) {
       console.error("");
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -98,7 +104,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     fontSize: 18,
     padding: 8,
     borderColor: "#E6E6E6",
