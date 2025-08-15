@@ -104,7 +104,7 @@ const VerifyCodeInputPage = () => {
           onBlur={() => setFocused(false)}
         />
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <Text style={styles.desc}>인증 번호다시 요청하기</Text>
+          <Text style={styles.desc}>인증번호 다시 요청하기</Text>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
