@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import { useRouter } from "expo-router";
+import { getConnections } from "@/utils/api/chatPageApi";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -28,7 +29,19 @@ const ConnectPage = () => {
     clearSignupToken();
     setAccessToken(null); // 화면 갱신
   };
+  console.log(accessToken);
 
+  //데이터요청 확인
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getConnections();
+        console.log("📌 connections data:", res);
+      } catch (e) {
+        console.log("❌ error:", e);
+      }
+    })();
+  }, []);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>ConnectPage</Text>

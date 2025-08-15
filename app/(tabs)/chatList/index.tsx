@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 
 import SearchBar from "@/components/chat/SearchBar";
 import ChatListItem, {
@@ -8,9 +9,11 @@ import ChatListItem, {
 } from "@/components/chat/ChatListItem";
 import PageContainer from "@/components/common/PageContainer";
 import { SAMPLE_CHATS } from "@/utils/dummy/test";
+import { getConnections } from "@/utils/api/chatPageApi";
 
 const ChatListPage = () => {
   const [query, setQuery] = useState("");
+
   const data = useMemo(
     () =>
       SAMPLE_CHATS.filter((c) =>

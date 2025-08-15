@@ -1,8 +1,6 @@
-// import instance from "./axios";
+import instance from "./axios";
 
-// export const getConnections = async (y) => {
-//   const { data } = await instance.post<RequestOtpResponse>(
-//     "/auth/phone/request-otp"
-//   );
-//   return data;
-// };
+export const getConnections = async () => {
+  const { data } = await instance.get("/connections/pending");
+  return data;
+};
