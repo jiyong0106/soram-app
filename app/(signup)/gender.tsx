@@ -14,6 +14,7 @@ const OPTIONS: Array<{ key: Gender; label: string }> = [
 const GenderPage = () => {
   const router = useRouter();
   const gender = useSignupDraftStore((s) => s.draft.gender);
+  const nickname = useSignupDraftStore((s) => s.draft.nickname);
   const patch = useSignupDraftStore((s) => s.patch);
 
   return (
@@ -30,14 +31,12 @@ const GenderPage = () => {
       }
     >
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/test.png")}
-          style={styles.heroImage}
-          resizeMode="contain"
-        />
-
-        <Text style={styles.title}>OO님의 성별을 알려주세요</Text>
-
+        <View style={styles.headerTitle}>
+          <Text style={styles.title}>{nickname}님의 성별을 선택해 주세요</Text>
+          <Text style={styles.subtitle}>
+            성별 정보를 기반 좋은 인연을 찾아드려요!
+          </Text>
+        </View>
         <View style={styles.selectList}>
           {OPTIONS.map(({ key, label }) => (
             <Pressable
@@ -79,23 +78,19 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 32,
   },
-
-  heroImage: {
-    width: 150,
-    height: 150,
-  },
-  speechBubble: {
-    marginLeft: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
+  headerTitle: {
+    marginBottom: 30,
+    gap: 10,
+    marginTop: 15,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: "600",
     color: "#222",
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#666666",
   },
   selectList: {
     gap: 10,
@@ -120,7 +115,7 @@ const styles = StyleSheet.create({
     color: "#444",
   },
   selectedLabel: {
-    color: "white",
+    color: "#fff",
     fontWeight: "700",
   },
   radio: {
@@ -129,12 +124,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     borderColor: "#DADADA",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
   radioChecked: {
     borderColor: "#ff6b6b",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
   },
 });

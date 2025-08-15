@@ -7,7 +7,7 @@ const ConnectLayout = () => {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: "white" },
+          contentStyle: { backgroundColor: "#fff" },
         }}
       >
         <Stack.Screen name="index" />
