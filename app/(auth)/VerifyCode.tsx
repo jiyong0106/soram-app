@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +13,7 @@ import { postRequestOtp, postVerifyOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
+import * as SecureStore from "expo-secure-store";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -43,16 +43,17 @@ const VerifyCodeInputPage = () => {
 
       // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
       if (res.accessToken) {
+        await SecureStore.setItemAsync("access_token", res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/chatList");
         return;
       }
 
       //  둘 다 없으면 예외 처리
-      Alert.alert("오류", "응답이 올바르지 않습니다. 다시 시도해 주세요.");
+      showAlert("응답이 올바르지 않습니다. 다시 시도해 주세요.");
     } catch (e: any) {
       if (e) {
-        Alert.alert(e.response.data.message);
+        showAlert(e.response.data.message);
         return;
       }
     } finally {

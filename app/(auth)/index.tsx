@@ -21,17 +21,13 @@ const AuthPage = () => {
     if (!isValid || loading) return;
     try {
       setLoading(true);
-      // const res = await postRequestOtp({ phoneNumber });
-      // showAlert(res.message, () =>
-      // router.push({
-      //   pathname: "/(auth)/VerifyCode",
-      //   params: { phoneNumber },
-      // })
-      // );
-      router.push({
-        pathname: "/(auth)/VerifyCode",
-        params: { phoneNumber },
-      });
+      const res = await postRequestOtp({ phoneNumber });
+      showAlert(res.message, () =>
+        router.push({
+          pathname: "/(auth)/VerifyCode",
+          params: { phoneNumber },
+        })
+      );
     } catch (e) {
       console.error("");
     } finally {
