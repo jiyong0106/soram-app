@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
@@ -41,6 +42,7 @@ const AuthPage = () => {
           disabled={!isValid}
           style={styles.button}
           onPress={hadnlePress}
+          loading={loading}
         />
       }
     >
