@@ -1,10 +1,70 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import AnswerRecommendLists from "./AnswerRecommendLists";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  AnswerRecommend,
+  GetAnswerRecommendResponse,
+} from "@/utils/types/connect";
+import { getAnswerRecommend } from "@/utils/api/connectPageApi";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const AnswerRecommendTab = () => {
+  //새로고침 스테이트
+  const [refreshing, setRefreshing] = useState(false);
+  //검색
+  const [searchName, setSearchName] = useState("");
+
+  //쿼리요청
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    isLoading,
+  } = useInfiniteQuery<GetAnswerRecommendResponse>({
+    queryKey: ["getAnswerRecommendKey", searchName],
+    queryFn: ({ pageParam }) =>
+      getAnswerRecommend({
+        take: 10,
+        cursor: pageParam,
+        search: searchName || "",
+      }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+  });
+
+  const items: AnswerRecommend[] =
+    data?.pages.flatMap((item) => item.data) ?? [];
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    refetch().finally(() => {
+      setRefreshing(false);
+    });
+  };
+
   return (
     <View style={styles.wrap}>
-      <Text style={styles.text}>여기는 "답변 추천" 탭 (UI Placeholder)</Text>
+      <FlatList
+        data={items}
+        renderItem={({ item }) => <AnswerRecommendLists item={item} />}
+        keyExtractor={(item) => String(item.id)}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: 10 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
+      />
     </View>
   );
 };
@@ -15,8 +75,7 @@ const styles = StyleSheet.create({
   wrap: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
   },
   text: {
     fontSize: 14,
