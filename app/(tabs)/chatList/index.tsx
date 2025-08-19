@@ -1,16 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
-
 import SearchBar from "@/components/chat/SearchBar";
 import ChatListItem, {
   ChatPreview as ChatPreviewItem,
 } from "@/components/chat/ChatListItem";
-import PageContainer from "@/components/common/PageContainer";
 import { SAMPLE_CHATS } from "@/utils/dummy/test";
 
 const ChatListPage = () => {
   const [query, setQuery] = useState("");
+
   const data = useMemo(
     () =>
       SAMPLE_CHATS.filter((c) =>
@@ -29,7 +28,7 @@ const ChatListPage = () => {
   );
 
   return (
-    <PageContainer edges={["top"]} padded={false}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>채팅</Text>
         <SearchBar value={query} onChangeText={setQuery} />
@@ -40,13 +39,17 @@ const ChatListPage = () => {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
       />
-    </PageContainer>
+    </View>
   );
 };
 
 export default ChatListPage;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   header: {
     paddingHorizontal: 15,
   },

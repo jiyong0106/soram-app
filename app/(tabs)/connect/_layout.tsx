@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 
 const ConnectLayout = () => {
   return (
-    <PageContainer>
+    <PageContainer edges={["top"]} padded={false}>
       <Stack
         screenOptions={{
           headerShown: false,

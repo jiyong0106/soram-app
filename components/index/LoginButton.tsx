@@ -5,7 +5,7 @@ const LoginButton = () => {
   const router = useRouter();
   return (
     <Button
-      label="로그인"
+      label="바로들어감"
       color="#fff"
       textColor="#222"
       borderColor="#FF835C"

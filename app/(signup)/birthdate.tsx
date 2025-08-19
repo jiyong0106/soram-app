@@ -5,7 +5,12 @@ import React, { useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 import { FieldKey } from "@/utils/types/signup";
-import { FIELDS, onlyDigits, parseBirth, validBirth } from "@/utils/util";
+import {
+  FIELDS,
+  onlyDigits,
+  parseBirth,
+  validBirth,
+} from "@/utils/util/birthdate";
 
 const order: FieldKey[] = ["year", "month", "day"];
 
