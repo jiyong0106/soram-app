@@ -1,4 +1,8 @@
-import { GetConnectionsResponse } from "../types/connection";
+import {
+  GetConnectionsResponse,
+  PostConnectionsAcceptResponse,
+  PostConnectionsRejectResponse,
+} from "../types/connection";
 import instance from "./axios";
 
 // 1. 나한테 대화요청한 목록 조회 api
@@ -16,7 +20,9 @@ export const postConnectionsAccept = async ({
 }: {
   connectionId: number;
 }) => {
-  const { data } = await instance.post(`/connections/${connectionId}/accept`);
+  const { data } = await instance.post<PostConnectionsAcceptResponse>(
+    `/connections/${connectionId}/accept`
+  );
   return data;
 };
 
@@ -27,6 +33,8 @@ export const postConnectionsReject = async ({
 }: {
   connectionId: number;
 }) => {
-  const { data } = await instance.post(`/connections/${connectionId}/reject`);
+  const { data } = await instance.post<PostConnectionsRejectResponse>(
+    `/connections/${connectionId}/reject`
+  );
   return data;
 };
