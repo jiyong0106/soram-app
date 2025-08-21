@@ -1,6 +1,6 @@
-import { FieldKey } from "./types/signup";
-
 //  birthdate 페이지 유틸 및 옵션
+
+import { FieldKey } from "../types/signup";
 
 export const onlyDigits = (s: string, max: number) =>
   s.replace(/\D/g, "").slice(0, max);

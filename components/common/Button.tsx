@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface ButtonProps {
   label: string;
@@ -8,6 +9,7 @@ interface ButtonProps {
   onPress?: () => void;
   style?: ViewStyle;
   disabled?: any;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -18,32 +20,40 @@ const Button = ({
   style,
   disabled,
   onPress,
+  loading,
 }: ButtonProps) => {
   // disabled 상태일 때 색상 지정
   const disabledBg = "#eee";
   const disabledText = "#aaa";
   const disabledBorder = "#eee";
+  const isDisabled = !!disabled || !!loading;
 
   return (
     <TouchableOpacity
       style={[
         styles.button,
         {
-          backgroundColor: disabled ? disabledBg : color,
-          borderColor: disabled ? disabledBorder : borderColor || color,
+          backgroundColor: isDisabled ? disabledBg : color,
+          borderColor: isDisabled ? disabledBorder : borderColor || color,
         },
         style,
-        // disabled && styles.disabled,
       ]}
-      disabled={disabled}
+      disabled={isDisabled}
       activeOpacity={0.8}
       onPress={onPress}
     >
-      <Text
-        style={[styles.label, { color: disabled ? disabledText : textColor }]}
-      >
-        {label}
-      </Text>
+      {loading ? (
+        <LoadingSpinner color="#ff6b6b" />
+      ) : (
+        <Text
+          style={[
+            styles.label,
+            { color: isDisabled ? disabledText : textColor },
+          ]}
+        >
+          {label}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };

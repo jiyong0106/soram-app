@@ -1,7 +1,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 
-const ProfileLayout = () => {
+const chatLayout = () => {
   return (
     <PageContainer edges={["top"]} padded={false}>
       <Stack
@@ -14,4 +14,4 @@ const ProfileLayout = () => {
     </PageContainer>
   );
 };
-export default ProfileLayout;
+export default chatLayout;

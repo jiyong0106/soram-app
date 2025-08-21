@@ -20,10 +20,6 @@ const Index = () => {
           <TermsNotice />
           <StartButton />
           <LoginButton />
-          <Button
-            title="온보디 들어가기"
-            onPress={() => router.push("/(signup)")}
-          />
         </View>
       </View>
     </PageContainer>

@@ -17,8 +17,9 @@ import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller
 import useSafeArea from "@/utils/hooks/useSafeArea";
 import ChatActionModal from "@/components/chat/ChatActionModal";
 import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
+import { BackButton } from "@/components/common/backbutton";
 
-const ChatDetailPage = () => {
+const ChatIdPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   //채팅 유저의 id
   const [text, setText] = useState("");
@@ -72,15 +73,7 @@ const ChatDetailPage = () => {
               </TouchableOpacity>
             </View>
           ),
-          headerLeft: () => (
-            <TouchableOpacity
-              style={{ flexDirection: "row" }}
-              activeOpacity={0.5}
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back-outline" size={24} color="black" />
-            </TouchableOpacity>
-          ),
+          headerLeft: () => <BackButton />,
         }}
       />
 
@@ -106,7 +99,7 @@ const ChatDetailPage = () => {
         </Animated.View>
 
         <StickyBottom
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#fff" }}
           onHeightChange={setInputBarHeight}
           bottomInset={bottom}
         >
@@ -129,6 +122,6 @@ const ChatDetailPage = () => {
   );
 };
 
-export default ChatDetailPage;
+export default ChatIdPage;
 
 const styles = StyleSheet.create({});

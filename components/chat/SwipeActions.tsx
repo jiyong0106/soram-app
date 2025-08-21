@@ -34,12 +34,12 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
   return (
     <Reanimated.View style={styles.actionsContainer}>
       <Reanimated.View style={[styles.actionButton, styles.noti, buttonStyle]}>
-        {/* <Ionicons name="notifications-off-outline" size={26} color="white" /> */}
+        {/* <Ionicons name="notifications-off-outline" size={26} color="#fff" /> */}
         <TouchableOpacity
           onPress={() => Alert.alert("알림 끄기")}
           activeOpacity={0.5}
         >
-          <Ionicons name="notifications-outline" size={26} color="white" />
+          <Ionicons name="notifications-outline" size={26} color="#fff" />
         </TouchableOpacity>
       </Reanimated.View>
       <Reanimated.View
@@ -49,7 +49,7 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
           onPress={() => Alert.alert("삭제 완료")}
           activeOpacity={0.5}
         >
-          <AntDesign name="delete" size={26} color="white" />
+          <AntDesign name="delete" size={26} color="#fff" />
         </TouchableOpacity>
       </Reanimated.View>
     </Reanimated.View>

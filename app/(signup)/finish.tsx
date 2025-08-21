@@ -7,14 +7,15 @@ import { postSignupSumbit } from "@/utils/api/signupPageApi";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
+import useAlert from "@/utils/hooks/useAlert";
+import * as SecureStore from "expo-secure-store";
 
 const FinishPage = () => {
   const router = useRouter();
   const { draft } = useSignupDraftStore.getState();
   const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const signupToken = useSignupTokenStore.getState().signupToken;
-  console.log("draft==>", draft);
-  console.log("signupToken===>", signupToken);
+  const { showAlert } = useAlert();
 
   const handlePress = async () => {
     try {
@@ -23,22 +24,24 @@ const FinishPage = () => {
         signupToken,
         ...draft,
       };
+      //서버 응답값 엑세스토큰
+      const res = await postSignupSumbit(body);
+      // 엑세스 토큰 스토어에 저장
+      await SecureStore.setItemAsync("access_token", res.accessToken);
 
-      const { accessToken } = await postSignupSumbit(body);
-      console.log("accessToken====>", accessToken);
-
-      // await SecureStore.setItemAsync("accessToken", accessToken, {
-      //   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-      // });
-
-      // 필요 시 드래프트/토큰 정리
+      // 드래프트/토큰 정리
       useSignupDraftStore.getState().reset?.();
+
       //사인업 토큰 정리
       clearSignupToken();
-      router.replace("/(tabs)/chatList");
-    } catch (e) {
-      // 에러 핸들링
-      console.log(e);
+
+      //라우터 이동
+      router.replace("/(tabs)/chat");
+    } catch (e: any) {
+      if (e) {
+        showAlert(e.response.data.message);
+        return;
+      }
     }
   };
 

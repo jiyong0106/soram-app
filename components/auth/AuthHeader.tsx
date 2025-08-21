@@ -40,7 +40,7 @@ export default AuthHeader;
 const styles = StyleSheet.create({
   container: {
     height: 50,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

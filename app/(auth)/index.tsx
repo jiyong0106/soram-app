@@ -5,13 +5,16 @@ import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
+import useAlert from "@/utils/hooks/useAlert";
 
 const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const setPhoneNumber = usePhoneNumberStore((s) => s.setPhoneNumber);
   const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState(false);
   const isValid = /^010\d{8}$/.test(phoneNumber);
   const router = useRouter();
+  const { showAlert } = useAlert();
   //라우터
 
   const hadnlePress = async () => {
@@ -19,15 +22,16 @@ const AuthPage = () => {
     try {
       setLoading(true);
       const res = await postRequestOtp({ phoneNumber });
-      Alert.alert(res.message);
-      router.push({
-        pathname: "/(auth)/VerifyCode",
-        params: { phoneNumber },
-      });
+      showAlert(res.message, () =>
+        router.push({
+          pathname: "/(auth)/VerifyCode",
+          params: { phoneNumber },
+        })
+      );
     } catch (e) {
       console.error("");
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -41,6 +45,7 @@ const AuthPage = () => {
           disabled={!isValid}
           style={styles.button}
           onPress={hadnlePress}
+          loading={loading}
         />
       }
     >
@@ -53,12 +58,14 @@ const AuthPage = () => {
         <View style={styles.inputRow}>
           <Text style={styles.countryCode}>+82</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, focused && styles.inputFocused]}
             placeholder="휴대폰 번호"
             keyboardType="number-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             maxLength={11}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
         </View>
       </View>
@@ -93,11 +100,15 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     fontSize: 18,
     padding: 8,
+    borderColor: "#E6E6E6",
   },
   button: {
     marginTop: 32,
+  },
+  inputFocused: {
+    borderColor: "#ff6b6b",
   },
 });
