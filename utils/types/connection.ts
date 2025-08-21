@@ -11,3 +11,8 @@ export interface GetConnectionsResponse {
   updatedAt: string;
   requester: UserType;
 }
+
+//대화 요청 수락 타입
+
+//대화 요청 거절 타입
+  

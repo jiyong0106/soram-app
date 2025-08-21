@@ -1,8 +1,11 @@
+import { GetConnectionsResponse } from "../types/connection";
 import instance from "./axios";
 
 // 1. 나한테 대화요청한 목록 조회 api
 export const getConnections = async () => {
-  const { data } = await instance.get("/connections/pending");
+  const { data } = await instance.get<GetConnectionsResponse[]>(
+    "/connections/pending"
+  );
   return data;
 };
 
