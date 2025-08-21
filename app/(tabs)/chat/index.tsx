@@ -9,7 +9,7 @@ import { GetChatResponse } from "@/utils/types/chat";
 const chatPage = () => {
   const [query, setQuery] = useState("");
 
-  const { data } = useQuery<GetChatResponse[]>({
+  const { data } = useQuery<GetChatResponse>({
     queryKey: ["getChatKey"],
     queryFn: () => getChat(),
   });

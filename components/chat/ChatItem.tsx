@@ -4,10 +4,10 @@ import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeabl
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { GetChatResponse } from "@/utils/types/chat";
+import { ChatItemType } from "@/utils/types/chat";
 
 type ChatItemProps = {
-  item: GetChatResponse;
+  item: ChatItemType;
 };
 
 const ChatItem = ({ item }: ChatItemProps) => {

@@ -7,7 +7,7 @@ export interface ChatParticipant extends UserType {
 }
 
 // 1. 채팅 목록 조회 api타입
-export interface GetChatResponse {
+export interface ChatItemType {
   id: number;
   requesterId: number;
   addresseeId: number;
@@ -19,3 +19,4 @@ export interface GetChatResponse {
   addressee: ChatParticipant;
   isBlocked: boolean;
 }
+export type GetChatResponse = ChatItemType[]; // ✅ 목록 응답
