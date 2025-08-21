@@ -3,22 +3,18 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
+import { useRouter } from "expo-router";
+import { GetChatResponse } from "@/utils/types/chat";
 
-//채팅 목록 컴포넌트
-export type ConnectionsPreview = {
-  id: string;
-  name: string;
-  lastMessage: string;
+type ChatItemProps = {
+  item: GetChatResponse;
 };
 
-type ConnectionsItemProps = {
-  item: ConnectionsPreview;
-  onPress: (id: string) => void;
-};
-
-const ConnectionsItem = ({ item, onPress }: ConnectionsItemProps) => {
+const ChatItem = ({ item }: ChatItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
+  const router = useRouter();
+  const { id, addressee } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -30,7 +26,8 @@ const ConnectionsItem = ({ item, onPress }: ConnectionsItemProps) => {
 
   const handleRowPress = () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
-    onPress(item.id);
+
+    router.push(`/chat/${id}`);
   };
   return (
     <ReanimatedSwipeable
@@ -61,10 +58,10 @@ const ConnectionsItem = ({ item, onPress }: ConnectionsItemProps) => {
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
           <Text style={styles.rowTitle} numberOfLines={1}>
-            {item.name}
+            {addressee.nickname}
           </Text>
           <Text style={styles.rowSubtitle} numberOfLines={1}>
-            {item.lastMessage}
+            {addressee.nickname}
           </Text>
         </View>
       </TouchableOpacity>
@@ -72,7 +69,7 @@ const ConnectionsItem = ({ item, onPress }: ConnectionsItemProps) => {
   );
 };
 
-export default ConnectionsItem;
+export default ChatItem;
 
 const styles = StyleSheet.create({
   row: {

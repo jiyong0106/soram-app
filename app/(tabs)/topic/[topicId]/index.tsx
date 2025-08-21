@@ -22,8 +22,8 @@ const AnswerRandomPage = () => {
         data={data ?? []}
         renderItem={({ item }) => <AnswerRandomLists item={item} />}
         keyExtractor={(item) => String(item.id)}
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{ gap: 10 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: 10, padding: 10 }}
         ListEmptyComponent={<Text style={styles.empty}>답변 없음</Text>}
       />
     </View>
@@ -33,9 +33,7 @@ const AnswerRandomPage = () => {
 export default AnswerRandomPage;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
+  container: {},
   empty: {
     textAlign: "center",
     color: "#666",

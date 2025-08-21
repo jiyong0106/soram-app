@@ -1,7 +1,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 
-const ConnectionsLayout = () => {
+const ConnectionLayout = () => {
   return (
     <PageContainer edges={["top"]} padded={false}>
       <Stack
@@ -14,4 +14,4 @@ const ConnectionsLayout = () => {
     </PageContainer>
   );
 };
-export default ConnectionsLayout;
+export default ConnectionLayout;

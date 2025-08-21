@@ -1,10 +1,9 @@
-import { AnswerRandom } from "@/utils/types/topic";
+import { AnswerRandom, RequestConnectionBody } from "@/utils/types/topic";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
-import { RequestConnectionBody } from "@/utils/types/connections";
-import { postRequestConnection } from "@/utils/api/connectionsPageApi";
+import { postRequestConnection } from "@/utils/api/topicPageApi";
 
 interface AnswerRandomListsProps {
   item: AnswerRandom;
@@ -48,7 +47,7 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={styles.container}>
       <Text style={styles.nick}>{user.nickname}</Text>
       {type === "TEXT" ? (
         <Text style={styles.text}>{textContent}</Text>
@@ -82,7 +81,7 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
 export default AnswerRandomLists;
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
     borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
     padding: 12,

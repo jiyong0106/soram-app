@@ -8,18 +8,18 @@ import {
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import MessageBubble from "@/components/connections/MessageBubble";
-import MessageInputBar from "@/components/connections/MessageInputBar";
+import MessageBubble from "@/components/chat/MessageBubble";
+import MessageInputBar from "@/components/chat/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import StickyBottom from "@/components/common/StickyBottom";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 import useSafeArea from "@/utils/hooks/useSafeArea";
-import ConnectionsActionModal from "@/components/connections/ConnectionsActionModal";
+import ChatActionModal from "@/components/chat/ChatActionModal";
 import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
 import { BackButton } from "@/components/common/backbutton";
 
-const ConnectionsIdPage = () => {
+const ChatIdPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   //채팅 유저의 id
   const [text, setText] = useState("");
@@ -110,7 +110,7 @@ const ConnectionsIdPage = () => {
           />
         </StickyBottom>
 
-        <ConnectionsActionModal
+        <ChatActionModal
           ref={actionModalRef}
           onReport={() => {}}
           onBlock={() => {}}
@@ -122,6 +122,6 @@ const ConnectionsIdPage = () => {
   );
 };
 
-export default ConnectionsIdPage;
+export default ChatIdPage;
 
 const styles = StyleSheet.create({});
