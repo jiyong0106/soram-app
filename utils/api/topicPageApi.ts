@@ -1,10 +1,9 @@
-// utils/api/connectPageApi.ts
 import instance from "./axios";
 import {
   GetAnswerRecommendResponse,
   AnswerRecommend,
   AnswerRandom,
-} from "../types/connect";
+} from "../types/topic";
 
 // 1. 주제 목록 리스트 api
 interface GetAnswerRecommendParams {

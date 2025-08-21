@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import TopicRandomLists from "./TopicRandomLists";
 import { useQuery } from "@tanstack/react-query";
-import { getTopicRandom } from "@/utils/api/connectPageApi";
+import { getTopicRandom } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const TopicRandomTab = () => {

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { AnswerRecommend } from "@/utils/types/connect";
+import { AnswerRecommend } from "@/utils/types/topic";
 import Button from "../common/Button";
 import { useRouter } from "expo-router";
 
@@ -22,7 +22,7 @@ const TopicRandomLists = ({ item }: TopicRandomListsProps) => {
           label="랜덤 답변 확인 할 버튼"
           color="#ff6b6b"
           textColor="#fff"
-          onPress={() => router.push(`/connect/${topicId}`)}
+          onPress={() => router.push(`/topic/${topicId}`)}
         />
         <Text>이거 누르면 상세페이지로 이동함</Text>
       </View>

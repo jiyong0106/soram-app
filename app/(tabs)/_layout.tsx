@@ -16,9 +16,9 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="connect"
+        name="topic"
         options={{
-          title: "연결",
+          title: "주제",
           tabBarIcon: ({ color }) => (
             <Ionicons name="rocket-outline" size={28} color={color} />
           ),

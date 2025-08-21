@@ -10,7 +10,7 @@ interface RouteType {
   title: string;
 }
 
-const ConnectTopTabs = () => {
+const TopicTopTabs = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
 
@@ -46,4 +46,4 @@ const ConnectTopTabs = () => {
   );
 };
 
-export default ConnectTopTabs;
+export default TopicTopTabs;

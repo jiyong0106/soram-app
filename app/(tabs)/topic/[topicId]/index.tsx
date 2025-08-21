@@ -1,10 +1,10 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import AnswerRandomLists from "@/components/connect/AnswerRandomLists";
+import AnswerRandomLists from "@/components/topic/AnswerRandomLists";
 import { useQuery } from "@tanstack/react-query";
-import { getAnswerRandom } from "@/utils/api/connectPageApi";
-import { AnswerRandom } from "@/utils/types/connect";
+import { getAnswerRandom } from "@/utils/api/topicPageApi";
+import { AnswerRandom } from "@/utils/types/topic";
 
 const AnswerRandomPage = () => {
   const { topicId } = useLocalSearchParams();

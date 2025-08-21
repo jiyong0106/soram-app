@@ -1,4 +1,4 @@
-import { AnswerRandom } from "@/utils/types/connect";
+import { AnswerRandom } from "@/utils/types/topic";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../common/Button";
 

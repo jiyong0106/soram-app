@@ -1,16 +1,16 @@
-import ConnectTopTabs from "@/components/connect/ConnectTopTabs";
+import TopicTopTabs from "@/components/topic/TopicTopTabs";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
-const ConnectPage = () => {
+const TopicPage = () => {
   return (
     <View style={styles.container}>
-      <ConnectTopTabs />
+      <TopicTopTabs />
     </View>
   );
 };
 
-export default ConnectPage;
+export default TopicPage;
 
 const styles = StyleSheet.create({
   container: {
