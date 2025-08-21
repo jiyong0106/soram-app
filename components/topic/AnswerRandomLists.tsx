@@ -1,6 +1,10 @@
 import { AnswerRandom } from "@/utils/types/topic";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../common/Button";
+import useAlert from "@/utils/hooks/useAlert";
+import { useState } from "react";
+import { RequestConnectionBody } from "@/utils/types/connections";
+import { postRequestConnection } from "@/utils/api/connectionsPageApi";
 
 interface AnswerRandomListsProps {
   item: AnswerRandom;
@@ -17,6 +21,32 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
     audioUrl,
     createdAt,
   } = item;
+  const { showAlert, showActionAlert } = useAlert();
+  const [loading, setLoading] = useState(false);
+
+  //대화 요청하기
+  const handlePress = () => {
+    if (loading) return; // 중복 클릭 방지
+
+    const body: RequestConnectionBody = {
+      addresseeId: userId,
+      voiceResponseId: id,
+    };
+
+    showActionAlert("대화요청 할거임?", "요청", async () => {
+      try {
+        setLoading(true);
+        await postRequestConnection(body);
+        showAlert("요청되었어요!");
+      } catch (e: any) {
+        const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
+        showAlert(msg);
+      } finally {
+        setLoading(false);
+      }
+    });
+  };
+
   return (
     <View style={styles.card}>
       <Text style={styles.nick}>{user.nickname}</Text>
@@ -41,6 +71,8 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
           color="#ff6b6b"
           textColor="#fff"
           style={{ flex: 1 }}
+          disabled={loading}
+          onPress={handlePress}
         />
       </View>
     </View>

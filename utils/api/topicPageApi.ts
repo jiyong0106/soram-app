@@ -34,7 +34,6 @@ export const getTopicRandom = async () => {
 };
 
 // 3. 랜덤 주제에대한 답변 보여주기 api
-
 export const getAnswerRandom = async ({ topicId }: { topicId: string }) => {
   const { data } = await instance.get<AnswerRandom[]>(`/voices/${topicId}`);
   return data;
