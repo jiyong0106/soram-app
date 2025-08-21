@@ -7,7 +7,7 @@ const TabLayout = () => {
       screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}
     >
       <Tabs.Screen
-        name="chatList"
+        name="connections"
         options={{
           title: "채팅",
           tabBarIcon: ({ color }) => (

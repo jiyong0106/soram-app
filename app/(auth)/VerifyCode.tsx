@@ -45,7 +45,7 @@ const VerifyCodeInputPage = () => {
       if (res.accessToken) {
         await SecureStore.setItemAsync("access_token", res.accessToken);
         clearPhoneNumber();
-        router.replace("/(tabs)/chatList");
+        router.replace("/(tabs)/connections");
         return;
       }
 

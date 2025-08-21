@@ -5,18 +5,18 @@ import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 
 //채팅 목록 컴포넌트
-export type ChatPreview = {
+export type ConnectionsPreview = {
   id: string;
   name: string;
   lastMessage: string;
 };
 
-type ChatListItemProps = {
-  item: ChatPreview;
+type ConnectionsItemProps = {
+  item: ConnectionsPreview;
   onPress: (id: string) => void;
 };
 
-const ChatListItem = ({ item, onPress }: ChatListItemProps) => {
+const ConnectionsItem = ({ item, onPress }: ConnectionsItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
 
@@ -72,7 +72,7 @@ const ChatListItem = ({ item, onPress }: ChatListItemProps) => {
   );
 };
 
-export default ChatListItem;
+export default ConnectionsItem;
 
 const styles = StyleSheet.create({
   row: {
