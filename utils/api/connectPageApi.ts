@@ -1,7 +1,8 @@
 // utils/api/connectPageApi.ts
 import instance from "./axios";
-import { GetAnswerRecommendResponse } from "../types/connect";
+import { GetAnswerRecommendResponse, AnswerRecommend } from "../types/connect";
 
+// 주제 목록 리스트 api
 interface GetAnswerRecommendParams {
   take: number;
   search?: string;
@@ -20,5 +21,11 @@ export const getAnswerRecommend = async ({
   const { data } = await instance.get<GetAnswerRecommendResponse>("/topics", {
     params,
   });
+  return data;
+};
+
+// 랜덤 주제 보여조기 api
+export const getAnswerRandom = async () => {
+  const { data } = await instance.get<AnswerRecommend>("/topics/random");
   return data;
 };

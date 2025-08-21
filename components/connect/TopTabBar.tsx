@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { TabBar, TabBarProps } from "react-native-tab-view";
 
 const TopTabBar = (props: TabBarProps<any>) => {

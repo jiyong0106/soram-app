@@ -11,6 +11,7 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
   return (
     <View style={styles.container}>
       <Text>{title}</Text>
+      <Text>{content}</Text>
     </View>
   );
 };
