@@ -24,9 +24,6 @@ const ChatItem = ({ item }: ChatItemProps) => {
     }, 150);
   };
 
-  console.log("addressee==>", addressee);
-  console.log("requester==>", requester);
-
   const handleRowPress = () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
 
