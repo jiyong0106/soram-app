@@ -1,14 +1,14 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import AnswerRandomLists from "./AnswerRandomLists";
+import TopicRandomLists from "./TopicRandomLists";
 import { useQuery } from "@tanstack/react-query";
-import { getAnswerRandom } from "@/utils/api/connectPageApi";
+import { getTopicRandom } from "@/utils/api/connectPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-const AnswerRandomTab = () => {
+const TopicRandomTab = () => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["getAnswerRandomKey"],
-    queryFn: () => getAnswerRandom(),
+    queryKey: ["getTopicRandomKey"],
+    queryFn: () => getTopicRandom(),
   });
 
   if (isLoading) return <LoadingSpinner />;
@@ -16,12 +16,12 @@ const AnswerRandomTab = () => {
 
   return (
     <View style={styles.wrap}>
-      <AnswerRandomLists item={data} />
+      <TopicRandomLists item={data} />
     </View>
   );
 };
 
-export default AnswerRandomTab;
+export default TopicRandomTab;
 
 const styles = StyleSheet.create({
   wrap: {

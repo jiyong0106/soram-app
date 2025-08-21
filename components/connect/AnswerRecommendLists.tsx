@@ -10,6 +10,7 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
   const { id, title, content, category, createdAt, updatedAt } = item;
   return (
     <View style={styles.container}>
+      <Text>{id}</Text>
       <Text>{title}</Text>
       <Text>{content}</Text>
     </View>

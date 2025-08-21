@@ -2,38 +2,35 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { AnswerRecommend } from "@/utils/types/connect";
 import Button from "../common/Button";
+import { useRouter } from "expo-router";
 
-interface AnswerRandomListsProps {
+interface TopicRandomListsProps {
   item: AnswerRecommend;
 }
 
-const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
+const TopicRandomLists = ({ item }: TopicRandomListsProps) => {
   const { id, title, content, category, createdAt, updatedAt } = item;
-
+  const router = useRouter();
+  const topicId = id;
   return (
     <View style={styles.container}>
+      <Text>{id}</Text>
       <Text>{title}</Text>
       <Text>{content}</Text>
       <View style={styles.btnWrapper}>
         <Button
-          label="다른 이야기 보기"
+          label="랜덤 답변 확인 할 버튼"
           color="#ff6b6b"
           textColor="#fff"
-          style={{ flex: 1 }}
+          onPress={() => router.push(`/connect/${topicId}`)}
         />
-        <View style={{ width: 8 }} /> // 간격
-        <Button
-          label="대화 요청하기"
-          color="#ff6b6b"
-          textColor="#fff"
-          style={{ flex: 1 }}
-        />
+        <Text>이거 누르면 상세페이지로 이동함</Text>
       </View>
     </View>
   );
 };
 
-export default AnswerRandomLists;
+export default TopicRandomLists;
 
 const styles = StyleSheet.create({
   container: {
@@ -42,7 +39,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   btnWrapper: {
-    flexDirection: "row",
     marginTop: 10,
     gap: 10,
   },

@@ -25,7 +25,10 @@ export const getAnswerRecommend = async ({
 };
 
 // 랜덤 주제 보여조기 api
-export const getAnswerRandom = async () => {
+export const getTopicRandom = async () => {
   const { data } = await instance.get<AnswerRecommend>("/topics/random");
   return data;
 };
+
+
+//랜덤 주제에대한 답변 보여주기 api

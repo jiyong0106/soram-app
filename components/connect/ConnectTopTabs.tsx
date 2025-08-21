@@ -3,7 +3,7 @@ import { useWindowDimensions } from "react-native";
 import { TabView } from "react-native-tab-view";
 import AnswerRecommendTab from "./AnswerRecommendTab";
 import TopTabBar from "./TopTabBar";
-import AnswerRandomTab from "./AnswerRandomTab";
+import TopicRandomTab from "./TopicRandomTab";
 
 interface RouteType {
   key: "random" | "recommend";
@@ -25,7 +25,7 @@ const ConnectTopTabs = () => {
   const renderScene = useCallback(({ route }: { route: RouteType }) => {
     switch (route.key) {
       case "random":
-        return <AnswerRandomTab />;
+        return <TopicRandomTab />;
       case "recommend":
         return <AnswerRecommendTab />;
       default:

@@ -11,6 +11,7 @@ const ConnectLayout = () => {
         }}
       >
         <Stack.Screen name="index" />
+        <Stack.Screen name="[topicId]" />
       </Stack>
     </PageContainer>
   );

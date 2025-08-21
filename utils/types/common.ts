@@ -5,3 +5,9 @@ export type metaType = {
   endCursor: number;
   hasNextPage: boolean;
 };
+
+//유저 타입
+export interface UserType {
+  id: number;
+  nickname: string;
+}
