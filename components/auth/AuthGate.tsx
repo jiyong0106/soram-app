@@ -36,7 +36,7 @@ const AuthGate = ({ children }: Props) => {
 
     if (state === "auth" && inPublic) {
       // 로그인 상태 → 메인으로
-      router.replace("/(tabs)/chatList");
+      router.replace("/(tabs)/chat");
     } else if (state === "guest" && inProtected) {
       // 비로그인 상태 → 루트(온보딩/로그인)
       router.replace("/");

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { AnswerRecommend } from "@/utils/types/connect";
+import { AnswerRecommend } from "@/utils/types/topic";
 
 interface ItemProps {
   item: AnswerRecommend;
@@ -10,7 +10,9 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
   const { id, title, content, category, createdAt, updatedAt } = item;
   return (
     <View style={styles.container}>
+      <Text>{id}</Text>
       <Text>{title}</Text>
+      <Text>{content}</Text>
     </View>
   );
 };

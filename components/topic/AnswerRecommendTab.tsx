@@ -5,8 +5,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   AnswerRecommend,
   GetAnswerRecommendResponse,
-} from "@/utils/types/connect";
-import { getAnswerRecommend } from "@/utils/api/connectPageApi";
+} from "@/utils/types/topic";
+import { getAnswerRecommend } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const AnswerRecommendTab = () => {

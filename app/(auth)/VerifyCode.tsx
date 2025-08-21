@@ -45,7 +45,7 @@ const VerifyCodeInputPage = () => {
       if (res.accessToken) {
         await SecureStore.setItemAsync("access_token", res.accessToken);
         clearPhoneNumber();
-        router.replace("/(tabs)/chatList");
+        router.replace("/(tabs)/chat");
         return;
       }
 
@@ -68,7 +68,11 @@ const VerifyCodeInputPage = () => {
       setLoading(true);
       await postRequestOtp({ phoneNumber });
       showAlert("인증번호를 다시 전송했어요");
-    } catch (e) {
+    } catch (e: any) {
+      if (e) {
+        showAlert(e.response.data.message);
+        return;
+      }
       console.error("");
     } finally {
       setLoading(false);

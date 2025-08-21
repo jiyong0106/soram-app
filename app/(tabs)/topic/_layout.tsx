@@ -1,7 +1,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 
-const ConnectLayout = () => {
+const TopicLayout = () => {
   return (
     <PageContainer edges={["top"]} padded={false}>
       <Stack
@@ -11,8 +11,9 @@ const ConnectLayout = () => {
         }}
       >
         <Stack.Screen name="index" />
+        <Stack.Screen name="[topicId]" />
       </Stack>
     </PageContainer>
   );
 };
-export default ConnectLayout;
+export default TopicLayout;

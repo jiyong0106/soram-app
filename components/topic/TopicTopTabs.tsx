@@ -1,22 +1,22 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { useWindowDimensions } from "react-native";
 import { TabView } from "react-native-tab-view";
-import AnswerSearchTab from "./AnswerSearchTab";
 import AnswerRecommendTab from "./AnswerRecommendTab";
 import TopTabBar from "./TopTabBar";
+import TopicRandomTab from "./TopicRandomTab";
 
 interface RouteType {
-  key: "search" | "recommend";
+  key: "random" | "recommend";
   title: string;
 }
 
-const ConnectTopTabs = () => {
+const TopicTopTabs = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
 
   const routes: RouteType[] = useMemo(
     () => [
-      { key: "search", title: "답변 찾기" },
+      { key: "random", title: "답변 랜덤" },
       { key: "recommend", title: "답변 추천" },
     ],
     []
@@ -24,8 +24,8 @@ const ConnectTopTabs = () => {
 
   const renderScene = useCallback(({ route }: { route: RouteType }) => {
     switch (route.key) {
-      case "search":
-        return <AnswerSearchTab />;
+      case "random":
+        return <TopicRandomTab />;
       case "recommend":
         return <AnswerRecommendTab />;
       default:
@@ -46,4 +46,4 @@ const ConnectTopTabs = () => {
   );
 };
 
-export default ConnectTopTabs;
+export default TopicTopTabs;

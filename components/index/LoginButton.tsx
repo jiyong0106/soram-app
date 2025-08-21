@@ -9,7 +9,7 @@ const LoginButton = () => {
       color="#fff"
       textColor="#222"
       borderColor="#FF835C"
-      onPress={() => router.replace("/chatList")}
+      onPress={() => router.replace("/chat")}
     />
   );
 };

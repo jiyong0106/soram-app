@@ -19,7 +19,7 @@ import ChatActionModal from "@/components/chat/ChatActionModal";
 import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
 import { BackButton } from "@/components/common/backbutton";
 
-const ChatDetailPage = () => {
+const ChatIdPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   //채팅 유저의 id
   const [text, setText] = useState("");
@@ -122,6 +122,6 @@ const ChatDetailPage = () => {
   );
 };
 
-export default ChatDetailPage;
+export default ChatIdPage;
 
 const styles = StyleSheet.create({});

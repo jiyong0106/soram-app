@@ -7,18 +7,27 @@ const TabLayout = () => {
       screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}
     >
       <Tabs.Screen
-        name="chatList"
+        name="chat"
         options={{
-          title: "채팅",
+          title: "대화",
           tabBarIcon: ({ color }) => (
             <Ionicons name="chatbox-ellipses-outline" size={28} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="connect"
+        name="connection"
         options={{
-          title: "연결",
+          title: "요청",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="happy-outline" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="topic"
+        options={{
+          title: "주제",
           tabBarIcon: ({ color }) => (
             <Ionicons name="rocket-outline" size={28} color={color} />
           ),

@@ -1,31 +1,19 @@
 import React, { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
 import SearchBar from "@/components/chat/SearchBar";
-import ChatListItem, {
-  ChatPreview as ChatPreviewItem,
-} from "@/components/chat/ChatListItem";
-import { SAMPLE_CHATS } from "@/utils/dummy/test";
+import ChatItem from "@/components/chat/ChatItem";
+import { useQuery } from "@tanstack/react-query";
+import { getChat } from "@/utils/api/chatPageApi";
+import { GetChatResponse } from "@/utils/types/chat";
 
-const ChatListPage = () => {
+const chatPage = () => {
   const [query, setQuery] = useState("");
 
-  const data = useMemo(
-    () =>
-      SAMPLE_CHATS.filter((c) =>
-        [c.name, c.lastMessage].some((t) =>
-          t.toLowerCase().includes(query.toLowerCase())
-        )
-      ),
-    [query]
-  );
-
-  const renderItem = ({ item }: { item: ChatPreviewItem }) => (
-    <ChatListItem
-      item={item}
-      onPress={(id) => router.push({ pathname: "/chat/[id]", params: { id } })}
-    />
-  );
+  const { data } = useQuery<GetChatResponse[]>({
+    queryKey: ["getChatKey"],
+    queryFn: () => getChat(),
+  });
+  console.log(data);
 
   return (
     <View style={styles.container}>
@@ -34,16 +22,17 @@ const ChatListPage = () => {
         <SearchBar value={query} onChangeText={setQuery} />
       </View>
       <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        data={data ?? []}
+        renderItem={({ item }) => <ChatItem item={item} />}
+        keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={<Text style={styles.empty}>메세지 없음</Text>}
       />
     </View>
   );
 };
 
-export default ChatListPage;
+export default chatPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -68,5 +57,11 @@ const styles = StyleSheet.create({
   },
   rowSubtitle: {
     color: "#8A8F98",
+  },
+  empty: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
   },
 });
