@@ -20,7 +20,7 @@ export type AnswerRandom = {
   id: number;
   userId: number;
   topicBoxId: number;
-  type: "TEXT" | "voice";
+  type: "TEXT" | "VOICE";
   textContent: string;
   audioUrl: string;
   playtime: any;
