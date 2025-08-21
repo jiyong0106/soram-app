@@ -11,3 +11,14 @@ export interface UserType {
   id: number;
   nickname: string;
 }
+
+//status타입
+export const CONNECTION_STATUS = {
+  PENDING: "PENDING",
+  ACCEPTED: "ACCEPTED",
+  REJECTED: "REJECTED",
+  CANCELED: "CANCELED",
+} as const;
+
+export type ConnectionStatus =
+  (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];

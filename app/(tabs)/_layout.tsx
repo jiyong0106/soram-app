@@ -16,7 +16,7 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="list"
+        name="connection"
         options={{
           title: "요청",
           tabBarIcon: ({ color }) => (

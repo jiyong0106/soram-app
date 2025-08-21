@@ -12,9 +12,3 @@ export const postRequestConnection = async (body: RequestConnectionBody) => {
   );
   return data;
 };
-
-// 2. 나한테 대화요청한 목록 보기
-export const getConnections = async () => {
-  const { data } = await instance.get("/connections/pending");
-  return data;
-};
