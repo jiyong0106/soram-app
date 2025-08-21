@@ -13,6 +13,7 @@ const chatPage = () => {
     queryKey: ["getChatKey"],
     queryFn: () => getChat(),
   });
+  console.log(data);
 
   return (
     <View style={styles.container}>
