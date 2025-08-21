@@ -1,10 +1,9 @@
-import { AnswerRandom } from "@/utils/types/topic";
+import { AnswerRandom, RequestConnectionBody } from "@/utils/types/topic";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
-import { RequestConnectionBody } from "@/utils/types/chat";
-import { postRequestConnection } from "@/utils/api/chatPageApi";
+import { postRequestConnection } from "@/utils/api/topicPageApi";
 
 interface AnswerRandomListsProps {
   item: AnswerRandom;

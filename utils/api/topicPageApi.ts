@@ -3,6 +3,8 @@ import {
   GetAnswerRecommendResponse,
   AnswerRecommend,
   AnswerRandom,
+  RequestConnectionBody,
+  RequestConnectionResponse,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -36,5 +38,14 @@ export const getTopicRandom = async () => {
 // 3. 랜덤 주제에대한 답변 보여주기 api
 export const getAnswerRandom = async ({ topicId }: { topicId: string }) => {
   const { data } = await instance.get<AnswerRandom[]>(`/voices/${topicId}`);
+  return data;
+};
+
+// 1. 다른 사람한테 대화 요청하기
+export const postRequestConnection = async (body: RequestConnectionBody) => {
+  const { data } = await instance.post<RequestConnectionResponse>(
+    "/connections/request",
+    body
+  );
   return data;
 };
