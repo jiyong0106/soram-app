@@ -57,7 +57,7 @@ import { useRouter } from "expo-router";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { getConnections } from "@/utils/api/connectionsPageApi";
+import { getConnections } from "@/utils/api/chatPageApi";
 
 const ACCESS_TOKEN_KEY = "access_token";
 

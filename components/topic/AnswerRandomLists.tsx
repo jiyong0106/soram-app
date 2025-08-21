@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
-import { RequestConnectionBody } from "@/utils/types/connections";
-import { postRequestConnection } from "@/utils/api/connectionsPageApi";
+import { RequestConnectionBody } from "@/utils/types/chat";
+import { postRequestConnection } from "@/utils/api/chatPageApi";
 
 interface AnswerRandomListsProps {
   item: AnswerRandom;

@@ -1,7 +1,7 @@
 import {
   RequestConnectionBody,
   RequestConnectionResponse,
-} from "../types/connections";
+} from "../types/chat";
 import instance from "./axios";
 
 // 1. 다른 사람한테 대화 요청하기

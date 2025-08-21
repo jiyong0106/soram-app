@@ -7,11 +7,20 @@ const TabLayout = () => {
       screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}
     >
       <Tabs.Screen
-        name="connections"
+        name="chat"
         options={{
-          title: "채팅",
+          title: "대화",
           tabBarIcon: ({ color }) => (
             <Ionicons name="chatbox-ellipses-outline" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="list"
+        options={{
+          title: "요청",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="happy-outline" size={28} color={color} />
           ),
         }}
       />

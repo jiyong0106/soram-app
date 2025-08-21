@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
-import SearchBar from "@/components/connections/SearchBar";
-import ConnectionsItem, {
-  ConnectionsPreview as ConnectionsPreview,
-} from "@/components/connections/ConnectionsItem";
+import SearchBar from "@/components/chat/SearchBar";
+import ChatItem, {
+  ChatPreview as ChatPreview,
+} from "@/components/chat/ChatItem";
 import { SAMPLE_CHATS } from "@/utils/dummy/test";
 
-const ConnectionsPage = () => {
+const chatPage = () => {
   const [query, setQuery] = useState("");
 
   const data = useMemo(
@@ -20,12 +20,10 @@ const ConnectionsPage = () => {
     [query]
   );
 
-  const renderItem = ({ item }: { item: ConnectionsPreview }) => (
-    <ConnectionsItem
+  const renderItem = ({ item }: { item: ChatPreview }) => (
+    <ChatItem
       item={item}
-      onPress={(id) =>
-        router.push({ pathname: "/connections/[id]", params: { id } })
-      }
+      onPress={(id) => router.push({ pathname: "/chat/[id]", params: { id } })}
     />
   );
 
@@ -45,7 +43,7 @@ const ConnectionsPage = () => {
   );
 };
 
-export default ConnectionsPage;
+export default chatPage;
 
 const styles = StyleSheet.create({
   container: {
