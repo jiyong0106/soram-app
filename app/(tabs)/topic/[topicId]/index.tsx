@@ -18,13 +18,13 @@ const AnswerRandomPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text>토픽 id는 {topicId}</Text>
       <FlatList
         data={data ?? []}
         renderItem={({ item }) => <AnswerRandomLists item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{ gap: 10 }}
+        ListEmptyComponent={<Text style={styles.empty}>답변 없음</Text>}
       />
     </View>
   );
@@ -35,5 +35,11 @@ export default AnswerRandomPage;
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+  },
+  empty: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
   },
 });
