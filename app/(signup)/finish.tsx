@@ -16,7 +16,6 @@ const FinishPage = () => {
   const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const signupToken = useSignupTokenStore.getState().signupToken;
   const { showAlert } = useAlert();
-
   const handlePress = async () => {
     try {
       // ✅ 현재 인풋값으로 스토어 값 덮어써서 body 구성 (patch 불필요)
