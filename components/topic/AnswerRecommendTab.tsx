@@ -55,7 +55,12 @@ const AnswerRecommendTab = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff6b6b"]}
+            tintColor="#ff6b6b"
+          />
         }
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {

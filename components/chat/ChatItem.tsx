@@ -4,17 +4,17 @@ import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeabl
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { GetChatResponse } from "@/utils/types/chat";
+import { ChatItemType } from "@/utils/types/chat";
 
 type ChatItemProps = {
-  item: GetChatResponse;
+  item: ChatItemType;
 };
 
 const ChatItem = ({ item }: ChatItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
-  const { id, addressee } = item;
+  const { id, opponent } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -58,10 +58,10 @@ const ChatItem = ({ item }: ChatItemProps) => {
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
           <Text style={styles.rowTitle} numberOfLines={1}>
-            {addressee.nickname}
+            {opponent.nickname}
           </Text>
           <Text style={styles.rowSubtitle} numberOfLines={1}>
-            {addressee.nickname}
+            {opponent.nickname}
           </Text>
         </View>
       </TouchableOpacity>

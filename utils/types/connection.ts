@@ -1,4 +1,4 @@
-import { ConnectionStatus, UserType } from "./common";
+import { ConnectionStatus, metaType, UserType } from "./common";
 
 /** 공통 필드 */
 interface ConnectionBase {
@@ -11,9 +11,14 @@ interface ConnectionBase {
 }
 
 //대화 요청 목록 조회 api타입
-export interface GetConnectionsResponse extends ConnectionBase {
+export interface GetConnectionsType extends ConnectionBase {
   status: ConnectionStatus;
   requester: UserType;
+}
+
+export interface GetConnectionsResponse {
+  data: GetConnectionsType[];
+  meta: metaType;
 }
 
 //대화 요청 수락 타입

@@ -5,10 +5,21 @@ import {
 } from "../types/connection";
 import instance from "./axios";
 
+interface PagenationParams {
+  take: number;
+  cursor?: any;
+}
+
 // 1. 나한테 대화요청한 목록 조회 api
-export const getConnections = async () => {
-  const { data } = await instance.get<GetConnectionsResponse[]>(
-    "/connections/pending"
+export const getConnections = async ({ take, cursor }: PagenationParams) => {
+  const params: Record<string, any> = {};
+  if (take) params.take = take;
+  if (cursor !== undefined) params.cursor = cursor;
+  const { data } = await instance.get<GetConnectionsResponse>(
+    "/connections/pending",
+    {
+      params,
+    }
   );
   return data;
 };

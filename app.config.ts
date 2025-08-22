@@ -35,6 +35,13 @@ export default ({ config }: any) => {
           foregroundImage: "./assets/icons/logos/012.png", // 안드로이드 적응형 아이콘 이미지
           backgroundColor: "#ffffff", // 아이콘 배경 색
         },
+        splash: {
+          //스플래시 이미지
+          image: "./assets/icons/logos/012.png",
+          resizeMode: "cover",
+          backgroundColor: "#ffffff",
+        },
+        package: "team.soram.soram",
         edgeToEdgeEnabled: true, // 상태바와 네비게이션바를 투명하게 처리 (엣지 투 엣지 모드)
       },
 

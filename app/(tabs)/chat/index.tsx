@@ -1,18 +1,38 @@
-import React, { useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getChat } from "@/utils/api/chatPageApi";
-import { GetChatResponse } from "@/utils/types/chat";
+import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data } = useQuery<GetChatResponse[]>({
-    queryKey: ["getChatKey"],
-    queryFn: () => getChat(),
-  });
+  const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery<GetChatResponse>({
+      queryKey: ["getChatKey"],
+      queryFn: ({ pageParam }) =>
+        getChat({
+          take: 10,
+          cursor: pageParam,
+        }),
+
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+    });
+
+  const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    refetch().finally(() => {
+      setRefreshing(false);
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -21,11 +41,26 @@ const chatPage = () => {
         <SearchBar value={query} onChangeText={setQuery} />
       </View>
       <FlatList
-        data={data ?? []}
+        data={items}
         renderItem={({ item }) => <ChatItem item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<Text style={styles.empty}>메세지 없음</Text>}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff6b6b"]}
+            tintColor="#ff6b6b"
+          />
+        }
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
       />
     </View>
   );

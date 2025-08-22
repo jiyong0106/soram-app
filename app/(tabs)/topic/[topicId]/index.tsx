@@ -11,8 +11,7 @@ const AnswerRandomPage = () => {
 
   const { data, isLoading, isError } = useQuery<AnswerRandom[]>({
     queryKey: ["getAnswerRandomKey", topicId],
-    // queryFn: () => getAnswerRandom({ topicId: topicId as string }),
-    queryFn: () => getAnswerRandom({ topicId: "5" }),
+    queryFn: () => getAnswerRandom({ topicId: topicId as string }),
     enabled: !!topicId,
   });
 
@@ -33,7 +32,9 @@ const AnswerRandomPage = () => {
 export default AnswerRandomPage;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   empty: {
     textAlign: "center",
     color: "#666",
