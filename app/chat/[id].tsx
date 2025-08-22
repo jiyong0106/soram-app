@@ -1,12 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { FlatList, TouchableOpacity, View, Text } from "react-native";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MessageBubble from "@/components/chat/MessageBubble";
 import MessageInputBar from "@/components/chat/MessageInputBar";
@@ -16,39 +10,108 @@ import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 import useSafeArea from "@/utils/hooks/useSafeArea";
 import ChatActionModal from "@/components/chat/ChatActionModal";
-import { Message, SAMPLE_MESSAGES } from "@/utils/dummy/test";
 import { BackButton } from "@/components/common/backbutton";
+import { getAuthToken } from "@/utils/util/auth";
+import { useChat } from "@/utils/hooks/useChat";
+import { getSocket } from "@/utils/libs/getSocket";
 
 const ChatIdPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  //채팅 유저의 id
+  const connectionId = Number(id);
+
+  // ✅ 토큰 가드: 없으면 훅 호출/소켓 연결 지연
+  const token = getAuthToken() ?? "";
+
   const [text, setText] = useState("");
-  const [messages] = useState<Message[]>(SAMPLE_MESSAGES);
-  const flatListRef = useRef<FlatList<Message>>(null);
+  const flatListRef = useRef<FlatList<any>>(null);
   const [inputBarHeight, setInputBarHeight] = useState(40);
   const { height } = useReanimatedKeyboardAnimation();
   const { bottom } = useSafeArea();
-  const router = useRouter();
   const actionModalRef = useRef<any>(null);
 
-  const animatedListStyle = useAnimatedStyle(() => {
-    return { transform: [{ translateY: height.value }] };
-  });
+  // ✅ 훅 시그니처/반환 이름 맞춤: useChat(jwt, connectionId) → { messages, sendMessage }
+  const { messages, sendMessage } = useChat(token, connectionId);
 
-  const headerTitle = useMemo(() => "가나다라마바사", [id]);
+  // ✅ 룸 변경 시 리스트 초기화 (옵션이지만 UX에 유리)
+  useEffect(() => {
+    // connectionId가 바뀌면 스크롤/길이 로그 초기화
+    prevLenRef.current = 0;
+    flatListRef.current?.scrollToOffset({ animated: false, offset: 0 });
+  }, [connectionId]);
 
-  const renderItem = ({ item }: { item: Message }) => (
-    <MessageBubble text={item.text} isMine={item.isMine} />
-  );
+  // ✅ 서버가 emit한 error 수신 (디버깅/알림용)
+  useEffect(() => {
+    const s = getSocket();
+    const onError = (e: any) => {
+      console.log("[page] socket error:", e);
+      // 필요시 토스트/Alert로 노출
+      // Alert.alert("채팅 오류", e?.message ?? "알 수 없는 오류");
+    };
+    s?.on("error", onError);
+    return () => {
+      s?.off("error", onError);
+    };
+  }, []);
+
+  const animatedListStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: height.value }],
+  }));
+
+  const headerTitle = useMemo(() => `채팅 #${connectionId}`, [connectionId]);
 
   const onSend = () => {
-    Alert.alert("메세지 전송");
+    if (!text.trim()) return;
+    if (!token) {
+      console.log("[page] no token, skip send");
+      return;
+    }
+    console.log("[page] onSend", { textLen: text.length });
+    sendMessage(text.trim());
+    setText("");
   };
 
+  // 인풋바/키보드로 레이아웃 변할 때 즉시
   useEffect(() => {
+    console.log(
+      "[page] inputBarHeight changed → scrollToEnd(false)",
+      inputBarHeight
+    );
     flatListRef.current?.scrollToEnd({ animated: false });
   }, [inputBarHeight]);
 
+  // 메시지 추가 시 부드럽게
+  const prevLenRef = useRef(0);
+  useEffect(() => {
+    const prev = prevLenRef.current;
+    const next = messages.length;
+    console.log("[page] messages length change", { prev, next });
+    if (next > prev) {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }
+    prevLenRef.current = next;
+  }, [messages.length]);
+
+  // ✅ 토큰 없을 때 간단한 가드 UI (선택)
+  if (!token) {
+    return (
+      <PageContainer edges={[]} padded={false}>
+        <Stack.Screen
+          options={{
+            title: headerTitle,
+            headerShown: true,
+            headerBackVisible: false,
+            headerLeft: () => <BackButton />,
+          }}
+        />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>로그인 토큰을 불러오는 중입니다…</Text>
+        </View>
+      </PageContainer>
+    );
+  }
+  console.log("messages==>", messages);
   return (
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
@@ -82,8 +145,8 @@ const ChatIdPage = () => {
           <FlatList
             ref={flatListRef}
             data={messages}
-            keyExtractor={(m) => m.id}
-            renderItem={renderItem}
+            keyExtractor={(m, i) => String(m.id ?? i)}
+            renderItem={({ item }) => <MessageBubble item={item} />}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               paddingHorizontal: 15,
@@ -92,30 +155,30 @@ const ChatIdPage = () => {
               gap: 12,
             }}
             showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => {
-              flatListRef.current?.scrollToEnd({ animated: false });
-            }}
           />
         </Animated.View>
 
         <StickyBottom
           style={{ backgroundColor: "#fff" }}
-          onHeightChange={setInputBarHeight}
+          onHeightChange={(h) => {
+            console.log("[page] StickyBottom height", h);
+            setInputBarHeight(h);
+          }}
           bottomInset={bottom}
         >
           <MessageInputBar
             value={text}
-            onChangeText={setText}
+            onChangeText={(t) => setText(t)}
             onSend={onSend}
           />
         </StickyBottom>
 
         <ChatActionModal
           ref={actionModalRef}
-          onReport={() => {}}
-          onBlock={() => {}}
-          onLeave={() => {}}
-          onMute={() => {}}
+          onReport={() => console.log("[page] action: report")}
+          onBlock={() => console.log("[page] action: block")}
+          onLeave={() => console.log("[page] action: leave")}
+          onMute={() => console.log("[page] action: mute")}
         />
       </View>
     </PageContainer>
@@ -123,5 +186,3 @@ const ChatIdPage = () => {
 };
 
 export default ChatIdPage;
-
-const styles = StyleSheet.create({});

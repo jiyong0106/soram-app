@@ -32,7 +32,9 @@ const AnswerRandomPage = () => {
 export default AnswerRandomPage;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   empty: {
     textAlign: "center",
     color: "#666",

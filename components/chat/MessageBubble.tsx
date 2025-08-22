@@ -1,23 +1,26 @@
+import { ChatMessage } from "@/utils/types/chat";
 import React from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
 type MessageBubbleProps = {
-  text: string;
-  isMine?: boolean;
-  style?: ViewStyle;
+  item: ChatMessage;
 };
 
-const MessageBubble = ({ text, isMine = false, style }: MessageBubbleProps) => {
+const MessageBubble = ({ item }: MessageBubbleProps) => {
+  const { id, senderId, content, isRead } = item;
+  // const isMine === senderId;
+
   return (
     <View
-      style={[
-        styles.bubble,
-        isMine ? styles.bubbleMine : styles.bubbleOther,
-        style,
-      ]}
+      style={[styles.bubble, senderId ? styles.bubbleMine : styles.bubbleOther]}
     >
-      <Text style={[styles.bubbleText, isMine && { color: "#fff" }]}>
-        {text}
+      <Text
+        style={[
+          styles.bubbleText,
+          senderId ? { color: "#fff" } : { color: "black" },
+        ]}
+      >
+        {content}
       </Text>
     </View>
   );
