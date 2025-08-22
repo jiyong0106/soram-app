@@ -14,6 +14,7 @@ import { BackButton } from "@/components/common/backbutton";
 import { getAuthToken } from "@/utils/util/auth";
 import { useChat } from "@/utils/hooks/useChat";
 import { getSocket } from "@/utils/libs/getSocket";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT ";
 
 const ChatIdPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -28,6 +29,7 @@ const ChatIdPage = () => {
   const { height } = useReanimatedKeyboardAnimation();
   const { bottom } = useSafeArea();
   const actionModalRef = useRef<any>(null);
+  const myUserId = useMemo(() => getUserIdFromJWT(token), [token]); // ✅ 내 ID
 
   // ✅ 훅 시그니처/반환 이름 맞춤: useChat(jwt, connectionId) → { messages, sendMessage }
   const { messages, sendMessage } = useChat(token, connectionId);
@@ -146,13 +148,17 @@ const ChatIdPage = () => {
             ref={flatListRef}
             data={messages}
             keyExtractor={(m, i) => String(m.id ?? i)}
-            renderItem={({ item }) => <MessageBubble item={item} />}
+            renderItem={({ item }) => {
+              const sender = item.senderId ?? item.sender?.id;
+              const isMine = myUserId != null && sender === myUserId; // ✅ 비교
+              return <MessageBubble item={item} isMine={isMine} />;
+            }}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               paddingHorizontal: 15,
               paddingTop: 15,
               paddingBottom: bottom,
-              gap: 12,
+              gap: 3,
             }}
             showsVerticalScrollIndicator={false}
           />
