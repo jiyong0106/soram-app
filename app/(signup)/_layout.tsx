@@ -18,6 +18,7 @@ const SignupLayout = () => {
         <Stack.Screen name="location" />
         <Stack.Screen name="interests" />
         <Stack.Screen name="personality" />
+        <Stack.Screen name="answers" />
         <Stack.Screen name="finish" />
       </Stack>
     </PageContainer>
