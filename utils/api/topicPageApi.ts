@@ -5,6 +5,8 @@ import {
   AnswerRandom,
   RequestConnectionBody,
   RequestConnectionResponse,
+  TextBody,
+  TextResponse,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -41,11 +43,17 @@ export const getAnswerRandom = async ({ topicId }: { topicId: string }) => {
   return data;
 };
 
-// 1. 다른 사람한테 대화 요청하기
+// 4. 다른 사람한테 대화 요청하기
 export const postRequestConnection = async (body: RequestConnectionBody) => {
   const { data } = await instance.post<RequestConnectionResponse>(
     "/connections/request",
     body
   );
+  return data;
+};
+
+//5. 다양한 토픽에 대해 내 답벼 등록하기 api
+export const postText = async (body: TextBody) => {
+  const { data } = await instance.post<TextResponse>("/voices/text", body);
   return data;
 };

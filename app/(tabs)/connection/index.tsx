@@ -108,7 +108,10 @@ const ConnectionPage = () => {
         )}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
+        contentContainerStyle={{
+          gap: 10,
+          padding: 10,
+        }}
         ListEmptyComponent={<Text style={styles.empty}>요청 목록 없음</Text>}
         ListFooterComponent={
           isRefetching ? (
@@ -133,7 +136,20 @@ const ConnectionPage = () => {
 export default ConnectionPage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 10 },
-  empty: { textAlign: "center", color: "#666", marginTop: 20, fontSize: 16 },
-  center: { textAlign: "center", marginTop: 24, color: "#666" },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 10,
+  },
+  empty: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
+  },
+  center: {
+    textAlign: "center",
+    marginTop: 24,
+    color: "#666",
+  },
 });

@@ -4,6 +4,7 @@ import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { setAuthToken } from "@/utils/util/auth";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -28,16 +29,20 @@ const ProfilePage = () => {
     await queryClient.cancelQueries();
 
     // 2) 토큰 정리 (저장소 + 메모리)
+    await setAuthToken(null);
+
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
 
     clearSignupToken();
 
     // 3) React Query 캐시 초기화
-    queryClient.clear();
+    queryClient.removeQueries();
 
     // 4) 화면 상태 갱신
     setAccessToken(null);
+    router.replace("/");
   };
+
   console.log("accessToken===>", accessToken);
 
   //데이터요청 확인
@@ -56,14 +61,7 @@ const ProfilePage = () => {
           style={styles.btn}
           activeOpacity={0.7}
         >
-          <Text style={styles.btnText}>모든 토큰 초기화</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.replace("/")}
-          style={styles.btn}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.btnText}>홈 이동</Text>
+          <Text style={styles.btnText}>모든 토큰 초기화 후 홈 이동</Text>
         </TouchableOpacity>
       </View>
     </View>
