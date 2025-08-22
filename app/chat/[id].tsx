@@ -167,7 +167,6 @@ const ChatIdPage = () => {
         <StickyBottom
           style={{ backgroundColor: "#fff" }}
           onHeightChange={(h) => {
-            console.log("[page] StickyBottom height", h);
             setInputBarHeight(h);
           }}
           bottomInset={bottom}
