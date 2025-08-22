@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
 import { useQuery } from "@tanstack/react-query";
@@ -8,11 +8,19 @@ import { GetChatResponse } from "@/utils/types/chat";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data } = useQuery<GetChatResponse>({
+  const { data, refetch } = useQuery<GetChatResponse>({
     queryKey: ["getChatKey"],
     queryFn: () => getChat(),
   });
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    refetch().finally(() => {
+      setRefreshing(false);
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -26,6 +34,14 @@ const chatPage = () => {
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<Text style={styles.empty}>메세지 없음</Text>}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff6b6b"]}
+            tintColor="#ff6b6b"
+          />
+        }
       />
     </View>
   );

@@ -14,6 +14,7 @@ import {
   View,
   Text,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
@@ -21,6 +22,7 @@ const QUERY_KEY = ["getConnectionsKey"] as const;
 const ConnectionPage = () => {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery<
     GetConnectionsResponse[]
@@ -28,6 +30,13 @@ const ConnectionPage = () => {
     queryKey: QUERY_KEY,
     queryFn: getConnections,
   });
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    refetch().finally(() => {
+      setRefreshing(false);
+    });
+  };
 
   // 보이는 리스트: PENDING만
   const items = useMemo(
@@ -99,15 +108,26 @@ const ConnectionPage = () => {
         )}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
+        contentContainerStyle={{
+          gap: 10,
+          padding: 10,
+        }}
         ListEmptyComponent={<Text style={styles.empty}>요청 목록 없음</Text>}
         ListFooterComponent={
           isRefetching ? (
             <ActivityIndicator style={{ marginVertical: 12 }} />
           ) : null
         }
-        onRefresh={refetch}
-        refreshing={isRefetching}
+        // onRefresh={refetch}
+        // refreshing={isRefetching}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff6b6b"]}
+            tintColor="#ff6b6b"
+          />
+        }
       />
     </View>
   );
@@ -116,7 +136,20 @@ const ConnectionPage = () => {
 export default ConnectionPage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 10 },
-  empty: { textAlign: "center", color: "#666", marginTop: 20, fontSize: 16 },
-  center: { textAlign: "center", marginTop: 24, color: "#666" },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 10,
+  },
+  empty: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
+  },
+  center: {
+    textAlign: "center",
+    marginTop: 24,
+    color: "#666",
+  },
 });

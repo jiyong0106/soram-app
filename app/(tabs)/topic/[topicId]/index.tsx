@@ -11,8 +11,7 @@ const AnswerRandomPage = () => {
 
   const { data, isLoading, isError } = useQuery<AnswerRandom[]>({
     queryKey: ["getAnswerRandomKey", topicId],
-    // queryFn: () => getAnswerRandom({ topicId: topicId as string }),
-    queryFn: () => getAnswerRandom({ topicId: "5" }),
+    queryFn: () => getAnswerRandom({ topicId: topicId as string }),
     enabled: !!topicId,
   });
 
