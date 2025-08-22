@@ -4,9 +4,17 @@ import {
   postConnectionsAccept,
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
-import { useOptimisticListRemove } from "@/utils/hooks/useOptimisticListRemove";
-import { GetConnectionsResponse } from "@/utils/types/connection";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
+import {
+  GetConnectionsResponse,
+  GetConnectionsType,
+} from "@/utils/types/connection";
+import {
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+  InfiniteData,
+} from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
@@ -24,49 +32,73 @@ const ConnectionPage = () => {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, isError, refetch, isRefetching } = useQuery<
-    GetConnectionsResponse[]
-  >({
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<GetConnectionsResponse>({
     queryKey: QUERY_KEY,
-    queryFn: getConnections,
+    queryFn: ({ pageParam }) =>
+      getConnections({
+        take: 10,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage
+        ? lastPage.meta.endCursor ?? undefined
+        : undefined,
   });
 
   const onRefresh = async () => {
     setRefreshing(true);
-    refetch().finally(() => {
-      setRefreshing(false);
-    });
+    refetch().finally(() => setRefreshing(false));
   };
 
-  // 보이는 리스트: PENDING만
-  const items = useMemo(
-    () => (data ?? []).filter((d) => d.status === "PENDING"),
-    [data]
-  );
+  // 보기용 리스트 (필요하면 PENDING만 필터)
+  const items: GetConnectionsType[] = useMemo(() => {
+    const flat = (data?.pages ?? []).flatMap((p) => p.data);
+    // PENDING만 보고 싶으면 아래 줄 사용
+    // return flat.filter((d) => d.status === "PENDING");
+    return flat;
+  }, [data?.pages]);
 
-  //  커스텀 훅 사용 (공용 낙관적 제거)
-  const optimisticRemove =
-    useOptimisticListRemove<GetConnectionsResponse>(QUERY_KEY);
+  // ✅ 무한스크롤 전용 낙관적 제거 훅
+  const optimisticRemove = useOptimisticInfiniteRemove<
+    GetConnectionsType,
+    GetConnectionsResponse
+  >(QUERY_KEY);
 
-  type Ctx = { prev?: GetConnectionsResponse[] };
+  // ✅ 컨텍스트 타입: InfiniteData 형태로 맞추기
+  type ConnInfinite = InfiniteData<GetConnectionsResponse>;
+  type Ctx = { prev?: ConnInfinite };
 
   const acceptMutation = useMutation<unknown, unknown, number, Ctx>({
     mutationFn: (connectionId: number) =>
       postConnectionsAccept({ connectionId }),
+
     onMutate: async (id) => {
       setProcessingId(id);
-      return await optimisticRemove(id); // 캐시에서 즉시 제거
+      return await optimisticRemove(id); // { prev } 반환
     },
+
     onError: (_err, _id, ctx) => {
-      // 롤백
-      if (ctx?.prev) queryClient.setQueryData(QUERY_KEY, ctx.prev);
+      if (ctx?.prev)
+        queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
     },
+
     onSuccess: () => {
+      // 채팅 목록 갱신 필요 시
       queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
     },
+
     onSettled: () => {
       setProcessingId(null);
-      // 서버 상태와 동기화
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
@@ -74,13 +106,17 @@ const ConnectionPage = () => {
   const rejectMutation = useMutation<unknown, unknown, number, Ctx>({
     mutationFn: (connectionId: number) =>
       postConnectionsReject({ connectionId }),
+
     onMutate: async (id) => {
       setProcessingId(id);
       return await optimisticRemove(id);
     },
+
     onError: (_err, _id, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(QUERY_KEY, ctx.prev);
+      if (ctx?.prev)
+        queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
     },
+
     onSettled: () => {
       setProcessingId(null);
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -108,18 +144,19 @@ const ConnectionPage = () => {
         )}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          gap: 10,
-          padding: 10,
-        }}
+        contentContainerStyle={{ gap: 10, padding: 10 }}
         ListEmptyComponent={<Text style={styles.empty}>요청 목록 없음</Text>}
         ListFooterComponent={
-          isRefetching ? (
+          isRefetching || isFetchingNextPage ? (
+            <ActivityIndicator style={{ marginVertical: 12 }} />
+          ) : hasNextPage ? (
             <ActivityIndicator style={{ marginVertical: 12 }} />
           ) : null
         }
-        // onRefresh={refetch}
-        // refreshing={isRefetching}
+        onEndReachedThreshold={0.6}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -136,20 +173,7 @@ const ConnectionPage = () => {
 export default ConnectionPage;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-  },
-  empty: {
-    textAlign: "center",
-    color: "#666",
-    marginTop: 20,
-    fontSize: 16,
-  },
-  center: {
-    textAlign: "center",
-    marginTop: 24,
-    color: "#666",
-  },
+  container: { flex: 1, backgroundColor: "#fff", padding: 10 },
+  empty: { textAlign: "center", color: "#666", marginTop: 20, fontSize: 16 },
+  center: { textAlign: "center", marginTop: 24, color: "#666" },
 });
