@@ -1,26 +1,31 @@
+// useSignupDraftStore.ts
+
 import { create } from "zustand";
-import { SignupDraftType } from "../types/signup";
+import { SignupDraftType, SignupAnswer } from "../types/signup";
 
 type SignupDraftStore = {
   draft: SignupDraftType;
-  /** 부분 업데이트(페이지별로 누적 저장) */
   patch: (p: Partial<SignupDraftType>) => void;
-  /** 제출/취소 시 초기화 */
   reset: () => void;
-  /** 서버 전송 페이로드 만들기 (외부의 signupToken 주입) */
   buildPayload: (
     signupToken: string
   ) => { signupToken: string } & SignupDraftType;
-  /** 필수값 채움 여부 (UI 버튼 활성화 등에 활용) */
   isReadyToSubmit: () => boolean;
+};
+
+// ✅ answers를 기본 1개로 구성 (questionId=1, isPrimary=true)
+const DEFAULT_ANSWER: SignupAnswer = {
+  questionId: 1,
+  content: "",
+  isPrimary: true,
 };
 
 const EMPTY: SignupDraftType = {
   nickname: "",
   gender: "",
   birthdate: "",
+  answers: [DEFAULT_ANSWER], // 🔁 기본 배열
   location: null,
-  bio: null,
   authProvider: null,
   providerId: null,
 };
@@ -36,11 +41,13 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
 
   isReadyToSubmit: () => {
     const d = get().draft;
-    // 필수값만 검증: nickname, gender, birthdate
+    const primary = d.answers?.find((a) => a.isPrimary);
     return (
       d.nickname.trim().length > 0 &&
       !!d.gender &&
-      d.birthdate.trim().length > 0
+      d.birthdate.trim().length > 0 &&
+      !!primary &&
+      primary.content.trim().length > 0 // ✅ 자기소개도 필수로 본다면
     );
   },
 }));

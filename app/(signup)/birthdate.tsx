@@ -52,7 +52,7 @@ const BirthdatePage = () => {
     const dd = date.day.padStart(2, "0");
     const birthdate = `${date.year}-${mm}-${dd}`;
     patch({ birthdate });
-    router.push("/(signup)/finish");
+    router.push("/(signup)/answers");
   };
 
   const setInputRef = (k: FieldKey) => (r: TextInput | null) => {
