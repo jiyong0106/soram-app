@@ -52,6 +52,9 @@ const ConnectionPage = () => {
       // 롤백
       if (ctx?.prev) queryClient.setQueryData(QUERY_KEY, ctx.prev);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+    },
     onSettled: () => {
       setProcessingId(null);
       // 서버 상태와 동기화

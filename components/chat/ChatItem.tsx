@@ -4,10 +4,10 @@ import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeabl
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { GetChatResponse } from "@/utils/types/chat";
+import { ChatItemType } from "@/utils/types/chat";
 
 type ChatItemProps = {
-  item: GetChatResponse;
+  item: ChatItemType;
 };
 
 const ChatItem = ({ item }: ChatItemProps) => {
@@ -23,9 +23,6 @@ const ChatItem = ({ item }: ChatItemProps) => {
       isSwipingRef.current = false;
     }, 150);
   };
-
-  console.log("addressee==>", addressee);
-  console.log("requester==>", requester);
 
   const handleRowPress = () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
