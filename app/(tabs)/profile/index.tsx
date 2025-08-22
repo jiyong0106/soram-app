@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -10,7 +11,7 @@ const ProfilePage = () => {
   const signupToken = useSignupTokenStore((s) => s.signupToken);
   const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const router = useRouter();
-
+  const queryClient = useQueryClient();
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   // SecureStore에서 access_token 읽기
@@ -23,9 +24,19 @@ const ProfilePage = () => {
 
   // 초기화: SecureStore + zustand 동시 정리
   const handleClearAll = async () => {
+    // 1) 진행 중인 쿼리 취소
+    await queryClient.cancelQueries();
+
+    // 2) 토큰 정리 (저장소 + 메모리)
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+
     clearSignupToken();
-    setAccessToken(null); // 화면 갱신
+
+    // 3) React Query 캐시 초기화
+    queryClient.clear();
+
+    // 4) 화면 상태 갱신
+    setAccessToken(null);
   };
   console.log("accessToken===>", accessToken);
 

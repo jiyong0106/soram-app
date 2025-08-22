@@ -14,6 +14,7 @@ import {
   View,
   Text,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
@@ -21,6 +22,7 @@ const QUERY_KEY = ["getConnectionsKey"] as const;
 const ConnectionPage = () => {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery<
     GetConnectionsResponse[]
@@ -28,6 +30,13 @@ const ConnectionPage = () => {
     queryKey: QUERY_KEY,
     queryFn: getConnections,
   });
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    refetch().finally(() => {
+      setRefreshing(false);
+    });
+  };
 
   // 보이는 리스트: PENDING만
   const items = useMemo(
@@ -106,8 +115,16 @@ const ConnectionPage = () => {
             <ActivityIndicator style={{ marginVertical: 12 }} />
           ) : null
         }
-        onRefresh={refetch}
-        refreshing={isRefetching}
+        // onRefresh={refetch}
+        // refreshing={isRefetching}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff6b6b"]}
+            tintColor="#ff6b6b"
+          />
+        }
       />
     </View>
   );
