@@ -53,7 +53,6 @@ export default function MessageList({
         return <MessageBubble item={item} isMine={isMine} />;
       }}
       onEndReachedThreshold={0.1}
-      // inverted=true 상태에서 onEndReached 는 "상단"에 도달했을 때 호출됨 → 과거 더 불러오기
       onEndReached={() => onLoadMore()}
       ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
       contentContainerStyle={{

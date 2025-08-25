@@ -245,7 +245,6 @@ const ChatIdPage = () => {
     data?.pages.flatMap((item) => item.data) ?? [];
 
   // 2) 실시간
-  // const { liveMessages, sendMessage, reset } = useChatLive(token, roomId);
   const { messages, sendMessage } = useChat(token, roomId);
 
   // 방 변경 시 라이브 버퍼 초기화(선택)
