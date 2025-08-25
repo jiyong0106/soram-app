@@ -20,7 +20,7 @@ const StickyBottom = ({
 
   return (
     <KeyboardStickyView
-    //이거하면 올라옴, 
+      //이거하면 올라옴,
       offset={{ closed: -bottomInset, opened: 0 }}
       style={style}
       onLayout={handleLayout}
