@@ -1,10 +1,10 @@
 import { ChatMessageType } from "@/utils/types/chat";
 import React from "react";
-import { StyleSheet, Text, View, ViewStyle } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 type MessageBubbleProps = {
   item: ChatMessageType;
-  isMine: boolean; //
+  isMine: boolean;
 };
 
 const MessageBubble = ({ item, isMine }: MessageBubbleProps) => {
