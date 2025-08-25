@@ -31,7 +31,6 @@ const ChatIdPage = () => {
   const actionModalRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
-  const [kbOpen, setKbOpen] = useState(false);
 
   // 1) 이전 채팅
 
@@ -94,20 +93,7 @@ const ChatIdPage = () => {
   //     </PageContainer>
   //   );
   // }
-  useEffect(() => {
-    const show = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      () => setKbOpen(true)
-    );
-    const hide = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      () => setKbOpen(false)
-    );
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
+
   return (
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
@@ -144,11 +130,12 @@ const ChatIdPage = () => {
               }
             }}
             isFetchingNextPage={isFetchingNextPage}
-            paddingBottom={kbOpen ? 0 : bottom}
+            paddingBottom={bottom}
           />
         </Animated.View>
 
         <StickyBottom
+          style={{ backgroundColor: "#fff" }}
           onHeightChange={(h) => setInputBarHeight(h)}
           bottomInset={bottom}
         >
