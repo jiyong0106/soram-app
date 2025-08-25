@@ -1,4 +1,4 @@
-import { ConnectionStatus, UserType } from "./common";
+import { ConnectionStatus, metaType, UserType } from "./common";
 
 export type UserStatus = "ACTIVE"; // 필요시 케이스 추가
 
@@ -15,8 +15,26 @@ export interface ChatItemType {
   voiceResponseId: number;
   createdAt: string;
   updatedAt: string;
-  requester: ChatParticipant;
-  addressee: ChatParticipant;
+  opponent: UserType;
   isBlocked: boolean;
 }
-export type GetChatResponse = ChatItemType[]; // ✅ 목록 응답
+export interface GetChatResponse {
+  data: ChatItemType[];
+  meta: metaType;
+}
+
+// 2. 채팅 메세지 조회 api타입
+export type ChatMessageType = {
+  id: number;
+  connectionId: number;
+  senderId: number;
+  content: string;
+  createdAt: string; // 서버 include 결과에 맞춰 필요시 수정
+  sender?: UserType;
+  isRead: boolean;
+};
+
+export type ChatMessageResponse = {
+  data: ChatMessageType[];
+  meta: metaType;
+};

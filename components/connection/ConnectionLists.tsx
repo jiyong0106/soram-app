@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { GetConnectionsResponse } from "@/utils/types/connection";
+import {
+  GetConnectionsResponse,
+  GetConnectionsType,
+} from "@/utils/types/connection";
 import Button from "../common/Button";
 
 interface ConnectionListsProps {
-  item: GetConnectionsResponse;
+  item: GetConnectionsType;
   onAccept: () => void;
   onReject: () => void;
   disabled?: boolean;

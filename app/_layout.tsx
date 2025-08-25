@@ -6,6 +6,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
 export default function RootLayout() {
+  // useEffect(() => { bootstrapAuthToken(); }, []);
+
   return (
     <GestureHandlerRootView>
       <QueryProvider>
