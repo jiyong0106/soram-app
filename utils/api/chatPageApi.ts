@@ -1,4 +1,4 @@
-import { GetChatResponse } from "../types/chat";
+import { GetChatResponse, UserBlockResponse } from "../types/chat";
 import instance from "./axios";
 
 interface PagenationParams {
@@ -35,8 +35,13 @@ export const getMessages = async ({
   return data;
 };
 
-// 60 ~ 31 => 30 =>1 이렇게 나와야함
- 
-//31 ~ 60 => 1 => 30 지금 이렇게나와 
+//사용자 신고하기
 
-//아까는 31 ~ 60 => 30 ~ 59
+//사용자 차단하기
+export const postUserBlock = async (blockedId: number) => {
+  const { data } = await instance.post<UserBlockResponse>("/blocks", {
+    blockedId, // 요청 body
+  });
+  return data;
+};
+// /blocks

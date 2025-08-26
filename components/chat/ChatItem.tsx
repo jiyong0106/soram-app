@@ -27,7 +27,15 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const handleRowPress = () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
 
-    router.push(`/chat/${id}`);
+    //데이터 넘기기
+    router.push({
+      pathname: "/chat/[id]",
+      params: {
+        id: String(id),
+        peerUserId: opponent.id,
+        peerUserName: opponent.nickname,
+      },
+    });
   };
   return (
     <ReanimatedSwipeable

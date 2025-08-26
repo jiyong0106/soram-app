@@ -1,22 +1,57 @@
-import React, { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef, useState } from "react";
 import { View } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
+import useAlert from "@/utils/hooks/useAlert";
+import { postUserBlock } from "@/utils/api/chatPageApi";
+import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ChatActionModalProps {
   snapPoints?: ReadonlyArray<string | number>;
-  onReport?: () => void;
-  onBlock?: () => void;
-  onLeave?: () => void;
-  onMute?: () => void;
+  blockedId: number;
 }
 
 const ChatActionModal = (
-  { snapPoints, onReport, onBlock, onLeave, onMute }: ChatActionModalProps,
+  { snapPoints, blockedId }: ChatActionModalProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
+  const { showAlert, showActionAlert } = useAlert();
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  const dismiss = () => (ref as any)?.current?.dismiss?.();
+
+  //신고
+  const onReport = () => console.log("onReport");
+
+  //차단
+
+  const onBlock = () => {
+    dismiss();
+    showActionAlert("차단?", "확인", async () => {
+      if (!blockedId) return;
+      try {
+        await postUserBlock(blockedId);
+        showAlert("차단 성공!", () => {
+          qc.invalidateQueries({ queryKey: ["getChatKey"] });
+          router.dismissTo("/chat");
+        });
+      } catch (e) {
+        showAlert("차단 실패 에러");
+      } finally {
+      }
+    });
+  };
+
+  //나가기
+  const onLeave = () => console.log("onLeave");
+
+  //알림끄기
+  const onMute = () => console.log("onMute");
+
   return (
     <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
       <View style={{ padding: 16 }}>

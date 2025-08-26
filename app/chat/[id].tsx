@@ -20,8 +20,14 @@ import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
 
 const ChatIdPage = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, peerUserId, peerUserName } = useLocalSearchParams<{
+    id: string;
+    peerUserId: string;
+    peerUserName: string;
+  }>();
+
   const roomId = Number(id);
+  const blockedId = Number(peerUserId);
   const token = getAuthToken() ?? "";
 
   const [text, setText] = useState("");
@@ -98,14 +104,14 @@ const ChatIdPage = () => {
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
-          title: "",
+          title: peerUserName,
           headerShown: true,
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
-              <TouchableOpacity activeOpacity={0.5}>
+              {/* <TouchableOpacity activeOpacity={0.5}>
                 <Ionicons name="call-outline" size={22} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => actionModalRef.current?.present?.()}
@@ -148,10 +154,11 @@ const ChatIdPage = () => {
 
         <ChatActionModal
           ref={actionModalRef}
-          onReport={() => console.log("[page] action: report")}
-          onBlock={() => console.log("[page] action: block")}
-          onLeave={() => console.log("[page] action: leave")}
-          onMute={() => console.log("[page] action: mute")}
+          blockedId={blockedId}
+          // onReport={() => console.log("[page] action: report")}
+          // onBlock={() => console.log("[page] action: block")}
+          // onLeave={() => console.log("[page] action: leave")}
+          // onMute={() => console.log("[page] action: mute")}
         />
       </View>
     </PageContainer>

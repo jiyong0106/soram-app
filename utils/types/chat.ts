@@ -24,7 +24,7 @@ export interface GetChatResponse {
 }
 
 // 2. 채팅 메세지 조회 api타입
-export type ChatMessageType = {
+export interface ChatMessageType {
   id: number;
   connectionId: number;
   senderId: number;
@@ -32,9 +32,19 @@ export type ChatMessageType = {
   createdAt: string; // 서버 include 결과에 맞춰 필요시 수정
   sender?: UserType;
   isRead: boolean;
-};
+}
 
-export type ChatMessageResponse = {
+export interface ChatMessageResponse {
   data: ChatMessageType[];
   meta: metaType;
-};
+}
+
+//3.
+export interface UserBlockResponse {
+  id: number;
+  //차단당한 유저
+  blockedId: number;
+  //차단한 내id
+  blockerId: number;
+  createdAt: string;
+}
