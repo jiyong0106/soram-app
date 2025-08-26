@@ -27,3 +27,32 @@ export function formatKoClock(
     ).padStart(2, "0")}`;
   }
 }
+
+export const makeMinuteKey = (
+  input: string | number | Date,
+  timeZone = "Asia/Seoul"
+) => {
+  const d = new Date(input);
+  try {
+    const parts = new Intl.DateTimeFormat("ko-KR", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).formatToParts(d);
+    const m = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+    // 같은 키면 같은 '분'
+    return `${m.year}-${m.month}-${m.day} ${m.hour}:${m.minute}`;
+  } catch {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(
+      2,
+      "0"
+    )}:${String(d.getMinutes()).padStart(2, "0")}`;
+  }
+};

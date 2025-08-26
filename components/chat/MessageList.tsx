@@ -13,6 +13,7 @@ import {
 import MessageBubble from "./MessageBubble";
 import { ChatMessageType } from "@/utils/types/chat";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { makeMinuteKey } from "@/utils/util/formatKoClock";
 
 type Props = {
   myUserId?: number | null;
@@ -36,16 +37,13 @@ export default function MessageList({
   // 1) 과거 + 실시간 병합, id 기준 중복 제거 → 최신→과거(DESC)
   const dataDesc = useMemo(() => {
     const map = new Map<string | number, ChatMessageType>();
-    for (const m of items) {
-      map.set(m.id ?? `${m.createdAt}-${m.senderId}`, m);
-    }
-    for (const m of live) {
-      map.set(m.id ?? `${m.createdAt}-${m.senderId}`, m);
-    }
-    return Array.from(map.values()).sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    for (const m of items) map.set(m.id ?? `${m.createdAt}-${m.senderId}`, m);
+    for (const m of live) map.set(m.id ?? `${m.createdAt}-${m.senderId}`, m);
+    const arr = Array.from(map.values()).sort(
+      (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
     );
+    // 분 키 미리 캐시
+    return arr.map((m) => ({ ...m, __minuteKey: makeMinuteKey(m.createdAt) }));
   }, [items, live]);
 
   // 2) 사용자가 하단(= inverted 기준 top) 근처인지 추적해서, 라이브가 올 때만 자동 붙이기
@@ -71,10 +69,27 @@ export default function MessageList({
       data={dataDesc} // 최신 → 과거
       inverted={true} // 최신이 시각적 하단에 보이도록
       keyExtractor={(m, i) => String(m.id ?? i)}
-      renderItem={({ item }) => {
-        const sender = (item as any).senderId ?? (item as any).sender?.id;
-        const isMine = myUserId != null && sender === myUserId;
-        return <MessageBubble item={item} isMine={isMine} />;
+      renderItem={({ item, index }) => {
+        const senderId = (item as any).senderId ?? (item as any).sender?.id;
+
+        const isMine = myUserId != null && senderId === myUserId;
+
+        const prev = dataDesc[index - 1];
+        const sameMinute = prev && prev.__minuteKey === item.__minuteKey;
+        const sameAuthor =
+          prev &&
+          ((prev as any).senderId ?? (prev as any).sender?.id) === senderId;
+
+        // 같은 보낸 사람 & 같은 분이면 시간 숨김
+        const showTime = !(sameMinute && sameAuthor);
+
+        return (
+          <MessageBubble
+            item={item}
+            isMine={isMine}
+            showTime={showTime} // ✅ MessageBubble에 전달
+          />
+        );
       }}
       onScroll={onScroll}
       scrollEventThrottle={16}

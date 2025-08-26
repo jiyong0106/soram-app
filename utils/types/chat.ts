@@ -32,6 +32,7 @@ export interface GetChatResponse {
 
 // 2. 채팅 메세지 조회 api타입
 export interface ChatMessageType {
+  __minuteKey: string;
   id: number;
   connectionId: number;
   senderId: number;

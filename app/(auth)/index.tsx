@@ -28,8 +28,11 @@ const AuthPage = () => {
           params: { phoneNumber },
         })
       );
-    } catch (e) {
-      console.error("");
+    } catch (e: any) {
+      if (e) {
+        showAlert(e.response.data.message);
+        return;
+      }
     } finally {
       setLoading(false);
     }

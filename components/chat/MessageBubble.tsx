@@ -6,17 +6,18 @@ import { StyleSheet, Text, View } from "react-native";
 type MessageBubbleProps = {
   item: ChatMessageType;
   isMine: boolean;
+  showTime?: boolean;
 };
 
-const MessageBubble = ({ item, isMine }: MessageBubbleProps) => {
+const MessageBubble = ({ item, isMine, showTime }: MessageBubbleProps) => {
   const { content, createdAt } = item;
   const timeText = formatKoClock(createdAt);
 
   if (isMine) {
-    // 내 메시지: 시간 ← 말풍선 (오른쪽 정렬, 시간은 말풍선의 왼쪽 하단)
+    // 내 메시지: 시간 ← 말풍선 (오른쪽 정렬)
     return (
       <View style={[styles.row, styles.rowMine]}>
-        <Text style={styles.timeText}>{timeText}</Text>
+        {showTime && <Text style={styles.timeText}>{timeText}</Text>}
         <View style={[styles.bubble, styles.bubbleMine]}>
           <Text style={[styles.bubbleText, styles.mineText]}>{content}</Text>
         </View>
@@ -24,18 +25,18 @@ const MessageBubble = ({ item, isMine }: MessageBubbleProps) => {
     );
   }
 
-  // 상대 메시지: 말풍선 → 시간 (왼쪽 정렬, 시간은 말풍선의 오른쪽 하단)
+  // 상대 메시지: 말풍선 → 시간 (왼쪽 정렬)
   return (
     <View style={[styles.row, styles.rowOther]}>
       <View style={[styles.bubble, styles.bubbleOther]}>
         <Text style={styles.bubbleText}>{content}</Text>
       </View>
-      <Text style={styles.timeText}>{timeText}</Text>
+      {showTime && <Text style={styles.timeText}>{timeText}</Text>}
     </View>
   );
 };
 
-export default MessageBubble;
+export default React.memo(MessageBubble);
 
 const styles = StyleSheet.create({
   // 한 줄에 배치 + 하단 정렬
