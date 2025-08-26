@@ -80,26 +80,6 @@ const ChatIdPage = () => {
     setText("");
   };
 
-  // if (!token) {
-  //   return (
-  //     <PageContainer edges={[]} padded={false}>
-  //       <Stack.Screen
-  //         options={{
-  //           title: "",
-  //           headerShown: true,
-  //           headerBackVisible: false,
-  //           headerLeft: () => <BackButton />,
-  //         }}
-  //       />
-  //       <View
-  //         style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-  //       >
-  //         <Text>로그인 토큰을 불러오는 중입니다…</Text>
-  //       </View>
-  //     </PageContainer>
-  //   );
-  // }
-
   return (
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
@@ -109,9 +89,6 @@ const ChatIdPage = () => {
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
-              {/* <TouchableOpacity activeOpacity={0.5}>
-                <Ionicons name="call-outline" size={22} />
-              </TouchableOpacity> */}
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => actionModalRef.current?.present?.()}
@@ -152,14 +129,7 @@ const ChatIdPage = () => {
           />
         </StickyBottom>
 
-        <ChatActionModal
-          ref={actionModalRef}
-          blockedId={blockedId}
-          // onReport={() => console.log("[page] action: report")}
-          // onBlock={() => console.log("[page] action: block")}
-          // onLeave={() => console.log("[page] action: leave")}
-          // onMute={() => console.log("[page] action: mute")}
-        />
+        <ChatActionModal ref={actionModalRef} blockedId={blockedId} />
       </View>
     </PageContainer>
   );
