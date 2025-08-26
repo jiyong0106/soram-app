@@ -39,7 +39,7 @@ export interface ChatMessageResponse {
   meta: metaType;
 }
 
-//3.
+//3.유저 차단하는 api 응답값 타입
 export interface UserBlockResponse {
   id: number;
   //차단당한 유저

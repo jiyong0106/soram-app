@@ -39,7 +39,11 @@ const ChatActionModal = (
           qc.invalidateQueries({ queryKey: ["getChatKey"] });
           router.dismissTo("/chat");
         });
-      } catch (e) {
+      } catch (e: any) {
+        if (e) {
+          showAlert(e.response.data.message || "다시 시도해 주세요");
+          return;
+        }
         showAlert("차단 실패 에러");
       } finally {
       }
