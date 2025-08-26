@@ -1,4 +1,11 @@
-import { ConnectionStatus, metaType, UserType } from "./common";
+import {
+  ConnectionStatus,
+  metaType,
+  ReportCategoryType,
+  ReportReasonType,
+  ReportStatusType,
+  UserType,
+} from "./common";
 
 export type UserStatus = "ACTIVE"; // 필요시 케이스 추가
 
@@ -42,9 +49,29 @@ export interface ChatMessageResponse {
 //3.유저 차단하는 api 응답값 타입
 export interface UserBlockResponse {
   id: number;
-  //차단당한 유저
   blockedId: number;
-  //차단한 내id
   blockerId: number;
   createdAt: string;
+}
+
+// 4.  유저 신고하는 api 바디값
+export interface UserReportBody {
+  reportedId: number;
+  type: "USER_PROFILE";
+  targetId: string;
+  reason: ReportReasonType;
+  details: string;
+}
+
+export interface UserReportResponse {
+  id: number;
+  reporterId: number;
+  reportedId: number;
+  type: "USER_PROFILE";
+  targetId: string;
+  reason: ReportReasonType;
+  details: string;
+  status: ReportStatusType;
+  createdAt: string;
+  updatedAt: string;
 }

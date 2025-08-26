@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useState } from "react";
+import React, { ForwardedRef, forwardRef } from "react";
 import { View } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,7 +6,7 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import useAlert from "@/utils/hooks/useAlert";
 import { postUserBlock } from "@/utils/api/chatPageApi";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ChatActionModalProps {
@@ -18,14 +18,29 @@ const ChatActionModal = (
   { snapPoints, blockedId }: ChatActionModalProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
+  const { peerUserId } = useLocalSearchParams<{
+    peerUserId: string;
+  }>();
+
   const { showAlert, showActionAlert } = useAlert();
   const router = useRouter();
   const qc = useQueryClient();
 
+  //모달 닫기
   const dismiss = () => (ref as any)?.current?.dismiss?.();
 
   //신고
-  const onReport = () => console.log("onReport");
+  const onReport = () => {
+    dismiss();
+    setTimeout(() => {
+      router.push({
+        pathname: "/chat/report",
+        params: {
+          peerUserId: peerUserId,
+        },
+      });
+    }, 300);
+  };
 
   //차단
 

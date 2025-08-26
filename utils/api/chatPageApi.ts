@@ -1,4 +1,9 @@
-import { GetChatResponse, UserBlockResponse } from "../types/chat";
+import {
+  GetChatResponse,
+  UserBlockResponse,
+  UserReportBody,
+  UserReportResponse,
+} from "../types/chat";
 import instance from "./axios";
 
 interface PagenationParams {
@@ -37,11 +42,16 @@ export const getMessages = async ({
 
 //사용자 신고하기
 
+export const posetUserReport = async (body: UserReportBody) => {
+  const { data } = await instance.post<UserReportResponse>("/reports", body);
+  return data;
+};
+
 //사용자 차단하기
 export const postUserBlock = async (blockedId: number) => {
-  const { data } = await instance.post<UserBlockResponse>("/blocks", {
+  const data = await instance.post<UserBlockResponse>("/blocks", {
     blockedId, // 요청 body
   });
-  return data;
+  return data.data;
 };
 // /blocks
