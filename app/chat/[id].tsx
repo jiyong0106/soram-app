@@ -52,6 +52,7 @@ const ChatIdPage = () => {
       initialPageParam: undefined as number | undefined,
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+      staleTime: 60 * 1000,
     });
   const items: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];

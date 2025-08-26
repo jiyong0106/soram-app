@@ -11,27 +11,40 @@ const chatPage = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<GetChatResponse>({
-      queryKey: ["getChatKey"],
-      queryFn: ({ pageParam }) =>
-        getChat({
-          take: 10,
-          cursor: pageParam,
-        }),
+  const {
+    data,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    dataUpdatedAt,
+  } = useInfiniteQuery<GetChatResponse>({
+    queryKey: ["getChatKey"],
+    queryFn: ({ pageParam }) =>
+      getChat({
+        take: 10,
+        cursor: pageParam,
+      }),
 
-      initialPageParam: undefined as number | undefined,
-      getNextPageParam: (lastPage) =>
-        lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-    });
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+    staleTime: 60 * 1000,
+  });
 
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
 
   const onRefresh = async () => {
+    const now = Date.now();
+    if (refreshing) return;
+    if (now - dataUpdatedAt < 60_000) return; // 최근 60초 내 데이터면 스킵
+
     setRefreshing(true);
-    refetch().finally(() => {
+    try {
+      await refetch();
+    } finally {
       setRefreshing(false);
-    });
+    }
   };
 
   return (
