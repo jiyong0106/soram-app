@@ -12,8 +12,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     // 예시: Pretendard 패밀리
-    nsnReg: require("../assets/fonts/NanumSquareNeo-bRg.ttf"),
-    nsnbol: require("../assets/fonts/NanumSquareNeo-cBd.ttf"),
+    nsReg: require("../assets/fonts/NanumSquareNeo-bRg.ttf"),
+    nsBol: require("../assets/fonts/NanumSquareNeo-cBd.ttf"),
     // 필요하면 추가:
   });
 

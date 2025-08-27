@@ -4,8 +4,8 @@ import { Text, TextProps, TextStyle } from "react-native";
 
 // 굵기별로 매핑
 const fontMap: Record<string, string> = {
-  normal: "nsnReg",
-  bold: "nsnBold",
+  normal: "nsReg",
+  bold: "nsBol",
   // 필요하면 더 추가
 };
 
@@ -19,7 +19,7 @@ const AppText = (props: TextProps) => {
   const { fontWeight, ...restStyle } = flatStyle as TextStyle;
 
   // fontWeight → fontFamily 매핑
-  const fontFamily = fontWeight ? fontMap[fontWeight] || "nsnReg" : "nsnReg";
+  const fontFamily = fontWeight ? fontMap[fontWeight] || "nsReg" : "nsReg";
 
   return <Text {...rest} style={[{ fontFamily }, restStyle]} />;
 };
