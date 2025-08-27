@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import AppText from "../common/AppText";
 
 type Props = {
   label: string;
@@ -32,7 +33,7 @@ const ReasonOption = ({
           selected && { backgroundColor: themeColor },
         ]}
       />
-      <Text style={styles.label}>{label}</Text>
+      <AppText style={styles.label}>{label}</AppText>
     </Pressable>
   );
 };

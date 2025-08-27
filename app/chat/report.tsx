@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -51,7 +51,7 @@ const ReportPage = () => {
   };
 
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["top"]} padded={false}>
       <Stack.Screen
         options={{
           title: "신고",

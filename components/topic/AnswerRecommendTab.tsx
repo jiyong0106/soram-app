@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import AnswerRecommendLists from "./AnswerRecommendLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getChat } from "@/utils/api/chatPageApi";
 import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import AppText from "@/components/common/AppText";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
@@ -50,7 +51,7 @@ const chatPage = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>채팅</Text>
+        <AppText style={styles.title}>채팅</AppText>
         <SearchBar value={query} onChangeText={setQuery} />
       </View>
       <FlatList
@@ -58,7 +59,7 @@ const chatPage = () => {
         renderItem={({ item }) => <ChatItem item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<Text style={styles.empty}>메세지 없음</Text>}
+        ListEmptyComponent={<AppText style={styles.empty}>메세지 없음</AppText>}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "bold",
     marginBottom: 16,
   },
   rowTextWrap: {

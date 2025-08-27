@@ -1,4 +1,5 @@
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import AppText from "./AppText";
 
 const SheetRow = ({
   icon,
@@ -19,7 +20,7 @@ const SheetRow = ({
       }}
     >
       {icon}
-      <Text style={{ fontSize: 16 }}>{label}</Text>
+      <AppText style={{ fontSize: 16 }}>{label}</AppText>
     </View>
   </TouchableOpacity>
 );

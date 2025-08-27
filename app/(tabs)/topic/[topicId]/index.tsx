@@ -1,10 +1,11 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import AnswerRandomLists from "@/components/topic/AnswerRandomLists";
 import { useQuery } from "@tanstack/react-query";
 import { getAnswerRandom } from "@/utils/api/topicPageApi";
 import { AnswerRandom } from "@/utils/types/topic";
+import AppText from "@/components/common/AppText";
 
 const AnswerRandomPage = () => {
   const { topicId } = useLocalSearchParams();
@@ -23,7 +24,7 @@ const AnswerRandomPage = () => {
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, padding: 10 }}
-        ListEmptyComponent={<Text style={styles.empty}>답변 없음</Text>}
+        ListEmptyComponent={<AppText style={styles.empty}>답변 없음</AppText>}
       />
     </View>
   );

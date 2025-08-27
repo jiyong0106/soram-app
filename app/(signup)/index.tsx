@@ -2,8 +2,9 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import AppText from "@/components/common/AppText";
 
 const MAX_LEN = 10;
 
@@ -36,10 +37,10 @@ const SignupPage = () => {
     >
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <Text style={styles.title}>닉네임을 설정해 주세요</Text>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.title}>닉네임을 설정해 주세요</AppText>
+          <AppText style={styles.subtitle}>
             사용 할 닉네임을 알려주세요, 언제든 바꿀 수 있어요!
-          </Text>
+          </AppText>
         </View>
         <View style={styles.inputWrap}>
           <TextInput
@@ -54,9 +55,9 @@ const SignupPage = () => {
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
           />
-          <Text style={styles.counter}>
+          <AppText style={styles.counter}>
             {nickname.length}/{MAX_LEN}
-          </Text>
+          </AppText>
         </View>
       </View>
     </ScreenWithStickyAction>

@@ -1,5 +1,6 @@
 import React from "react";
-import { View, TextInput, StyleSheet, Text } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
+import AppText from "../common/AppText";
 
 type Props = {
   value: string;
@@ -25,8 +26,10 @@ const ReportDetailsInput = ({
 
   return (
     <View>
-      <Text style={styles.title}>상세 내용</Text>
-      {helperText ? <Text style={styles.helper}>{helperText}</Text> : null}
+      <AppText style={styles.title}>상세 내용</AppText>
+      {helperText ? (
+        <AppText style={styles.helper}>{helperText}</AppText>
+      ) : null}
 
       <View
         style={[styles.box, { borderColor: tooShort ? themeColor : "#e5e5e5" }]}
@@ -47,13 +50,13 @@ const ReportDetailsInput = ({
       </View>
 
       <View style={styles.footer}>
-        <Text style={[styles.counter, tooShort && { color: themeColor }]}>
+        <AppText style={[styles.counter, tooShort && { color: themeColor }]}>
           {len}/{maxLen}
-        </Text>
+        </AppText>
         {minLen > 0 && (
-          <Text style={[styles.minText, tooShort && { color: themeColor }]}>
+          <AppText style={[styles.minText, tooShort && { color: themeColor }]}>
             최소 {minLen}자
-          </Text>
+          </AppText>
         )}
       </View>
     </View>
@@ -65,7 +68,7 @@ export default ReportDetailsInput;
 const styles = StyleSheet.create({
   title: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "bold",
     color: "#222",
     marginBottom: 8,
   },

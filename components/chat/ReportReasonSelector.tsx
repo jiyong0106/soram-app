@@ -1,7 +1,8 @@
 import { REASON_LABELS, ReportReasonType } from "@/utils/types/common";
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ReasonOption from "./ReasonOption";
+import AppText from "../common/AppText";
 
 type ReportReasonSelectorProps = {
   value: ReportReasonType | null;
@@ -24,7 +25,7 @@ const ReportReasonSelector = ({
 }: ReportReasonSelectorProps) => {
   return (
     <View style={styles.wrap}>
-      <Text style={styles.title}>신고 사유</Text>
+      <AppText style={styles.title}>신고 사유</AppText>
       <View style={styles.group}>
         {REASONS.map((r) => (
           <ReasonOption
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
   wrap: { marginBottom: 20 },
   title: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "bold",
     color: "#222",
     marginBottom: 12,
   },

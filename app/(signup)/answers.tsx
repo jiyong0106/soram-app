@@ -1,9 +1,10 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore"; // (오탈자면 store로 수정)
 import { useMemo, useState } from "react";
+import AppText from "@/components/common/AppText";
 
 const MAX_LEN = 1000;
 
@@ -47,10 +48,10 @@ const AnswersPage = () => {
     >
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <Text style={styles.title}>{nickname}님의 필수 정보 입력</Text>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.title}>{nickname}님의 필수 정보 입력</AppText>
+          <AppText style={styles.subtitle}>
             자기소개를 작성해주세요 (최대 {MAX_LEN}자)
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.inputWrap}>
@@ -69,9 +70,9 @@ const AnswersPage = () => {
             numberOfLines={8}
             textAlignVertical="top"
           />
-          <Text style={styles.counter}>
+          <AppText style={styles.counter}>
             {primary?.content?.length ?? 0}/{MAX_LEN}
-          </Text>
+          </AppText>
         </View>
       </View>
     </ScreenWithStickyAction>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import React from "react";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
@@ -9,6 +9,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import * as SecureStore from "expo-secure-store";
+import AppText from "@/components/common/AppText";
 
 const FinishPage = () => {
   const router = useRouter();
@@ -58,7 +59,7 @@ const FinishPage = () => {
       }
     >
       <View style={styles.container}>
-        <Text>여기서 버튼 누르면 회원가입 완료! </Text>
+        <AppText>여기서 버튼 누르면 회원가입 완료! </AppText>
       </View>
     </ScreenWithStickyAction>
   );

@@ -1,17 +1,14 @@
 import { Stack, usePathname } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
-import AuthHeader from "@/components/auth/AuthHeader";
+import { BackButton } from "@/components/common/backbutton";
 
 const AuthLayout = () => {
-  const pathname = usePathname();
-  const isRoot = pathname === "/(auth)";
-
   return (
     <PageContainer edges={["top", "bottom"]} padded={false}>
-      <AuthHeader showBack={!isRoot} />
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerLeft: () => <BackButton />,
+          title: "",
           contentStyle: { backgroundColor: "#fff" },
         }}
       >

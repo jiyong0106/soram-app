@@ -1,9 +1,7 @@
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
-  ActivityIndicator,
   LayoutAnimation,
   Platform,
   UIManager,
@@ -15,6 +13,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { postText } from "@/utils/api/topicPageApi";
 import Button from "../common/Button";
 import { useQueryClient } from "@tanstack/react-query";
+import AppText from "../common/AppText";
 
 interface ItemProps {
   item: AnswerRecommend;
@@ -75,9 +74,9 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
 
   return (
     <View style={styles.container}>
-      <Text>{id}</Text>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.desc}>{content}</Text>
+      <AppText>{id}</AppText>
+      <AppText style={styles.title}>{title}</AppText>
+      <AppText style={styles.desc}>{content}</AppText>
 
       {/* 토글 버튼 */}
       <TouchableOpacity
@@ -85,9 +84,9 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
         activeOpacity={0.7}
         style={styles.toggle}
       >
-        <Text style={styles.toggleText}>
+        <AppText style={styles.toggleText}>
           {isShow ? "입력창 숨기기 ▲" : "입력창 보이기 ▼"}
-        </Text>
+        </AppText>
       </TouchableOpacity>
 
       {/* 입력창 & 등록버튼: 토글 */}

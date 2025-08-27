@@ -1,9 +1,10 @@
 import { AnswerRandom, RequestConnectionBody } from "@/utils/types/topic";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
+import AppText from "../common/AppText";
 
 interface AnswerRandomListsProps {
   item: AnswerRandom;
@@ -48,16 +49,18 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.nick}>{user.nickname}</Text>
+      <AppText style={styles.nick}>{user.nickname}</AppText>
       {type === "TEXT" ? (
-        <Text style={styles.text}>{textContent}</Text>
+        <AppText style={styles.text}>{textContent}</AppText>
       ) : (
-        <Text style={styles.text}>[음성] {audioUrl}</Text>
+        <AppText style={styles.text}>[음성] {audioUrl}</AppText>
       )}
-      <Text style={styles.meta}>{new Date(createdAt).toLocaleString()}</Text>
-      <Text style={styles.meta}>답변 id : {id}</Text>
-      <Text style={styles.meta}>답변한 유저 id : {userId}</Text>
-      <Text style={styles.meta}>이 답변의 토픽 id : {topicBoxId}</Text>
+      <AppText style={styles.meta}>
+        {new Date(createdAt).toLocaleString()}
+      </AppText>
+      <AppText style={styles.meta}>답변 id : {id}</AppText>
+      <AppText style={styles.meta}>답변한 유저 id : {userId}</AppText>
+      <AppText style={styles.meta}>이 답변의 토픽 id : {topicBoxId}</AppText>
       <View style={styles.btnWrapper}>
         <Button
           label="이사람 답변 더 보기"

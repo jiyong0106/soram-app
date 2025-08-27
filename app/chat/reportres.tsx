@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import PageContainer from "@/components/common/PageContainer";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
+import AppText from "@/components/common/AppText";
 
 const Reportres = () => {
   const router = useRouter();
@@ -25,8 +26,8 @@ const Reportres = () => {
         }
       >
         <View style={styles.container}>
-          <Text>신고 완료되었습니다.</Text>
-          <Text>24시간 이내 검토 후 처리될 예정입니다.</Text>
+          <AppText>신고 완료되었습니다.</AppText>
+          <AppText>24시간 이내 검토 후 처리될 예정입니다.</AppText>
         </View>
       </ScreenWithStickyAction>
     </PageContainer>

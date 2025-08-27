@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
+import AppText from "../common/AppText";
 
 const Description = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>내 기준에 꼭 맞는</Text>
-      <Text style={styles.text}>소중한 만남의 연결 </Text>
-      <Text style={styles.text}>인연 큐레이터 소람</Text>
+      <AppText style={styles.text}>내 기준에 꼭 맞는</AppText>
+      <AppText style={styles.text}>소중한 만남의 연결 </AppText>
+      <AppText style={styles.text}>인연 큐레이터 소람</AppText>
     </View>
   );
 };

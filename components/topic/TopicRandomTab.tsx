@@ -1,9 +1,10 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import TopicRandomLists from "./TopicRandomLists";
 import { useQuery } from "@tanstack/react-query";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
+import AppText from "../common/AppText";
 
 const TopicRandomTab = () => {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
@@ -32,7 +33,7 @@ const TopicRandomTab = () => {
         {isFetching ? (
           <LoadingSpinner />
         ) : (
-          <Text style={styles.nextText}>다른 주제 보기</Text>
+          <AppText style={styles.nextText}>다른 주제 보기</AppText>
         )}
       </TouchableOpacity>
     </View>
@@ -59,6 +60,6 @@ const styles = StyleSheet.create({
   },
   nextText: {
     color: "#fff",
-    fontWeight: "600",
+    fontWeight: "bold",
   },
 });
