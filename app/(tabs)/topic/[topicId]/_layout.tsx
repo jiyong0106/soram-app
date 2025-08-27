@@ -7,8 +7,7 @@ const AnswerRandomLayout = () => {
     <Stack
       screenOptions={{
         contentStyle: { backgroundColor: "#fff" },
-        title: "",
-        headerLeft: () => <BackButton />,
+        headerShown: false,
       }}
     >
       <Stack.Screen name="index" />
