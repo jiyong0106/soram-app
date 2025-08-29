@@ -5,7 +5,6 @@ import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
-import { useLocalSearchParams } from "expo-router";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
@@ -13,19 +12,10 @@ interface UserAnswerListProps {
 }
 
 const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
-  const {
-    textContent,
-    id,
-    userId,
-    topicBoxId,
-    user,
-    type,
-    audioUrl,
-    createdAt,
-  } = item;
+  const { textContent, id, userId, user, createdAt } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
-  console.log(topicBoxId);
+
   //대화 요청하기
   const handlePress = () => {
     if (loading) return; // 중복 클릭 방지
@@ -57,13 +47,7 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         <AppText style={styles.title}>{title}</AppText>
       </View>
 
-      <AppText style={styles.content}>
-        경찰은 이들 행위에 대해 캠코더 단속, 공익신고 활성화, 암행 순찰차 증차,
-        무인단속 장비 확충 등 장비와 인력을 총동원해 법규 위반 근절에 나선다.
-        이미 두 달간 계도 기간을 거친 만큼 더 이상 ‘몰랐다’는 변명은 통하지
-        않는다. 단속에 적발되면 위반 사항에 따라 최대 7만원의 범칙금을 내야
-        하고, 버스전용차로를 위반하면 최대 30점의 벌점이 부과된다.
-      </AppText>
+      <AppText style={styles.content}>{textContent}</AppText>
 
       {/* 작성자 닉네임 (오른쪽 정렬, 서명 느낌) */}
       <AppText style={styles.nick}>– {user.nickname}</AppText>
