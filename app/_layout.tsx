@@ -41,6 +41,7 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(signup)" />
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="topic" />
             </Stack>
           </KeyboardProvider>
         </BottomSheetModalProvider>
