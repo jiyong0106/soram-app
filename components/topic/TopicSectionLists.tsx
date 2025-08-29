@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { AnswerRecommend } from "@/utils/types/topic"; // id, title, content 등
+import { TopicListType } from "@/utils/types/topic"; // id, title, content 등
 import useAlert from "@/utils/hooks/useAlert";
 import { postText } from "@/utils/api/topicPageApi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,7 +15,7 @@ import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 
 interface ItemProps {
-  item: AnswerRecommend;
+  item: TopicListType;
 }
 
 const MAX_LEN = 1000;

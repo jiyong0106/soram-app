@@ -1,12 +1,12 @@
 import React, { memo } from "react";
 import { ImageBackground, Pressable, View, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
-import { AnswerRecommend } from "@/utils/types/topic";
+import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type Props = {
-  item: AnswerRecommend;
+  item: TopicListType;
 };
 
 const TopicCard = ({ item }: Props) => {

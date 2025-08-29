@@ -14,7 +14,7 @@ export interface baseTopic {
 }
 
 // 1. 주제함 목록 조회 api 타입 및 랜덤 주제 보여주기 api 타입
-export interface AnswerRecommend {
+export interface TopicListType {
   id: number;
   title: string;
   content: string;
@@ -22,8 +22,8 @@ export interface AnswerRecommend {
   createdAt: string;
   updatedAt: string;
 }
-export interface GetAnswerRecommendResponse {
-  data: AnswerRecommend[];
+export interface GetTopicListTypeResponse {
+  data: TopicListType[];
   meta: metaType;
 }
 

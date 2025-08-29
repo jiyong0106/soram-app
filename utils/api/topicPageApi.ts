@@ -1,7 +1,7 @@
 import instance from "./axios";
 import {
-  GetAnswerRecommendResponse,
-  AnswerRecommend,
+  GetTopicListTypeResponse,
+  TopicListType,
   AnswerRandom,
   RequestConnectionBody,
   RequestConnectionResponse,
@@ -10,22 +10,22 @@ import {
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
-interface GetAnswerRecommendParams {
+interface GetTopicListTypeParams {
   take: number;
   search?: string;
   cursor?: any;
 }
 
-export const getAnswerRecommend = async ({
+export const getTopicListType = async ({
   take,
   search,
   cursor,
-}: GetAnswerRecommendParams) => {
+}: GetTopicListTypeParams) => {
   const params: Record<string, any> = {};
   if (take) params.take = take;
   if (cursor !== undefined) params.cursor = cursor;
   if (search) params.search = search;
-  const { data } = await instance.get<GetAnswerRecommendResponse>("/topics", {
+  const { data } = await instance.get<GetTopicListTypeResponse>("/topics", {
     params,
   });
   return data;
@@ -33,7 +33,7 @@ export const getAnswerRecommend = async ({
 
 // 2. 랜덤 주제 보여조기 api
 export const getTopicRandom = async () => {
-  const { data } = await instance.get<AnswerRecommend>("/topics/random");
+  const { data } = await instance.get<TopicListType>("/topics/random");
   return data;
 };
 

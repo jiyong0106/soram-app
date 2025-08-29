@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  AnswerRecommend,
-  GetAnswerRecommendResponse,
-} from "@/utils/types/topic";
-import { getAnswerRecommend } from "@/utils/api/topicPageApi";
+import { TopicListType, GetTopicListTypeResponse } from "@/utils/types/topic";
+import { getTopicListType } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const TopicSection = () => {
@@ -23,10 +20,10 @@ const TopicSection = () => {
     isFetchingNextPage,
     refetch,
     isLoading,
-  } = useInfiniteQuery<GetAnswerRecommendResponse>({
-    queryKey: ["getAnswerRecommendKey", searchName],
+  } = useInfiniteQuery<GetTopicListTypeResponse>({
+    queryKey: ["getTopicListKey", searchName],
     queryFn: ({ pageParam }) =>
-      getAnswerRecommend({
+      getTopicListType({
         take: 10,
         cursor: pageParam,
         search: searchName || "",
@@ -36,8 +33,7 @@ const TopicSection = () => {
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
   });
 
-  const items: AnswerRecommend[] =
-    data?.pages.flatMap((item) => item.data) ?? [];
+  const items: TopicListType[] = data?.pages.flatMap((item) => item.data) ?? [];
 
   const onRefresh = async () => {
     setRefreshing(true);
