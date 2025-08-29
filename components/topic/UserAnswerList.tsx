@@ -8,19 +8,11 @@ import AppText from "../common/AppText";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
+  title: string | string[];
 }
 
-const UserAnswerList = ({ item }: UserAnswerListProps) => {
-  const {
-    textContent,
-    id,
-    userId,
-    topicBoxId,
-    user,
-    type,
-    audioUrl,
-    createdAt,
-  } = item;
+const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
+  const { textContent, id, userId, user, createdAt } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
 
@@ -49,30 +41,35 @@ const UserAnswerList = ({ item }: UserAnswerListProps) => {
 
   return (
     <View style={styles.container}>
-      <AppText style={styles.nick}>{user.nickname}</AppText>
-      {type === "TEXT" ? (
-        <AppText style={styles.text}>{textContent}</AppText>
-      ) : (
-        <AppText style={styles.text}>[음성] {audioUrl}</AppText>
-      )}
+      {/* 질문 말풍선 카드 */}
+      <View style={styles.titleWrapper}>
+        <AppText style={styles.questionHighlight}>Q.</AppText>
+        <AppText style={styles.title}>{title}</AppText>
+      </View>
+
+      <AppText style={styles.content}>{textContent}</AppText>
+
+      {/* 작성자 닉네임 (오른쪽 정렬, 서명 느낌) */}
+      <AppText style={styles.nick}>– {user.nickname}</AppText>
+
+      {/* 메타 (필요 시 표시) */}
       <AppText style={styles.meta}>
         {new Date(createdAt).toLocaleString()}
       </AppText>
-      <AppText style={styles.meta}>답변 id : {id}</AppText>
-      <AppText style={styles.meta}>답변한 유저 id : {userId}</AppText>
-      <AppText style={styles.meta}>이 답변의 토픽 id : {topicBoxId}</AppText>
+
+      {/* 하단 버튼 */}
       <View style={styles.btnWrapper}>
         <Button
-          label="이사람 답변 더 보기"
-          color="#ff6b6b"
-          textColor="#fff"
-          style={{ flex: 1 }}
+          label={`${user.nickname}님의 \n 다른 이야기 보기`}
+          color="#FFFFFF"
+          textColor="#9B9B9B"
+          style={styles.btnOutline}
         />
         <Button
-          label="대화요청"
-          color="#ff6b6b"
-          textColor="#fff"
-          style={{ flex: 1 }}
+          label="대화 요청하기"
+          color="#FFF5F0"
+          textColor="#FF6B3E"
+          style={styles.btnEmphasis}
           disabled={loading}
           onPress={handlePress}
         />
@@ -85,26 +82,88 @@ export default UserAnswerList;
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    // 카드 그림자
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
+
+  /* 질문 말풍선 */
+  titleWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "#FFF",
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    // 말풍선도 살짝 그림자
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    lineHeight: 22,
+    color: "#333",
+  },
+  questionHighlight: {
+    color: "#FF6B3E",
+    fontWeight: "bold",
+  },
+
+  content: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#3D3D3D",
+  },
+
   nick: {
-    fontWeight: "700",
-    marginBottom: 6,
+    alignSelf: "flex-end",
+    marginTop: 8,
+    color: "#7F7F7F",
+    fontSize: 13,
+    fontStyle: "italic",
   },
-  text: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
+
   meta: {
-    color: "#999",
-    marginTop: 6,
+    color: "#A5A5A5",
+    marginTop: 4,
     fontSize: 12,
   },
+
+  /* 버튼 */
   btnWrapper: {
     flexDirection: "row",
-    marginVertical: 10,
-    gap: 10,
+    gap: 12,
+    marginTop: 14,
+  },
+  btnOutline: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#E6E6E6",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    height: "auto",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  btnEmphasis: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#FF6B3E",
+    backgroundColor: "#FFF5F0",
+    borderRadius: 12,
+    height: "auto",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
 });
