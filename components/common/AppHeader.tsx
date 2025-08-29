@@ -1,4 +1,3 @@
-import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";

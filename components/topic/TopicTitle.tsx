@@ -1,4 +1,3 @@
-import React from "react";
 import { Pressable, View, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 
