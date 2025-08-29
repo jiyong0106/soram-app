@@ -22,14 +22,14 @@ export interface TopicListType {
   createdAt: string;
   updatedAt: string;
 }
-export interface GetTopicListTypeResponse {
+export interface GetTopicListResponse {
   data: TopicListType[];
   meta: metaType;
 }
 
 // 2. 랜덤 주제에대한 답변 보여주기 api타입
 
-export interface AnswerRandom extends baseTopic {
+export interface UserAnswerResponse extends baseTopic {
   user: UserType;
 }
 

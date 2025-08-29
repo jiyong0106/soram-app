@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TopicListType, GetTopicListTypeResponse } from "@/utils/types/topic";
+import { TopicListType, GetTopicListResponse } from "@/utils/types/topic";
 import { getTopicListType } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
@@ -20,7 +20,7 @@ const TopicSection = () => {
     isFetchingNextPage,
     refetch,
     isLoading,
-  } = useInfiniteQuery<GetTopicListTypeResponse>({
+  } = useInfiniteQuery<GetTopicListResponse>({
     queryKey: ["getTopicListKey", searchName],
     queryFn: ({ pageParam }) =>
       getTopicListType({

@@ -1,4 +1,4 @@
-import { AnswerRandom, RequestConnectionBody } from "@/utils/types/topic";
+import { UserAnswerResponse, RequestConnectionBody } from "@/utils/types/topic";
 import { StyleSheet, View } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
@@ -6,11 +6,11 @@ import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
 
-interface AnswerRandomListsProps {
-  item: AnswerRandom;
+interface UserAnswerListProps {
+  item: UserAnswerResponse;
 }
 
-const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
+const UserAnswerList = ({ item }: UserAnswerListProps) => {
   const {
     textContent,
     id,
@@ -81,7 +81,7 @@ const AnswerRandomLists = ({ item }: AnswerRandomListsProps) => {
   );
 };
 
-export default AnswerRandomLists;
+export default UserAnswerList;
 
 const styles = StyleSheet.create({
   container: {

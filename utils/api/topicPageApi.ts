@@ -1,8 +1,8 @@
 import instance from "./axios";
 import {
-  GetTopicListTypeResponse,
+  GetTopicListResponse,
   TopicListType,
-  AnswerRandom,
+  UserAnswerResponse,
   RequestConnectionBody,
   RequestConnectionResponse,
   TextBody,
@@ -25,7 +25,7 @@ export const getTopicListType = async ({
   if (take) params.take = take;
   if (cursor !== undefined) params.cursor = cursor;
   if (search) params.search = search;
-  const { data } = await instance.get<GetTopicListTypeResponse>("/topics", {
+  const { data } = await instance.get<GetTopicListResponse>("/topics", {
     params,
   });
   return data;
@@ -38,8 +38,10 @@ export const getTopicRandom = async () => {
 };
 
 // 3. 랜덤 주제에대한 답변 보여주기 api
-export const getAnswerRandom = async ({ topicId }: { topicId: string }) => {
-  const { data } = await instance.get<AnswerRandom[]>(`/voices/${topicId}`);
+export const getUserAnswer = async ({ topicId }: { topicId: string }) => {
+  const { data } = await instance.get<UserAnswerResponse[]>(
+    `/voices/${topicId}`
+  );
   return data;
 };
 

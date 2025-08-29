@@ -60,7 +60,6 @@ const TopicSectionLists = ({ item }: ItemProps) => {
       const body = { topicId: id, textContent: text.trim() };
       await postText(body);
       showAlert("등록되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["getAnswerRandomKey"] });
       setText("");
       // 필요 시 refetch/invalidate 등
     } catch (e: any) {
