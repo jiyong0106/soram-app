@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import UserAnswerList from "@/components/topic/UserAnswerList";
@@ -11,10 +11,11 @@ import { Ionicons } from "@expo/vector-icons";
 const UserAnswerPage = () => {
   const { topicId, title } = useLocalSearchParams();
 
-  const { data, isLoading, isError } = useQuery<UserAnswerResponse[]>({
+  const { data, isLoading, isError, refetch } = useQuery<UserAnswerResponse[]>({
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
+    staleTime: 60 * 1000,
   });
 
   return (
@@ -30,10 +31,14 @@ const UserAnswerPage = () => {
         }
         ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
         ListFooterComponent={
-          <View style={styles.moreTopicWrapper}>
+          <TouchableOpacity
+            style={styles.moreTopicWrapper}
+            activeOpacity={0.7}
+            onPress={() => refetch()}
+          >
             <AppText style={styles.moreTopic}>다른 이야기 보기</AppText>
-            <Ionicons name="chevron-forward-outline" size={20} color="black" />
-          </View>
+            <Ionicons name="reload" size={15} color="#8E8E8E" />
+          </TouchableOpacity>
         }
         ListEmptyComponent={<AppText style={styles.empty}>답변 없음</AppText>}
       />
@@ -73,6 +78,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     flexDirection: "row",
     alignItems: "center",
+    gap: 3,
   },
   moreTopic: {
     textAlign: "center",

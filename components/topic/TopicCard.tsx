@@ -38,11 +38,9 @@ const TopicCard = ({ item }: Props) => {
             <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
             <MaterialIcons name="touch-app" size={24} color="white" />
           </View>
-          {/* {typeof participants === "number" && ( */}
           <AppText style={styles.participants}>
             💬 36명이 이야기하고 있어요
           </AppText>
-          {/* )} */}
         </View>
       </ImageBackground>
     </Pressable>
