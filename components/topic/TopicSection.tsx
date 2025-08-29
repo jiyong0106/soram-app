@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
-import AnswerRecommendLists from "./AnswerRecommendLists";
+import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  AnswerRecommend,
-  GetAnswerRecommendResponse,
-} from "@/utils/types/topic";
-import { getAnswerRecommend } from "@/utils/api/topicPageApi";
+import { TopicListType, GetTopicListResponse } from "@/utils/types/topic";
+import { getTopicListType } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-const AnswerRecommendTab = () => {
+const TopicSection = () => {
   //새로고침 스테이트
   const [refreshing, setRefreshing] = useState(false);
   //검색
@@ -23,10 +20,10 @@ const AnswerRecommendTab = () => {
     isFetchingNextPage,
     refetch,
     isLoading,
-  } = useInfiniteQuery<GetAnswerRecommendResponse>({
-    queryKey: ["getAnswerRecommendKey", searchName],
+  } = useInfiniteQuery<GetTopicListResponse>({
+    queryKey: ["getTopicListKey", searchName],
     queryFn: ({ pageParam }) =>
-      getAnswerRecommend({
+      getTopicListType({
         take: 10,
         cursor: pageParam,
         search: searchName || "",
@@ -36,8 +33,7 @@ const AnswerRecommendTab = () => {
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
   });
 
-  const items: AnswerRecommend[] =
-    data?.pages.flatMap((item) => item.data) ?? [];
+  const items: TopicListType[] = data?.pages.flatMap((item) => item.data) ?? [];
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -50,10 +46,10 @@ const AnswerRecommendTab = () => {
     <View style={styles.wrap}>
       <FlatList
         data={items}
-        renderItem={({ item }) => <AnswerRecommendLists item={item} />}
+        renderItem={({ item }) => <TopicSectionLists item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10 }}
+        contentContainerStyle={{ gap: 15, paddingVertical: 10 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -74,13 +70,12 @@ const AnswerRecommendTab = () => {
   );
 };
 
-export default AnswerRecommendTab;
+export default TopicSection;
 
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
   },
   text: {
     fontSize: 14,

@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
+import AppText from "../common/AppText";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -27,7 +28,15 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const handleRowPress = () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
 
-    router.push(`/chat/${id}`);
+    //데이터 넘기기
+    router.push({
+      pathname: "/chat/[id]",
+      params: {
+        id: String(id),
+        peerUserId: opponent.id,
+        peerUserName: opponent.nickname,
+      },
+    });
   };
   return (
     <ReanimatedSwipeable
@@ -57,12 +66,12 @@ const ChatItem = ({ item }: ChatItemProps) => {
       >
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
-          <Text style={styles.rowTitle} numberOfLines={1}>
+          <AppText style={styles.rowTitle} numberOfLines={1}>
             {opponent.nickname}
-          </Text>
-          <Text style={styles.rowSubtitle} numberOfLines={1}>
+          </AppText>
+          <AppText style={styles.rowSubtitle} numberOfLines={1}>
             {opponent.nickname}
-          </Text>
+          </AppText>
         </View>
       </TouchableOpacity>
     </ReanimatedSwipeable>

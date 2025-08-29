@@ -70,7 +70,7 @@ export const SAMPLE_CHATS = [
   },
 ];
 
-export const AnswerRecommendItem = [
+export const TopicListTypeItem = [
   {
     id: 11,
     title: "자유란 무엇인가",

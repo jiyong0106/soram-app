@@ -1,3 +1,4 @@
+import AppText from "@/components/common/AppText";
 import ConnectionLists from "@/components/connection/ConnectionLists";
 import {
   getConnections,
@@ -20,7 +21,6 @@ import {
   FlatList,
   StyleSheet,
   View,
-  Text,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
@@ -126,9 +126,9 @@ const ConnectionPage = () => {
   const onAccept = (id: number) => acceptMutation.mutate(id);
   const onReject = (id: number) => rejectMutation.mutate(id);
 
-  if (isLoading) return <Text style={styles.center}>로딩중…</Text>;
+  if (isLoading) return <AppText style={styles.center}>로딩중…</AppText>;
   if (isError)
-    return <Text style={styles.center}>목록을 불러오지 못했어요</Text>;
+    return <AppText style={styles.center}>목록을 불러오지 못했어요</AppText>;
 
   return (
     <View style={styles.container}>
@@ -145,7 +145,9 @@ const ConnectionPage = () => {
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, padding: 10 }}
-        ListEmptyComponent={<Text style={styles.empty}>요청 목록 없음</Text>}
+        ListEmptyComponent={
+          <AppText style={styles.empty}>요청 목록 없음</AppText>
+        }
         ListFooterComponent={
           isRefetching || isFetchingNextPage ? (
             <ActivityIndicator style={{ marginVertical: 12 }} />

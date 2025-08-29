@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
@@ -14,6 +8,7 @@ import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
 import * as SecureStore from "expo-secure-store";
+import AppText from "@/components/common/AppText";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -93,10 +88,10 @@ const VerifyCodeInputPage = () => {
       }
     >
       <View style={styles.container}>
-        <Text style={styles.title}>인증번호를 입력해 주세요</Text>
-        <Text style={styles.desc}>
+        <AppText style={styles.title}>인증번호를 입력해 주세요</AppText>
+        <AppText style={styles.desc}>
           인증번호가 전송됐어요. 받은 번호를 입력하면 인증이 완료돼요.
-        </Text>
+        </AppText>
         <TextInput
           style={[styles.input, focused && styles.inputFocused]}
           placeholder="4자리 숫자"
@@ -108,7 +103,7 @@ const VerifyCodeInputPage = () => {
           onBlur={() => setFocused(false)}
         />
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <Text style={styles.desc}>인증번호 다시 요청하기</Text>
+          <AppText style={styles.desc}>인증번호 다시 요청하기</AppText>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>

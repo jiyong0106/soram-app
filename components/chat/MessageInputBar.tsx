@@ -29,16 +29,14 @@ const MessageInputBar = ({
       <TouchableOpacity style={styles.addBtn}>
         <Ionicons name="add" size={20} color="#C4C4C4" />
       </TouchableOpacity>
-      <View style={styles.inputWrap}>
-        <TextInput
-          style={styles.input}
-          placeholder="메시지 입력"
-          value={value}
-          onChangeText={onChangeText}
-          placeholderTextColor="#A5A8AE"
-          multiline
-        />
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="메시지 입력"
+        value={value}
+        onChangeText={onChangeText}
+        placeholderTextColor="#A5A8AE"
+        multiline
+      />
       <TouchableOpacity style={styles.sendBtn} onPress={onSend}>
         <Feather name="send" size={22} color="#FF6B6B" />
       </TouchableOpacity>
@@ -63,17 +61,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  inputWrap: {
-    flex: 1,
-    backgroundColor: "#F2F4F7",
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    justifyContent: "center",
-    height: 40,
-  },
   input: {
+    flex: 1,
     fontSize: 15,
     textAlignVertical: "top",
+    backgroundColor: "#F2F4F7",
+    borderRadius: 22,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    height: 40,
   },
   sendBtn: {
     width: 32,

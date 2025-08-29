@@ -1,10 +1,10 @@
 // hooks/useChat.ts
 import { useEffect, useRef, useState, useCallback } from "react";
 import { connectSocket, getSocket } from "../libs/getSocket";
-import { ChatMessage } from "../types/chat";
+import { ChatMessageType } from "../types/chat";
 
 export function useChat(jwt: string, connectionId: number) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const joinedRef = useRef(false);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function useChat(jwt: string, connectionId: number) {
       console.log("[socket] joinedRoom:", payload);
     };
 
-    const onNewMessage = (msg: ChatMessage) => {
+    const onNewMessage = (msg: ChatMessageType) => {
       setMessages((prev) => [...prev, msg]);
     };
 

@@ -1,7 +1,8 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AppBottomSheetModal from "../common/AppBottomSheetModal";
+import AppText from "../common/AppText";
 
 type Props = { snapPoints?: ReadonlyArray<string | number> };
 
@@ -25,17 +26,17 @@ const LocationActionModal = forwardRef<LocationActionModalRef, Props>(
     return (
       <AppBottomSheetModal ref={innerRef} snapPoints={snapPoints}>
         <View style={{ padding: 16 }}>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
-          <Text>LocationActionModal</Text>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
+          <AppText>LocationActionModal</AppText>
           {/* ... */}
         </View>
       </AppBottomSheetModal>

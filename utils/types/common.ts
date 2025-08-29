@@ -22,3 +22,29 @@ export const CONNECTION_STATUS = {
 
 export type ConnectionStatus =
   (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
+
+//리포트 이유 리터럴 타입
+export type ReportReasonType =
+  | "SPAM_ADVERTISING"
+  | "INAPPROPRIATE_CONTENT"
+  | "ABUSE_HARASSMENT"
+  | "IMPERSONATION"
+  | "OTHER";
+
+//리포트 이유 카테고리 타입
+export type ReportCategoryType =
+  | "USER_PROFILE"
+  | "VOICE_RESPONSE"
+  | "CHAT_MESSAGE";
+
+//리포트 스테이터스 타입
+export type ReportStatusType = "PENDING" | "REVIEWING" | "RESOLVED";
+
+// 리포트 이유 리터럴 타입 매핑
+export const REASON_LABELS: Record<ReportReasonType, string> = {
+  SPAM_ADVERTISING: "스팸/광고",
+  INAPPROPRIATE_CONTENT: "부적절한 콘텐츠",
+  ABUSE_HARASSMENT: "욕설/괴롭힘",
+  IMPERSONATION: "사칭",
+  OTHER: "기타",
+};
