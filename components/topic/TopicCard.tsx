@@ -13,7 +13,15 @@ const TopicCard = ({ item }: Props) => {
   const router = useRouter();
   const { title, content, id } = item;
 
-  const handlePress = () => router.push(`/topic/${id}`);
+  const handlePress = () => {
+    router.push({
+      pathname: "/topic/[topicId]",
+      params: {
+        topicId: id,
+        title,
+      },
+    });
+  };
 
   return (
     <Pressable onPress={handlePress} style={styles.container}>
