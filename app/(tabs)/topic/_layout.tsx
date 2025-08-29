@@ -10,7 +10,17 @@ const TopicLayout = () => {
           contentStyle: { backgroundColor: "#fff" },
         }}
       >
-        <Stack.Screen name="index" options={{ title: "" }} />
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false,
+            // title: "",
+            // headerRight: () => (
+            //   <Ionicons name="notifications-outline" size={24} color="black" />
+            // ),
+            // headerLeft: () => <Text>소람 어쩌고 ㅓ쩌고</Text>,
+          }}
+        />
         <Stack.Screen
           name="[topicId]"
           options={{

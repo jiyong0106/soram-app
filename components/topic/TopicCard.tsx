@@ -1,0 +1,82 @@
+import React, { memo } from "react";
+import { ImageBackground, Pressable, View, StyleSheet } from "react-native";
+import AppText from "@/components/common/AppText";
+import { AnswerRecommend } from "@/utils/types/topic";
+import { useRouter } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
+type Props = {
+  item: AnswerRecommend;
+};
+
+const TopicCard = ({ item }: Props) => {
+  const router = useRouter();
+  const { title, content, id } = item;
+
+  const handlePress = () => router.push(`/topic/${id}`);
+
+  return (
+    <Pressable onPress={handlePress} style={styles.container}>
+      <ImageBackground
+        source={require("@/assets/images/1.jpg")}
+        style={styles.image}
+      >
+        <View style={styles.textWrapper}>
+          <AppText style={styles.cardTitle}>{title}</AppText>
+
+          <AppText style={styles.cardSub}>{content}</AppText>
+
+          <View style={styles.touch}>
+            <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
+            <MaterialIcons name="touch-app" size={24} color="white" />
+          </View>
+          {/* {typeof participants === "number" && ( */}
+          <AppText style={styles.participants}>
+            💬 36명이 이야기하고 있어요
+          </AppText>
+          {/* )} */}
+        </View>
+      </ImageBackground>
+    </Pressable>
+  );
+};
+
+export default memo(TopicCard);
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 10,
+  },
+  image: {
+    height: 420,
+    borderRadius: 24,
+    overflow: "hidden",
+  },
+  textWrapper: {
+    padding: 20,
+    flex: 1,
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  cardTitle: {
+    fontSize: 28,
+    lineHeight: 36,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  cardSub: {
+    marginTop: 16,
+    fontSize: 18,
+    color: "#fff",
+    lineHeight: 25,
+  },
+  participants: {
+    marginTop: 16,
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  touch: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});
