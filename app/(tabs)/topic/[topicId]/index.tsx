@@ -1,17 +1,18 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import AnswerRandomLists from "@/components/topic/AnswerRandomLists";
+import UserAnswerList from "@/components/topic/UserAnswerList";
 import { useQuery } from "@tanstack/react-query";
-import { getAnswerRandom } from "@/utils/api/topicPageApi";
-import { AnswerRandom } from "@/utils/types/topic";
+import { getUserAnswer } from "@/utils/api/topicPageApi";
+import { UserAnswerResponse } from "@/utils/types/topic";
+import AppText from "@/components/common/AppText";
 
-const AnswerRandomPage = () => {
+const UserAnswerPage = () => {
   const { topicId } = useLocalSearchParams();
 
-  const { data, isLoading, isError } = useQuery<AnswerRandom[]>({
-    queryKey: ["getAnswerRandomKey", topicId],
-    queryFn: () => getAnswerRandom({ topicId: topicId as string }),
+  const { data, isLoading, isError } = useQuery<UserAnswerResponse[]>({
+    queryKey: ["getUserAnswerKey", topicId],
+    queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
   });
 
@@ -19,17 +20,17 @@ const AnswerRandomPage = () => {
     <View style={styles.container}>
       <FlatList
         data={data ?? []}
-        renderItem={({ item }) => <AnswerRandomLists item={item} />}
+        renderItem={({ item }) => <UserAnswerList item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, padding: 10 }}
-        ListEmptyComponent={<Text style={styles.empty}>답변 없음</Text>}
+        ListEmptyComponent={<AppText style={styles.empty}>답변 없음</AppText>}
       />
     </View>
   );
 };
 
-export default AnswerRandomPage;
+export default UserAnswerPage;
 
 const styles = StyleSheet.create({
   container: {

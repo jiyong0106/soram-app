@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
 import LoadingSpinner from "./LoadingSpinner";
+import AppText from "./AppText";
 
 interface ButtonProps {
   label: string;
@@ -45,14 +46,14 @@ const Button = ({
       {loading ? (
         <LoadingSpinner color="#ff6b6b" />
       ) : (
-        <Text
+        <AppText
           style={[
             styles.label,
             { color: isDisabled ? disabledText : textColor },
           ]}
         >
           {label}
-        </Text>
+        </AppText>
       )}
     </TouchableOpacity>
   );

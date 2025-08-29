@@ -2,17 +2,16 @@ import { BackButton } from "@/components/common/backbutton";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 
-const AnswerRandomLayout = () => {
+const UserAnswerLayout = () => {
   return (
     <Stack
       screenOptions={{
         contentStyle: { backgroundColor: "#fff" },
-        title: "",
-        headerLeft: () => <BackButton />,
+        headerShown: false,
       }}
     >
       <Stack.Screen name="index" />
     </Stack>
   );
 };
-export default AnswerRandomLayout;
+export default UserAnswerLayout;

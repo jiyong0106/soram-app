@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
 import { FieldKey } from "@/utils/types/signup";
 import {
@@ -11,6 +11,7 @@ import {
   parseBirth,
   validBirth,
 } from "@/utils/util/birthdate";
+import AppText from "@/components/common/AppText";
 
 const order: FieldKey[] = ["year", "month", "day"];
 
@@ -74,10 +75,12 @@ const BirthdatePage = () => {
     >
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <Text style={styles.title}>{nickname}님의 생년월일을 알려주세요</Text>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.title}>
+            {nickname}님의 생년월일을 알려주세요
+          </AppText>
+          <AppText style={styles.subtitle}>
             생년월일은 나이 표시 용도로만 사용돼요!
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.birthRow}>
