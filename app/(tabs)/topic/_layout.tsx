@@ -22,6 +22,13 @@ const TopicLayout = () => {
           }}
         />
         <Stack.Screen
+          name="list/index"
+          options={{
+            title: "주제 둘러보기",
+            headerLeft: () => <BackButton />,
+          }}
+        />
+        <Stack.Screen
           name="[topicId]"
           options={{
             title: "",

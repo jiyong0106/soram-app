@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
-import AnswerRecommendLists from "./AnswerRecommendLists";
+import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   AnswerRecommend,
@@ -9,7 +9,7 @@ import {
 import { getAnswerRecommend } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-const AnswerRecommendTab = () => {
+const TopicSection = () => {
   //새로고침 스테이트
   const [refreshing, setRefreshing] = useState(false);
   //검색
@@ -50,10 +50,10 @@ const AnswerRecommendTab = () => {
     <View style={styles.wrap}>
       <FlatList
         data={items}
-        renderItem={({ item }) => <AnswerRecommendLists item={item} />}
+        renderItem={({ item }) => <TopicSectionLists item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10 }}
+        contentContainerStyle={{ gap: 15, paddingVertical: 10 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -74,13 +74,12 @@ const AnswerRecommendTab = () => {
   );
 };
 
-export default AnswerRecommendTab;
+export default TopicSection;
 
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
   },
   text: {
     fontSize: 14,

@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { TabBar, TabBarProps } from "react-native-tab-view";
 
-const TopTabBar = (props: TabBarProps<any>) => {
+const TopicTabBarLists = (props: TabBarProps<any>) => {
   return (
     <TabBar
       {...props}
@@ -16,7 +16,7 @@ const TopTabBar = (props: TabBarProps<any>) => {
   );
 };
 
-export default TopTabBar;
+export default TopicTabBarLists;
 
 const styles = StyleSheet.create({
   tabBar: {

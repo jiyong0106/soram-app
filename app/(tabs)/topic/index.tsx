@@ -41,7 +41,7 @@ const TopicPage = () => {
       <TopicTitle onShuffle={onShuffle} />
       <TopicCard item={data} />
       <TouchableOpacity
-        onPress={() => showAlert("다양한 주제 페이지!")}
+        onPress={() => router.push("/topic/list")}
         activeOpacity={0.5}
         style={styles.moreTopic}
       >

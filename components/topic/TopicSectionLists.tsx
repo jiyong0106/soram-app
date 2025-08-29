@@ -1,19 +1,18 @@
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
   LayoutAnimation,
   Platform,
   UIManager,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { AnswerRecommend } from "@/utils/types/topic"; // id, title, content 등
 import useAlert from "@/utils/hooks/useAlert";
-import { TextInput } from "react-native-gesture-handler";
 import { postText } from "@/utils/api/topicPageApi";
-import Button from "../common/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import AppText from "../common/AppText";
+import { Ionicons } from "@expo/vector-icons";
 
 interface ItemProps {
   item: AnswerRecommend;
@@ -21,8 +20,8 @@ interface ItemProps {
 
 const MAX_LEN = 1000;
 
-const AnswerRecommendLists = ({ item }: ItemProps) => {
-  const { id, title, content } = item;
+const TopicSectionLists = ({ item }: ItemProps) => {
+  const { id, title, content, category } = item;
   const { showAlert } = useAlert();
 
   const [focused, setFocused] = useState(false);
@@ -73,82 +72,72 @@ const AnswerRecommendLists = ({ item }: ItemProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <AppText>{id}</AppText>
-      <AppText style={styles.title}>{title}</AppText>
+    <TouchableOpacity style={styles.container} activeOpacity={0.5}>
+      <View style={styles.categoryWrapper}>
+        <AppText style={styles.category}># {category}</AppText>
+        <Ionicons name="chevron-forward-outline" size={20} color="black" />
+      </View>
+      <View style={styles.titleWrapper}>
+        <AppText style={styles.questionHighlight}>Q.</AppText>
+        <AppText style={styles.title}>{title}</AppText>
+      </View>
       <AppText style={styles.desc}>{content}</AppText>
-
-      {/* 토글 버튼 */}
-      <TouchableOpacity
-        onPress={toggleInput}
-        activeOpacity={0.7}
-        style={styles.toggle}
-      >
-        <AppText style={styles.toggleText}>
-          {isShow ? "입력창 숨기기 ▲" : "입력창 보이기 ▼"}
-        </AppText>
-      </TouchableOpacity>
-
-      {/* 입력창 & 등록버튼: 토글 */}
-      {isShow && (
-        <>
-          <TextInput
-            style={[styles.input, focused && styles.inputFocused]}
-            placeholder="예) 저는 사람들과 대화를 좋아하고 주말에는 등산을 즐겨요..."
-            value={text}
-            onChangeText={onChange}
-            returnKeyType="default"
-            autoCapitalize="sentences"
-            autoCorrect
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            multiline
-            numberOfLines={5}
-            textAlignVertical="top"
-          />
-
-          <Button
-            label="답변등록"
-            color="#ff6b6b"
-            textColor="#fff"
-            disabled={!text.trim() || loading}
-            loading={loading}
-            onPress={handlePress}
-          />
-        </>
-      )}
-    </View>
+      <AppText style={styles.participants}>💬 36명이 이야기하고 있어요</AppText>
+    </TouchableOpacity>
   );
 };
 
-export default AnswerRecommendLists;
-
+export default TopicSectionLists;
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: 10,
-    gap: 8,
+    borderRadius: 16,
     backgroundColor: "#fff",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    // 카드 그림자
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2, // 안드로이드 그림자
+    gap: 10,
+    marginHorizontal: 10,
   },
-  title: { fontWeight: "700", fontSize: 16 },
-  desc: { color: "#666" },
-  toggle: {
-    paddingVertical: 8,
+  categoryWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 5,
   },
-  toggleText: {
-    color: "#ff6b6b",
-    fontWeight: "700",
+  titleWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#F1C0B5",
-    borderRadius: 10,
-    minHeight: 100,
-    padding: 10,
-    backgroundColor: "#FFF",
-    fontSize: 14,
-    marginTop: 6,
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    lineHeight: 22,
+    color: "#333",
   },
-  inputFocused: { borderColor: "#ff6b6b" },
+  desc: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#555",
+  },
+  participants: {
+    marginTop: 12,
+    fontSize: 13,
+    color: "#999",
+  },
+  category: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#888",
+  },
+
+  questionHighlight: {
+    color: "#FF6B3E",
+    fontWeight: "bold",
+  },
 });
