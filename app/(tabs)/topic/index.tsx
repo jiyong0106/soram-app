@@ -108,3 +108,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+
+// /topic
+// /topic/id
+// /topic/list
+// /topic/list/id
