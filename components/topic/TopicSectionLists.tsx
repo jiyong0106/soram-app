@@ -13,6 +13,7 @@ import { postText } from "@/utils/api/topicPageApi";
 import { useQueryClient } from "@tanstack/react-query";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 interface ItemProps {
   item: TopicListType;
@@ -23,6 +24,7 @@ const MAX_LEN = 1000;
 const TopicSectionLists = ({ item }: ItemProps) => {
   const { id, title, content, category } = item;
   const { showAlert } = useAlert();
+  const router = useRouter();
 
   const [focused, setFocused] = useState(false);
   const [text, setText] = useState("");
@@ -71,7 +73,11 @@ const TopicSectionLists = ({ item }: ItemProps) => {
   };
 
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.5}>
+    <TouchableOpacity
+      style={styles.container}
+      activeOpacity={0.5}
+      onPress={() => router.push(`/topic/list/${id}`)}
+    >
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
         <Ionicons name="chevron-forward-outline" size={20} color="black" />

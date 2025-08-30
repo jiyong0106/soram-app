@@ -2,7 +2,7 @@ import { BackButton } from "@/components/common/backbutton";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 
-const UserAnswerLayout = () => {
+const TopicListIdLayout = () => {
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack
@@ -11,12 +11,11 @@ const UserAnswerLayout = () => {
         }}
       >
         <Stack.Screen
-          name="[topicId]"
+          name="[listId]"
           options={{ title: "", headerLeft: () => <BackButton /> }}
         />
-        <Stack.Screen name="list" options={{ headerShown: false }} />
       </Stack>
     </PageContainer>
   );
 };
-export default UserAnswerLayout;
+export default TopicListIdLayout;
