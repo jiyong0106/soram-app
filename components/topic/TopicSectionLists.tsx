@@ -52,31 +52,40 @@ const TopicSectionLists = ({ item }: ItemProps) => {
     setIsShow((prev) => !prev);
   };
 
-  const handlePress = async () => {
-    if (!text.trim()) {
-      showAlert("내용을 입력해주세요.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const body = { topicId: id, textContent: text.trim() };
-      await postText(body);
-      showAlert("등록되었습니다.");
-      setText("");
-      // 필요 시 refetch/invalidate 등
-    } catch (e: any) {
-      const msg = e?.response?.data?.message ?? "등록 중 오류가 발생했습니다.";
-      showAlert(msg);
-    } finally {
-      setLoading(false);
-    }
+  // const handlePress = async () => {
+  //   if (!text.trim()) {
+  //     showAlert("내용을 입력해주세요.");
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   try {
+  //     const body = { topicId: id, textContent: text.trim() };
+  //     await postText(body);
+  //     showAlert("등록되었습니다.");
+  //     setText("");
+  //     // 필요 시 refetch/invalidate 등
+  //   } catch (e: any) {
+  //     const msg = e?.response?.data?.message ?? "등록 중 오류가 발생했습니다.";
+  //     showAlert(msg);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handlePress = () => {
+    router.push({
+      pathname: "/topic/list/[listId]",
+      params: {
+        listId: id,
+      },
+    });
   };
 
   return (
     <TouchableOpacity
       style={styles.container}
       activeOpacity={0.5}
-      onPress={() => router.push(`/topic/list/${id}`)}
+      onPress={handlePress}
     >
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
