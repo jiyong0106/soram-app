@@ -59,7 +59,7 @@ export const postRequestConnection = async (body: RequestConnectionBody) => {
   return data;
 };
 
-//5. 다양한 토픽에 대해 내 답벼 등록하기 api
+//5. 다양한 토픽에 대해 내 답변 등록하기 api
 export const postText = async (body: TextBody) => {
   const { data } = await instance.post<TextResponse>("/voices/text", body);
   return data;

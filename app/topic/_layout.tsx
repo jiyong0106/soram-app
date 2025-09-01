@@ -14,7 +14,6 @@ const UserAnswerLayout = () => {
           name="[topicId]"
           options={{ title: "", headerLeft: () => <BackButton /> }}
         />
-        <Stack.Screen name="list" options={{ headerShown: false }} />
       </Stack>
     </PageContainer>
   );
