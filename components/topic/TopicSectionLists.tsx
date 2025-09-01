@@ -1,6 +1,6 @@
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import React from "react";
-import { TopicListType } from "@/utils/types/topic"; // id, title, content 등
+import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";

@@ -1,18 +1,16 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { KeyboardStickyView } from "react-native-keyboard-controller";
+import { View, StyleSheet } from "react-native";
 import AppText from "../common/AppText";
 
 type Props = {
   length: number;
   max: number;
-  progress: number;
 };
 
 const messages = [
-  { until: 0, text: "더 자세한 이야기를 듣고 싶어요!" },
-  { until: 40, text: "좋아요! 이야기가 더 듣고 싶어요!" },
-  { until: 120, text: "멋진 답변이에요! 진심이 느껴져요 ✨" },
+  { until: 0, text: "질문에 대한 이야기를 자유롭게 작성해 보세요!" },
+  { until: 100, text: "좋아요! 이야기가 더 듣고 싶어요!" },
+  { until: 200, text: "멋진 답변이에요! 진심이 느껴져요 ✨" },
   { until: Infinity, text: "충분해요. 자유롭게 마무리해볼까요?" },
 ];
 
@@ -20,7 +18,7 @@ const messages = [
 const SEGMENT_COUNT = 3;
 const STEP = 100;
 
-const ProgressFooter = ({ length, max, progress }: Props) => {
+const ProgressFooter = ({ length, max }: Props) => {
   const msg = useMemo(() => {
     const found = messages.find((m) => length <= m.until);
     return found?.text ?? "";

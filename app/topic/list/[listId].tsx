@@ -18,7 +18,7 @@ import { postText } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-const MAX = 1000;
+const MAX = 2000;
 
 type Form = { content: string };
 
@@ -51,13 +51,13 @@ const TopicListIdPage = () => {
 
     try {
       await postText({ topicId, textContent: text });
-      showAlert("등록되었습니다.", () => {
-        reset({ content: "" }); // ✅ 폼 초기화
+      showAlert("답변이 등록되었어요.", () => {
+        reset({ content: "" });
         router.dismissTo("/(tabs)/topic/list");
       });
     } catch (e: any) {
       if (e) {
-        showAlert(e?.response?.data?.message);
+        showAlert(e.response.data.message);
         return;
       }
     }
@@ -67,7 +67,7 @@ const TopicListIdPage = () => {
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
-          title: String(listId),
+          title: "",
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <TouchableOpacity
@@ -134,11 +134,7 @@ const TopicListIdPage = () => {
         </ScrollView>
 
         <KeyboardStickyView offset={{ closed: 0, opened: bottom }}>
-          <ProgressFooter
-            length={content.length}
-            max={MAX}
-            progress={content.length / MAX}
-          />
+          <ProgressFooter length={content.length} max={MAX} />
         </KeyboardStickyView>
       </View>
     </PageContainer>
