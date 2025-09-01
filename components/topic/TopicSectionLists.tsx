@@ -10,7 +10,7 @@ interface ItemProps {
 }
 
 const TopicSectionLists = ({ item }: ItemProps) => {
-  const { id, title, content, category } = item;
+  const { id, title, content, category, userCount } = item;
   const router = useRouter();
 
   const handlePress = () => {
@@ -38,7 +38,9 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         <AppText style={styles.title}>{title}</AppText>
       </View>
       <AppText style={styles.desc}>{content}</AppText>
-      <AppText style={styles.participants}>💬 36명이 이야기하고 있어요</AppText>
+      <AppText style={styles.participants}>
+        💬 {userCount}명이 이야기하고 있어요
+      </AppText>
     </TouchableOpacity>
   );
 };

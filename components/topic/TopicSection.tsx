@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { TopicListType, GetTopicListResponse } from "@/utils/types/topic";
-import { getTopicListType } from "@/utils/api/topicPageApi";
+import { getTopicList } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const TopicSection = () => {
@@ -23,7 +23,7 @@ const TopicSection = () => {
   } = useInfiniteQuery<GetTopicListResponse>({
     queryKey: ["getTopicListKey", searchName],
     queryFn: ({ pageParam }) =>
-      getTopicListType({
+      getTopicList({
         take: 10,
         cursor: pageParam,
         search: searchName || "",

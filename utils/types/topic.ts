@@ -21,6 +21,7 @@ export interface TopicListType {
   category: string;
   createdAt: string;
   updatedAt: string;
+  userCount: number;
 }
 export interface GetTopicListResponse {
   data: TopicListType[];

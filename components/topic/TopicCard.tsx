@@ -11,7 +11,7 @@ type Props = {
 
 const TopicCard = ({ item }: Props) => {
   const router = useRouter();
-  const { title, content, id } = item;
+  const { title, content, id, userCount } = item;
 
   const handlePress = () => {
     router.push({
@@ -39,7 +39,7 @@ const TopicCard = ({ item }: Props) => {
             <MaterialIcons name="touch-app" size={24} color="white" />
           </View>
           <AppText style={styles.participants}>
-            💬 36명이 이야기하고 있어요
+            💬 {userCount}명이 이야기하고 있어요
           </AppText>
         </View>
       </ImageBackground>

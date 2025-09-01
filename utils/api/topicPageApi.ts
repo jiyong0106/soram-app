@@ -16,7 +16,7 @@ interface GetTopicListTypeParams {
   cursor?: any;
 }
 
-export const getTopicListType = async ({
+export const getTopicList = async ({
   take,
   search,
   cursor,
