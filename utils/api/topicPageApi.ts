@@ -16,7 +16,7 @@ interface GetTopicListTypeParams {
   cursor?: any;
 }
 
-export const getTopicListType = async ({
+export const getTopicList = async ({
   take,
   search,
   cursor,
@@ -32,8 +32,13 @@ export const getTopicListType = async ({
 };
 
 // 2. 랜덤 주제 보여조기 api
-export const getTopicRandom = async () => {
-  const { data } = await instance.get<TopicListType>("/topics/random");
+export const getTopicRandom = async (excludeTopicId?: number) => {
+  const { data } = await instance.get("/topics/random", {
+    params: {
+      // 최초엔 undefined로 보내서 파라미터 생략
+      excludeTopicId: excludeTopicId ?? undefined,
+    },
+  });
   return data;
 };
 
@@ -54,7 +59,7 @@ export const postRequestConnection = async (body: RequestConnectionBody) => {
   return data;
 };
 
-//5. 다양한 토픽에 대해 내 답벼 등록하기 api
+//5. 다양한 토픽에 대해 내 답변 등록하기 api
 export const postText = async (body: TextBody) => {
   const { data } = await instance.post<TextResponse>("/voices/text", body);
   return data;
