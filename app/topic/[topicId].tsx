@@ -15,14 +15,13 @@ const UserAnswerPage = () => {
   const [cooldown, setCooldown] = useState(false);
   const { showAlert } = useAlert();
 
-  const { data, isLoading, isError, refetch, isFetching } = useQuery<
-    UserAnswerResponse[]
-  >({
+  const { data, refetch, isFetching } = useQuery<UserAnswerResponse[]>({
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
     staleTime: 60 * 1000,
     placeholderData: keepPreviousData,
+    retry: 1,
   });
 
   const lockRef = useRef(false);

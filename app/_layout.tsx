@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import TicketsBootstrap from "@/components/auth/TicketsBootstrap";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,6 +33,7 @@ export default function RootLayout() {
       <QueryProvider>
         <BottomSheetModalProvider>
           <KeyboardProvider>
+            <TicketsBootstrap />
             <Stack
               screenOptions={{
                 headerShown: false,

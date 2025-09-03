@@ -39,7 +39,9 @@ const TopicSectionLists = ({ item }: ItemProps) => {
       </View>
       <AppText style={styles.desc}>{content}</AppText>
       <AppText style={styles.participants}>
-        💬 {userCount}명이 이야기하고 있어요
+        {userCount === 0
+          ? "아직 등록 된 답변이 없어요"
+          : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
     </TouchableOpacity>
   );

@@ -1,6 +1,9 @@
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet, Text } from "react-native";
 import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { getTickets } from "@/utils/api/authPageApi";
+import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 
 type Props = {
   onPressNotification?: () => void;
@@ -8,9 +11,12 @@ type Props = {
 };
 
 const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
+  const { CHAT, NEW_RESPONSE, MORE_RESPONSE } = useTicketsStore(
+    (s) => s.counts
+  );
+
   return (
     <View style={styles.container}>
-      {/* 왼쪽: 로고 + 슬로건 */}
       <View>
         <AppText style={styles.logo}>SORAM</AppText>
         <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
@@ -23,6 +29,18 @@ const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
           {hasNotification && <View style={styles.badge} />}
         </View>
       </Pressable> */}
+      <View style={styles.tickets}>
+        <Text>chat</Text>
+        <Text>{CHAT}</Text>
+      </View>
+      <View style={styles.tickets}>
+        <Text>new</Text>
+        <Text>{NEW_RESPONSE}</Text>
+      </View>
+      <View style={styles.tickets}>
+        <Text>more</Text>
+        <Text>{MORE_RESPONSE}</Text>
+      </View>
     </View>
   );
 };
@@ -57,5 +75,9 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "red",
+  },
+  tickets: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

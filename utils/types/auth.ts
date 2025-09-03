@@ -18,3 +18,27 @@ export interface VerifyOtpResponse {
   signupToken: string;
   accessToken: string;
 }
+
+// 2 재화 갯수 확인 타입
+export type TicketSourceType = "DAILY" | "EVENT" | "PAID";
+export type TicketKind = "CHAT" | "NEW_RESPONSE" | "MORE_RESPONSE";
+
+// breakdown 한 항목
+export interface TicketBreakdownItem {
+  sourceType: TicketSourceType;
+  quantity: number;
+  expiresAt: string;
+}
+
+// 한 종류 티켓의 합계 + 내역
+export interface TicketBundle {
+  totalQuantity: number;
+  breakdown: TicketBreakdownItem[];
+}
+
+// 응답 타입 (요구한 이름 그대로)
+export interface getTicketsResponse {
+  CHAT: TicketBundle;
+  NEW_RESPONSE: TicketBundle;
+  MORE_RESPONSE: TicketBundle;
+}
