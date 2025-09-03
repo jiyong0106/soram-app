@@ -45,7 +45,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
           ? "아직 등록 된 답변이 없어요"
           : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
-      <TopicListSheet ref={actionSheetRef} title={title} />
+      <TopicListSheet ref={actionSheetRef} title={title} id={id} />
     </TouchableOpacity>
   );
 };
