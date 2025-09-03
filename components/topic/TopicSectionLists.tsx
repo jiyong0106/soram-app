@@ -1,9 +1,10 @@
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
 import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import TopicListSheet from "./TopicListSheet";
 
 interface ItemProps {
   item: TopicListType;
@@ -12,6 +13,7 @@ interface ItemProps {
 const TopicSectionLists = ({ item }: ItemProps) => {
   const { id, title, content, category, userCount } = item;
   const router = useRouter();
+  const actionSheetRef = useRef<any>(null);
 
   const handlePress = () => {
     router.push({
@@ -27,7 +29,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
     <TouchableOpacity
       style={styles.container}
       activeOpacity={0.5}
-      onPress={handlePress}
+      onPress={() => actionSheetRef.current?.present?.()}
     >
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
@@ -43,6 +45,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
           ? "아직 등록 된 답변이 없어요"
           : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
+      <TopicListSheet ref={actionSheetRef} title={title} />
     </TouchableOpacity>
   );
 };

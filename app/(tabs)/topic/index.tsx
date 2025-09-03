@@ -46,7 +46,7 @@ const TopicPage = () => {
     timerRef.current = setTimeout(() => {
       lockRef.current = false;
       setCooldown(false);
-    }, 2000);
+    }, 1000);
 
     // 3) 호출
     try {

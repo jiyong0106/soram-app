@@ -9,13 +9,13 @@ import { postUserBlock } from "@/utils/api/chatPageApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
-interface ChatActionModalProps {
+interface ChatActionSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
   blockedId: number;
 }
 
-const ChatActionModal = (
-  { snapPoints, blockedId }: ChatActionModalProps,
+const ChatActionSheet = (
+  { snapPoints, blockedId }: ChatActionSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const { peerUserId } = useLocalSearchParams<{
@@ -99,4 +99,4 @@ const ChatActionModal = (
   );
 };
 
-export default forwardRef(ChatActionModal);
+export default forwardRef(ChatActionSheet);

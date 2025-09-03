@@ -60,7 +60,7 @@ const UserAnswerPage = () => {
     timerRef.current = setTimeout(() => {
       lockRef.current = false;
       setCooldown(false);
-    }, 1500);
+    }, 1000);
 
     // 3) 호출
     try {
