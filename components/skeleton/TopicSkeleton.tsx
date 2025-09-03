@@ -18,18 +18,31 @@ const TopicSkeleton = () => {
 
   const translateX = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [-300, 300], // 카드 가로 방향으로 왕복
+    outputRange: [-300, 300], // 가로 방향 쉬머 이동
   });
 
   return (
     <View style={styles.container}>
+      {/* ===== Title Skeleton ===== */}
+      <View style={styles.titleRow}>
+        <View style={[styles.line, styles.titleText]} />
+        <View style={[styles.line, styles.shufflePill]} />
+        {/* Shimmer Overlay for Title */}
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.shimmerTitle, { transform: [{ translateX }] }]}
+        />
+      </View>
+
+      {/* ===== Card Skeleton ===== */}
       <View style={styles.card}>
-        {/* Shimmer Overlay */}
+        {/* Shimmer Overlay for Card */}
         <Animated.View
           pointerEvents="none"
           style={[styles.shimmer, { transform: [{ translateX }] }]}
         />
-        {/* 내부 콘텐츠 자리잡기 (TopicCard와 동일한 구조 감) */}
+
+        {/* 내부 콘텐츠 자리잡기 (TopicCard와 유사 구조) */}
         <View style={styles.textWrapper}>
           <View style={[styles.line, styles.title]} />
           <View style={[styles.line, styles.subtitle]} />
@@ -52,6 +65,39 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
   },
+
+  /* ===== Title Skeleton ===== */
+  titleRow: {
+    paddingTop: 8,
+    paddingBottom: 12,
+    paddingHorizontal: 10,
+    alignItems: "center",
+
+    overflow: "hidden",
+    gap: 8,
+  },
+  titleText: {
+    width: "100%",
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: "#DCDCDC",
+  },
+  shufflePill: {
+    width: 150, // "다른 주제" 버튼 자리 느낌
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#DCDCDC",
+    marginLeft: "auto",
+  },
+  shimmerTitle: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 140,
+    backgroundColor: "rgba(255,255,255,0.35)",
+  },
+
+  /* ===== Card Skeleton ===== */
   card: {
     height: 420,
     borderRadius: 24,

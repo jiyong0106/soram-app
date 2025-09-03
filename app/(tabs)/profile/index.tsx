@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { setAuthToken } from "@/utils/util/auth";
+import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -14,6 +15,7 @@ const ProfilePage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const resetTickets = useTicketsStore((s) => s.reset);
 
   // SecureStore에서 access_token 읽기
   useEffect(() => {
@@ -34,7 +36,7 @@ const ProfilePage = () => {
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
 
     clearSignupToken();
-
+    resetTickets();
     // 3) React Query 캐시 초기화
     queryClient.removeQueries();
 

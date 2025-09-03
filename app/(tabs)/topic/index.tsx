@@ -59,18 +59,22 @@ const TopicPage = () => {
   return (
     <View style={styles.container}>
       <AppHeader />
-      <TopicTitle
-        onShuffle={onShuffle}
-        disabled={isFetching || cooldown}
-        loading={isFetching || cooldown}
-      />
-      <View style={styles.cardSlot}>
-        {showInitSkeleton ? (
-          <TopicSkeleton />
-        ) : (
-          data && <TopicCard item={data} />
-        )}
-      </View>
+
+      {showInitSkeleton ? (
+        <TopicSkeleton />
+      ) : (
+        data && (
+          <>
+            <TopicTitle
+              onShuffle={onShuffle}
+              disabled={isFetching || cooldown}
+              loading={isFetching || cooldown}
+            />
+            <TopicCard item={data} />
+          </>
+        )
+      )}
+
       <TouchableOpacity
         onPress={() => router.push("/topic/list")}
         activeOpacity={0.5}
@@ -101,10 +105,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  cardSlot: {
-    height: 420,
-    borderRadius: 24,
-    overflow: "hidden",
-    justifyContent: "center",
-  },
+  // cardSlot: {
+  //   borderRadius: 24,
+  //   overflow: "hidden",
+  //   justifyContent: "center",
+  // },
 });
