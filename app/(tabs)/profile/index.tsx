@@ -1,53 +1,43 @@
+// app/(tabs)/profile/index.tsx (예시)
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
-import * as SecureStore from "expo-secure-store";
+import React from "react";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { setAuthToken } from "@/utils/util/auth";
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 
-const ACCESS_TOKEN_KEY = "access_token";
+import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
+import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
+import { useAuthStore } from "@/utils/sotre/useAuthStore";
 
 const ProfilePage = () => {
-  const signupToken = useSignupTokenStore((s) => s.signupToken);
-  const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  // 전역 상태
+  const signupToken = useSignupTokenStore((s) => s.signupToken);
+  const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const resetTickets = useTicketsStore((s) => s.reset);
 
-  // SecureStore에서 access_token 읽기
-  useEffect(() => {
-    (async () => {
-      const t = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-      setAccessToken(t);
-    })();
-  }, []);
-
-  // 초기화: SecureStore + zustand 동시 정리
+  // 🔑 현재 액세스 토큰 (반응형)
+  const token = useAuthStore((s) => s.token);
+  console.log("token===>", token);
+  // 초기화(로그아웃): 쿼리/스토어/헤더 모두 정리
   const handleClearAll = async () => {
-    // 1) 진행 중인 쿼리 취소
+    // 1) 진행 중 네트워크 요청 취소
     await queryClient.cancelQueries();
 
-    // 2) 토큰 정리 (저장소 + 메모리)
-    await setAuthToken(null);
+    // 2) 토큰 제거 (SecureStore + axios 헤더 + 메모리) — useAuthStore가 책임
+    await useAuthStore.getState().setToken(null);
 
-    await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-
+    // 3) 기타 전역 스토어 정리
     clearSignupToken();
     resetTickets();
-    // 3) React Query 캐시 초기화
-    queryClient.removeQueries();
 
-    // 4) 화면 상태 갱신
-    setAccessToken(null);
+    // 4) React Query 캐시 정리
+    queryClient.clear(); // 또는 queryClient.removeQueries()
+
+    // 5) 라우팅
     router.replace("/");
   };
-
-  console.log("accessToken===>", accessToken);
-
-  //데이터요청 확인
 
   return (
     <View style={styles.container}>
@@ -55,8 +45,8 @@ const ProfilePage = () => {
         <Text style={styles.label}>signupToken (메모리):</Text>
         <Text style={styles.value}>{signupToken ?? "없음"}</Text>
 
-        <Text style={styles.label}>accessToken (SecureStore):</Text>
-        <Text style={styles.value}>{accessToken}</Text>
+        <Text style={styles.label}>accessToken (AuthStore):</Text>
+        <Text style={styles.value}>{token ? token : "없음"}</Text>
 
         <TouchableOpacity
           onPress={handleClearAll}
