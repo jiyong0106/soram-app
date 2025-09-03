@@ -11,9 +11,7 @@ type Props = {
 };
 
 const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
-  const { CHAT, NEW_RESPONSE, MORE_RESPONSE } = useTicketsStore(
-    (s) => s.counts
-  );
+  const { NEW_RESPONSE } = useTicketsStore((s) => s.counts);
 
   return (
     <View style={styles.container}>
@@ -29,17 +27,10 @@ const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
           {hasNotification && <View style={styles.badge} />}
         </View>
       </Pressable> */}
+
       <View style={styles.tickets}>
-        <Text>chat</Text>
-        <Text>{CHAT}</Text>
-      </View>
-      <View style={styles.tickets}>
-        <Text>new</Text>
+        <Ionicons name="ticket-outline" size={24} color="black" />
         <Text>{NEW_RESPONSE}</Text>
-      </View>
-      <View style={styles.tickets}>
-        <Text>more</Text>
-        <Text>{MORE_RESPONSE}</Text>
       </View>
     </View>
   );
@@ -79,5 +70,7 @@ const styles = StyleSheet.create({
   tickets: {
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 2,
   },
 });
