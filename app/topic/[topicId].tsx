@@ -9,19 +9,34 @@ import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import Spin from "@/components/common/Spin";
 import useAlert from "@/utils/hooks/useAlert";
+import { isAxiosError } from "axios";
+import type { AxiosError } from "axios";
 
 const UserAnswerPage = () => {
   const { topicId, title } = useLocalSearchParams();
   const [cooldown, setCooldown] = useState(false);
   const { showAlert } = useAlert();
+  const isShuffleRef = useRef(false);
 
-  const { data, refetch, isFetching } = useQuery<UserAnswerResponse[]>({
+  const { data, refetch, isFetching } = useQuery<
+    UserAnswerResponse[],
+    AxiosError
+  >({
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
-    staleTime: 60 * 1000,
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
-    retry: 1,
+    // 조건부 재시도: onShuffle 중엔 재시도 OFF, 그 외엔 1번만 재시도
+    retry: (failureCount, err) => {
+      // 4xx는 원래도 재시도 안 하는게 UX 좋음
+      const s = err?.response?.status;
+      if (s && s >= 400 && s < 500) return false;
+      // onShuffle 시도 중이면 재시도 금지 → 1번만 요청
+      if (isShuffleRef.current) return false;
+      // 그 외(초기 로딩 등)에는 1회 재시도 허용
+      return failureCount < 1; // (= retry: 1)
+    },
   });
 
   const lockRef = useRef(false);
@@ -45,13 +60,18 @@ const UserAnswerPage = () => {
     timerRef.current = setTimeout(() => {
       lockRef.current = false;
       setCooldown(false);
-    }, 2000);
+    }, 1500);
 
     // 3) 호출
     try {
       await refetch({ throwOnError: true });
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message ?? "답변을 불러오지 못했어요.");
+    } catch (e) {
+      const msg = isAxiosError(e)
+        ? e.response?.data?.message ?? e.message
+        : (e as Error).message;
+      showAlert(msg);
+    } finally {
+      isShuffleRef.current = false; //  원상복구
     }
   }, [isFetching, refetch, showAlert]);
 
