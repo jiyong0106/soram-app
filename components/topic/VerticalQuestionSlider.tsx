@@ -11,7 +11,7 @@ import AppText from "@/components/common/AppText";
 import { Entypo } from "@expo/vector-icons";
 
 type Props = {
-  subQuestions: string[]; // ["Q1", "Q2", "Q3", ...]
+  subQuestions: string[];
 };
 
 export default function VerticalQuestionSlider({ subQuestions }: Props) {
