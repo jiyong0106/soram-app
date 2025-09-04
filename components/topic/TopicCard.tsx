@@ -1,10 +1,11 @@
-import React, { memo, useCallback } from "react";
-import { ImageBackground, Pressable, View, StyleSheet } from "react-native";
+import React, { memo } from "react";
+import { ImageBackground, View, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import ScalePressable from "../common/ScalePressable";
 
 type Props = {
   item: TopicListType;
@@ -29,7 +30,7 @@ const TopicCard = ({ item }: Props) => {
   };
 
   return (
-    <Pressable onPress={handlePress} style={styles.container}>
+    <ScalePressable onPress={handlePress} style={styles.container}>
       <ImageBackground
         source={require("@/assets/images/1.jpg")}
         style={styles.image}
@@ -53,7 +54,7 @@ const TopicCard = ({ item }: Props) => {
           </AppText>
         </View>
       </ImageBackground>
-    </Pressable>
+    </ScalePressable>
   );
 };
 

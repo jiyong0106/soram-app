@@ -1,9 +1,10 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useRef } from "react";
 import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import TopicListSheet from "./TopicListSheet";
+import ScalePressable from "../common/ScalePressable";
 
 interface ItemProps {
   item: TopicListType;
@@ -14,9 +15,8 @@ const TopicSectionLists = ({ item }: ItemProps) => {
   const actionSheetRef = useRef<any>(null);
 
   return (
-    <TouchableOpacity
+    <ScalePressable
       style={styles.container}
-      activeOpacity={0.5}
       onPress={() => actionSheetRef.current?.present?.()}
     >
       <View style={styles.categoryWrapper}>
@@ -45,7 +45,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         id={id}
         subQuestions={subQuestions}
       />
-    </TouchableOpacity>
+    </ScalePressable>
   );
 };
 
