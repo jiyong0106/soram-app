@@ -1,12 +1,18 @@
-import React, { useRef } from "react";
-import { Pressable, Animated, StyleProp, ViewStyle } from "react-native";
+import React from "react";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
 type Props = {
   children: React.ReactNode;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
-  scaleTo?: number; // 눌렀을 때 줄어드는 정도
-  duration?: number; // 속도 (ms)
+  scaleTo?: number;
+  duration?: number;
+  disabled?: any;
 };
 
 const ScalePressable = ({
@@ -15,34 +21,23 @@ const ScalePressable = ({
   style,
   scaleTo = 0.95,
   duration = 120,
+  disabled,
 }: Props) => {
-  const scale = useRef(new Animated.Value(1)).current;
+  const scale = useSharedValue(1);
 
-  const handlePressIn = () => {
-    Animated.timing(scale, {
-      toValue: scaleTo,
-      duration,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.timing(scale, {
-      toValue: 1,
-      duration,
-      useNativeDriver: true,
-    }).start();
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      onPressIn={() => (scale.value = withTiming(scaleTo, { duration }))}
+      onPressOut={() => (scale.value = withTiming(1, { duration }))}
+      disabled={disabled}
+      style={{ width: "100%" }}
     >
-      <Animated.View style={[style, { transform: [{ scale }] }]}>
-        {children}
-      </Animated.View>
+      <Animated.View style={[style, animatedStyle]}>{children}</Animated.View>
     </Pressable>
   );
 };
