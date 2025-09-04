@@ -1,7 +1,6 @@
 import instance from "./axios";
 import {
   GetTopicListResponse,
-  TopicListType,
   UserAnswerResponse,
   RequestConnectionBody,
   RequestConnectionResponse,
@@ -15,17 +14,20 @@ interface GetTopicListTypeParams {
   take: number;
   search?: string;
   cursor?: any;
+  category?: string;
 }
 
 export const getTopicList = async ({
   take,
   search,
   cursor,
+  category,
 }: GetTopicListTypeParams) => {
   const params: Record<string, any> = {};
   if (take) params.take = take;
   if (cursor !== undefined) params.cursor = cursor;
   if (search) params.search = search;
+  if (category && category !== "전체") params.category = category;
   const { data } = await instance.get<GetTopicListResponse>("/topics", {
     params,
   });

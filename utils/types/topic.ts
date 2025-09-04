@@ -68,3 +68,27 @@ export interface TextHeaderType {
   title: string;
   subQuestions: string[];
 }
+
+//토픽 리스트 카테고리 타입들
+export const CATEGORIES = [
+  "전체",
+  "미래",
+  "밸런스 게임",
+  "경험",
+  "관계",
+  "일상",
+  "유머",
+  "사랑",
+  "추억",
+  "여행",
+  "음식",
+  "책",
+  "영화",
+  "음악",
+  "상상",
+  "생각",
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
+export type RouteType = { key: Category; title: string };
