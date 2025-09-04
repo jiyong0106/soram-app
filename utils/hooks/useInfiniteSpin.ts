@@ -8,7 +8,7 @@ type Options = {
   useNativeDriver?: boolean;
 };
 
-export default function useInfiniteSpin(active: boolean, opts: Options = {}) {
+const useInfiniteSpin = (active: boolean, opts: Options = {}) => {
   const {
     duration = 800,
     easing = Easing.linear,
@@ -46,4 +46,6 @@ export default function useInfiniteSpin(active: boolean, opts: Options = {}) {
   const animatedStyle = useMemo(() => ({ transform: [{ rotate }] }), [rotate]);
 
   return { animatedStyle, start, stop, value };
-}
+};
+
+export default useInfiniteSpin;

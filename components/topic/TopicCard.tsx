@@ -1,10 +1,11 @@
-import React, { memo, useCallback } from "react";
-import { ImageBackground, Pressable, View, StyleSheet } from "react-native";
+import React, { memo } from "react";
+import { ImageBackground, View, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import ScalePressable from "../common/ScalePressable";
 
 type Props = {
   item: TopicListType;
@@ -12,7 +13,7 @@ type Props = {
 
 const TopicCard = ({ item }: Props) => {
   const router = useRouter();
-  const { title, content, id, userCount } = item;
+  const { title, subQuestions, id, userCount } = item;
 
   const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
     onInsufficient: () => console.log("재화가 부족해서 충전해야합니다"),
@@ -29,15 +30,20 @@ const TopicCard = ({ item }: Props) => {
   };
 
   return (
-    <Pressable onPress={handlePress} style={styles.container}>
+    <ScalePressable onPress={handlePress} style={styles.container}>
       <ImageBackground
         source={require("@/assets/images/1.jpg")}
         style={styles.image}
       >
         <View style={styles.textWrapper}>
           <AppText style={styles.cardTitle}>{title}</AppText>
-
-          <AppText style={styles.cardSub}>{content}</AppText>
+          <View>
+            {subQuestions.map((content, index) => (
+              <AppText key={`${id}-${index}`} style={styles.cardSub}>
+                {content}
+              </AppText>
+            ))}
+          </View>
 
           <View style={styles.touch}>
             <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
@@ -48,7 +54,7 @@ const TopicCard = ({ item }: Props) => {
           </AppText>
         </View>
       </ImageBackground>
-    </Pressable>
+    </ScalePressable>
   );
 };
 
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 18,
     color: "#fff",
-    lineHeight: 25,
+    lineHeight: 20,
   },
   participants: {
     marginTop: 16,

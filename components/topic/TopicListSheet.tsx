@@ -1,26 +1,23 @@
 import React, { ForwardedRef, forwardRef } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  InteractionManager,
-} from "react-native";
+import { View, StyleSheet, InteractionManager } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import ScalePressable from "../common/ScalePressable";
 
 interface TopicListSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
   title: string;
   id: number;
+  subQuestions: string[];
 }
 const THEME = "#ff6b6b";
-const BTN_MIN_HEIGHT = 64; // ✅ 두 버튼 최소 높이 통일
+const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id }: TopicListSheetProps,
+  { snapPoints, title, id, subQuestions }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
@@ -31,24 +28,12 @@ const TopicListSheet = (
     // …네비게이션 등
   };
 
-  // const handleWriteAnswer = () => {
-  //   dismiss();
-  //   router.push({
-  //     pathname: "/topic/list/[listId]",
-  //     params: {
-  //       listId: id,
-  //       title,
-  //     },
-  //   });
-  //   // …네비게이션 등
-  // };
-
   const handleWriteAnswer = () => {
     dismiss(); // 시트 닫기(애니메이션 시작)
     InteractionManager.runAfterInteractions(() => {
       router.push({
         pathname: "/topic/list/[listId]",
-        params: { listId: String(id), title },
+        params: { listId: String(id) },
       });
     });
   };
@@ -61,14 +46,12 @@ const TopicListSheet = (
           <AppText style={styles.q}>Q. </AppText>
           <AppText style={styles.title}>{title}</AppText>
         </View>
+        <View></View>
 
         {/* 1) 꽉 찬 테마 버튼 */}
-        <TouchableOpacity
-          activeOpacity={0.9}
+        <ScalePressable
           style={[styles.ctaBase, styles.ctaPrimary]}
           onPress={handleSeeOthers}
-          accessibilityRole="button"
-          accessibilityLabel="다른 사람의 답변 보러가기"
         >
           <View style={{ flexShrink: 1 }}>
             <AppText style={styles.ctaPrimaryText}>
@@ -77,19 +60,16 @@ const TopicListSheet = (
             <AppText style={styles.ctaPrimarySub}>마음 탐색권 1개 사용</AppText>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#fff" />
-        </TouchableOpacity>
+        </ScalePressable>
 
         {/* 2) 아웃라인 버튼 */}
-        <TouchableOpacity
-          activeOpacity={0.9}
+        <ScalePressable
           style={[styles.ctaBase, styles.ctaGhost]}
           onPress={handleWriteAnswer}
-          accessibilityRole="button"
-          accessibilityLabel="내 답변 남기기"
         >
           <AppText style={styles.ctaGhostText}>내 답변 남기기</AppText>
           <Ionicons name="chevron-forward" size={20} color={THEME} />
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
     </AppBottomSheetModal>
   );

@@ -60,18 +60,18 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       {/* 하단 버튼 */}
       <View style={styles.btnWrapper}>
         <Button
-          label={`${user.nickname}님의 \n 다른 이야기 보기`}
-          color="#FFFFFF"
-          textColor="#9B9B9B"
-          style={styles.btnOutline}
-        />
-        <Button
           label="대화 요청하기"
           color="#FFF5F0"
           textColor="#FF6B3E"
           style={styles.btnEmphasis}
           disabled={loading}
           onPress={handlePress}
+        />
+        <Button
+          label={`${user.nickname}님의 \n 다른 이야기 보기`}
+          color="#FFFFFF"
+          textColor="#9B9B9B"
+          style={styles.btnOutline}
         />
       </View>
     </View>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
 
   /* 버튼 */
   btnWrapper: {
-    flexDirection: "row",
+    // flexDirection: "row",
     gap: 12,
     marginTop: 14,
   },
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     height: "auto",
+    minHeight: 60,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF5F0",
     borderRadius: 12,
     height: "auto",
+    minHeight: 60,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },

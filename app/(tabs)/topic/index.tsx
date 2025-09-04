@@ -1,6 +1,8 @@
 import AppHeader from "@/components/common/AppHeader";
 import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
+import TicketsSheet from "@/components/topic/TicketsSheet";
+import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
@@ -14,6 +16,9 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
+  // 내부 락/타이머 레퍼런스 (리렌더 영향 X)
+  const lockRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["getTopicRandomKey"],
@@ -23,10 +28,6 @@ const TopicPage = () => {
 
   const [cooldown, setCooldown] = useState(false);
   const showInitSkeleton = !data && isLoading;
-
-  // 내부 락/타이머 레퍼런스 (리렌더 영향 X)
-  const lockRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 언마운트 시 타이머 정리
   useEffect(() => {
@@ -59,7 +60,7 @@ const TopicPage = () => {
   return (
     <View style={styles.container}>
       <AppHeader />
-
+      <TicketsView />
       {showInitSkeleton ? (
         <TopicSkeleton />
       ) : (

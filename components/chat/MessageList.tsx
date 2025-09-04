@@ -24,14 +24,14 @@ type Props = {
   isFetchingNextPage: boolean;
 };
 
-export default function MessageList({
+const MessageList = ({
   myUserId,
   items,
   live,
   onLoadMore,
   isFetchingNextPage,
   paddingBottom,
-}: Props) {
+}: Props) => {
   const flatRef = useRef<FlatList<ChatMessageType>>(null);
 
   // 1) 과거 + 실시간 병합, id 기준 중복 제거 → 최신→과거(DESC)
@@ -111,4 +111,5 @@ export default function MessageList({
       showsVerticalScrollIndicator={false}
     />
   );
-}
+};
+export default MessageList;

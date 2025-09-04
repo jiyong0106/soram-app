@@ -2,44 +2,42 @@ import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TopicListType, GetTopicListResponse } from "@/utils/types/topic";
+import {
+  TopicListType,
+  GetTopicListResponse,
+  Category,
+} from "@/utils/types/topic";
 import { getTopicList } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-const TopicSection = () => {
-  //새로고침 스테이트
+const TopicSection = ({ category }: { category: Category }) => {
   const [refreshing, setRefreshing] = useState(false);
-  //검색
   const [searchName, setSearchName] = useState("");
+  const isAll = !category || category === "전체";
 
-  //쿼리요청
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-    isLoading,
-  } = useInfiniteQuery<GetTopicListResponse>({
-    queryKey: ["getTopicListKey", searchName],
-    queryFn: ({ pageParam }) =>
-      getTopicList({
-        take: 10,
-        cursor: pageParam,
-        search: searchName || "",
-      }),
-    initialPageParam: undefined as number | undefined,
-    getNextPageParam: (lastPage) =>
-      lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+    useInfiniteQuery<GetTopicListResponse>({
+      // 카테고리를 key에 포함해서 탭별 캐시를 분리
+      queryKey: ["getTopicListKey", searchName, category],
+      queryFn: ({ pageParam }) =>
+        getTopicList({
+          take: 10,
+          cursor: pageParam,
+          search: searchName || "",
+          category: isAll ? undefined : category,
+        }),
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+      staleTime: 60 * 1000,
+    });
 
-  const items: TopicListType[] = data?.pages.flatMap((item) => item.data) ?? [];
+  // 받은 페이지들을 합치고, 클라이언트에서 카테고리만 필터
+  const items: TopicListType[] = data?.pages.flatMap((p) => p.data) ?? [];
 
   const onRefresh = async () => {
     setRefreshing(true);
-    refetch().finally(() => {
-      setRefreshing(false);
-    });
+    refetch().finally(() => setRefreshing(false));
   };
 
   return (
@@ -59,9 +57,7 @@ const TopicSection = () => {
           />
         }
         onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.2}
         ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
@@ -73,11 +69,5 @@ const TopicSection = () => {
 export default TopicSection;
 
 const styles = StyleSheet.create({
-  wrap: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  text: {
-    fontSize: 14,
-  },
+  wrap: { flex: 1, backgroundColor: "#fff" },
 });

@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import UserAnswerList from "@/components/topic/UserAnswerList";
@@ -11,6 +11,8 @@ import Spin from "@/components/common/Spin";
 import useAlert from "@/utils/hooks/useAlert";
 import { isAxiosError } from "axios";
 import type { AxiosError } from "axios";
+import ScalePressable from "@/components/common/ScalePressable";
+import EmptyState from "@/components/common/EmptyState";
 
 const UserAnswerPage = () => {
   const { topicId, title } = useLocalSearchParams();
@@ -25,7 +27,7 @@ const UserAnswerPage = () => {
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
-    staleTime: 60_000,
+    staleTime: 60 * 1000,
     placeholderData: keepPreviousData,
     // 조건부 재시도: onShuffle 중엔 재시도 OFF, 그 외엔 1번만 재시도
     retry: (failureCount, err) => {
@@ -88,11 +90,7 @@ const UserAnswerPage = () => {
         }
         ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
         ListFooterComponent={
-          <TouchableOpacity
-            style={styles.moreTopicWrapper}
-            activeOpacity={0.7}
-            onPress={onShuffle}
-          >
+          <ScalePressable style={styles.moreTopicWrapper} onPress={onShuffle}>
             {isFetching || cooldown ? (
               <Spin active duration={800}>
                 <Ionicons name="reload" size={16} color="#FF6B3E" />
@@ -103,9 +101,16 @@ const UserAnswerPage = () => {
                 <Ionicons name="reload" size={15} color="#8E8E8E" />
               </>
             )}
-          </TouchableOpacity>
+          </ScalePressable>
         }
-        ListEmptyComponent={<AppText style={styles.empty}>답변 없음</AppText>}
+        ListEmptyComponent={
+          <EmptyState
+            title="조회 가능한 답변이 없어요"
+            subtitle="주제를 바꿔보거나 새 답변을 남겨보세요."
+            onPressAction={onShuffle}
+            loading={isFetching || cooldown}
+          />
+        }
       />
     </View>
   );
