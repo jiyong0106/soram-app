@@ -1,6 +1,7 @@
 import AppHeader from "@/components/common/AppHeader";
 import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
+import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
@@ -59,7 +60,7 @@ const TopicPage = () => {
   return (
     <View style={styles.container}>
       <AppHeader />
-
+      <TicketsView />
       {showInitSkeleton ? (
         <TopicSkeleton />
       ) : (

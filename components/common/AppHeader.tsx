@@ -1,9 +1,6 @@
-import { View, Pressable, StyleSheet, Text } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { getTickets } from "@/utils/api/authPageApi";
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 
 type Props = {
   onPressNotification?: () => void;
@@ -11,8 +8,6 @@ type Props = {
 };
 
 const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
-  const { NEW_RESPONSE } = useTicketsStore((s) => s.counts);
-
   return (
     <View style={styles.container}>
       <View>
@@ -21,17 +16,10 @@ const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
       </View>
 
       {/* 오른쪽: 알림 아이콘 */}
-      {/* <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
-        <View>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
-          {hasNotification && <View style={styles.badge} />}
-        </View>
-      </Pressable> */}
-
-      <View style={styles.tickets}>
-        <Ionicons name="ticket-outline" size={24} color="black" />
-        <Text>{NEW_RESPONSE}</Text>
-      </View>
+      <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
+        <Ionicons name="notifications-outline" size={24} color="#333" />
+        {hasNotification && <View style={styles.badge} />}
+      </Pressable>
     </View>
   );
 };
@@ -55,9 +43,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
   },
-  notificationBtn: {
-    padding: 6,
-  },
+  notificationBtn: {},
   badge: {
     position: "absolute",
     top: 2,

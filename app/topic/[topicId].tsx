@@ -26,7 +26,7 @@ const UserAnswerPage = () => {
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
-    staleTime: 60_000,
+    staleTime: 60 * 1000,
     placeholderData: keepPreviousData,
     // 조건부 재시도: onShuffle 중엔 재시도 OFF, 그 외엔 1번만 재시도
     retry: (failureCount, err) => {
@@ -102,7 +102,9 @@ const UserAnswerPage = () => {
             )}
           </ScalePressable>
         }
-        ListEmptyComponent={<AppText style={styles.empty}>답변 없음</AppText>}
+        ListEmptyComponent={
+          <AppText style={styles.empty}>조회 가능한 답변이 없어요</AppText>
+        }
       />
     </View>
   );

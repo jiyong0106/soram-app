@@ -6,7 +6,7 @@ import type { getTicketsResponse } from "@/utils/types/auth";
 import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 import { useAuthStore } from "@/utils/sotre/useAuthStore";
 
-export default function TicketsBootstrap() {
+const TicketsBootstrap = () => {
   const setFromResponse = useTicketsStore((s) => s.setFromResponse);
   const token = useAuthStore((s) => s.token);
 
@@ -30,4 +30,6 @@ export default function TicketsBootstrap() {
   }, [data, setFromResponse]);
 
   return null;
-}
+};
+
+export default TicketsBootstrap;

@@ -8,7 +8,7 @@ type Props = {
   subQuestions: string[];
 };
 
-export default function VerticalQuestionSlider({ subQuestions }: Props) {
+const VerticalQuestionSlider = ({ subQuestions }: Props) => {
   const [containerW, setContainerW] = useState(0);
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -44,7 +44,9 @@ export default function VerticalQuestionSlider({ subQuestions }: Props) {
       <Entypo name="select-arrows" size={18} color="black" />
     </View>
   );
-}
+};
+
+export default VerticalQuestionSlider;
 
 const styles = StyleSheet.create({
   wrap: {

@@ -9,7 +9,7 @@ type Options = {
   onInsufficient?: () => void;
 };
 
-export default function useTicketGuard(kind: TicketKind, opts?: Options) {
+const useTicketGuard = (kind: TicketKind, opts?: Options) => {
   const amount = opts?.amount ?? 1;
   const optimistic = opts?.optimistic ?? true;
   const onInsufficient = opts?.onInsufficient;
@@ -49,4 +49,5 @@ export default function useTicketGuard(kind: TicketKind, opts?: Options) {
   );
 
   return { ensure };
-}
+};
+export default useTicketGuard;
