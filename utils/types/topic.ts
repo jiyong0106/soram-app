@@ -55,10 +55,16 @@ export interface RequestConnectionResponse {
   updatedAt: string;
 }
 
-//4. 다양한 토픽에 대해 내 답벼 등록하기 api 타입 바디값
+//4 -1 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 바디값
 export interface TextBody {
-  topicId: number;
+  topicBoxId: number;
   textContent: string;
 }
-//4. 다양한 토픽에 대해 내 답벼 등록하기 api 타입 응답값
+//4 - 2 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 응답값
 export interface TextResponse extends baseTopic {}
+
+//5 답변 등록하기에 조회되는 타이틀 및 sub api타입
+export interface TextHeaderType {
+  title: string;
+  subQuestions: string[];
+}

@@ -1,26 +1,33 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import AppText from "../common/AppText";
+import { useQuery } from "@tanstack/react-query";
+import { getTextHeader } from "@/utils/api/topicPageApi";
+import VerticalQuestionSlider from "./VerticalQuestionSlider";
 
 type Props = {
-  title: string;
+  topicBoxId: number;
 };
 
-const QuestionHeader = ({ title }: Props) => {
+const QuestionHeader = ({ topicBoxId }: Props) => {
+  const { data } = useQuery({
+    queryKey: ["getTextHeaderKey", topicBoxId],
+    queryFn: () => getTextHeader(topicBoxId),
+    staleTime: 60 * 1000,
+    enabled: !!topicBoxId,
+  });
+  if (!data) {
+    return null;
+  }
+  console.log(data);
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
         <AppText style={styles.questionHighlight}>Q.</AppText>
-        <AppText style={styles.title}>{title}</AppText>
+        <AppText style={styles.title}>{data?.title}</AppText>
       </View>
 
-      {/* <View>
-        {subQuestions.map((content: string, index: number) => (
-          <AppText key={`${index}`} style={styles.cardSub}>
-            {content}
-          </AppText>
-        ))}
-      </View> */}
+      <VerticalQuestionSlider subQuestions={data?.subQuestions} />
     </View>
   );
 };

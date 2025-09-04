@@ -23,8 +23,8 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId, title, subQuestions } = useLocalSearchParams();
-  const topicId = Number(listId);
+  const { listId } = useLocalSearchParams();
+  const topicBoxId = Number(listId);
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -50,7 +50,7 @@ const TopicListIdPage = () => {
     }
 
     try {
-      await postText({ topicId, textContent: text });
+      await postText({ topicBoxId, textContent: text });
       showAlert("답변이 등록되었어요.", () => {
         reset({ content: "" });
         router.dismissTo("/(tabs)/topic/list");
@@ -95,7 +95,7 @@ const TopicListIdPage = () => {
           contentContainerStyle={{ padding: 10, paddingBottom: 80 }}
           automaticallyAdjustKeyboardInsets
         >
-          <QuestionHeader title={String(title)} />
+          <QuestionHeader topicBoxId={topicBoxId} />
 
           <Controller
             control={control}
@@ -135,12 +135,13 @@ const TopicListIdPage = () => {
 export default TopicListIdPage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+  },
   input: {
     minHeight: 200,
     fontSize: 16,
     textAlignVertical: "top",
     padding: 10,
-    marginTop: 12,
   },
 });

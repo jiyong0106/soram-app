@@ -7,6 +7,7 @@ import {
   RequestConnectionResponse,
   TextBody,
   TextResponse,
+  TextHeaderType,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -62,5 +63,13 @@ export const postRequestConnection = async (body: RequestConnectionBody) => {
 //5. 다양한 토픽에 대해 내 답변 등록하기 api
 export const postText = async (body: TextBody) => {
   const { data } = await instance.post<TextResponse>("/voices/text", body);
+  return data;
+};
+
+//6 답변 등록하기에 조회되는 타이틀 및 sub api타입
+export const getTextHeader = async (topicBoxId: number) => {
+  const { data } = await instance.get<TextHeaderType>(
+    `/topics/${topicBoxId}/questions`
+  );
   return data;
 };

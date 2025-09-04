@@ -33,7 +33,7 @@ const TopicListSheet = (
     InteractionManager.runAfterInteractions(() => {
       router.push({
         pathname: "/topic/list/[listId]",
-        params: { listId: String(id), title },
+        params: { listId: String(id) },
       });
     });
   };
