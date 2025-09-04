@@ -15,12 +15,13 @@ interface TopicListSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
   title: string;
   id: number;
+  subQuestions: string[];
 }
 const THEME = "#ff6b6b";
-const BTN_MIN_HEIGHT = 64; // ✅ 두 버튼 최소 높이 통일
+const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id }: TopicListSheetProps,
+  { snapPoints, title, id, subQuestions }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
@@ -30,18 +31,6 @@ const TopicListSheet = (
     dismiss();
     // …네비게이션 등
   };
-
-  // const handleWriteAnswer = () => {
-  //   dismiss();
-  //   router.push({
-  //     pathname: "/topic/list/[listId]",
-  //     params: {
-  //       listId: id,
-  //       title,
-  //     },
-  //   });
-  //   // …네비게이션 등
-  // };
 
   const handleWriteAnswer = () => {
     dismiss(); // 시트 닫기(애니메이션 시작)
@@ -61,6 +50,7 @@ const TopicListSheet = (
           <AppText style={styles.q}>Q. </AppText>
           <AppText style={styles.title}>{title}</AppText>
         </View>
+        <View></View>
 
         {/* 1) 꽉 찬 테마 버튼 */}
         <TouchableOpacity

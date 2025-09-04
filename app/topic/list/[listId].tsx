@@ -23,7 +23,7 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId, title } = useLocalSearchParams();
+  const { listId, title, subQuestions } = useLocalSearchParams();
   const topicId = Number(listId);
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
@@ -95,15 +95,7 @@ const TopicListIdPage = () => {
           contentContainerStyle={{ padding: 10, paddingBottom: 80 }}
           automaticallyAdjustKeyboardInsets
         >
-          <QuestionHeader
-            title={String(title)}
-            subSteps={[
-              "어떤 주와 같이 전투를 하고 싶나요?",
-              "가장 보고싶은 오니는 누구인가요?",
-              "무잔을 만나면 도망치시나요?",
-            ]}
-            activeIndex={2}
-          />
+          <QuestionHeader title={String(title)} />
 
           <Controller
             control={control}

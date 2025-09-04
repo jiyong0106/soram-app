@@ -3,7 +3,6 @@ import React, { useRef } from "react";
 import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import TopicListSheet from "./TopicListSheet";
 
 interface ItemProps {
@@ -12,18 +11,7 @@ interface ItemProps {
 
 const TopicSectionLists = ({ item }: ItemProps) => {
   const { id, title, subQuestions, category, userCount } = item;
-  const router = useRouter();
   const actionSheetRef = useRef<any>(null);
-
-  const handlePress = () => {
-    router.push({
-      pathname: "/topic/list/[listId]",
-      params: {
-        listId: id,
-        title,
-      },
-    });
-  };
 
   return (
     <TouchableOpacity
@@ -51,7 +39,12 @@ const TopicSectionLists = ({ item }: ItemProps) => {
           ? "아직 등록 된 답변이 없어요"
           : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
-      <TopicListSheet ref={actionSheetRef} title={title} id={id} />
+      <TopicListSheet
+        ref={actionSheetRef}
+        title={title}
+        id={id}
+        subQuestions={subQuestions}
+      />
     </TouchableOpacity>
   );
 };
