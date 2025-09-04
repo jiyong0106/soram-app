@@ -4,6 +4,7 @@ import AppText from "../common/AppText";
 import { useQuery } from "@tanstack/react-query";
 import { getTextHeader } from "@/utils/api/topicPageApi";
 import VerticalQuestionSlider from "./VerticalQuestionSlider";
+import QuestionHeaderSkeleton from "../skeleton/QuestionHeaderSkeleton";
 
 type Props = {
   topicBoxId: number;
@@ -16,10 +17,11 @@ const QuestionHeader = ({ topicBoxId }: Props) => {
     staleTime: 60 * 1000,
     enabled: !!topicBoxId,
   });
+
   if (!data) {
-    return null;
+    return <QuestionHeaderSkeleton />;
   }
-  console.log(data);
+
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
