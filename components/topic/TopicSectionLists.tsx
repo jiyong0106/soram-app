@@ -11,7 +11,7 @@ interface ItemProps {
 }
 
 const TopicSectionLists = ({ item }: ItemProps) => {
-  const { id, title, content, category, userCount } = item;
+  const { id, title, subQuestions, category, userCount } = item;
   const router = useRouter();
   const actionSheetRef = useRef<any>(null);
 
@@ -39,7 +39,13 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         <AppText style={styles.questionHighlight}>Q.</AppText>
         <AppText style={styles.title}>{title}</AppText>
       </View>
-      <AppText style={styles.desc}>{content}</AppText>
+      <View>
+        {subQuestions.map((content, index) => (
+          <AppText key={`${id}-${index}`} style={styles.cardSub}>
+            {content}
+          </AppText>
+        ))}
+      </View>
       <AppText style={styles.participants}>
         {userCount === 0
           ? "아직 등록 된 답변이 없어요"
@@ -102,5 +108,10 @@ const styles = StyleSheet.create({
   questionHighlight: {
     color: "#FF6B3E",
     fontWeight: "bold",
+  },
+  cardSub: {
+    marginTop: 10,
+    fontSize: 13,
+    lineHeight: 20,
   },
 });

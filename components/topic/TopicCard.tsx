@@ -12,7 +12,7 @@ type Props = {
 
 const TopicCard = ({ item }: Props) => {
   const router = useRouter();
-  const { title, content, id, userCount } = item;
+  const { title, subQuestions, id, userCount } = item;
 
   const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
     onInsufficient: () => console.log("재화가 부족해서 충전해야합니다"),
@@ -36,8 +36,13 @@ const TopicCard = ({ item }: Props) => {
       >
         <View style={styles.textWrapper}>
           <AppText style={styles.cardTitle}>{title}</AppText>
-
-          <AppText style={styles.cardSub}>{content}</AppText>
+          <View>
+            {subQuestions.map((content, index) => (
+              <AppText key={`${id}-${index}`} style={styles.cardSub}>
+                {content}
+              </AppText>
+            ))}
+          </View>
 
           <View style={styles.touch}>
             <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 18,
     color: "#fff",
-    lineHeight: 25,
+    lineHeight: 20,
   },
   participants: {
     marginTop: 16,

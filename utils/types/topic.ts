@@ -17,12 +17,13 @@ export interface baseTopic {
 export interface TopicListType {
   id: number;
   title: string;
-  content: string;
+  subQuestions: string[];
   category: string;
   createdAt: string;
   updatedAt: string;
   userCount: number;
 }
+
 export interface GetTopicListResponse {
   data: TopicListType[];
   meta: metaType;
