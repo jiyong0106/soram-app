@@ -2,20 +2,26 @@ import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
 import { StyleSheet, View } from "react-native";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import TicketsSheet from "./TicketsSheet";
+import { useRef } from "react";
+import ScalePressable from "../common/ScalePressable";
 
 const TicketsView = () => {
   const { CHAT, NEW_RESPONSE, MORE_RESPONSE } = useTicketsStore(
     (s) => s.counts
   );
+  const actionSheetRef = useRef<any>(null);
 
   const itmes = [
     { color: "#FF8A5B", value: CHAT },
     { color: "#72635C", value: NEW_RESPONSE },
     { color: "#BFDCAB", value: MORE_RESPONSE },
   ];
-
   return (
-    <View style={styles.container}>
+    <ScalePressable
+      style={styles.container}
+      onPress={() => actionSheetRef.current?.present?.()}
+    >
       <AppText style={styles.headerText}>내 티켓</AppText>
       <View style={styles.ticketWrap}>
         {itmes.map(({ color, value }, id) => (
@@ -25,7 +31,8 @@ const TicketsView = () => {
           </View>
         ))}
       </View>
-    </View>
+      <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
+    </ScalePressable>
   );
 };
 

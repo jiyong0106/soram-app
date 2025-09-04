@@ -12,6 +12,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import { isAxiosError } from "axios";
 import type { AxiosError } from "axios";
 import ScalePressable from "@/components/common/ScalePressable";
+import EmptyState from "@/components/common/EmptyState";
 
 const UserAnswerPage = () => {
   const { topicId, title } = useLocalSearchParams();
@@ -103,7 +104,12 @@ const UserAnswerPage = () => {
           </ScalePressable>
         }
         ListEmptyComponent={
-          <AppText style={styles.empty}>조회 가능한 답변이 없어요</AppText>
+          <EmptyState
+            title="조회 가능한 답변이 없어요"
+            subtitle="주제를 바꿔보거나 새 답변을 남겨보세요."
+            onPressAction={onShuffle}
+            loading={isFetching || cooldown}
+          />
         }
       />
     </View>
