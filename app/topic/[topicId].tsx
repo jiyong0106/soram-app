@@ -144,8 +144,14 @@ const UserAnswerPage = () => {
 export default UserAnswerPage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF" },
-  listContent: { gap: 10, padding: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: "#FFF",
+  },
+  listContent: {
+    gap: 10,
+    padding: 10,
+  },
   remainText: {
     textAlign: "center",
     marginTop: 12,
@@ -160,5 +166,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 3,
   },
-  moreTopic: { textAlign: "center", fontSize: 13, color: "#8E8E8E" },
+  moreTopic: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#8E8E8E",
+  },
 });
