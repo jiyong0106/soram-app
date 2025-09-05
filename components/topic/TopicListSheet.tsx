@@ -6,6 +6,8 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
 import ScalePressable from "../common/ScalePressable";
+import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import useAlert from "@/utils/hooks/useAlert";
 
 interface TopicListSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
@@ -22,10 +24,23 @@ const TopicListSheet = (
 ) => {
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
+  const { showAlert } = useAlert();
+  const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
+    onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
+    optimistic: true,
+  });
 
+  //여기서
   const handleSeeOthers = () => {
     dismiss();
-    // …네비게이션 등
+    ensureNewResponse.ensure(() => {
+      InteractionManager.runAfterInteractions(() => {
+        router.push({
+          pathname: "/topic/[topicId]",
+          params: { topicId: id, title },
+        });
+      });
+    });
   };
 
   const handleWriteAnswer = () => {
