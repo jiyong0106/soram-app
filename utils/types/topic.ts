@@ -57,7 +57,7 @@ export interface RequestConnectionResponse {
 
 //4 -1 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 바디값
 export interface TextBody {
-  topicBoxId: number;
+  topicId: number;
   textContent: string;
 }
 //4 - 2 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 응답값

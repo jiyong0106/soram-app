@@ -12,6 +12,7 @@ const TopicTabBarLists = (props: TabBarProps<any>) => {
       pressColor="transparent"
       activeColor="#ff6b6b"
       inactiveColor="#8E9499"
+      scrollEnabled
     />
   );
 };

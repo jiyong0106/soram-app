@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useTicketGuard from "@/utils/hooks/useTicketGuard";
 import ScalePressable from "../common/ScalePressable";
+import useAlert from "@/utils/hooks/useAlert";
 
 type Props = {
   item: TopicListType;
@@ -14,9 +15,10 @@ type Props = {
 const TopicCard = ({ item }: Props) => {
   const router = useRouter();
   const { title, subQuestions, id, userCount } = item;
+  const { showAlert } = useAlert();
 
-  const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
-    onInsufficient: () => console.log("재화가 부족해서 충전해야합니다"),
+  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
+    onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
     optimistic: true,
   });
 

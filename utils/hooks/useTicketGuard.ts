@@ -1,4 +1,3 @@
-// utils/hooks/useTicketGuard.ts
 import { useCallback } from "react";
 import type { TicketKind } from "@/utils/types/auth";
 import { useTicketsStore } from "../sotre/useTicketsStore";
@@ -23,7 +22,7 @@ const useTicketGuard = (kind: TicketKind, opts?: Options) => {
   const ensure = useCallback(
     (onPass: () => void) => {
       if (!hasTicket || amount <= 0) {
-        onInsufficient?.() ?? console.log("재화가 부족해서 충전해야합니다");
+        onInsufficient?.() ?? console.log("");
         return;
       }
       if (optimistic) consumeLocal(kind, amount);

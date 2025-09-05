@@ -7,15 +7,12 @@ import { useRef } from "react";
 import ScalePressable from "../common/ScalePressable";
 
 const TicketsView = () => {
-  const { CHAT, NEW_RESPONSE, MORE_RESPONSE } = useTicketsStore(
-    (s) => s.counts
-  );
+  const { CHAT, VIEW_RESPONSE } = useTicketsStore((s) => s.counts);
   const actionSheetRef = useRef<any>(null);
 
   const itmes = [
     { color: "#FF8A5B", value: CHAT },
-    { color: "#72635C", value: NEW_RESPONSE },
-    { color: "#BFDCAB", value: MORE_RESPONSE },
+    { color: "#72635C", value: VIEW_RESPONSE },
   ];
   return (
     <ScalePressable
@@ -31,7 +28,7 @@ const TicketsView = () => {
           </View>
         ))}
       </View>
-      <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
+      <TicketsSheet ref={actionSheetRef} snapPoints={["40%"]} />
     </ScalePressable>
   );
 };
@@ -45,12 +42,12 @@ const styles = StyleSheet.create({
     borderColor: "#FF6B6B",
     marginVertical: 7,
     paddingHorizontal: 10,
-    paddingVertical: 7,
+    paddingVertical: 5,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
-    width: "80%",
+    width: "60%",
     marginHorizontal: "auto",
   },
   headerText: {
@@ -59,12 +56,12 @@ const styles = StyleSheet.create({
   ticketWrap: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   ticket: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
+    gap: 2,
   },
   ticketText: {
     fontSize: 11,

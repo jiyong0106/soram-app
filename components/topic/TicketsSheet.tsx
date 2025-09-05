@@ -43,31 +43,22 @@ const TicketsSheet = (
 ) => {
   const dismiss = () => (ref as any)?.current?.dismiss?.();
 
-  const { CHAT, NEW_RESPONSE, MORE_RESPONSE } = useTicketsStore(
-    (s) => s.counts
-  );
+  const { CHAT, VIEW_RESPONSE } = useTicketsStore((s) => s.counts);
 
   const items: TicketItem[] = [
     {
       code: "C",
       title: "대화요청권",
-      desc: "마음에 드는 상대방에게 대화(채팅)를 요청할 수 있어요",
+      desc: "마음에 드는 상대방에게 대화를 요청할 수 있어요",
       color: "#FF8A5B",
       value: CHAT ?? 0,
     },
     {
-      code: "N",
-      title: "새로운 답변 보기",
-      desc: "다양한 사람들의 답변을 볼 수 있어요",
-      color: "#72635C",
-      value: NEW_RESPONSE ?? 0,
-    },
-    {
       code: "M",
-      title: "더 많은 답변 보기",
-      desc: "상대방이 남긴 또다른 답변을 볼 수 있어요",
+      title: "답변 보기",
+      desc: "상대방이 남긴 답변을 볼 수 있어요",
       color: "#BFDCAB",
-      value: MORE_RESPONSE ?? 0,
+      value: VIEW_RESPONSE ?? 0,
     },
   ];
 
@@ -94,10 +85,10 @@ const TicketsSheet = (
         </View>
 
         {/* CTA */}
-        <ScalePressable style={styles.cta} onPress={handlePurchase}>
-          <AppText style={styles.ctaText}>사용권 구매하러 가기</AppText>
+        {/* <ScalePressable style={styles.cta} onPress={handlePurchase}>
+          <AppText style={styles.ctaText}>사용권 구매하러 </AppText>
           <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
-        </ScalePressable>
+        </ScalePressable> */}
       </View>
     </AppBottomSheetModal>
   );

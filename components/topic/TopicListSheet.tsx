@@ -6,6 +6,8 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
 import ScalePressable from "../common/ScalePressable";
+import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import useAlert from "@/utils/hooks/useAlert";
 
 interface TopicListSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
@@ -17,15 +19,28 @@ const THEME = "#ff6b6b";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id, subQuestions }: TopicListSheetProps,
+  { snapPoints, title, id }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
+  const { showAlert } = useAlert();
+  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
+    onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
+    optimistic: true,
+  });
 
+  //여기서
   const handleSeeOthers = () => {
     dismiss();
-    // …네비게이션 등
+    ensureNewResponse.ensure(() => {
+      InteractionManager.runAfterInteractions(() => {
+        router.push({
+          pathname: "/topic/[topicId]",
+          params: { topicId: id, title },
+        });
+      });
+    });
   };
 
   const handleWriteAnswer = () => {

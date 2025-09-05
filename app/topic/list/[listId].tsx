@@ -24,7 +24,7 @@ type Form = { content: string };
 
 const TopicListIdPage = () => {
   const { listId } = useLocalSearchParams();
-  const topicBoxId = Number(listId);
+  const topicId = Number(listId);
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -48,9 +48,8 @@ const TopicListIdPage = () => {
       showAlert("내용을 입력해 주세요.");
       return;
     }
-
     try {
-      await postText({ topicBoxId, textContent: text });
+      await postText({ topicId, textContent: text });
       showAlert("답변이 등록되었어요.", () => {
         reset({ content: "" });
         router.dismissTo("/(tabs)/topic/list");
@@ -95,7 +94,7 @@ const TopicListIdPage = () => {
           contentContainerStyle={{ padding: 10, paddingBottom: 80 }}
           automaticallyAdjustKeyboardInsets
         >
-          <QuestionHeader topicBoxId={topicBoxId} />
+          <QuestionHeader topicBoxId={topicId} />
 
           <Controller
             control={control}
