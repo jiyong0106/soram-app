@@ -1,7 +1,6 @@
 import AppHeader from "@/components/common/AppHeader";
 import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
-import TicketsSheet from "@/components/topic/TicketsSheet";
 import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
@@ -106,9 +105,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  // cardSlot: {
-  //   borderRadius: 24,
-  //   overflow: "hidden",
-  //   justifyContent: "center",
-  // },
 });

@@ -1,26 +1,38 @@
+import React, { useCallback, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import UserAnswerList from "@/components/topic/UserAnswerList";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getUserAnswer } from "@/utils/api/topicPageApi";
-import { UserAnswerResponse } from "@/utils/types/topic";
-import AppText from "@/components/common/AppText";
-import { Ionicons } from "@expo/vector-icons";
-import Spin from "@/components/common/Spin";
-import useAlert from "@/utils/hooks/useAlert";
-import { isAxiosError } from "axios";
+import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { isAxiosError } from "axios";
+
+import AppText from "@/components/common/AppText";
+import UserAnswerList from "@/components/topic/UserAnswerList";
 import ScalePressable from "@/components/common/ScalePressable";
 import EmptyState from "@/components/common/EmptyState";
+import useAlert from "@/utils/hooks/useAlert";
+import { getUserAnswer } from "@/utils/api/topicPageApi";
+import { UserAnswerResponse } from "@/utils/types/topic";
+import { Ionicons } from "@expo/vector-icons";
+import useMinDelay from "@/utils/hooks/useMinDelay";
+import FindingAnswersOverlay from "@/components/topic/FindingAnswersOverlay";
+
+const OVERLAY_FADE_MS = 220;
+const MIN_SHUFFLE_MS = 3000;
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const UserAnswerPage = () => {
   const { topicId, title } = useLocalSearchParams();
-  const [cooldown, setCooldown] = useState(false);
   const { showAlert } = useAlert();
-  const isShuffleRef = useRef(false);
+  const [shuffleOverlay, setShuffleOverlay] = useState(false);
+  const [forceEmpty, setForceEmpty] = useState(false);
+  const [suppressList, setSuppressList] = useState(false); // ✅ 플리커 방지용
 
-  const { data, refetch, isFetching } = useQuery<
+  // 초기 3초
+  const minElapsed = useMinDelay(MIN_SHUFFLE_MS);
+
+  // 데이터
+  const { data, refetch, isFetching, isSuccess, isError } = useQuery<
     UserAnswerResponse[],
     AxiosError
   >({
@@ -28,89 +40,102 @@ const UserAnswerPage = () => {
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
     staleTime: 60 * 1000,
-    placeholderData: keepPreviousData,
-    // 조건부 재시도: onShuffle 중엔 재시도 OFF, 그 외엔 1번만 재시도
     retry: (failureCount, err) => {
-      // 4xx는 원래도 재시도 안 하는게 UX 좋음
       const s = err?.response?.status;
       if (s && s >= 400 && s < 500) return false;
-      // onShuffle 시도 중이면 재시도 금지 → 1번만 요청
-      if (isShuffleRef.current) return false;
-      // 그 외(초기 로딩 등)에는 1회 재시도 허용
-      return failureCount < 1; // (= retry: 1)
+      return failureCount < 1;
     },
   });
 
-  const lockRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
+  const initialReady = minElapsed && (isSuccess || isError);
+  const dataForRender = forceEmpty ? [] : data ?? [];
 
   const onShuffle = useCallback(async () => {
-    // 1) 네트워크 로딩 중이거나 쿨다운 중이면 무시
-    if (isFetching || lockRef.current) return;
+    if (isFetching) return;
 
-    // 2) 쿨다운 시작
-    lockRef.current = true;
-    setCooldown(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      lockRef.current = false;
-      setCooldown(false);
-    }, 1000);
+    setShuffleOverlay(true);
+    setSuppressList(true); // ✅ 리스트 잠깐 숨김
+    setForceEmpty(false);
 
-    // 3) 호출
+    const startedAt = Date.now();
+
     try {
-      await refetch({ throwOnError: true });
+      const result = await refetch({ throwOnError: true });
+      const next = result.data ?? [];
+
+      const elapsed = Date.now() - startedAt;
+      const remain = Math.max(0, MIN_SHUFFLE_MS - elapsed);
+      if (remain) await delay(remain);
+
+      setShuffleOverlay(false);
+      await delay(OVERLAY_FADE_MS + 20);
+
+      if (!next.length) {
+        showAlert(
+          "조회 가능한 답변이 없어요. 주제를 바꿔보거나 새 답변을 남겨보세요."
+        );
+        setForceEmpty(true);
+      }
     } catch (e) {
+      const elapsed = Date.now() - startedAt;
+      const remain = Math.max(0, MIN_SHUFFLE_MS - elapsed);
+      if (remain) await delay(remain);
+
+      setShuffleOverlay(false);
+      await delay(OVERLAY_FADE_MS + 20);
+
       const msg = isAxiosError(e)
         ? e.response?.data?.message ?? e.message
         : (e as Error).message;
+
       showAlert(msg);
+      setForceEmpty(true);
     } finally {
-      isShuffleRef.current = false; //  원상복구
+      setSuppressList(false); // ✅ 최종 단계에서만 다시 보이기
     }
   }, [isFetching, refetch, showAlert]);
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data ?? []}
-        renderItem={({ item }) => <UserAnswerList item={item} title={title} />}
-        keyExtractor={(item) => String(item.id)}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
-        ListHeaderComponent={
-          <AppText style={styles.remainText}>오늘 남은 이야기 1 / 10</AppText>
-        }
-        ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
-        ListFooterComponent={
-          <ScalePressable style={styles.moreTopicWrapper} onPress={onShuffle}>
-            {isFetching || cooldown ? (
-              <Spin active duration={800}>
-                <Ionicons name="reload" size={16} color="#FF6B3E" />
-              </Spin>
-            ) : (
-              <>
+      {initialReady &&
+        !suppressList && ( // ✅ 숨김 중에는 리스트 렌더 안 함
+          <FlatList
+            data={dataForRender}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <UserAnswerList item={item} title={title} />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            ListHeaderComponent={
+              <AppText style={styles.remainText}>
+                오늘 남은 이야기 1 / 10
+              </AppText>
+            }
+            ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
+            ListFooterComponent={
+              <ScalePressable
+                style={styles.moreTopicWrapper}
+                onPress={onShuffle}
+              >
                 <AppText style={styles.moreTopic}>다른 이야기 보기</AppText>
                 <Ionicons name="reload" size={15} color="#8E8E8E" />
-              </>
-            )}
-          </ScalePressable>
-        }
-        ListEmptyComponent={
-          <EmptyState
-            title="조회 가능한 답변이 없어요"
-            subtitle="주제를 바꿔보거나 새 답변을 남겨보세요."
-            onPressAction={onShuffle}
-            loading={isFetching || cooldown}
+              </ScalePressable>
+            }
+            ListEmptyComponent={
+              <EmptyState
+                title="조회 가능한 답변이 없어요"
+                subtitle="주제를 바꿔보거나 새 답변을 남겨보세요."
+                onPressAction={onShuffle}
+                loading={isFetching}
+              />
+            }
           />
-        }
+        )}
+
+      <FindingAnswersOverlay
+        visible={!initialReady || shuffleOverlay}
+        text="답변을 찾는 중이에요"
       />
     </View>
   );
@@ -119,30 +144,15 @@ const UserAnswerPage = () => {
 export default UserAnswerPage;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-  },
-  empty: {
-    textAlign: "center",
-    color: "#666",
-    marginTop: 20,
-    fontSize: 16,
-  },
+  container: { flex: 1, backgroundColor: "#FFF" },
+  listContent: { gap: 10, padding: 10 },
   remainText: {
     textAlign: "center",
     marginTop: 12,
-
     color: "#8E8E8E",
     fontSize: 13,
     marginLeft: "auto",
   },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    gap: 16,
-  },
-
   moreTopicWrapper: {
     marginHorizontal: "auto",
     marginVertical: 20,
@@ -150,9 +160,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 3,
   },
-  moreTopic: {
-    textAlign: "center",
-    fontSize: 13,
-    color: "#8E8E8E",
-  },
+  moreTopic: { textAlign: "center", fontSize: 13, color: "#8E8E8E" },
 });
