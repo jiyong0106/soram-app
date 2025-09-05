@@ -5,6 +5,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
+import { useRouter } from "expo-router";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
@@ -12,9 +13,10 @@ interface UserAnswerListProps {
 }
 
 const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
-  const { textContent, id, userId, user, createdAt } = item;
+  const { textContent, id, userId, user, createdAt, topicBoxId } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   //대화 요청하기
   const handlePress = () => {
@@ -32,7 +34,15 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         showAlert("요청되었어요!");
       } catch (e: any) {
         const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-        showAlert(msg);
+        showAlert(msg, () => {
+          if (e.response.data.statusCode === 403) {
+            router.push({
+              pathname: "/topic/list/[listId]",
+              params: { listId: String(topicBoxId) },
+            });
+            return;
+          }
+        });
       } finally {
         setLoading(false);
       }
