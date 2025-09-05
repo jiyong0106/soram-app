@@ -107,11 +107,6 @@ const UserAnswerPage = () => {
             )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
-            ListHeaderComponent={
-              <AppText style={styles.remainText}>
-                오늘 남은 이야기 1 / 10
-              </AppText>
-            }
             ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
             ListFooterComponent={
               <ScalePressable

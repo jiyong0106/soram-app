@@ -1,4 +1,3 @@
-// utils/hooks/useTicketGuard.ts
 import { useCallback } from "react";
 import type { TicketKind } from "@/utils/types/auth";
 import { useTicketsStore } from "../sotre/useTicketsStore";

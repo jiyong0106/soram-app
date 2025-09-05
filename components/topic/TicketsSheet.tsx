@@ -85,10 +85,10 @@ const TicketsSheet = (
         </View>
 
         {/* CTA */}
-        <ScalePressable style={styles.cta} onPress={handlePurchase}>
-          <AppText style={styles.ctaText}>사용권 구매하러 가기</AppText>
+        {/* <ScalePressable style={styles.cta} onPress={handlePurchase}>
+          <AppText style={styles.ctaText}>사용권 구매하러 </AppText>
           <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
-        </ScalePressable>
+        </ScalePressable> */}
       </View>
     </AppBottomSheetModal>
   );
