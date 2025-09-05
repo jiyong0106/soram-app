@@ -19,13 +19,13 @@ const THEME = "#ff6b6b";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id, subQuestions }: TopicListSheetProps,
+  { snapPoints, title, id }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
   const { showAlert } = useAlert();
-  const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
+  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
     optimistic: true,
   });

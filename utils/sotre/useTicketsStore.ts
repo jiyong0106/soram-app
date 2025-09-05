@@ -15,20 +15,18 @@ type TicketsState = {
 };
 
 export const useTicketsStore = create<TicketsState>((set, get) => ({
-  counts: { CHAT: 0, NEW_RESPONSE: 0, MORE_RESPONSE: 0 },
+  counts: { CHAT: 0, VIEW_RESPONSE: 0 },
   initialized: false,
 
   setFromResponse: (resp) =>
     set((s) => {
       const next: Counts = {
         CHAT: resp.CHAT?.totalQuantity ?? 0,
-        NEW_RESPONSE: resp.NEW_RESPONSE?.totalQuantity ?? 0,
-        MORE_RESPONSE: resp.MORE_RESPONSE?.totalQuantity ?? 0,
+        VIEW_RESPONSE: resp.VIEW_RESPONSE?.totalQuantity ?? 0,
       };
       const same =
         s.counts.CHAT === next.CHAT &&
-        s.counts.NEW_RESPONSE === next.NEW_RESPONSE &&
-        s.counts.MORE_RESPONSE === next.MORE_RESPONSE;
+        s.counts.VIEW_RESPONSE === next.VIEW_RESPONSE;
 
       if (same && s.initialized) return s;
       return { counts: next, initialized: true };
@@ -46,7 +44,7 @@ export const useTicketsStore = create<TicketsState>((set, get) => ({
 
   reset: () =>
     set({
-      counts: { CHAT: 0, NEW_RESPONSE: 0, MORE_RESPONSE: 0 },
+      counts: { CHAT: 0, VIEW_RESPONSE: 0 },
       initialized: false,
     }), // 👈
 }));

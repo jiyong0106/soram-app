@@ -17,7 +17,7 @@ const TopicCard = ({ item }: Props) => {
   const { title, subQuestions, id, userCount } = item;
   const { showAlert } = useAlert();
 
-  const ensureNewResponse = useTicketGuard("NEW_RESPONSE", {
+  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
     optimistic: true,
   });
