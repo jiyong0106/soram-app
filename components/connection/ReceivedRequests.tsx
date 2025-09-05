@@ -146,7 +146,7 @@ const ReceivedRequests = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, padding: 10 }}
         ListEmptyComponent={
-          <AppText style={styles.empty}>요청 목록 없음</AppText>
+          <AppText style={styles.empty}>받은 대화 요청이 없어요</AppText>
         }
         ListFooterComponent={
           isRefetching || isFetchingNextPage ? (
