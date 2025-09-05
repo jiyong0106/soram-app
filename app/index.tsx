@@ -6,10 +6,8 @@ import StartButton from "../components/index/StartButton";
 import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
 import PageContainer from "@/components/common/PageContainer";
-import { useRouter } from "expo-router";
 
 const Index = () => {
-  const router = useRouter();
   return (
     <PageContainer edges={["top", "bottom"]}>
       <View style={styles.container}>

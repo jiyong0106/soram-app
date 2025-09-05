@@ -10,19 +10,16 @@ type Props = {
 const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
   return (
     <View style={styles.container}>
-      {/* 왼쪽: 로고 + 슬로건 */}
       <View>
         <AppText style={styles.logo}>SORAM</AppText>
         <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
       </View>
 
       {/* 오른쪽: 알림 아이콘 */}
-      {/* <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
-        <View>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
-          {hasNotification && <View style={styles.badge} />}
-        </View>
-      </Pressable> */}
+      <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
+        <Ionicons name="notifications-outline" size={24} color="#333" />
+        {hasNotification && <View style={styles.badge} />}
+      </Pressable>
     </View>
   );
 };
@@ -46,9 +43,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
   },
-  notificationBtn: {
-    padding: 6,
-  },
+  notificationBtn: {},
   badge: {
     position: "absolute",
     top: 2,
@@ -57,5 +52,11 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "red",
+  },
+  tickets: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 2,
   },
 });

@@ -17,11 +17,13 @@ export interface baseTopic {
 export interface TopicListType {
   id: number;
   title: string;
-  content: string;
+  subQuestions: string[];
   category: string;
   createdAt: string;
   updatedAt: string;
+  userCount: number;
 }
+
 export interface GetTopicListResponse {
   data: TopicListType[];
   meta: metaType;
@@ -53,10 +55,40 @@ export interface RequestConnectionResponse {
   updatedAt: string;
 }
 
-//4. 다양한 토픽에 대해 내 답벼 등록하기 api 타입 바디값
+//4 -1 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 바디값
 export interface TextBody {
   topicId: number;
   textContent: string;
 }
-//4. 다양한 토픽에 대해 내 답벼 등록하기 api 타입 응답값
+//4 - 2 . 다양한 토픽에 대해 내 답변 등록하기 api 타입 응답값
 export interface TextResponse extends baseTopic {}
+
+//5 답변 등록하기에 조회되는 타이틀 및 sub api타입
+export interface TextHeaderType {
+  title: string;
+  subQuestions: string[];
+}
+
+//토픽 리스트 카테고리 타입들
+export const CATEGORIES = [
+  "전체",
+  "미래",
+  "밸런스 게임",
+  "경험",
+  "관계",
+  "일상",
+  "유머",
+  "사랑",
+  "추억",
+  "여행",
+  "음식",
+  "책",
+  "영화",
+  "음악",
+  "상상",
+  "생각",
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
+export type RouteType = { key: Category; title: string };

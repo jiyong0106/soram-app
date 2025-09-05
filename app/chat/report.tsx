@@ -9,9 +9,9 @@ import ReportReasonSelector from "@/components/chat/ReportReasonSelector";
 import ReportDetailsInput from "@/components/chat/ReportDetailsInput";
 import { REASON_LABELS, ReportReasonType } from "@/utils/types/common";
 import StickyBottom from "@/components/common/StickyBottom";
-import { useSafeArea } from "react-native-safe-area-context";
 import { posetUserReport } from "@/utils/api/chatPageApi";
 import useAlert from "@/utils/hooks/useAlert";
+import useSafeArea from "@/utils/hooks/useSafeArea";
 
 const ReportPage = () => {
   // UI state

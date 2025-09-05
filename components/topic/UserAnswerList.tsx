@@ -5,6 +5,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
+import { useRouter } from "expo-router";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
@@ -12,9 +13,10 @@ interface UserAnswerListProps {
 }
 
 const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
-  const { textContent, id, userId, user, createdAt } = item;
+  const { textContent, id, userId, user, createdAt, topicBoxId } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   //대화 요청하기
   const handlePress = () => {
@@ -32,7 +34,15 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         showAlert("요청되었어요!");
       } catch (e: any) {
         const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-        showAlert(msg);
+        showAlert(msg, () => {
+          if (e.response.data.statusCode === 403) {
+            router.push({
+              pathname: "/topic/list/[listId]",
+              params: { listId: String(topicBoxId) },
+            });
+            return;
+          }
+        });
       } finally {
         setLoading(false);
       }
@@ -60,18 +70,18 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       {/* 하단 버튼 */}
       <View style={styles.btnWrapper}>
         <Button
-          label={`${user.nickname}님의 \n 다른 이야기 보기`}
-          color="#FFFFFF"
-          textColor="#9B9B9B"
-          style={styles.btnOutline}
-        />
-        <Button
           label="대화 요청하기"
           color="#FFF5F0"
           textColor="#FF6B3E"
           style={styles.btnEmphasis}
           disabled={loading}
           onPress={handlePress}
+        />
+        <Button
+          label={`${user.nickname}님의 \n 다른 이야기 보기`}
+          color="#FFFFFF"
+          textColor="#9B9B9B"
+          style={styles.btnOutline}
         />
       </View>
     </View>
@@ -142,7 +152,7 @@ const styles = StyleSheet.create({
 
   /* 버튼 */
   btnWrapper: {
-    flexDirection: "row",
+    // flexDirection: "row",
     gap: 12,
     marginTop: 14,
   },
@@ -153,6 +163,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     height: "auto",
+    minHeight: 60,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
@@ -163,6 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF5F0",
     borderRadius: 12,
     height: "auto",
+    minHeight: 60,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },

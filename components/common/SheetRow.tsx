@@ -1,5 +1,6 @@
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import AppText from "./AppText";
+import ScalePressable from "./ScalePressable";
 
 const SheetRow = ({
   icon,
@@ -10,7 +11,7 @@ const SheetRow = ({
   label: string;
   onPress?: () => void;
 }) => (
-  <TouchableOpacity activeOpacity={0.6} onPress={onPress}>
+  <ScalePressable onPress={onPress}>
     <View
       style={{
         paddingVertical: 14,
@@ -22,7 +23,7 @@ const SheetRow = ({
       {icon}
       <AppText style={{ fontSize: 16 }}>{label}</AppText>
     </View>
-  </TouchableOpacity>
+  </ScalePressable>
 );
 
 export default SheetRow;
