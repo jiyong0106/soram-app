@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "#E6E8EC",
-    padding: 14,
+    padding: 10,
     backgroundColor: "#fff",
     gap: 12,
 
