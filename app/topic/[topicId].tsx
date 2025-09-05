@@ -26,7 +26,7 @@ const UserAnswerPage = () => {
   const { showAlert } = useAlert();
   const [shuffleOverlay, setShuffleOverlay] = useState(false);
   const [forceEmpty, setForceEmpty] = useState(false);
-  const [suppressList, setSuppressList] = useState(false); // ✅ 플리커 방지용
+  const [suppressList, setSuppressList] = useState(false); // 플리커 방지용
 
   // 초기 3초
   const minElapsed = useMinDelay(MIN_SHUFFLE_MS);
