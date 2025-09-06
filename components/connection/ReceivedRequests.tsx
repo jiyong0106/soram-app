@@ -24,6 +24,7 @@ import {
   RefreshControl,
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
 
@@ -126,7 +127,7 @@ const ReceivedRequests = () => {
   const onAccept = (id: number) => acceptMutation.mutate(id);
   const onReject = (id: number) => rejectMutation.mutate(id);
 
-  if (isLoading) return <AppText style={styles.center}>로딩중…</AppText>;
+  if (isLoading) return <LoadingSpinner />;
   if (isError)
     return <AppText style={styles.center}>목록을 불러오지 못했어요</AppText>;
 
