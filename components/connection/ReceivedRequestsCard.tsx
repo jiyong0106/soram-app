@@ -67,16 +67,6 @@ const ReceivedRequestsCard = ({
 
       {/* 액션: Primary(수락) + Ghost(거절) */}
       <View style={styles.btnRow}>
-        <View style={styles.acceptWrap}>
-          <Button
-            label="수락"
-            color={THEME}
-            textColor="#fff"
-            style={styles.btn}
-            onPress={onAccept}
-            disabled={disabled || status !== "PENDING"}
-          />
-        </View>
         <View style={styles.rejWrap}>
           <Button
             label="거절"
@@ -84,6 +74,16 @@ const ReceivedRequestsCard = ({
             textColor={THEME}
             style={[styles.btn, styles.ghost]}
             onPress={onReject}
+            disabled={disabled || status !== "PENDING"}
+          />
+        </View>
+        <View style={styles.acceptWrap}>
+          <Button
+            label="수락"
+            color={THEME}
+            textColor="#fff"
+            style={styles.btn}
+            onPress={onAccept}
             disabled={disabled || status !== "PENDING"}
           />
         </View>

@@ -23,6 +23,8 @@ const TopicSkeleton = () => {
 
   return (
     <View style={styles.container}>
+      {/* ===== tickets Skeleton ===== */}
+      <View style={[styles.line, styles.ticketsRow]} />
       {/* ===== Title Skeleton ===== */}
       <View style={styles.titleRow}>
         <View style={[styles.line, styles.titleText]} />
@@ -65,7 +67,12 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
   },
-
+  ticketsRow: {
+    width: "65%",
+    borderRadius: 8,
+    marginHorizontal: "auto",
+    height: 30,
+  },
   /* ===== Title Skeleton ===== */
   titleRow: {
     paddingTop: 8,
