@@ -59,30 +59,33 @@ const TopicPage = () => {
   return (
     <View style={styles.container}>
       <AppHeader />
-      <TicketsView />
       {showInitSkeleton ? (
         <TopicSkeleton />
       ) : (
         data && (
           <>
+            <TicketsView />
             <TopicTitle
               onShuffle={onShuffle}
               disabled={isFetching || cooldown}
               loading={isFetching || cooldown}
             />
             <TopicCard item={data} />
+            <TouchableOpacity
+              onPress={() => router.push("/topic/list")}
+              activeOpacity={0.5}
+              style={styles.moreTopic}
+            >
+              <AppText>더 다양한 주제 보러가기</AppText>
+              <Ionicons
+                name="chevron-forward-outline"
+                size={20}
+                color="black"
+              />
+            </TouchableOpacity>
           </>
         )
       )}
-
-      <TouchableOpacity
-        onPress={() => router.push("/topic/list")}
-        activeOpacity={0.5}
-        style={styles.moreTopic}
-      >
-        <AppText>더 다양한 주제 보러가기</AppText>
-        <Ionicons name="chevron-forward-outline" size={20} color="black" />
-      </TouchableOpacity>
     </View>
   );
 };
