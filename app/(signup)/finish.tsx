@@ -36,7 +36,7 @@ const FinishPage = () => {
       clearSignupToken();
 
       //라우터 이동
-      router.replace("/(tabs)/chat");
+      router.replace("/(tabs)/topic");
     } catch (e: any) {
       if (e) {
         showAlert(e.response.data.message);

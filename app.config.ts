@@ -28,6 +28,7 @@ export default ({ config }: any) => {
           resizeMode: "cover",
           backgroundColor: "#ffffff",
         },
+        // entitlements: { "aps-environment": "development" },
       },
 
       // Android 관련 설정
@@ -67,6 +68,7 @@ export default ({ config }: any) => {
           },
         ],
         ["expo-secure-store", { configureAndroidBackup: true }],
+        ["expo-notifications"],
       ],
 
       // 실험적 기능 활성화

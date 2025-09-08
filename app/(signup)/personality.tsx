@@ -9,7 +9,7 @@ const PersonalityPage = () => {
     Alert.alert("", "프로필 입력 완료!", [
       {
         text: "확인",
-        onPress: () => router.push("/(tabs)/chatList"),
+        onPress: () => router.push("/(tabs)/topic"),
       },
     ]);
   };
