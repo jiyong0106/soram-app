@@ -1,38 +1,23 @@
 // app/utils/auth/token.ts
 // “토큰 저장·복원·만료확인” 유틸 모듈
+import { Buffer } from "buffer"; // RN 환경에서 base64 디코딩용
 
-import * as SecureStore from "expo-secure-store";
-
-// 저장될 토큰큰 키
-export const TOKEN_KEY = "access_token";
-
-// 메모리 캐시(빠른 접근)
+export const TOKEN_KEY = "access_token"; // (레거시 키, migrate에 활용 가능)
 let memToken: string | null = null;
 
-export const setAuthToken = async (t: string | null) => {
+export const setAuthToken = (t: string | null) => {
+  // 메모리만 갱신 (헤더 주입은 axios 요청 인터셉터가 담당)
   memToken = t;
-  if (t) await SecureStore.setItemAsync(TOKEN_KEY, t);
-  else await SecureStore.deleteItemAsync(TOKEN_KEY);
 };
 
 export const getAuthToken = () => memToken;
 
-export const bootstrapAuthToken = async () => {
-  memToken = await SecureStore.getItemAsync(TOKEN_KEY);
-  return memToken;
-};
-
-// JWT exp 만료 여부
 export const isTokenExpired = (t?: string | null) => {
   if (!t) return true;
   try {
     const [, payload] = t.split(".");
-    // base64url → base64
     const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const json = JSON.parse(
-      // RN에는 atob가 없을 수 있으니 Buffer 사용
-      Buffer.from(base64, "base64").toString("utf-8")
-    );
+    const json = JSON.parse(Buffer.from(base64, "base64").toString("utf-8"));
     const expMs = Number(json?.exp) * 1000;
     if (!expMs) return true;
     return expMs <= Date.now();

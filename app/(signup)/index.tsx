@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import AppText from "@/components/common/AppText";
 
 const MAX_LEN = 10;

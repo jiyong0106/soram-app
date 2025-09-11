@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useMemo, useRef, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { FieldKey } from "@/utils/types/signup";
 import {
   FIELDS,

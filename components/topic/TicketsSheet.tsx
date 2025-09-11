@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
 
 interface TicketsSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
