@@ -23,8 +23,12 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId } = useLocalSearchParams();
-  const topicId = Number(listId);
+  const { listId, error } = useLocalSearchParams();
+  // 파라미터 안전 파싱
+  const rawListId = Array.isArray(listId) ? listId[0] : listId;
+  const topicId = Number(rawListId);
+  const rawError = Array.isArray(error) ? error[0] : error;
+  const hasError = typeof rawError !== "undefined"; // 존재 여부로만 판단
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -52,6 +56,10 @@ const TopicListIdPage = () => {
       await postText({ topicId, textContent: text });
       showAlert("답변이 등록되었어요.", () => {
         reset({ content: "" });
+        if (hasError && router.canGoBack()) {
+          router.back();
+          return;
+        }
         router.dismissTo("/(tabs)/topic/list");
       });
     } catch (e: any) {

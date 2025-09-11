@@ -38,7 +38,7 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
           if (e.response.data.statusCode === 403) {
             router.push({
               pathname: "/topic/list/[listId]",
-              params: { listId: String(topicBoxId) },
+              params: { listId: String(topicBoxId), error: "forbidden" },
             });
             return;
           }
