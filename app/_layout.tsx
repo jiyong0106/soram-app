@@ -30,6 +30,14 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
+  // 토큰이 있으면 /topic으로 이동
+  useEffect(() => {
+    if (!hydrated || !fontsLoaded) return;
+    if (token && !pathname.startsWith("/topic")) {
+      router.replace("/topic");
+    }
+  }, [hydrated, fontsLoaded, token, pathname, router]);
+
   // 폰트/스토어 로드 전엔 렌더링 보류
   if (!fontsLoaded || !hydrated) return null;
 
