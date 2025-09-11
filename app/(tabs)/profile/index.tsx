@@ -19,6 +19,7 @@ import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import { useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import ScalePressable from "@/components/common/ScalePressable";
 
 const mockUser: ProfileType = {
   nickname: "하루",
@@ -61,7 +62,7 @@ const ProfilePage = () => {
 
     router.replace("/");
   };
-  console.log(token);
+  console.log(token); 
 
   return (
     <PageContainer edges={[]} padded={false}>
@@ -71,9 +72,12 @@ const ProfilePage = () => {
           headerShown: true,
           headerBackVisible: false,
           headerRight: () => (
-            <View style={{ paddingHorizontal: 16 }}>
-              <Ionicons name="ellipsis-vertical" size={22} />
-            </View>
+            <ScalePressable
+              style={{ paddingHorizontal: 16, marginLeft: "auto" }}
+              onPress={() => router.push("/profile/setting")}
+            >
+              <Ionicons name="settings-outline" size={24} color="black" />
+            </ScalePressable>
           ),
         }}
       />

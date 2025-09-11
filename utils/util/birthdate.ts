@@ -38,3 +38,19 @@ export const FIELDS: Array<{
   { key: "day", ph: "DD", max: 2, width: 80 },
 ];
 //  birthdate 페이지 유틸 및 옵션
+export const getAgeFromBirthdate = (birthdate: string) => {
+  try {
+    const [y, m, d] = birthdate.split("-").map(Number);
+    const today = new Date();
+    let age = today.getFullYear() - y;
+    const hasHadBirthday =
+      today.getMonth() + 1 > m ||
+      (today.getMonth() + 1 === m && today.getDate() >= d);
+    if (!hasHadBirthday) age -= 1;
+    return age;
+  } catch {
+    return undefined;
+  }
+};
+
+export const prettyLocation = (location?: string) => location ?? "어딘가에서";
