@@ -1,10 +1,6 @@
 // app/utils/api/api.ts (refactor)
 import axios, { AxiosHeaders } from "axios";
-import {
-  bootstrapAuthToken,
-  getAuthToken,
-  setAuthToken,
-} from "@/utils/util/auth";
+import { getAuthToken, setAuthToken } from "@/utils/util/auth";
 
 const instance = axios.create({
   baseURL: `${process.env.EXPO_PUBLIC_API_URL}/api/v1`,
@@ -19,27 +15,16 @@ const setHeader = (headers: any, key: string, val?: string) => {
 };
 
 // ===== 요청 인터셉터 =====
-instance.interceptors.request.use(async (config) => {
+instance.interceptors.request.use((config) => {
   if (!config.headers) config.headers = new AxiosHeaders();
 
-  // 1) 메모리 토큰
-  let token = getAuthToken();
-
-  // 2) 부트스트랩 누락 보정 (필요 시 1회 SecureStore 로드)
-  if (!token) {
-    token = await bootstrapAuthToken();
-    console.log(
-      "[req] memToken was empty, loaded from SecureStore ->",
-      !!token
-    );
-  }
-
-  // 3) Authorization 주입
+  // 메모리 토큰만 신뢰
+  const token = getAuthToken();
   if (token) {
     setHeader(config.headers, "Authorization", `Bearer ${token}`);
   }
 
-  // 4) JSON만 Content-Type 지정 (FormData는 건드리지 않음)
+  // JSON만 Content-Type 지정 (FormData는 건드리지 않음)
   const hasBody = config.data && !(config.data instanceof FormData);
   const ct =
     (config.headers as any).get?.("Content-Type") ??

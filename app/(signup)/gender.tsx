@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Gender } from "@/utils/types/signup";
 import AppText from "@/components/common/AppText";

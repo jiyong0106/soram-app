@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import LocationActionModal, {
   LocationActionModalRef,
 } from "@/components/signup/LocationActionModal";
