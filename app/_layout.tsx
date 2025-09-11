@@ -22,27 +22,23 @@ export default function RootLayout() {
   const pathname = usePathname();
   const hydrated = useAuthStore((s) => s.hydrated);
   const token = useAuthStore((s) => s.token);
+  const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
 
   // 폰트 로드 후 스플래시 종료
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
+    if (fontsLoaded && hydrated && !needsRedirect) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, hydrated, needsRedirect]);
 
   // 토큰이 있으면 /topic으로 이동
   useEffect(() => {
     if (!hydrated || !fontsLoaded) return;
-
-    const isEntry = pathname === "/" || pathname === "/index";
-
-    if (token && isEntry) {
-      router.replace("/topic");
-    }
-  }, [hydrated, fontsLoaded, token, pathname, router]);
+    if (needsRedirect) router.replace("/topic");
+  }, [hydrated, fontsLoaded, needsRedirect, router]);
 
   // 폰트/스토어 로드 전엔 렌더링 보류
-  if (!fontsLoaded || !hydrated) return null;
+  if (!fontsLoaded || !hydrated || needsRedirect) return null;
 
   return (
     <GestureHandlerRootView onLayout={onLayoutRootView}>
