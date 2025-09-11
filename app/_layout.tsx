@@ -33,7 +33,10 @@ export default function RootLayout() {
   // 토큰이 있으면 /topic으로 이동
   useEffect(() => {
     if (!hydrated || !fontsLoaded) return;
-    if (token && !pathname.startsWith("/topic")) {
+
+    const isEntry = pathname === "/" || pathname === "/index";
+
+    if (token && isEntry) {
       router.replace("/topic");
     }
   }, [hydrated, fontsLoaded, token, pathname, router]);
