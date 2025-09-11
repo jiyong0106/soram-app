@@ -1,6 +1,8 @@
 import {
   GetConnectionsResponse,
+  GetSentConnectionsResponse,
   PostConnectionsAcceptResponse,
+  PostConnectionsCancelResponse,
   PostConnectionsRejectResponse,
 } from "../types/connection";
 import instance from "./axios";
@@ -46,6 +48,33 @@ export const postConnectionsReject = async ({
 }) => {
   const { data } = await instance.post<PostConnectionsRejectResponse>(
     `/connections/${connectionId}/reject`
+  );
+  return data;
+};
+
+//4. 보낸 대화 요청 목록 조회 api
+export const getSentConnections = async ({
+  take,
+  cursor,
+}: PagenationParams) => {
+  const params: Record<string, any> = {};
+  if (take) params.take = take;
+  if (cursor !== undefined) params.cursor = cursor;
+  const { data } = await instance.get<GetSentConnectionsResponse>(
+    "/connections/sent",
+    { params }
+  );
+  return data;
+};
+
+//5. 보낸 대화 요청 취소 api
+export const postConnectionsCancel = async ({
+  connectionId,
+}: {
+  connectionId: number;
+}) => {
+  const { data } = await instance.post<PostConnectionsCancelResponse>(
+    `/connections/${connectionId}/cancel`
   );
   return data;
 };

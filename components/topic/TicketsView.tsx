@@ -1,4 +1,4 @@
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import { StyleSheet, View } from "react-native";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";

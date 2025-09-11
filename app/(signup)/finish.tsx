@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import React from "react";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
-import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
+import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import { SignupSumbitBody } from "@/utils/types/signup";
 import { postSignupSumbit } from "@/utils/api/signupPageApi";
 import { useRouter } from "expo-router";

@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { getTickets } from "@/utils/api/authPageApi";
 import type { getTicketsResponse } from "@/utils/types/auth";
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
-import { useAuthStore } from "@/utils/sotre/useAuthStore";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
+import { useAuthStore } from "@/utils/store/useAuthStore";
 
 const TicketsBootstrap = () => {
   const setFromResponse = useTicketsStore((s) => s.setFromResponse);

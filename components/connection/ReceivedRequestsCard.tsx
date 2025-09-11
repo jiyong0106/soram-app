@@ -1,10 +1,17 @@
+// 받은 연결 요청 카드 - 요청자 정보, 상태 배지, 수락/거절 버튼 제공
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import AppText from "../common/AppText";
 import Button from "../common/Button";
 import { GetConnectionsType } from "@/utils/types/connection";
 import { formatRelative } from "@/utils/util/formatRelative";
+import {
+  getInitials,
+  hexWithAlpha,
+  connectionStatusLabel as statusLabel,
+} from "@/utils/util/uiHelpers";
 
+// 부모에서 비동기 처리(onAccept/onReject)를 주입
 interface ReceivedRequestsCardProps {
   item: GetConnectionsType;
   onAccept: () => void;
@@ -22,6 +29,7 @@ const ReceivedRequestsCard = ({
 }: ReceivedRequestsCardProps) => {
   const { id, requesterId, addresseeId, status, requester, createdAt } = item;
 
+  // 상태별 표시 색상
   const statusColor =
     status === "PENDING"
       ? "#F59E0B"
@@ -59,13 +67,13 @@ const ReceivedRequestsCard = ({
         </View>
       </View>
 
-      {/* 메타 블록 (접을 수도 있음) */}
+      {/* 메타 블록: 내부 식별자 안내 */}
       <View style={styles.metaBlock}>
         <AppText style={styles.meta}>요청 ID: {id}</AppText>
         <AppText style={styles.meta}>내 ID: {addresseeId}</AppText>
       </View>
 
-      {/* 액션: Primary(수락) + Ghost(거절) */}
+      {/* 액션: 대기 상태에서만 활성화 */}
       <View style={styles.btnRow}>
         <View style={styles.rejWrap}>
           <Button
@@ -94,32 +102,7 @@ const ReceivedRequestsCard = ({
 
 export default ReceivedRequestsCard;
 
-/* --- helpers --- */
-const getInitials = (name?: string) => {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  const a = parts[0]?.[0] ?? "";
-  const b = parts[1]?.[0] ?? "";
-  return (a + b).toUpperCase();
-};
-
-const hexWithAlpha = (hex: string, a = 0.15) => {
-  // #RRGGBB -> rgba
-  const m = hex.replace("#", "");
-  const r = parseInt(m.slice(0, 2), 16);
-  const g = parseInt(m.slice(2, 4), 16);
-  const b = parseInt(m.slice(4, 6), 16);
-  return `rgba(${r},${g},${b},${a})`;
-};
-
-const statusLabel = (s: string) =>
-  s === "PENDING"
-    ? "대기"
-    : s === "ACCEPTED"
-    ? "수락됨"
-    : s === "REJECTED"
-    ? "거절됨"
-    : s;
+/* helpers moved to @/utils/util/uiHelpers */
 
 const styles = StyleSheet.create({
   card: {

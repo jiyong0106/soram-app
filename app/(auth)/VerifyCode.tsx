@@ -4,11 +4,11 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp, postVerifyOtp } from "@/utils/api/authPageApi";
-import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
-import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
+import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
+import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
-import { useAuthStore } from "@/utils/sotre/useAuthStore";
+import { useAuthStore } from "@/utils/store/useAuthStore";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");

@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
-import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
+import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
 

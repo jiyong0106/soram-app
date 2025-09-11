@@ -15,10 +15,11 @@ import CTASection from "@/components/profile/CTASection";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
+import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import { useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
-import { setAuthToken } from "@/utils/util/auth";
+import { useAuthStore } from "@/utils/store/useAuthStore";
+import ScalePressable from "@/components/common/ScalePressable";
 
 const mockUser: ProfileType = {
   nickname: "하루",
@@ -35,8 +36,6 @@ const mockUser: ProfileType = {
   ],
 };
 
-export const ACCESS_TOKEN_KEY = "access_token";
-
 const ProfilePage = () => {
   const profile = mockUser;
 
@@ -44,37 +43,26 @@ const ProfilePage = () => {
   const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-
-  // SecureStore에서 access_token 읽기
-  useEffect(() => {
-    (async () => {
-      const t = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-      setAccessToken(t);
-    })();
-  }, []);
+  const token = useAuthStore((s) => s.token);
+  const logout = useAuthStore((s) => s.logout);
 
   // 초기화: SecureStore + zustand 동시 정리
   const handleClearAll = async () => {
     // 1) 진행 중인 쿼리 취소
     await queryClient.cancelQueries();
 
-    // 2) 토큰 정리 (저장소 + 메모리)
-    await setAuthToken(null);
-
-    await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+    // 2) 토큰 정리 (메모리/헤더 + persist 삭제)
+    logout();
+    await SecureStore.deleteItemAsync("auth-store");
 
     clearSignupToken();
 
     // 3) React Query 캐시 초기화
     queryClient.removeQueries();
 
-    // 4) 화면 상태 갱신
-    setAccessToken(null);
     router.replace("/");
   };
-
-  console.log("accessToken===>", accessToken);
+  console.log(token); 
 
   return (
     <PageContainer edges={[]} padded={false}>
@@ -84,9 +72,12 @@ const ProfilePage = () => {
           headerShown: true,
           headerBackVisible: false,
           headerRight: () => (
-            <View style={{ paddingHorizontal: 16 }}>
-              <Ionicons name="ellipsis-vertical" size={22} />
-            </View>
+            <ScalePressable
+              style={{ paddingHorizontal: 16, marginLeft: "auto" }}
+              onPress={() => router.push("/profile/setting")}
+            >
+              <Ionicons name="settings-outline" size={24} color="black" />
+            </ScalePressable>
           ),
         }}
       />
@@ -109,8 +100,8 @@ const ProfilePage = () => {
             <Text style={styles.label}>signupToken (메모리):</Text>
             <Text style={styles.value}>{signupToken ?? "없음"}</Text>
 
-            <Text style={styles.label}>accessToken (SecureStore):</Text>
-            <Text style={styles.value}>{accessToken}</Text>
+            <Text style={styles.label}>accessToken (store):</Text>
+            <Text style={styles.value}>{token ?? "없음"}</Text>
 
             <TouchableOpacity
               onPress={handleClearAll}

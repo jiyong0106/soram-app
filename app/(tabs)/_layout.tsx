@@ -1,7 +1,12 @@
+import { useAuthStore } from "@/utils/store/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 
 const TabLayout = () => {
+  const token = useAuthStore((s) => s.token);
+
+  if (!token) return <Redirect href="/" />;
+
   return (
     <Tabs
       screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}

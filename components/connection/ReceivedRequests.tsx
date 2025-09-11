@@ -15,7 +15,7 @@ import {
   useInfiniteQuery,
   InfiniteData,
 } from "@tanstack/react-query";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -56,7 +56,13 @@ const ReceivedRequests = () => {
         : undefined,
   });
 
+  // 연속 새로고침 방지: 1.5초 이내 재시도 무시 + 진행 중 가드
+  const lastRefreshAtRef = useRef<number>(0);
   const onRefresh = async () => {
+    if (refreshing) return;
+    const now = Date.now();
+    if (now - lastRefreshAtRef.current < 2000) return;
+    lastRefreshAtRef.current = now;
     setRefreshing(true);
     refetch().finally(() => setRefreshing(false));
   };
