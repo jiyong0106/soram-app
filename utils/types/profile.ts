@@ -31,3 +31,8 @@ export const getAgeFromBirthdate = (birthdate: string) => {
 };
 
 export const prettyLocation = (location?: string) => location ?? "어딘가에서";
+
+//로그아웃
+export type LogoutResponse = {
+  message: string;
+};

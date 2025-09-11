@@ -3,9 +3,9 @@ import React from "react";
 import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
-import AccountSection from "@/components/settings/sections/AccountSection";
-import SupportSection from "@/components/settings/sections/SupportSection";
-import PolicySection from "@/components/settings/sections/PolicySection";
+import AccountSection from "@/components/settings/AccountSection";
+import SupportSection from "@/components/settings/SupportSection";
+import PolicySection from "@/components/settings/PolicySection";
 
 const SettingPage = () => {
   return (
