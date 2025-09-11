@@ -1,34 +1,35 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import AppText from "../common/AppText";
+import { useQuery } from "@tanstack/react-query";
+import { getTextHeader } from "@/utils/api/topicPageApi";
+import VerticalQuestionSlider from "./VerticalQuestionSlider";
+import QuestionHeaderSkeleton from "../skeleton/QuestionHeaderSkeleton";
 
 type Props = {
-  title: string;
-  subSteps: string[];
-  activeIndex: number;
-  onChangeIndex?: (i: number) => void;
+  topicBoxId: number;
 };
 
-const QuestionHeader = ({
-  title,
-  subSteps,
-  activeIndex,
-  onChangeIndex,
-}: Props) => {
+const QuestionHeader = ({ topicBoxId }: Props) => {
+  const { data } = useQuery({
+    queryKey: ["getTextHeaderKey", topicBoxId],
+    queryFn: () => getTextHeader(topicBoxId),
+    staleTime: 60 * 1000,
+    enabled: !!topicBoxId,
+  });
+
+  if (!data) {
+    return <QuestionHeaderSkeleton />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
         <AppText style={styles.questionHighlight}>Q.</AppText>
-        <AppText style={styles.title}>{title}</AppText>
+        <AppText style={styles.title}>{data?.title}</AppText>
       </View>
-      <TouchableOpacity
-        onPress={() => onChangeIndex?.((activeIndex + 1) % subSteps.length)}
-        activeOpacity={0.7}
-      >
-        {/* <Text style={styles.subQ}>
-          {`${activeIndex + 1}. ${subSteps[activeIndex]}`} ▼
-        </Text> */}
-      </TouchableOpacity>
+
+      <VerticalQuestionSlider subQuestions={data?.subQuestions} />
     </View>
   );
 };
@@ -36,23 +37,21 @@ const QuestionHeader = ({
 export default QuestionHeader;
 
 const styles = StyleSheet.create({
-  container: {
+  container: {},
+  titleWrapper: {
     borderRadius: 16,
     backgroundColor: "#fff",
     paddingVertical: 20,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    gap: 5,
 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
-  },
-  titleWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
   },
   title: {
     fontSize: 16,
@@ -65,7 +64,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   subQ: {
-    fontSize: 16,
-    fontWeight: "600",
+    marginVertical: 10,
+    backgroundColor: "red",
+  },
+  subQText: {
+    fontSize: 14,
+  },
+  cardSub: {
+    marginTop: 10,
+    fontSize: 13,
+    lineHeight: 20,
   },
 });

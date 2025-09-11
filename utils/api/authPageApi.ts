@@ -1,5 +1,7 @@
+import instance from "./axios";
 import api from "./axios";
 import {
+  getTicketsResponse,
   RequestOtpBody,
   RequestOtpResponse,
   VerifyOtpBody,
@@ -26,3 +28,9 @@ export const postVerifyOtp = async (body: VerifyOtpBody) => {
 };
 
 //3. 생년월일 입력
+
+// 4. 내 보유 재화 갯수 확인
+export const getTickets = async () => {
+  const { data } = await instance.get<getTicketsResponse>("/users/me/tickets");
+  return data;
+};

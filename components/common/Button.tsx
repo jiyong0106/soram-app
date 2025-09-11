@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import React from "react";
+import { StyleSheet, ViewStyle, StyleProp, Pressable } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import LoadingSpinner from "./LoadingSpinner";
 import AppText from "./AppText";
 
@@ -8,9 +14,15 @@ interface ButtonProps {
   textColor?: string;
   borderColor?: string;
   onPress?: () => void;
-  style?: ViewStyle;
-  disabled?: any;
+  style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
   loading?: boolean;
+  /** 스케일 효과 on/off */
+  withPressScale?: boolean;
+  /** 눌렀을 때 스케일 값 */
+  scaleTo?: number;
+  /** 애니메이션 지속 시간(ms) */
+  duration?: number;
 }
 
 const Button = ({
@@ -22,40 +34,65 @@ const Button = ({
   disabled,
   onPress,
   loading,
+  withPressScale = true,
+  scaleTo = 0.95,
+  duration = 120,
 }: ButtonProps) => {
-  // disabled 상태일 때 색상 지정
   const disabledBg = "#eee";
   const disabledText = "#aaa";
   const disabledBorder = "#eee";
   const isDisabled = !!disabled || !!loading;
 
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    if (withPressScale && !isDisabled) {
+      scale.value = withTiming(scaleTo, { duration });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (withPressScale) {
+      scale.value = withTiming(1, { duration });
+    }
+  };
+
   return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        {
-          backgroundColor: isDisabled ? disabledBg : color,
-          borderColor: isDisabled ? disabledBorder : borderColor || color,
-        },
-        style,
-      ]}
-      disabled={isDisabled}
-      activeOpacity={0.8}
+    <Pressable
       onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={isDisabled}
+      style={{ width: "100%" }}
     >
-      {loading ? (
-        <LoadingSpinner color="#ff6b6b" />
-      ) : (
-        <AppText
-          style={[
-            styles.label,
-            { color: isDisabled ? disabledText : textColor },
-          ]}
-        >
-          {label}
-        </AppText>
-      )}
-    </TouchableOpacity>
+      <Animated.View
+        style={[
+          styles.button,
+          {
+            backgroundColor: isDisabled ? disabledBg : color,
+            borderColor: isDisabled ? disabledBorder : borderColor || color,
+          },
+          animatedStyle,
+          style,
+        ]}
+      >
+        {loading ? (
+          <LoadingSpinner color="#ff6b6b" />
+        ) : (
+          <AppText
+            style={[
+              styles.label,
+              { color: isDisabled ? disabledText : textColor },
+            ]}
+          >
+            {label}
+          </AppText>
+        )}
+      </Animated.View>
+    </Pressable>
   );
 };
 

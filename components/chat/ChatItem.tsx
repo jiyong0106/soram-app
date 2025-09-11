@@ -1,11 +1,12 @@
 import React, { useRef } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
 import AppText from "../common/AppText";
+import ScalePressable from "../common/ScalePressable";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -59,11 +60,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
         drag: SharedValue<number>
       ) => <SwipeActions prog={prog} drag={drag} />}
     >
-      <TouchableOpacity
-        style={styles.row}
-        onPress={handleRowPress}
-        activeOpacity={0.5}
-      >
+      <ScalePressable style={styles.row} onPress={handleRowPress}>
         <View style={styles.avatar} />
         <View style={styles.rowTextWrap}>
           <AppText style={styles.rowTitle} numberOfLines={1}>
@@ -73,7 +70,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
             {opponent.nickname}
           </AppText>
         </View>
-      </TouchableOpacity>
+      </ScalePressable>
     </ReanimatedSwipeable>
   );
 };

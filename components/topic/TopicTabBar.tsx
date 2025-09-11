@@ -3,28 +3,19 @@ import { useWindowDimensions } from "react-native";
 import { TabView } from "react-native-tab-view";
 import TopicSection from "./TopicSection";
 import TopicTabBarLists from "./TopicTabBarLists";
-
-interface RouteType {
-  key: "random" | "recommend";
-  title: string;
-}
+import { CATEGORIES, RouteType } from "@/utils/types/topic";
 
 const TopicTabBar = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
 
   const routes: RouteType[] = useMemo(
-    () => [{ key: "recommend", title: "답변 추천" }],
+    () => CATEGORIES.map((c) => ({ key: c, title: c })),
     []
   );
 
   const renderScene = useCallback(({ route }: { route: RouteType }) => {
-    switch (route.key) {
-      case "recommend":
-        return <TopicSection />;
-      default:
-        return null;
-    }
+    return <TopicSection category={route.key} />;
   }, []);
 
   return (

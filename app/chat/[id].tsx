@@ -7,7 +7,7 @@ import StickyBottom from "@/components/common/StickyBottom";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 import useSafeArea from "@/utils/hooks/useSafeArea";
-import ChatActionModal from "@/components/chat/ChatActionModal";
+import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getAuthToken } from "@/utils/util/auth";
 import MessageInputBar from "@/components/chat/MessageInputBar";
@@ -34,7 +34,7 @@ const ChatIdPage = () => {
   const [inputBarHeight, setInputBarHeight] = useState(40);
   const { height } = useReanimatedKeyboardAnimation();
   const { bottom } = useSafeArea();
-  const actionModalRef = useRef<any>(null);
+  const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
@@ -92,7 +92,7 @@ const ChatIdPage = () => {
             <View style={{ flexDirection: "row", gap: 16 }}>
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => actionModalRef.current?.present?.()}
+                onPress={() => actionSheetRef.current?.present?.()}
               >
                 <Ionicons name="ellipsis-vertical" size={22} />
               </TouchableOpacity>
@@ -130,7 +130,7 @@ const ChatIdPage = () => {
           />
         </StickyBottom>
 
-        <ChatActionModal ref={actionModalRef} blockedId={blockedId} />
+        <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />
       </View>
     </PageContainer>
   );

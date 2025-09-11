@@ -23,7 +23,7 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId, title } = useLocalSearchParams();
+  const { listId } = useLocalSearchParams();
   const topicId = Number(listId);
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
@@ -48,7 +48,6 @@ const TopicListIdPage = () => {
       showAlert("내용을 입력해 주세요.");
       return;
     }
-
     try {
       await postText({ topicId, textContent: text });
       showAlert("답변이 등록되었어요.", () => {
@@ -95,15 +94,7 @@ const TopicListIdPage = () => {
           contentContainerStyle={{ padding: 10, paddingBottom: 80 }}
           automaticallyAdjustKeyboardInsets
         >
-          <QuestionHeader
-            title={String(title)}
-            subSteps={[
-              "어떤 주와 같이 전투를 하고 싶나요?",
-              "가장 보고싶은 오니는 누구인가요?",
-              "무잔을 만나면 도망치시나요?",
-            ]}
-            activeIndex={2}
-          />
+          <QuestionHeader topicBoxId={topicId} />
 
           <Controller
             control={control}
@@ -143,12 +134,13 @@ const TopicListIdPage = () => {
 export default TopicListIdPage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+  },
   input: {
     minHeight: 200,
     fontSize: 16,
     textAlignVertical: "top",
     padding: 10,
-    marginTop: 12,
   },
 });

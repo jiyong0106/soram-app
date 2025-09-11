@@ -1,12 +1,12 @@
 import instance from "./axios";
 import {
   GetTopicListResponse,
-  TopicListType,
   UserAnswerResponse,
   RequestConnectionBody,
   RequestConnectionResponse,
   TextBody,
   TextResponse,
+  TextHeaderType,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -14,17 +14,20 @@ interface GetTopicListTypeParams {
   take: number;
   search?: string;
   cursor?: any;
+  category?: string;
 }
 
 export const getTopicList = async ({
   take,
   search,
   cursor,
+  category,
 }: GetTopicListTypeParams) => {
   const params: Record<string, any> = {};
   if (take) params.take = take;
   if (cursor !== undefined) params.cursor = cursor;
   if (search) params.search = search;
+  if (category && category !== "전체") params.category = category;
   const { data } = await instance.get<GetTopicListResponse>("/topics", {
     params,
   });
@@ -62,5 +65,13 @@ export const postRequestConnection = async (body: RequestConnectionBody) => {
 //5. 다양한 토픽에 대해 내 답변 등록하기 api
 export const postText = async (body: TextBody) => {
   const { data } = await instance.post<TextResponse>("/voices/text", body);
+  return data;
+};
+
+//6 답변 등록하기에 조회되는 타이틀 및 sub api타입
+export const getTextHeader = async (topicBoxId: number) => {
+  const { data } = await instance.get<TextHeaderType>(
+    `/topics/${topicBoxId}/questions`
+  );
   return data;
 };

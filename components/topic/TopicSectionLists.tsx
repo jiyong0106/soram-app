@@ -1,33 +1,23 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-import React from "react";
+import { StyleSheet, View } from "react-native";
+import React, { useRef } from "react";
 import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import TopicListSheet from "./TopicListSheet";
+import ScalePressable from "../common/ScalePressable";
 
 interface ItemProps {
   item: TopicListType;
 }
 
 const TopicSectionLists = ({ item }: ItemProps) => {
-  const { id, title, content, category, userCount } = item;
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push({
-      pathname: "/topic/list/[listId]",
-      params: {
-        listId: id,
-        title,
-      },
-    });
-  };
+  const { id, title, subQuestions, category, userCount } = item;
+  const actionSheetRef = useRef<any>(null);
 
   return (
-    <TouchableOpacity
+    <ScalePressable
       style={styles.container}
-      activeOpacity={0.5}
-      onPress={handlePress}
+      onPress={() => actionSheetRef.current?.present?.()}
     >
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
@@ -37,11 +27,25 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         <AppText style={styles.questionHighlight}>Q.</AppText>
         <AppText style={styles.title}>{title}</AppText>
       </View>
-      <AppText style={styles.desc}>{content}</AppText>
+      <View>
+        {subQuestions.map((content, index) => (
+          <AppText key={`${id}-${index}`} style={styles.cardSub}>
+            {content}
+          </AppText>
+        ))}
+      </View>
       <AppText style={styles.participants}>
-        💬 {userCount}명이 이야기하고 있어요
+        {userCount === 0
+          ? "아직 등록 된 답변이 없어요"
+          : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
-    </TouchableOpacity>
+      <TopicListSheet
+        ref={actionSheetRef}
+        title={title}
+        id={id}
+        subQuestions={subQuestions}
+      />
+    </ScalePressable>
   );
 };
 
@@ -97,5 +101,10 @@ const styles = StyleSheet.create({
   questionHighlight: {
     color: "#FF6B3E",
     fontWeight: "bold",
+  },
+  cardSub: {
+    marginTop: 10,
+    fontSize: 13,
+    lineHeight: 20,
   },
 });

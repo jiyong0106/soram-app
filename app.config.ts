@@ -21,12 +21,14 @@ export default ({ config }: any) => {
         infoPlist: {
           CFBundleDevelopmentRegion: "ko", //앱 기본 언어를 한국어로 지정.
           ITSAppUsesNonExemptEncryption: false, // 암호화 사용 x
+          UIBackgroundModes: ["fetch", "remote-notification"],
         },
         splash: {
           image: "./assets/icons/logos/012.png",
           resizeMode: "cover",
           backgroundColor: "#ffffff",
         },
+        // entitlements: { "aps-environment": "development" },
       },
 
       // Android 관련 설정
@@ -66,6 +68,7 @@ export default ({ config }: any) => {
           },
         ],
         ["expo-secure-store", { configureAndroidBackup: true }],
+        ["expo-notifications"],
       ],
 
       // 실험적 기능 활성화

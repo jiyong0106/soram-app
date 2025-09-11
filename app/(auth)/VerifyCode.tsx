@@ -9,6 +9,7 @@ import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
 import * as SecureStore from "expo-secure-store";
 import AppText from "@/components/common/AppText";
+import { useAuthStore } from "@/utils/sotre/useAuthStore";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -38,9 +39,9 @@ const VerifyCodeInputPage = () => {
 
       // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
       if (res.accessToken) {
-        await SecureStore.setItemAsync("access_token", res.accessToken);
+        await useAuthStore.getState().setToken(res.accessToken);
         clearPhoneNumber();
-        router.replace("/(tabs)/chat");
+        router.replace("/(tabs)/topic");
         return;
       }
 
