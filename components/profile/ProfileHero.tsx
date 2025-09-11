@@ -1,11 +1,8 @@
-import {
-  getAgeFromBirthdate,
-  prettyLocation,
-  ProfileType,
-} from "@/utils/types/profile";
+import { ProfileType } from "@/utils/types/profile";
 import React from "react";
 import { View, Image, StyleSheet } from "react-native";
 import AppText from "../common/AppText";
+import { getAgeFromBirthdate, prettyLocation } from "@/utils/util/birthdate";
 
 type ProfileHeroProps = {
   profile: ProfileType;
