@@ -7,7 +7,6 @@ import { postRequestOtp, postVerifyOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
 import { useSignupTokenStore } from "@/utils/sotre/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
-import * as SecureStore from "expo-secure-store";
 import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/sotre/useAuthStore";
 

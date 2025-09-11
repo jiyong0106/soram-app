@@ -1,7 +1,9 @@
 // app/utils/auth/token.ts
+// “토큰 저장·복원·만료확인” 유틸 모듈
+
 import * as SecureStore from "expo-secure-store";
 
-// 저장 키
+// 저장될 토큰큰 키
 export const TOKEN_KEY = "access_token";
 
 // 메모리 캐시(빠른 접근)
