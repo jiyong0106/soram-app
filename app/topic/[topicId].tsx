@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import { UserAnswerResponse } from "@/utils/types/topic";
 import { Ionicons } from "@expo/vector-icons";
 import useMinDelay from "@/utils/hooks/useMinDelay";
 import FindingAnswersOverlay from "@/components/topic/FindingAnswersOverlay";
+import useTicketGuard from "@/utils/hooks/useTicketGuard";
 
 const OVERLAY_FADE_MS = 220;
 const MIN_SHUFFLE_MS = 3000;
@@ -46,6 +47,16 @@ const UserAnswerPage = () => {
       return failureCount < 1;
     },
   });
+
+  // 비관적 차감: 페이지 진입이 성공(isSuccess)한 첫 시점에 1장 차감
+  const { ensure } = useTicketGuard("VIEW_RESPONSE", { optimistic: false });
+  const [deducted, setDeducted] = useState(false);
+
+  useEffect(() => {
+    if (!deducted && isSuccess) {
+      ensure(() => setDeducted(true));
+    }
+  }, [deducted, isSuccess, ensure]);
 
   const initialReady = minElapsed && (isSuccess || isError);
   const dataForRender = forceEmpty ? [] : data ?? [];
