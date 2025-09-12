@@ -106,7 +106,7 @@ const ReceivedRequests = () => {
 
     onSettled: () => {
       setProcessingId(null);
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      // 낙관적으로 제거된 상태를 유지. 즉시 리패치하면 서버 타이밍에 따라 다시 나타날 수 있음
     },
   });
 
@@ -126,7 +126,7 @@ const ReceivedRequests = () => {
 
     onSettled: () => {
       setProcessingId(null);
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      // 동일: 즉시 목록 리패치하지 않음
     },
   });
 
@@ -156,9 +156,7 @@ const ReceivedRequests = () => {
           <AppText style={styles.empty}>받은 대화 요청이 없어요</AppText>
         }
         ListFooterComponent={
-          isRefetching || isFetchingNextPage ? (
-            <ActivityIndicator style={{ marginVertical: 12 }} />
-          ) : hasNextPage ? (
+          isFetchingNextPage ? (
             <ActivityIndicator style={{ marginVertical: 12 }} />
           ) : null
         }
