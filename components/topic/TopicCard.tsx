@@ -15,18 +15,21 @@ type Props = {
 const TopicCard = ({ item }: Props) => {
   const router = useRouter();
   const { title, subQuestions, id, userCount } = item;
-  const { showAlert } = useAlert();
+  const { showAlert, showActionAlert } = useAlert();
 
   const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
-    optimistic: true,
+    optimistic: false, // 서버 성공 확인 후 차감
   });
 
   const handlePress = () => {
-    ensureNewResponse.ensure(() => {
-      router.push({
-        pathname: "/topic/[topicId]",
-        params: { topicId: id, title },
+    showActionAlert("티켓 1장을 소모해서 이야기를 들으시나요?", "확인", () => {
+      // 비관적: 페이지 진입 시점에서 차감하도록 보장 (useTicketGuard 내부 optimistic=false)
+      ensureNewResponse.ensure(() => {
+        router.push({
+          pathname: "/topic/[topicId]",
+          params: { topicId: id, title },
+        });
       });
     });
   };

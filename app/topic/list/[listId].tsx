@@ -28,7 +28,7 @@ const TopicListIdPage = () => {
   const rawListId = Array.isArray(listId) ? listId[0] : listId;
   const topicId = Number(rawListId);
   const rawError = Array.isArray(error) ? error[0] : error;
-  const hasError = typeof rawError !== "undefined"; // 존재 여부로만 판단
+  const hasError = typeof rawError !== "undefined";
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -50,6 +50,10 @@ const TopicListIdPage = () => {
     const text = (content ?? "").trim();
     if (!text) {
       showAlert("내용을 입력해 주세요.");
+      return;
+    }
+    if (text.length < 20) {
+      showAlert("최소 20자 이상 입력해 주세요.");
       return;
     }
     try {

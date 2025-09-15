@@ -76,3 +76,11 @@ export interface UserReportResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+//채팅방 나가기
+export interface ChatLeaveResponse {
+  id: number;
+  connectionId: number;
+  userId: number;
+  createdAt: string;
+}

@@ -8,8 +8,8 @@ import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
-import * as SecureStore from "expo-secure-store";
 import AppText from "@/components/common/AppText";
+import { useAuthStore } from "@/utils/store/useAuthStore";
 
 const FinishPage = () => {
   const router = useRouter();
@@ -17,31 +17,36 @@ const FinishPage = () => {
   const clearSignupToken = useSignupTokenStore((s) => s.clear);
   const signupToken = useSignupTokenStore.getState().signupToken;
   const { showAlert } = useAlert();
+  const [loading, setLoading] = React.useState(false);
+
   const handlePress = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
-      // ✅ 현재 인풋값으로 스토어 값 덮어써서 body 구성 (patch 불필요)
-      const body: SignupSumbitBody = {
-        signupToken,
-        ...draft,
-      };
-      //서버 응답값 엑세스토큰
+      const body: SignupSumbitBody = { signupToken, ...draft };
       const res = await postSignupSumbit(body);
-      // 엑세스 토큰 스토어에 저장
-      await SecureStore.setItemAsync("access_token", res.accessToken);
 
-      // 드래프트/토큰 정리
+      if (!res?.accessToken) {
+        showAlert(" 다시 시도해 주세요.");
+        return;
+      }
+
+      // 3) 토큰 저장 → 인터셉터가 이후 요청부터 자동 주입
+      useAuthStore.getState().setToken(res.accessToken);
+
+      // 4) 임시 스토어 정리
       useSignupDraftStore.getState().reset?.();
-
-      //사인업 토큰 정리
       clearSignupToken();
 
-      //라우터 이동
+      // 5) 페이지 이동
       router.replace("/(tabs)/topic");
     } catch (e: any) {
       if (e) {
         showAlert(e.response.data.message);
         return;
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +57,7 @@ const FinishPage = () => {
           label="계속하기"
           color="#ff6b6b"
           textColor="#fff"
-          // disabled={!isValid}
+          disabled={loading}
           style={styles.button}
           onPress={handlePress}
         />
