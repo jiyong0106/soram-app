@@ -24,6 +24,7 @@ export interface ChatItemType {
   updatedAt: string;
   opponent: UserType;
   isBlocked: boolean;
+  isLeave: boolean;
 }
 export interface GetChatResponse {
   data: ChatItemType[];

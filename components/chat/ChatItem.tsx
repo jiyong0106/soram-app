@@ -58,7 +58,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
       renderRightActions={(
         prog: SharedValue<number>,
         drag: SharedValue<number>
-      ) => <SwipeActions prog={prog} drag={drag} />}
+      ) => <SwipeActions prog={prog} drag={drag} connectionId={id} />}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
         <View style={styles.avatar} />

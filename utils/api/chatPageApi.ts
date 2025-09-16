@@ -57,6 +57,6 @@ export const postUserBlock = async (blockedId: number) => {
 
 //채팅방 나가기
 export const postChatLeave = async (connectionId: number) => {
-  const data = await instance.post(`/connections/${connectionId}/leave`);
-  return data.data;
+  const { data } = await instance.delete(`/connections/${connectionId}/leave`);
+  return data;
 };
