@@ -1,16 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TouchableOpacity, View, Text, Keyboard, Platform } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { TouchableOpacity, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
-import StickyBottom from "@/components/common/StickyBottom";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
-import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
-import useSafeArea from "@/utils/hooks/useSafeArea";
+import Reanimated, { useAnimatedProps } from "react-native-reanimated";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getAuthToken } from "@/utils/util/auth";
-import MessageInputBar from "@/components/chat/MessageInputBar";
 import MessageList from "@/components/chat/MessageList";
 import { getSocket } from "@/utils/libs/getSocket";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT ";
@@ -18,6 +20,8 @@ import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
+import { useKeyboardAnimation } from "@/utils/hooks/useKeyboardAnimation";
+import MessageInputBar from "@/components/chat/MessageInputBar";
 
 const ChatIdPage = () => {
   const { id, peerUserId, peerUserName } = useLocalSearchParams<{
@@ -30,11 +34,10 @@ const ChatIdPage = () => {
   const blockedId = Number(peerUserId);
   const token = getAuthToken() ?? "";
 
-  const [text, setText] = useState("");
-  const [inputBarHeight, setInputBarHeight] = useState(40);
-  const { height } = useReanimatedKeyboardAnimation();
-  const { bottom } = useSafeArea();
   const actionSheetRef = useRef<any>(null);
+  const ref = useRef<Reanimated.ScrollView>(null);
+  const { height, onScroll, inset, offset } = useKeyboardAnimation();
+  const [text, setText] = useState("");
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
@@ -71,10 +74,6 @@ const ChatIdPage = () => {
     };
   }, [token]);
 
-  const animatedListStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: height.value }],
-  }));
-
   const onSend = () => {
     const msg = text.trim();
     if (!msg || !token) return;
@@ -82,8 +81,22 @@ const ChatIdPage = () => {
     setText("");
   };
 
+  const scrollToBottom = useCallback(() => {
+    ref.current?.scrollToEnd({ animated: false });
+  }, []);
+
+  const props = useAnimatedProps(() => ({
+    contentInset: {
+      bottom: inset.value,
+    },
+    contentOffset: {
+      x: 0,
+      y: offset.value,
+    },
+  }));
+
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: peerUserName,
@@ -102,37 +115,38 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-
-      <View style={{ flex: 1 }}>
-        <Animated.View style={[{ flex: 1 }, animatedListStyle]}>
-          <MessageList
-            myUserId={myUserId}
-            items={items}
-            live={messages}
-            onLoadMore={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            isFetchingNextPage={isFetchingNextPage}
-            paddingBottom={bottom}
-          />
-        </Animated.View>
-
-        <StickyBottom
-          style={{ backgroundColor: "#fff" }}
-          onHeightChange={(h) => setInputBarHeight(h)}
-          bottomInset={bottom}
-        >
-          <MessageInputBar
-            value={text}
-            onChangeText={setText}
-            onSend={onSend}
-          />
-        </StickyBottom>
-
-        <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />
-      </View>
+      <Reanimated.ScrollView
+        ref={ref}
+        // simulation of `automaticallyAdjustKeyboardInsets` behavior on RN < 0.73
+        animatedProps={props}
+        automaticallyAdjustContentInsets={false}
+        contentContainerStyle={{ paddingBottom: 50 }}
+        contentInsetAdjustmentBehavior="never"
+        keyboardDismissMode="interactive"
+        testID="chat.scroll"
+        onContentSizeChange={scrollToBottom}
+        onScroll={onScroll}
+      >
+        <MessageList
+          myUserId={myUserId}
+          items={items}
+          live={messages}
+          onLoadMore={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          isFetchingNextPage={isFetchingNextPage}
+          paddingBottom={20}
+        />
+      </Reanimated.ScrollView>
+      <MessageInputBar
+        value={text}
+        onChangeText={setText}
+        onSend={onSend}
+        height={height}
+      />
+      <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />
     </PageContainer>
   );
 };
