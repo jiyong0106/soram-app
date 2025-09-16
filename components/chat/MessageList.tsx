@@ -47,6 +47,7 @@ const MessageList = ({
     return Array.from(map.values());
   }, [items, live]);
 
+  // DESC: 최신→과거
   const desc = useMemo(
     () =>
       merged
@@ -55,18 +56,14 @@ const MessageList = ({
         .map((m) => ({ ...m, __minuteKey: makeMinuteKey(m.createdAt) })),
     [merged]
   );
+  // ASC: 과거→최신
   const asc = useMemo(() => [...desc].reverse(), [desc]);
 
-  // ---- 모드: 빈 방이면 Top 모드(위에서부터), 아니면 inverted ----
-  const isTopMode = items.length === 0;
-  const useInverted = !isTopMode;
-  const data = useInverted ? desc : asc;
-
-  // ---- 스크롤 상태 추적 ----
+  // ---- 레이아웃/콘텐츠 측정 ----
   const [nearBottom, setNearBottom] = useState(true);
   const [layoutH, setLayoutH] = useState(0);
   const [contentH, setContentH] = useState(0);
-  const canScroll = contentH > layoutH + 1; // 스크롤 가능한지
+  const canScroll = contentH > layoutH + 1;
 
   const onLayout = useCallback((e: LayoutChangeEvent) => {
     setLayoutH(e.nativeEvent.layout.height);
@@ -75,6 +72,17 @@ const MessageList = ({
     setContentH(h);
   }, []);
 
+  // ---- 모드 결정 ----
+  // 기본 규칙: 과거(items) 없고 더 불러올 것도 없으면 Top 모드
+  const baseTopMode = items.length === 0 && !hasNextPage;
+  // 추가 규칙: 콘텐츠가 화면을 못 채우면(스크롤 불가) 무조건 Top 모드
+  const compactTopMode = !canScroll;
+  const useTopMode = baseTopMode || compactTopMode;
+  const useInverted = !useTopMode;
+
+  const data = useInverted ? desc : asc;
+
+  // ---- 스크롤 처리 ----
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { y } = e.nativeEvent.contentOffset;
@@ -82,32 +90,25 @@ const MessageList = ({
       const { height: ch } = e.nativeEvent.contentSize;
 
       if (useInverted) {
-        // inverted: 하단 = offset 0
         setNearBottom(y <= TH);
       } else {
-        // Top 모드: 하단 = 리스트 끝
         setNearBottom(y + vh >= ch - TH);
-
-        // Top 모드에서 위로 당겨 과거 불러오기
         if (hasNextPage && y <= TH) onLoadMore();
       }
     },
     [useInverted, hasNextPage, onLoadMore]
   );
 
-  // ---- 새 메시지 자동 붙이기 ----
+  // 새 메시지 자동 붙이기
   useEffect(() => {
     if (!nearBottom) return;
 
     if (useInverted) {
-      // 일반 채팅 UX: 최신이 아래(시각적 하단) → offset 0
       flatRef.current?.scrollToOffset({ animated: true, offset: 0 });
     } else {
-      // Top 모드: **스크롤 가능할 때만** 바닥으로 붙임
       if (canScroll) {
         flatRef.current?.scrollToEnd({ animated: true });
       }
-      // 스크롤 불가(컨텐츠가 화면보다 작음)면 아무것도 하지 않음 → 위쪽에 고정
     }
   }, [live.length, nearBottom, useInverted, canScroll]);
 
