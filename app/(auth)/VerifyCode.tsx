@@ -38,7 +38,7 @@ const VerifyCodeInputPage = () => {
 
       // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
       if (res.accessToken) {
-        await useAuthStore.getState().setToken(res.accessToken);
+        useAuthStore.getState().setToken(res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/topic");
         return;

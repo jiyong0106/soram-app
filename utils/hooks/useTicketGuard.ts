@@ -14,21 +14,23 @@ const useTicketGuard = (kind: TicketKind, opts?: Options) => {
   const onInsufficient = opts?.onInsufficient;
 
   // 렌더 중에는 "읽기"만
-  const hasTicket = useTicketsStore((s) => s.counts[kind] > 0);
+  const available = useTicketsStore((s) => s.counts[kind]);
   const consumeLocal = useTicketsStore((s) => s.consumeLocal);
   const restoreLocal = useTicketsStore((s) => s.restoreLocal);
 
   // 상태 변경은 onPress 시점에만
   const ensure = useCallback(
     (onPass: () => void) => {
-      if (!hasTicket || amount <= 0) {
-        onInsufficient?.() ?? console.log("");
+      if (amount <= 0 || available < amount) {
+        onInsufficient?.();
         return;
       }
       if (optimistic) consumeLocal(kind, amount);
 
       try {
         onPass();
+        // 비관적 모드: 성공 이후에만 차감
+        if (!optimistic) consumeLocal(kind, amount);
         // TODO: 서버 차감 API가 있다면 여기서 mutate 후 실패 시 restoreLocal 호출
         // await mutateAsync({ kind, amount });
       } catch (e) {
@@ -37,7 +39,7 @@ const useTicketGuard = (kind: TicketKind, opts?: Options) => {
       }
     },
     [
-      hasTicket,
+      available,
       amount,
       optimistic,
       onInsufficient,

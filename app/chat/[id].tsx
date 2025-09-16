@@ -14,7 +14,7 @@ import MessageInputBar from "@/components/chat/MessageInputBar";
 import MessageList from "@/components/chat/MessageList";
 import { getSocket } from "@/utils/libs/getSocket";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT ";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
@@ -53,6 +53,7 @@ const ChatIdPage = () => {
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
       staleTime: 60 * 1000,
+      placeholderData: keepPreviousData,
     });
   const items: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];

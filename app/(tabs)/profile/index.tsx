@@ -62,7 +62,7 @@ const ProfilePage = () => {
 
     router.replace("/");
   };
-  console.log(token); 
+  console.log("token===>", token);
 
   return (
     <PageContainer edges={[]} padded={false}>

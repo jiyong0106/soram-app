@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { isAxiosError } from "axios";
@@ -15,6 +15,7 @@ import { UserAnswerResponse } from "@/utils/types/topic";
 import { Ionicons } from "@expo/vector-icons";
 import useMinDelay from "@/utils/hooks/useMinDelay";
 import FindingAnswersOverlay from "@/components/topic/FindingAnswersOverlay";
+import useTicketGuard from "@/utils/hooks/useTicketGuard";
 
 const OVERLAY_FADE_MS = 220;
 const MIN_SHUFFLE_MS = 3000;
@@ -27,12 +28,13 @@ const UserAnswerPage = () => {
   const [shuffleOverlay, setShuffleOverlay] = useState(false);
   const [forceEmpty, setForceEmpty] = useState(false);
   const [suppressList, setSuppressList] = useState(false); // 플리커 방지용
+  const router = useRouter();
 
   // 초기 3초
   const minElapsed = useMinDelay(MIN_SHUFFLE_MS);
 
   // 데이터
-  const { data, refetch, isFetching, isSuccess, isError } = useQuery<
+  const { data, refetch, isFetching, isSuccess, isError, error } = useQuery<
     UserAnswerResponse[],
     AxiosError
   >({
@@ -46,6 +48,16 @@ const UserAnswerPage = () => {
       return failureCount < 1;
     },
   });
+
+  // 비관적 차감: 페이지 진입이 성공(isSuccess)한 첫 시점에 1장 차감
+  const { ensure } = useTicketGuard("VIEW_RESPONSE", { optimistic: false });
+  const [deducted, setDeducted] = useState(false);
+
+  useEffect(() => {
+    if (!deducted && isSuccess) {
+      ensure(() => setDeducted(true));
+    }
+  }, [deducted, isSuccess, ensure]);
 
   const initialReady = minElapsed && (isSuccess || isError);
   const dataForRender = forceEmpty ? [] : data ?? [];
@@ -109,13 +121,23 @@ const UserAnswerPage = () => {
             contentContainerStyle={styles.listContent}
             ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
             ListFooterComponent={
-              <ScalePressable
-                style={styles.moreTopicWrapper}
-                onPress={onShuffle}
-              >
-                <AppText style={styles.moreTopic}>다른 이야기 보기</AppText>
-                <Ionicons name="reload" size={15} color="#8E8E8E" />
-              </ScalePressable>
+              isError ? (
+                <ScalePressable
+                  style={styles.moreTopicWrapper}
+                  onPress={() => router.push("/topic/list")}
+                >
+                  <AppText style={styles.moreTopic}>다른 주제 보기</AppText>
+                  <Ionicons name="reload" size={15} color="#8E8E8E" />
+                </ScalePressable>
+              ) : (
+                <ScalePressable
+                  style={styles.moreTopicWrapper}
+                  onPress={onShuffle}
+                >
+                  <AppText style={styles.moreTopic}>다른 이야기 보기</AppText>
+                  <Ionicons name="reload" size={15} color="#8E8E8E" />
+                </ScalePressable>
+              )
             }
             ListEmptyComponent={
               <EmptyState

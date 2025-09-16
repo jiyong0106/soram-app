@@ -54,4 +54,9 @@ export const postUserBlock = async (blockedId: number) => {
   });
   return data.data;
 };
-// /blocks
+
+//채팅방 나가기
+export const postChatLeave = async (connectionId: number) => {
+  const { data } = await instance.delete(`/connections/${connectionId}/leave`);
+  return data;
+};
