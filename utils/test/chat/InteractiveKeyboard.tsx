@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput } from "react-native";
 import {
   KeyboardGestureArea,
   useKeyboardHandler,
@@ -12,8 +12,10 @@ import Reanimated, {
 } from "react-native-reanimated";
 
 import type { LayoutChangeEvent } from "react-native";
-import Message from "@/utils/test/chat/Message";
-import { history } from "@/utils/test/chat/histroy";
+import Message from "@/utils/test/chat/chatut/Message";
+import { history } from "@/utils/test/chat/chatut/histroy";
+import styles from "./styles";
+
 const AnimatedTextInput = Reanimated.createAnimatedComponent(TextInput);
 
 const useKeyboardAnimation = () => {
@@ -155,35 +157,3 @@ function InteractiveKeyboard() {
 }
 
 export default InteractiveKeyboard;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    color: "black",
-    marginRight: 12,
-  },
-  contentContainer: { justifyContent: "flex-end", flexGrow: 1 },
-  textInput: { height: 50, width: "100%", backgroundColor: "#BCBCBC" },
-  fab: {
-    position: "absolute",
-    bottom: 50,
-    right: 16,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingBottom: 16,
-  },
-  circle: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#0080FF",
-    borderRadius: 90,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  icon: {
-    fontSize: 24,
-    color: "white",
-  },
-});
