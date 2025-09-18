@@ -52,7 +52,7 @@ export default SettingRow;
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: 52,
+    minHeight: 48,
     paddingHorizontal: 16,
     paddingVertical: 12,
     flexDirection: "row",
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 13,
-    color: "#202124",
+    color: "#5C4B44",
   },
   subtitle: {
     marginTop: 4,

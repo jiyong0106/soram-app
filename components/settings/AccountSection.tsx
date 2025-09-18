@@ -43,7 +43,6 @@ const AccountSection = () => {
         onPress={handleLogout}
         disabled={loading}
       />
-      <View style={styles.divider} />
       <SettingRow
         title="계정 삭제"
         variant="danger"
@@ -55,9 +54,9 @@ const AccountSection = () => {
 
 export default AccountSection;
 
-const styles = StyleSheet.create({
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#ECEFF1",
-  },
-});
+// const styles = StyleSheet.create({
+//   divider: {
+//     height: StyleSheet.hairlineWidth,
+//     backgroundColor: "#ECEFF1",
+//   },
+// });
