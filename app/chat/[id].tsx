@@ -1,11 +1,5 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useMemo, useRef } from "react";
+import { TouchableOpacity, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";

@@ -1,14 +1,12 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import {
   GiftedChat,
   Bubble,
   IMessage,
   InputToolbar,
-  Composer,
 } from "react-native-gifted-chat";
 import type { MessageProps } from "react-native-gifted-chat";
-import type { DayProps } from "react-native-gifted-chat/lib/Day";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 
