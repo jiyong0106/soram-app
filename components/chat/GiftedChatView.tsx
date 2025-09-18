@@ -157,7 +157,7 @@ const GiftedChatView = ({
     return (
       <View
         style={{
-          paddingVertical: 10,
+          paddingVertical: 5,
           paddingHorizontal: 3,
           backgroundColor: "#E5E7EB",
           borderRadius: 16,
