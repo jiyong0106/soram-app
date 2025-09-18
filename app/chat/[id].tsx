@@ -12,7 +12,7 @@ import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getAuthToken } from "@/utils/util/auth";
-import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT ";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatMessageType } from "@/utils/types/chat";
