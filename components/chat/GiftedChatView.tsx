@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { GiftedChat, Bubble, IMessage } from "react-native-gifted-chat";
 import type { MessageProps } from "react-native-gifted-chat";
 import type { DayProps } from "react-native-gifted-chat/lib/Day";
 import AppText from "../common/AppText";
+import { Ionicons } from "@expo/vector-icons";
 
 // GiftedChat 래퍼 컴포넌트
 // - 목적: 메시지 정렬(위→아래), 시간 라벨 배치, 시스템 메시지 표현 일관화
@@ -157,7 +158,7 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
           backgroundColor: "#E5E7EB",
           borderRadius: 16,
           width: "30%",
-          marginHorizontal: "auto",
+          alignSelf: "center",
           marginVertical: 30,
         }}
       >
@@ -186,8 +187,29 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
+      renderSend={(props) => {
+        const canSend = !!props.text?.trim();
+        return (
+          <TouchableOpacity
+            onPress={() => props.onSend?.({ text: props.text!.trim() }, true)}
+            disabled={!canSend}
+            style={{
+              opacity: canSend ? 1 : 0.4,
+              marginRight: 15,
+            }}
+          >
+            <Ionicons name="send" size={25} color="#ff6b6b" />
+          </TouchableOpacity>
+        );
+      }}
     />
   );
 };
 
 export default GiftedChatView;
+
+//renderActions
+//=> 메시지 입력 영역 왼쪽에 버튼 추가
+
+//renderSend
+//=> 메시지 전송 버튼
