@@ -2,18 +2,18 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import SettingSection from "@/components/settings/SettingSection";
 import SettingRow from "@/components/settings/SettingRow";
-import useAlert from "@/utils/hooks/useAlert";
+import { useRouter } from "expo-router";
 
 const CurrencySection = () => {
-  const { showAlert } = useAlert();
+  const router = useRouter();
 
   // TODO: 실제 사용자 재화 정보를 API로 조회하여 연동해야 합니다.
   const chatTickets = 10;
   const viewTickets = 3;
 
   const handleHistory = () => {
-    // TODO: 재화 사용내역 페이지로 이동하는 로직 구현
-    showAlert("재화 사용내역 페이지로 이동합니다.");
+    // 재화 사용내역 페이지로 이동
+    router.push("/profile/setting/ticketHistory");
   };
 
   return (
