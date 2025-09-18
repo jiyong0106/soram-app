@@ -1,0 +1,193 @@
+import React, { useCallback, useMemo } from "react";
+import { View, Text } from "react-native";
+import { GiftedChat, Bubble, IMessage } from "react-native-gifted-chat";
+import type { MessageProps } from "react-native-gifted-chat";
+import type { DayProps } from "react-native-gifted-chat/lib/Day";
+import AppText from "../common/AppText";
+
+// GiftedChat 래퍼 컴포넌트
+// - 목적: 메시지 정렬(위→아래), 시간 라벨 배치, 시스템 메시지 표현 일관화
+// - 주의: 상위에서 messages는 오름차순 제공 권장. 아니면 내부에서 정렬합니다.
+
+export type GiftedChatViewProps = {
+  messages: IMessage[];
+  onSend: (newMessages?: IMessage[]) => void;
+  currentUser: { _id: string | number };
+  placeholder?: string;
+};
+
+const GiftedChatView: React.FC<GiftedChatViewProps> = ({
+  messages,
+  onSend,
+  currentUser,
+  placeholder = "메시지를 입력하세요",
+}) => {
+  // 시간 라벨 포맷터
+  const formatTimeLabel = useCallback((date?: Date | number | string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }, []);
+
+  // 메시지 커스텀 렌더러: 시간 라벨을 말풍선 옆으로 배치
+  const renderMessage = useCallback(
+    (props: MessageProps<IMessage>) => {
+      const current = props?.currentMessage as IMessage | undefined;
+      if (!current) return <View />;
+      if (current.system) {
+        return (
+          <View style={{ paddingVertical: 8, alignItems: "center" }}>
+            <Text style={{ color: "#8E8E93", fontSize: 12 }}>
+              {current.text}
+            </Text>
+          </View>
+        );
+      }
+      const isMe = current.user?._id === currentUser._id;
+      const timeText = formatTimeLabel(current.createdAt);
+
+      // 같은 사용자·같은 분의 연속 메시지면 현재 메시지 시간은 숨김
+      const nextMsg = props?.nextMessage as IMessage | undefined;
+      const toMinute = (d?: Date | number | string) =>
+        d ? Math.floor(new Date(d).getTime() / 60000) : NaN;
+      const isSameUser = nextMsg && nextMsg.user?._id === current.user?._id;
+      const isSameMinute =
+        nextMsg && toMinute(nextMsg.createdAt) === toMinute(current.createdAt);
+      const showTime = !(isSameUser && isSameMinute);
+
+      const wrapperStyle = {
+        right: {
+          backgroundColor: "#ff6b6b",
+          padding: 5,
+          marginLeft: 0,
+          marginRight: 0,
+        },
+        left: {
+          backgroundColor: "#f2f2f7",
+          padding: 5,
+          marginLeft: 0,
+          marginRight: 0,
+        },
+      } as const;
+
+      const textStyle = {
+        right: { color: "#ffffff" },
+        left: { color: "#111111" },
+      } as const;
+
+      const containerStyle = {
+        right: { flex: 0, maxWidth: "78%" },
+        left: { flex: 0, maxWidth: "78%" },
+      } as const;
+
+      return (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "flex-end",
+            justifyContent: isMe ? "flex-end" : "flex-start",
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+          }}
+        >
+          {isMe ? (
+            <>
+              {showTime && (
+                <Text
+                  style={{ color: "#8E8E93", fontSize: 12, marginRight: 4 }}
+                >
+                  {timeText}
+                </Text>
+              )}
+              <Bubble
+                {...props}
+                renderTime={() => null}
+                wrapperStyle={wrapperStyle}
+                textStyle={textStyle}
+                containerStyle={containerStyle}
+              />
+            </>
+          ) : (
+            <>
+              <Bubble
+                {...props}
+                renderTime={() => null}
+                wrapperStyle={wrapperStyle}
+                textStyle={textStyle}
+                containerStyle={containerStyle}
+              />
+              {showTime && (
+                <Text style={{ color: "#8E8E93", fontSize: 12, marginLeft: 4 }}>
+                  {timeText}
+                </Text>
+              )}
+            </>
+          )}
+        </View>
+      );
+    },
+    [currentUser._id, formatTimeLabel]
+  );
+
+  const renderSystemMessage = useCallback((props: any) => {
+    const text = props?.currentMessage?.text ?? "";
+    return (
+      <View style={{ paddingVertical: 8, alignItems: "center" }}>
+        <Text style={{ color: "#8E8E93", fontSize: 12 }}>{text}</Text>
+      </View>
+    );
+  }, []);
+
+  // Day(날짜 배지) 포맷: YYYY-MM-DD
+  const renderDay = useCallback((props: any) => {
+    const createdAt = props?.createdAt ?? props?.currentMessage?.createdAt;
+    const d = createdAt ? new Date(createdAt) : undefined;
+    const yyyy = d?.getFullYear();
+    const mm = d ? String(d.getMonth() + 1).padStart(2, "0") : "";
+    const dd = d ? String(d.getDate()).padStart(2, "0") : "";
+    const label = d ? `${yyyy}-${mm}-${dd}` : "";
+    return (
+      <View
+        style={{
+          paddingVertical: 10,
+          paddingHorizontal: 3,
+          backgroundColor: "#E5E7EB",
+          borderRadius: 16,
+          width: "30%",
+          marginHorizontal: "auto",
+          marginVertical: 30,
+        }}
+      >
+        <AppText
+          style={{
+            color: "#6B7280",
+            fontSize: 11,
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          {label}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  return (
+    <GiftedChat
+      messages={messages}
+      onSend={onSend}
+      user={currentUser}
+      placeholder={placeholder}
+      alwaysShowSend
+      inverted={false}
+      renderMessage={renderMessage}
+      renderSystemMessage={renderSystemMessage}
+      renderDay={renderDay}
+    />
+  );
+};
+
+export default GiftedChatView;
