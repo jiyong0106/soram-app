@@ -27,7 +27,7 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
   messages,
   onSend,
   currentUser,
-  placeholder = "메시지를 입력하세요",
+  placeholder = "메시지 입력",
 }) => {
   // 시간 라벨 포맷터
   const formatTimeLabel = useCallback((date?: Date | number | string) => {
@@ -188,9 +188,9 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
       <InputToolbar
         {...props}
         containerStyle={{
-          paddingVertical: 8,
+          borderTopWidth: 0,
+          paddingHorizontal: 10,
         }}
-        primaryStyle={{ alignItems: "center" }}
       />
     );
   }, []);
@@ -205,9 +205,7 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
           style={{
             flex: 1,
             borderRadius: 20,
-            paddingHorizontal: 12,
-            marginHorizontal: 4,
-            minHeight: 35,
+            paddingHorizontal: 10,
             backgroundColor: "#f2f2f7",
             justifyContent: "center",
           }}
@@ -215,7 +213,6 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
           <Composer
             {...props}
             placeholder={placeholder}
-            multiline
             textInputStyle={{
               color: "#111111",
               paddingTop: 0,
@@ -249,10 +246,9 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
             disabled={!canSend}
             style={{
               opacity: canSend ? 1 : 0.4,
-              width: 32,
-              height: 32,
-              marginHorizontal: 5,
-              alignSelf: "center",
+              paddingVertical: 10,
+              paddingLeft: 10,
+              marginHorizontal: "auto",
               justifyContent: "center",
             }}
           >
