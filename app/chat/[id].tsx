@@ -111,6 +111,9 @@ const ChatIdPage = () => {
         messages={giftedMessages}
         onSend={handleSendGifted}
         currentUser={{ _id: myUserId ?? "me" }}
+        onLoadEarlier={() => fetchNextPage()}
+        canLoadEarlier={!!hasNextPage}
+        isLoadingEarlier={!!isFetchingNextPage}
       />
 
       <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />

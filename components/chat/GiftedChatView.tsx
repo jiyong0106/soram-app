@@ -9,6 +9,7 @@ import {
 import type { MessageProps } from "react-native-gifted-chat";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 // GiftedChat 래퍼 컴포넌트
 // - 목적: 메시지 정렬(위→아래), 시간 라벨 배치, 시스템 메시지 표현 일관화
@@ -19,6 +20,9 @@ export type GiftedChatViewProps = {
   onSend: (newMessages?: IMessage[]) => void;
   currentUser: { _id: string | number };
   placeholder?: string;
+  onLoadEarlier?: () => void;
+  canLoadEarlier?: boolean;
+  isLoadingEarlier?: boolean;
 };
 
 const GiftedChatView = ({
@@ -26,6 +30,9 @@ const GiftedChatView = ({
   onSend,
   currentUser,
   placeholder = "메시지 입력",
+  onLoadEarlier,
+  canLoadEarlier,
+  isLoadingEarlier,
 }: GiftedChatViewProps) => {
   // 시간 라벨 포맷터
   const formatTimeLabel = useCallback((date?: Date | number | string) => {
@@ -241,6 +248,15 @@ const GiftedChatView = ({
     );
   };
 
+  const renderLoadEarlier = useCallback(() => {
+    if (!canLoadEarlier) return null; // 더 불러올 게 없으면 아무것도 안 보임
+    return (
+      <View style={{ paddingVertical: 12, alignItems: "center" }}>
+        {isLoadingEarlier ? <LoadingSpinner color="#ff6b6b" /> : null}
+      </View>
+    );
+  }, [canLoadEarlier, isLoadingEarlier]);
+
   return (
     <GiftedChat
       messages={messages}
@@ -249,6 +265,25 @@ const GiftedChatView = ({
       placeholder={placeholder}
       alwaysShowSend
       inverted={false}
+      // 이전 기록 로딩
+      loadEarlier={!!canLoadEarlier}
+      isLoadingEarlier={!!isLoadingEarlier}
+      onLoadEarlier={onLoadEarlier}
+      renderLoadEarlier={renderLoadEarlier}
+      // 위로 스크롤 시 임계점에서 자동 로드
+      handleOnScroll={(e: any) => {
+        try {
+          const y = e?.contentOffset?.y ?? e?.nativeEvent?.contentOffset?.y;
+          if (y != null && y < 48 && canLoadEarlier && !isLoadingEarlier) {
+            onLoadEarlier?.();
+          }
+        } catch {}
+      }}
+      listViewProps={{
+        // iOS에서 스크롤 위치 보존 지원 (플랫폼별 동작 상이할 수 있음)
+        // @ts-ignore
+        maintainVisibleContentPosition: { minIndexForVisible: 1 },
+      }}
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
