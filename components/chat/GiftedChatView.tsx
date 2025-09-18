@@ -23,12 +23,12 @@ export type GiftedChatViewProps = {
   placeholder?: string;
 };
 
-const GiftedChatView: React.FC<GiftedChatViewProps> = ({
+const GiftedChatView = ({
   messages,
   onSend,
   currentUser,
   placeholder = "메시지 입력",
-}) => {
+}: GiftedChatViewProps) => {
   // 시간 라벨 포맷터
   const formatTimeLabel = useCallback((date?: Date | number | string) => {
     if (!date) return "";
