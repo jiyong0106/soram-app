@@ -113,7 +113,6 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-
       <GiftedChatView
         messages={giftedMessages}
         onSend={handleSendGifted}

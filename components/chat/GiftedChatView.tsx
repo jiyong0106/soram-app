@@ -1,6 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { GiftedChat, Bubble, IMessage } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  Bubble,
+  IMessage,
+  InputToolbar,
+  Composer,
+} from "react-native-gifted-chat";
 import type { MessageProps } from "react-native-gifted-chat";
 import type { DayProps } from "react-native-gifted-chat/lib/Day";
 import AppText from "../common/AppText";
@@ -176,6 +182,52 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
     );
   }, []);
 
+  // 인풋바 컨테이너 커스텀(상단 보더 제거, 패딩 정리)
+  const renderInputToolbar = useCallback((props: any) => {
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          paddingVertical: 8,
+        }}
+        primaryStyle={{ alignItems: "center" }}
+      />
+    );
+  }, []);
+
+  // 왼쪽 액션 버튼(+)
+
+  // 입력창 배경/라운드 적용
+  const renderComposer = useCallback(
+    (props: any) => {
+      return (
+        <View
+          style={{
+            flex: 1,
+            borderRadius: 20,
+            paddingHorizontal: 12,
+            marginHorizontal: 4,
+            minHeight: 35,
+            backgroundColor: "#f2f2f7",
+            justifyContent: "center",
+          }}
+        >
+          <Composer
+            {...props}
+            placeholder={placeholder}
+            multiline
+            textInputStyle={{
+              color: "#111111",
+              paddingTop: 0,
+              paddingBottom: 0,
+            }}
+          />
+        </View>
+      );
+    },
+    [placeholder]
+  );
+
   return (
     <GiftedChat
       messages={messages}
@@ -187,6 +239,8 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
+      renderInputToolbar={renderInputToolbar}
+      renderComposer={renderComposer}
       renderSend={(props) => {
         const canSend = !!props.text?.trim();
         return (
@@ -195,7 +249,11 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
             disabled={!canSend}
             style={{
               opacity: canSend ? 1 : 0.4,
-              marginRight: 15,
+              width: 32,
+              height: 32,
+              marginHorizontal: 5,
+              alignSelf: "center",
+              justifyContent: "center",
             }}
           >
             <Ionicons name="send" size={25} color="#ff6b6b" />
