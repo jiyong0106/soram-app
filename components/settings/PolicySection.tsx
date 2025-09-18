@@ -16,8 +16,8 @@ const PolicySection = ({ onPressPrivacy, onPressTerms }: Props) => {
         variant="link"
         onPress={onPressPrivacy}
       />
-      <View style={styles.divider} />
       <SettingRow title="이용약관" variant="link" onPress={onPressTerms} />
+      <View style={styles.divider} />
     </SettingSection>
   );
 };
@@ -27,6 +27,8 @@ export default PolicySection;
 const styles = StyleSheet.create({
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: "#ECEFF1",
+    backgroundColor: "#5C4B44",
+    marginTop: 8,
+    marginBottom: 8,
   },
 });
