@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import {
   GiftedChat,
   Bubble,
@@ -198,32 +198,50 @@ const GiftedChatView: React.FC<GiftedChatViewProps> = ({
   // 왼쪽 액션 버튼(+)
 
   // 입력창 배경/라운드 적용
-  const renderComposer = useCallback(
-    (props: any) => {
-      return (
-        <View
-          style={{
+  const renderComposer = (props: any) => {
+    const {
+      placeholder = "메시지 입력",
+      placeholderTextColor = "#b2b2b2",
+      multiline = true,
+      textInputAutoFocus = false,
+      keyboardAppearance = "default",
+      text = "",
+      onTextChanged,
+      textInputProps,
+      textInputStyle,
+      disableComposer = false,
+    } = props;
+
+    return (
+      <TextInput
+        testID={placeholder}
+        accessible
+        accessibilityLabel={placeholder}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
+        multiline={multiline}
+        editable={!disableComposer}
+        onChangeText={onTextChanged}
+        numberOfLines={6}
+        style={[
+          textInputStyle,
+          {
             flex: 1,
-            borderRadius: 20,
-            paddingHorizontal: 10,
+            minHeight: 40,
             backgroundColor: "#f2f2f7",
-            justifyContent: "center",
-          }}
-        >
-          <Composer
-            {...props}
-            placeholder={placeholder}
-            textInputStyle={{
-              color: "#111111",
-              paddingTop: 0,
-              paddingBottom: 0,
-            }}
-          />
-        </View>
-      );
-    },
-    [placeholder]
-  );
+            borderRadius: 20,
+            padding: 10,
+          },
+        ]}
+        autoFocus={textInputAutoFocus}
+        value={text}
+        enablesReturnKeyAutomatically
+        underlineColorAndroid="transparent"
+        keyboardAppearance={keyboardAppearance}
+        {...textInputProps}
+      />
+    );
+  };
 
   return (
     <GiftedChat
