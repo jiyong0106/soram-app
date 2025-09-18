@@ -282,6 +282,3 @@ export default GiftedChatView;
 
 //renderActions
 //=> 메시지 입력 영역 왼쪽에 버튼 추가
-
-//renderSend
-//=> 메시지 전송 버튼
