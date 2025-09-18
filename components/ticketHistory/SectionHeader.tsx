@@ -15,9 +15,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA", // 리스트 배경과 다른 색으로 구분
   },
   text: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
-    color: "#5C6E80",
+    color: "#5C4B44",
   },
 });
 

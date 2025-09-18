@@ -53,14 +53,14 @@ const styles = StyleSheet.create({
     borderBottomColor: "transparent",
   },
   activeTab: {
-    borderBottomColor: "#121212",
+    borderBottomColor: "#FF7D4A",
   },
   tabText: {
-    fontSize: 16,
-    color: "#8A8A8A",
+    fontSize: 14,
+    color: "#B0A6A0",
   },
   activeTabText: {
-    color: "#121212",
+    color: "#5C4B44",
     fontWeight: "bold",
   },
 });

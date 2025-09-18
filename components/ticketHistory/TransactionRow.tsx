@@ -6,8 +6,8 @@ import AppText from "../common/AppText";
 
 // API의 iconType과 Ionicons 이름 매핑
 const iconMap: { [key: string]: keyof typeof Ionicons.glyphMap } = {
-  CHAT_START: "chatbubble-ellipses-outline",
-  VIEW_STORY: "eye-outline",
+  CHAT_START: "chatbubble-ellipses",
+  VIEW_STORY: "search-sharp",
   WELCOME_GIFT: "gift-outline",
   DAILY_REWARD: "calendar-outline",
   DEFAULT: "help-circle-outline",
@@ -33,7 +33,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => {
 
   return (
     <View style={styles.container}>
-      <Ionicons name={iconName} size={24} color="#5C6E80" style={styles.icon} />
+      <Ionicons name={iconName} size={24} color="#FF7D4A" style={styles.icon} />
       <View style={styles.content}>
         <AppText style={styles.displayText}>{transaction.displayText}</AppText>
         <AppText style={styles.subText}>
@@ -62,24 +62,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   displayText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
-    color: "#121212",
+    color: "#5C4B44",
     marginBottom: 4,
   },
   subText: {
-    fontSize: 13,
-    color: "#8A8A8A",
+    fontSize: 12,
+    color: "#B0A6A0",
   },
   quantity: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
   earn: {
     color: "#2979FF", // 파란색 (획득)
   },
   use: {
-    color: "#5C6E80", // 회색 (사용)
+    color: "#B0A6A0", // 회색 (사용)
   },
 });
 
