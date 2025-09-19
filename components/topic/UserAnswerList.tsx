@@ -6,6 +6,7 @@ import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
@@ -17,6 +18,7 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   //대화 요청하기
   const handlePress = () => {
@@ -32,6 +34,7 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         setLoading(true);
         await postRequestConnection(body);
         showAlert("요청되었어요!");
+        queryClient.invalidateQueries({ queryKey: ["getSentConnectionsKey"] });
       } catch (e: any) {
         const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
         showAlert(msg, () => {

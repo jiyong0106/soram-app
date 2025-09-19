@@ -58,8 +58,6 @@ const SentRequests = () => {
   // 보기용 리스트 (필요하면 PENDING만 필터)
   const items: GetSentConnectionsType[] = useMemo(() => {
     const flat = (data?.pages ?? []).flatMap((p) => p.data);
-    // PENDING만 보고 싶으면 아래 줄 사용
-    // return flat.filter((d) => d.status === "PENDING");
     return flat;
   }, [data?.pages]);
 
@@ -122,7 +120,7 @@ const SentRequests = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, padding: 10 }}
         ListEmptyComponent={
-          <AppText style={styles.empty}>받은 대화 요청이 없어요</AppText>
+          <AppText style={styles.empty}>보낸 대화 요청이 없어요</AppText>
         }
         ListFooterComponent={
           isRefetching || isFetchingNextPage ? (

@@ -11,9 +11,12 @@ interface ConnectionBase {
 }
 
 //받은 대화 요청 목록 조회 api타입
-export interface GetConnectionsType extends ConnectionBase {
-  status: ConnectionStatus;
+
+export interface GetConnectionsType {
+  createdAt: string;
+  id: number;
   requester: UserType;
+  topicTitle: string;
 }
 
 export interface GetConnectionsResponse {
