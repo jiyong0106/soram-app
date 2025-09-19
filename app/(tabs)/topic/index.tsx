@@ -7,7 +7,11 @@ import TopicTitle from "@/components/topic/TopicTitle";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -27,6 +31,14 @@ const TopicPage = () => {
 
   const [cooldown, setCooldown] = useState(false);
   const showInitSkeleton = !data && isLoading;
+  const queryClient = useQueryClient();
+  console.log(
+    "🗃️ 캐시에 존재하는 모든 쿼리키:",
+    queryClient
+      .getQueryCache()
+      .findAll()
+      .map((q) => q.queryKey)
+  );
 
   // 언마운트 시 타이머 정리
   useEffect(() => {
