@@ -2,19 +2,49 @@ import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import { StyleSheet, View } from "react-native";
 import AppText from "../common/AppText";
 import TicketsSheet from "./TicketsSheet";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ScalePressable from "../common/ScalePressable";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
+// 🚨 1. BottomSheetModal의 타입을 import 합니다.
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const TicketsView = () => {
-  // 변경점: 스토어에서 데이터를 각각의 selector로 가져와 무한 루프를 방지합니다.
   const storeState = useTicketsStore();
-  console.log(
-    "--- [TicketsView파일] 스토어 상태를 사용한 렌더링:",
-    JSON.stringify(storeState, null, 2)
-  );
-
   const { data, initialized } = storeState;
-  const actionSheetRef = useRef<any>(null);
+
+  // 🚨 2. useRef에 BottomSheetModal 타입을 명시해줍니다.
+  const actionSheetRef = useRef<BottomSheetModal>(null);
+
+  const [containerWidth, setContainerWidth] = useState(0);
+  const translateX = useSharedValue(0);
+
+  useEffect(() => {
+    if (containerWidth === 0) return;
+    const gradientWidth = containerWidth * 3;
+    const animationRange = gradientWidth - containerWidth;
+    translateX.value = withRepeat(
+      withTiming(-animationRange, {
+        duration: 500,
+        easing: Easing.linear,
+      }),
+      -1,
+      true
+    );
+  }, [containerWidth, translateX]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  });
 
   if (!initialized) {
     return null;
@@ -23,32 +53,53 @@ const TicketsView = () => {
   const { CHAT, VIEW_RESPONSE } = data;
 
   const items = [
-    { color: "#FF8A5B", value: CHAT.totalQuantity },
-    { color: "#BFDCAB", value: VIEW_RESPONSE.totalQuantity },
+    {
+      icon: (
+        <Ionicons name="chatbubble-ellipses-sharp" size={22} color="#FF8A5B" />
+      ),
+      value: CHAT.totalQuantity,
+    },
+    {
+      icon: <Ionicons name="book" size={22} color="#6A839A" />,
+      value: VIEW_RESPONSE.totalQuantity,
+    },
   ];
 
   return (
-    <ScalePressable
-      style={styles.container}
-      onPress={() => actionSheetRef.current?.present?.()}
-    >
-      <AppText style={styles.headerText}>보유 중인 사용권</AppText>
-      <View style={styles.ticketWrap}>
-        {items.map(({ color, value }, id) => (
-          <View key={id} style={styles.ticket}>
-            <View
-              style={[
-                styles.iconBadge,
-                { backgroundColor: color, marginRight: 4 },
-              ]}
-            >
-              <AppText style={styles.iconBadgeText}>
-                {id === 0 ? "C" : "M"}
-              </AppText>
-            </View>
-            <AppText style={styles.ticketText}>{value}</AppText>
+    // ✅ 이제 이 부분에서 오류가 발생하지 않습니다.
+    <ScalePressable onPress={() => actionSheetRef.current?.present?.()}>
+      <View
+        style={styles.gradientBorderContainer}
+        onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
+      >
+        {containerWidth > 0 && (
+          <Animated.View
+            style={[
+              { width: containerWidth * 3 },
+              styles.gradientAnimator,
+              animatedStyle,
+            ]}
+          >
+            <LinearGradient
+              colors={["#E86A78", "#A89CF7", "#72D6EE"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradient}
+            />
+          </Animated.View>
+        )}
+
+        <View style={styles.innerContainer}>
+          <AppText style={styles.headerText}>보유중인 이용권</AppText>
+          <View style={styles.ticketWrap}>
+            {items.map(({ icon, value }, id) => (
+              <View key={id} style={styles.ticket}>
+                {icon}
+                <AppText style={styles.ticketText}>{value}</AppText>
+              </View>
+            ))}
           </View>
-        ))}
+        </View>
       </View>
       <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
     </ScalePressable>
@@ -58,50 +109,49 @@ const TicketsView = () => {
 export default TicketsView;
 
 const styles = StyleSheet.create({
-  container: {
-    borderRadius: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ddd",
+  gradientBorderContainer: {
+    borderRadius: 30,
+    overflow: "hidden",
+    // width: "90%",
+    alignSelf: "center",
     marginVertical: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+  },
+  gradientAnimator: {
+    ...StyleSheet.absoluteFillObject,
+    height: "100%",
+  },
+  gradient: {
+    flex: 1,
+  },
+  innerContainer: {
+    backgroundColor: "#fff",
+    margin: 1.25,
+    borderRadius: 28,
+    paddingHorizontal: 32,
+    paddingVertical: 4,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    alignSelf: "center",
-    width: "90%",
-    backgroundColor: "#fff",
+    justifyContent: "center",
+    gap: 30,
   },
   headerText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
-    color: "#4A4A4A",
+    color: "#5C4B44",
   },
   ticketWrap: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 14,
   },
   ticket: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
   },
   ticketText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#4A4A4A",
-  },
-  iconBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconBadgeText: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#fff",
   },
 });
