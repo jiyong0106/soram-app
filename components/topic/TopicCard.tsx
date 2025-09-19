@@ -23,15 +23,19 @@ const TopicCard = ({ item }: Props) => {
   });
 
   const handlePress = () => {
-    showActionAlert("티켓 1장을 소모해서 이야기를 들으시나요?", "확인", () => {
-      // 비관적: 페이지 진입 시점에서 차감하도록 보장 (useTicketGuard 내부 optimistic=false)
-      ensureNewResponse.ensure(() => {
-        router.push({
-          pathname: "/topic/[topicId]",
-          params: { topicId: id, title },
+    showActionAlert(
+      "다른 사람들의 이야기를 보시겠어요? \n (이야기 보기권 1장 사용)",
+      "확인",
+      () => {
+        // 비관적: 페이지 진입 시점에서 차감하도록 보장 (useTicketGuard 내부 optimistic=false)
+        ensureNewResponse.ensure(() => {
+          router.push({
+            pathname: "/topic/[topicId]",
+            params: { topicId: id, title },
+          });
         });
-      });
-    });
+      }
+    );
   };
 
   return (
@@ -42,13 +46,13 @@ const TopicCard = ({ item }: Props) => {
       >
         <View style={styles.textWrapper}>
           <AppText style={styles.cardTitle}>{title}</AppText>
-          <View>
+          {/* <View>
             {subQuestions.map((content, index) => (
               <AppText key={`${id}-${index}`} style={styles.cardSub}>
                 {content}
               </AppText>
             ))}
-          </View>
+          </View> */}
 
           <View style={styles.touch}>
             <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cardTitle: {
-    fontSize: 28,
+    fontSize: 22,
     lineHeight: 36,
     color: "#fff",
     fontWeight: "bold",
