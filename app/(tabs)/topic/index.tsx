@@ -31,14 +31,6 @@ const TopicPage = () => {
 
   const [cooldown, setCooldown] = useState(false);
   const showInitSkeleton = !data && isLoading;
-  const queryClient = useQueryClient();
-  console.log(
-    "🗃️ 캐시에 존재하는 모든 쿼리키:",
-    queryClient
-      .getQueryCache()
-      .findAll()
-      .map((q) => q.queryKey)
-  );
 
   // 언마운트 시 타이머 정리
   useEffect(() => {
