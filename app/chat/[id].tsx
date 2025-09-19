@@ -87,6 +87,19 @@ const ChatIdPage = () => {
     [sendMessage]
   );
 
+  // 스크롤 최상단 자동 로드 시 다중 호출 방지용 락
+  const loadingEarlierRef = useRef(false);
+  const handleLoadEarlier = useCallback(async () => {
+    // 이미 로딩 중이면 추가 호출 무시
+    if (loadingEarlierRef.current) return;
+    loadingEarlierRef.current = true;
+    try {
+      await fetchNextPage();
+    } finally {
+      loadingEarlierRef.current = false;
+    }
+  }, [fetchNextPage]);
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -111,7 +124,7 @@ const ChatIdPage = () => {
         messages={giftedMessages}
         onSend={handleSendGifted}
         currentUser={{ _id: myUserId ?? "me" }}
-        onLoadEarlier={() => fetchNextPage()}
+        onLoadEarlier={handleLoadEarlier}
         canLoadEarlier={!!hasNextPage}
         isLoadingEarlier={!!isFetchingNextPage}
       />
