@@ -50,7 +50,7 @@ const TicketsView = () => {
           </View>
         ))}
       </View>
-      <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
+      <TicketsSheet ref={actionSheetRef} snapPoints={["70%"]} />
     </ScalePressable>
   );
 };
