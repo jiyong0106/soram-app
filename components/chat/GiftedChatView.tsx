@@ -265,7 +265,6 @@ const GiftedChatView = ({
       placeholder={placeholder}
       alwaysShowSend
       inverted={false}
-      // 이전 기록 로딩
       loadEarlier={!!canLoadEarlier}
       isLoadingEarlier={!!isLoadingEarlier}
       onLoadEarlier={onLoadEarlier}
