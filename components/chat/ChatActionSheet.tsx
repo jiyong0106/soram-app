@@ -52,7 +52,7 @@ const ChatActionSheet = (
       if (!blockedId) return;
       try {
         await postUserBlock(blockedId);
-        showAlert("차단 성공!", () => {
+        showAlert(`이제 ${peerUserName}님과 \n 대화를 할 수 없어요`, () => {
           qc.invalidateQueries({ queryKey: ["getChatKey"] });
           router.dismissTo("/chat");
         });
