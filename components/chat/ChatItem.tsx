@@ -9,6 +9,7 @@ import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
+import { getInitials } from "@/utils/util/uiHelpers";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -77,7 +78,11 @@ const ChatItem = ({ item }: ChatItemProps) => {
       ) => <SwipeActions prog={prog} drag={drag} connectionId={id} />}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
-        <View style={styles.avatar} />
+        <View style={styles.avatar}>
+          <AppText style={styles.avatarText}>
+            {getInitials(opponent?.nickname)}
+          </AppText>
+        </View>
         <View style={styles.rowTextWrap}>
           <AppText style={styles.rowTitle} numberOfLines={1}>
             {opponent.nickname}
@@ -99,13 +104,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 15,
+    gap: 12,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#E9ECEF",
-    marginRight: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FFE2E2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    color: "#ff6b6b",
+    fontWeight: "800",
   },
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
