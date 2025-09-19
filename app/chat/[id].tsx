@@ -15,16 +15,22 @@ import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
 
 const ChatIdPage = () => {
-  const { id, peerUserId, peerUserName } = useLocalSearchParams<{
+  const { id, peerUserId, peerUserName, isLeave } = useLocalSearchParams<{
     id: string;
     peerUserId: string;
     peerUserName: string;
+    isLeave: string;
   }>();
-
+  // 한글 주석: 라우트 파라미터는 문자열이므로 "false"도 truthy가 됨 -> 안전 변환
+  const isLeaveUser = useMemo(() => {
+    const raw = Array.isArray(isLeave) ? isLeave[0] : isLeave;
+    if (raw == null) return false;
+    const v = String(raw).trim().toLowerCase();
+    return v === "true" || v === "1" || v === "yes";
+  }, [isLeave]);
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
   const token = getAuthToken() ?? "";
-
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
@@ -127,6 +133,8 @@ const ChatIdPage = () => {
         onLoadEarlier={handleLoadEarlier}
         canLoadEarlier={!!hasNextPage}
         isLoadingEarlier={!!isFetchingNextPage}
+        isLeaveUser={isLeaveUser}
+        leaveUserName={peerUserName}
       />
 
       <ChatActionSheet

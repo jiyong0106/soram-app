@@ -34,7 +34,6 @@ const chatPage = () => {
   });
 
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
-
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
