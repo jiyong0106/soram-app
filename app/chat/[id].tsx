@@ -23,7 +23,7 @@ const ChatIdPage = () => {
       isLeave: string;
       isBlocked: string;
     }>();
-  // 한글 주석: 라우트 파라미터 불리언 안전 변환 유틸
+  //  라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
