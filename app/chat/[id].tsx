@@ -133,6 +133,7 @@ const ChatIdPage = () => {
         ref={actionSheetRef}
         blockedId={blockedId}
         roomId={roomId}
+        peerUserName={peerUserName}
       />
     </PageContainer>
   );

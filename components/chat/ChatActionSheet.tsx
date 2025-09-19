@@ -13,10 +13,11 @@ interface ChatActionSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
   blockedId: number;
   roomId: number;
+  peerUserName: string;
 }
 
 const ChatActionSheet = (
-  { snapPoints, blockedId, roomId }: ChatActionSheetProps,
+  { snapPoints, blockedId, roomId, peerUserName }: ChatActionSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const { peerUserId } = useLocalSearchParams<{
@@ -47,7 +48,7 @@ const ChatActionSheet = (
 
   const onBlock = () => {
     dismiss();
-    showActionAlert("차단?", "확인", async () => {
+    showActionAlert(`${peerUserName}님을 차단하시나요?`, "차단", async () => {
       if (!blockedId) return;
       try {
         await postUserBlock(blockedId);
@@ -69,18 +70,22 @@ const ChatActionSheet = (
   //나가기
   const onLeave = () => {
     dismiss();
-    showActionAlert("채팅방을 나가시나요?", "확인", async () => {
-      try {
-        await postChatLeave(roomId);
-        qc.invalidateQueries({ queryKey: ["getChatKey"] });
-        router.dismissTo("/chat");
-      } catch (e: any) {
-        if (e) {
-          showAlert(e.response.data.message || "다시 시도해 주세요");
-          return;
+    showActionAlert(
+      `${peerUserName}님과의 \n 채팅방을 나가시겠어요?`,
+      "나가기",
+      async () => {
+        try {
+          await postChatLeave(roomId);
+          qc.invalidateQueries({ queryKey: ["getChatKey"] });
+          router.dismissTo("/chat");
+        } catch (e: any) {
+          if (e) {
+            showAlert(e.response.data.message || "다시 시도해 주세요");
+            return;
+          }
         }
       }
-    });
+    );
   };
 
   //알림끄기
