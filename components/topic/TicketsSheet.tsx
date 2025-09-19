@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useMemo } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
@@ -6,8 +6,14 @@ import AppText from "../common/AppText";
 import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import type { TicketBreakdownItem, TicketSourceType } from "@/utils/types/auth";
 import dayjs from "dayjs";
-import { LinearGradient } from "expo-linear-gradient";
-
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from "react-native-reanimated";
+const AnimatedAppText = Animated.createAnimatedComponent(AppText);
 const Badge = ({ label, color }: { label: string; color: string }) => (
   <View style={[styles.badge, { backgroundColor: color }]}>
     <AppText style={styles.badgeText}>{label}</AppText>
@@ -37,19 +43,18 @@ const Row = ({
     const getExpiresText = (expiresAt: string) => {
       const diff = dayjs(expiresAt).diff(dayjs(), "day");
       if (diff < 0) return "(기간 만료)";
-      if (diff === 0) return "(오늘 사라져요)";
-      return `(${diff + 1}일 뒤에 사라져요)`;
+      if (diff === 0) return "오늘 사라져요";
+      return `${diff + 1}일 뒤에 사라져요`;
     };
     const getSourceTypeText = (sourceType: TicketSourceType) => {
-      if (sourceType === "EVENT") return "이벤트 이용권";
+      if (sourceType === "EVENT") return "보유중인 이용권";
       if (sourceType === "PAID") return "구매한 이용권";
-      return "보관 중인 이용권";
+      return "보관중인 이용권";
     };
     return {
       daily: dailyTicket
         ? {
             quantity: dailyTicket.quantity,
-            expiresText: "(매일 오전 6시에 초기화됩니다)",
           }
         : null,
       stored: storedTickets.map((item) => ({
@@ -60,8 +65,37 @@ const Row = ({
     };
   }, [breakdown]);
 
+  const dailyRatio = useMemo(() => {
+    if (!processedBreakdown.daily || totalQuantity === 0) {
+      return 0;
+    }
+    return (processedBreakdown.daily.quantity / totalQuantity) * 100;
+  }, [processedBreakdown.daily, totalQuantity]);
+
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (processedBreakdown.daily) {
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0.25, { duration: 500 }),
+          withTiming(1, { duration: 500 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [processedBreakdown.daily, opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
   return (
     <View style={styles.row}>
+      {/* --- 상단 UI 부분 --- */}
       <View style={styles.rowTop}>
         <View style={styles.rowLeft}>
           <Badge label={code} color={color} />
@@ -70,22 +104,22 @@ const Row = ({
         <AppText style={styles.totalQuantityText}>총 {totalQuantity}개</AppText>
       </View>
       <AppText style={styles.rowDesc}>{desc}</AppText>
-      <View style={styles.stackedBarPlaceholder} />
+      {/* --- 하단 상세 내역 부분 --- */}
       <View style={styles.breakdownList}>
         {processedBreakdown.daily && (
           <View style={styles.breakdownItem}>
-            <AppText style={[styles.breakdownText, styles.dailyText]}>
-              • 오늘 사라지는 이용권 {processedBreakdown.daily.quantity}개
-            </AppText>
-            <AppText style={styles.expiresText}>
-              {processedBreakdown.daily.expiresText}
-            </AppText>
+            {/* 변경점 1: 텍스트와 변수를 하나의 문자열로 합쳐줍니다. */}
+            <AnimatedAppText
+              style={[styles.breakdownText, styles.dailyText, animatedStyle]}
+            >
+              {`• 오늘 사라지는 이용권 ${processedBreakdown.daily.quantity}개`}
+            </AnimatedAppText>
           </View>
         )}
         {processedBreakdown.stored.map((item, index) => (
           <View key={index} style={styles.breakdownItem}>
             <AppText style={styles.breakdownText}>
-              • {item.text} {item.quantity}개
+              {`• ${item.text} ${item.quantity}개`}
             </AppText>
             <AppText style={styles.expiresText}>{item.expiresText}</AppText>
           </View>
@@ -113,34 +147,31 @@ const TicketsSheet = (
   const { CHAT, VIEW_RESPONSE } = data;
 
   return (
-    <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
+    <AppBottomSheetModal
+      ref={ref}
+      snapPoints={snapPoints}
+      backgroundStyle={{ backgroundColor: "#FFFFFF" }}
+    >
       <View style={styles.container}>
         {/* 변경점 2: LinearGradient 컴포넌트를 배경으로 추가 */}
-        <LinearGradient
-          colors={["#FFF3EC", "#FFFFFF"]}
-          style={StyleSheet.absoluteFill}
+        <AppText style={styles.header}>보유중인 이용권</AppText>
+        <Row
+          code="C"
+          color="#FF8A5B"
+          title="대화 요청권"
+          desc="마음에 드는 상대방에게 대화를 요청할 수 있어요"
+          totalQuantity={CHAT.totalQuantity}
+          breakdown={CHAT.breakdown}
         />
-
-        <AppText style={styles.header}>보유 중인 사용권</AppText>
-        <View style={styles.listCard}>
-          <Row
-            code="C"
-            color="#FF8A5B"
-            title="대화요청권"
-            desc="마음에 드는 상대방에게 대화를 요청할 수 있어요"
-            totalQuantity={CHAT.totalQuantity}
-            breakdown={CHAT.breakdown}
-          />
-          <View style={styles.divider} />
-          <Row
-            code="M"
-            color="#BFDCAB"
-            title="답변 보기"
-            desc="상대방이 남긴 답변을 볼 수 있어요"
-            totalQuantity={VIEW_RESPONSE.totalQuantity}
-            breakdown={VIEW_RESPONSE.breakdown}
-          />
-        </View>
+        <View style={styles.divider} />
+        <Row
+          code="M"
+          color="#BFDCAB"
+          title="이야기 보기권"
+          desc="다양한 주제에 남겨진 이야기들을 볼 수 있어요"
+          totalQuantity={VIEW_RESPONSE.totalQuantity}
+          breakdown={VIEW_RESPONSE.breakdown}
+        />
       </View>
     </AppBottomSheetModal>
   );
@@ -158,13 +189,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#5C4B44",
     textAlign: "center",
-  },
-  listCard: {
-    borderRadius: 16,
-    backgroundColor: "#fff",
-    padding: 10,
   },
   row: {
     paddingVertical: 15,
@@ -182,19 +208,18 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   rowTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4A4A4A",
+    fontSize: 18,
+    color: "#5C4B44",
   },
   totalQuantityText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#4A4A4A",
+    color: "#5C4B44",
   },
   rowDesc: {
-    fontSize: 13,
-    color: "#8E8E8E",
-    marginLeft: 32,
+    fontSize: 14,
+    color: "#B0A6A0",
+    textAlign: "left",
   },
   badge: {
     width: 22,
@@ -209,16 +234,22 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   divider: {
-    height: 1,
-    backgroundColor: "#F0F0F0",
+    height: 0.5,
+    backgroundColor: "#5C4B44",
     marginHorizontal: 10,
   },
-  stackedBarPlaceholder: {
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#F0F0F0",
+  stackedBarContainer: {
+    height: 24,
+    borderRadius: 2,
+    backgroundColor: "#5C4B44", // 기본 배경색
     marginVertical: 10,
     marginHorizontal: 5,
+    overflow: "hidden", // 자식 요소가 부모 밖으로 나가지 않도록 설정
+  },
+  stackedBarFilled: {
+    height: "100%",
+    backgroundColor: "#B0A6A0", // 오늘 소멸 재화 색상
+    borderRadius: 2,
   },
   breakdownList: {
     marginLeft: 5,
@@ -229,15 +260,16 @@ const styles = StyleSheet.create({
   },
   breakdownText: {
     fontSize: 14,
-    color: "#555",
+    color: "#5C4B44",
   },
   dailyText: {
     fontWeight: "bold",
-    color: "#333",
+    color: "#5C4B44",
   },
   expiresText: {
     fontSize: 12,
-    color: "#999",
-    marginLeft: 15,
+    color: "#B0A6A0",
+    marginLeft: 12,
+    marginTop: 4,
   },
 });
