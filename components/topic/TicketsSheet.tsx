@@ -13,23 +13,18 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
+
 const AnimatedAppText = Animated.createAnimatedComponent(AppText);
-const Badge = ({ label, color }: { label: string; color: string }) => (
-  <View style={[styles.badge, { backgroundColor: color }]}>
-    <AppText style={styles.badgeText}>{label}</AppText>
-  </View>
-);
 
 const Row = ({
-  code,
-  color,
+  icon, // 변경점 3: code, color 대신 icon prop을 받습니다.
   title,
-  desc,
+  // desc,
   totalQuantity,
   breakdown,
 }: {
-  code: string;
-  color: string;
+  icon: React.ReactNode; // React 컴포넌트를 받을 수 있도록 타입을 지정합니다.
   title: string;
   desc: string;
   totalQuantity: number;
@@ -98,12 +93,12 @@ const Row = ({
       {/* --- 상단 UI 부분 --- */}
       <View style={styles.rowTop}>
         <View style={styles.rowLeft}>
-          <Badge label={code} color={color} />
+          {icon}
           <AppText style={styles.rowTitle}>{title}</AppText>
         </View>
         <AppText style={styles.totalQuantityText}>총 {totalQuantity}개</AppText>
       </View>
-      <AppText style={styles.rowDesc}>{desc}</AppText>
+      {/* <AppText style={styles.rowDesc}>{desc}</AppText> */}
       {/* --- 하단 상세 내역 부분 --- */}
       <View style={styles.breakdownList}>
         {processedBreakdown.daily && (
@@ -156,17 +151,22 @@ const TicketsSheet = (
         {/* 변경점 2: LinearGradient 컴포넌트를 배경으로 추가 */}
         <AppText style={styles.header}>보유중인 이용권</AppText>
         <Row
-          code="C"
-          color="#FF8A5B"
+          icon={
+            <Ionicons
+              name="chatbubble-ellipses-sharp"
+              size={22}
+              color="#FF8A5B"
+            />
+          }
           title="대화 요청권"
           desc="마음에 드는 상대방에게 대화를 요청할 수 있어요"
           totalQuantity={CHAT.totalQuantity}
           breakdown={CHAT.breakdown}
         />
         <View style={styles.divider} />
+        {/* '이야기 보기권'에도 어울리는 아이콘을 추가했습니다. */}
         <Row
-          code="M"
-          color="#BFDCAB"
+          icon={<Ionicons name="search-sharp" size={22} color="#FF8A5B" />}
           title="이야기 보기권"
           desc="다양한 주제에 남겨진 이야기들을 볼 수 있어요"
           totalQuantity={VIEW_RESPONSE.totalQuantity}
@@ -221,39 +221,29 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
     textAlign: "left",
   },
-  badge: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#fff",
-  },
   divider: {
     height: 0.5,
     backgroundColor: "#5C4B44",
-    marginHorizontal: 10,
-  },
-  stackedBarContainer: {
-    height: 24,
-    borderRadius: 2,
-    backgroundColor: "#5C4B44", // 기본 배경색
+    marginHorizontal: 15,
     marginVertical: 10,
-    marginHorizontal: 5,
-    overflow: "hidden", // 자식 요소가 부모 밖으로 나가지 않도록 설정
   },
-  stackedBarFilled: {
-    height: "100%",
-    backgroundColor: "#B0A6A0", // 오늘 소멸 재화 색상
-    borderRadius: 2,
-  },
+  // stackedBarContainer: {
+  //   height: 24,
+  //   borderRadius: 2,
+  //   backgroundColor: "#5C4B44", // 기본 배경색
+  //   marginVertical: 10,
+  //   marginHorizontal: 5,
+  //   overflow: "hidden", // 자식 요소가 부모 밖으로 나가지 않도록 설정
+  // },
+  // stackedBarFilled: {
+  //   height: "100%",
+  //   backgroundColor: "#B0A6A0", // 오늘 소멸 재화 색상
+  //   borderRadius: 2,
+  // },
   breakdownList: {
     marginLeft: 5,
     gap: 12,
+    marginVertical: 2,
   },
   breakdownItem: {
     gap: 4,
@@ -261,6 +251,7 @@ const styles = StyleSheet.create({
   breakdownText: {
     fontSize: 14,
     color: "#5C4B44",
+    marginVertical: 2,
   },
   dailyText: {
     fontWeight: "bold",
