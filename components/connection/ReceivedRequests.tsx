@@ -24,6 +24,9 @@ import {
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
+
+const QUERY_KEY = ["getConnectionsKey"] as const;
 
 const ReceivedRequests = () => {
   const queryClient = useQueryClient();
@@ -40,7 +43,7 @@ const ReceivedRequests = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery<GetConnectionsResponse>({
-    queryKey: ["getConnectionsKey"],
+    queryKey: QUERY_KEY,
     queryFn: ({ pageParam }) =>
       getConnections({
         take: 10,
@@ -74,36 +77,25 @@ const ReceivedRequests = () => {
   type ConnInfinite = InfiniteData<GetConnectionsResponse>;
   type Ctx = { prev?: ConnInfinite };
 
+  // 낙관적 제거 훅 (무한 스크롤용)
+  const optimisticRemove = useOptimisticInfiniteRemove<
+    GetConnectionsType,
+    GetConnectionsResponse
+  >(QUERY_KEY);
+
   // 수락
   const acceptMutation = useMutation<unknown, unknown, number, Ctx>({
     mutationFn: (connectionId: number) =>
       postConnectionsAccept({ connectionId }),
 
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["getConnectionsKey"] });
       setProcessingId(id);
-
-      const prev = queryClient.getQueryData<ConnInfinite>([
-        "getConnectionsKey",
-      ]);
-
-      if (prev) {
-        const next: ConnInfinite = {
-          pageParams: [...prev.pageParams],
-          pages: prev.pages.map((page) => ({
-            ...page,
-            data: page.data.filter((item) => item.id !== id),
-          })),
-        };
-        queryClient.setQueryData<ConnInfinite>(["getConnectionsKey"], next);
-      }
-
-      return { prev };
+      return await optimisticRemove(id);
     },
 
     onError: (_err, _id, ctx) => {
       if (ctx?.prev) {
-        queryClient.setQueryData<ConnInfinite>(["getConnectionsKey"], ctx.prev);
+        queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
       }
     },
 
@@ -122,30 +114,13 @@ const ReceivedRequests = () => {
       postConnectionsReject({ connectionId }),
 
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["getConnectionsKey"] });
       setProcessingId(id);
-
-      const prev = queryClient.getQueryData<ConnInfinite>([
-        "getConnectionsKey",
-      ]);
-
-      if (prev) {
-        const next: ConnInfinite = {
-          pageParams: [...prev.pageParams],
-          pages: prev.pages.map((page) => ({
-            ...page,
-            data: page.data.filter((item) => item.id !== id),
-          })),
-        };
-        queryClient.setQueryData<ConnInfinite>(["getConnectionsKey"], next);
-      }
-
-      return { prev };
+      return await optimisticRemove(id);
     },
 
     onError: (_err, _id, ctx) => {
       if (ctx?.prev) {
-        queryClient.setQueryData<ConnInfinite>(["getConnectionsKey"], ctx.prev);
+        queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
       }
     },
 
