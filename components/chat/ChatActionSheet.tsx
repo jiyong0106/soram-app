@@ -5,17 +5,18 @@ import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import useAlert from "@/utils/hooks/useAlert";
-import { postUserBlock } from "@/utils/api/chatPageApi";
+import { postChatLeave, postUserBlock } from "@/utils/api/chatPageApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ChatActionSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
   blockedId: number;
+  roomId: number;
 }
 
 const ChatActionSheet = (
-  { snapPoints, blockedId }: ChatActionSheetProps,
+  { snapPoints, blockedId, roomId }: ChatActionSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const { peerUserId } = useLocalSearchParams<{
@@ -66,7 +67,21 @@ const ChatActionSheet = (
   };
 
   //나가기
-  const onLeave = () => console.log("onLeave");
+  const onLeave = () => {
+    dismiss();
+    showActionAlert("채팅방을 나가시나요?", "확인", async () => {
+      try {
+        await postChatLeave(roomId);
+        qc.invalidateQueries({ queryKey: ["getChatKey"] });
+        router.dismissTo("/chat");
+      } catch (e: any) {
+        if (e) {
+          showAlert(e.response.data.message || "다시 시도해 주세요");
+          return;
+        }
+      }
+    });
+  };
 
   //알림끄기
   const onMute = () => console.log("onMute");

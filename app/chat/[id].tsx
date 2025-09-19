@@ -129,7 +129,11 @@ const ChatIdPage = () => {
         isLoadingEarlier={!!isFetchingNextPage}
       />
 
-      <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />
+      <ChatActionSheet
+        ref={actionSheetRef}
+        blockedId={blockedId}
+        roomId={roomId}
+      />
     </PageContainer>
   );
 };
