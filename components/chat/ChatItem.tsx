@@ -7,6 +7,8 @@ import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
+import { useQueryClient } from "@tanstack/react-query";
+import { getMessages } from "@/utils/api/chatPageApi";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -16,6 +18,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { id, opponent } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
@@ -26,10 +29,23 @@ const ChatItem = ({ item }: ChatItemProps) => {
     }, 150);
   };
 
-  const handleRowPress = () => {
+  const handleRowPress = async () => {
     if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
 
-    //데이터 넘기기
+    // 1) 채팅방 입장 전 메시지 1페이지 프리페치(최대 250ms만 대기)
+    try {
+      const prefetch = queryClient.prefetchInfiniteQuery({
+        queryKey: ["getMessagesKey", id],
+        queryFn: ({ pageParam }) =>
+          getMessages({ connectionId: id, cursor: pageParam }),
+        initialPageParam: undefined as number | undefined,
+        staleTime: 60 * 1000,
+      });
+      const timeout = new Promise((resolve) => setTimeout(resolve, 250));
+      await Promise.race([prefetch, timeout]);
+    } catch {}
+
+    // 2) 라우팅 진행(프리페치가 끝났다면 즉시 캐시 사용, 아니라도 백그라운드에서 이어짐)
     router.push({
       pathname: "/chat/[id]",
       params: {

@@ -7,7 +7,11 @@ import TopicTitle from "@/components/topic/TopicTitle";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";

@@ -4,7 +4,6 @@ import {
   postConnectionsAccept,
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
-import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
 import {
   GetConnectionsResponse,
   GetConnectionsType,
@@ -25,6 +24,7 @@ import {
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
 
@@ -56,7 +56,7 @@ const ReceivedRequests = () => {
         : undefined,
   });
 
-  // 연속 새로고침 방지: 1.5초 이내 재시도 무시 + 진행 중 가드
+  // 새로고침 가드
   const lastRefreshAtRef = useRef<number>(0);
   const onRefresh = async () => {
     if (refreshing) return;
@@ -67,49 +67,48 @@ const ReceivedRequests = () => {
     refetch().finally(() => setRefreshing(false));
   };
 
-  // 보기용 리스트 (필요하면 PENDING만 필터)
+  // 화면 표시용 리스트
   const items: GetConnectionsType[] = useMemo(() => {
     const flat = (data?.pages ?? []).flatMap((p) => p.data);
-    // PENDING만 보고 싶으면 아래 줄 사용
-    // return flat.filter((d) => d.status === "PENDING");
     return flat;
   }, [data?.pages]);
 
-  // ✅ 무한스크롤 전용 낙관적 제거 훅
+  // 캐시 타입
+  type ConnInfinite = InfiniteData<GetConnectionsResponse>;
+  type Ctx = { prev?: ConnInfinite };
+
+  // 낙관적 제거 훅 (무한 스크롤용)
   const optimisticRemove = useOptimisticInfiniteRemove<
     GetConnectionsType,
     GetConnectionsResponse
   >(QUERY_KEY);
 
-  // ✅ 컨텍스트 타입: InfiniteData 형태로 맞추기
-  type ConnInfinite = InfiniteData<GetConnectionsResponse>;
-  type Ctx = { prev?: ConnInfinite };
-
+  // 수락
   const acceptMutation = useMutation<unknown, unknown, number, Ctx>({
     mutationFn: (connectionId: number) =>
       postConnectionsAccept({ connectionId }),
 
     onMutate: async (id) => {
       setProcessingId(id);
-      return await optimisticRemove(id); // { prev } 반환
+      return await optimisticRemove(id);
     },
 
     onError: (_err, _id, ctx) => {
-      if (ctx?.prev)
+      if (ctx?.prev) {
         queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
+      }
     },
 
     onSuccess: () => {
-      // 채팅 목록 갱신 필요 시
       queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
     },
 
     onSettled: () => {
       setProcessingId(null);
-      // 낙관적으로 제거된 상태를 유지. 즉시 리패치하면 서버 타이밍에 따라 다시 나타날 수 있음
     },
   });
 
+  // 거절
   const rejectMutation = useMutation<unknown, unknown, number, Ctx>({
     mutationFn: (connectionId: number) =>
       postConnectionsReject({ connectionId }),
@@ -120,13 +119,13 @@ const ReceivedRequests = () => {
     },
 
     onError: (_err, _id, ctx) => {
-      if (ctx?.prev)
+      if (ctx?.prev) {
         queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
+      }
     },
 
     onSettled: () => {
       setProcessingId(null);
-      // 동일: 즉시 목록 리패치하지 않음
     },
   });
 
