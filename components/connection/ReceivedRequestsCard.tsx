@@ -5,11 +5,7 @@ import AppText from "../common/AppText";
 import Button from "../common/Button";
 import { GetConnectionsType } from "@/utils/types/connection";
 import { formatRelative } from "@/utils/util/formatRelative";
-import {
-  getInitials,
-  hexWithAlpha,
-  connectionStatusLabel as statusLabel,
-} from "@/utils/util/uiHelpers";
+import { getInitials } from "@/utils/util/uiHelpers";
 
 // 부모에서 비동기 처리(onAccept/onReject)를 주입
 interface ReceivedRequestsCardProps {
@@ -27,15 +23,7 @@ const ReceivedRequestsCard = ({
   onReject,
   disabled,
 }: ReceivedRequestsCardProps) => {
-  const { id, requesterId, addresseeId, status, requester, createdAt } = item;
-
-  // 상태별 표시 색상
-  const statusColor =
-    status === "PENDING"
-      ? "#F59E0B"
-      : status === "ACCEPTED"
-      ? "#10B981"
-      : "#EF4444";
+  const { id, requester, createdAt, topicTitle } = item;
 
   return (
     <View style={styles.card}>
@@ -49,28 +37,16 @@ const ReceivedRequestsCard = ({
         <View style={{ flex: 1 }}>
           <AppText style={styles.name}>{requester?.nickname}</AppText>
           <AppText style={styles.sub}>
-            {formatRelative(createdAt)} • ID {requesterId}
-          </AppText>
-        </View>
-        <View
-          style={[
-            styles.badge,
-            {
-              backgroundColor: hexWithAlpha(statusColor, 0.12),
-              borderColor: statusColor,
-            },
-          ]}
-        >
-          <AppText style={[styles.badgeText, { color: statusColor }]}>
-            {statusLabel(status)}
+            {formatRelative(createdAt)} • ID {requester.id}
           </AppText>
         </View>
       </View>
 
       {/* 메타 블록: 내부 식별자 안내 */}
       <View style={styles.metaBlock}>
-        <AppText style={styles.meta}>요청 ID: {id}</AppText>
-        <AppText style={styles.meta}>내 ID: {addresseeId}</AppText>
+        <AppText style={styles.meta}>
+          {id} / {topicTitle}
+        </AppText>
       </View>
 
       {/* 액션: 대기 상태에서만 활성화 */}
@@ -82,7 +58,7 @@ const ReceivedRequestsCard = ({
             textColor={THEME}
             style={[styles.btn, styles.ghost]}
             onPress={onReject}
-            disabled={disabled || status !== "PENDING"}
+            disabled={disabled}
           />
         </View>
         <View style={styles.acceptWrap}>
@@ -92,7 +68,7 @@ const ReceivedRequestsCard = ({
             textColor="#fff"
             style={styles.btn}
             onPress={onAccept}
-            disabled={disabled || status !== "PENDING"}
+            disabled={disabled}
           />
         </View>
       </View>
