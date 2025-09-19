@@ -166,7 +166,7 @@ const TicketsSheet = (
         <View style={styles.divider} />
         {/* '이야기 보기권'에도 어울리는 아이콘을 추가했습니다. */}
         <Row
-          icon={<Ionicons name="search-sharp" size={22} color="#FF8A5B" />}
+          icon={<Ionicons name="book" size={22} color="#6A839A" />}
           title="이야기 보기권"
           desc="다양한 주제에 남겨진 이야기들을 볼 수 있어요"
           totalQuantity={VIEW_RESPONSE.totalQuantity}
