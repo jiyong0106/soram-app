@@ -1,23 +1,10 @@
 import React, { ForwardedRef, forwardRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
-import ScalePressable from "../common/ScalePressable";
 import { useTicketsStore } from "@/utils/store/useTicketsStore";
-
-interface TicketsSheetProps {
-  snapPoints?: ReadonlyArray<string | number>;
-}
-
-type TicketItem = {
-  code: "C" | "N" | "M";
-  title: string;
-  desc: string;
-  color: string; // badge color
-  value: number;
-};
+import type { TicketBreakdownItem } from "@/utils/types/auth";
 
 const Badge = ({ label, color }: { label: string; color: string }) => (
   <View style={[styles.badge, { backgroundColor: color }]}>
@@ -25,70 +12,82 @@ const Badge = ({ label, color }: { label: string; color: string }) => (
   </View>
 );
 
-const Row = ({ item }: { item: TicketItem }) => (
+const Row = ({
+  code,
+  color,
+  title,
+  desc,
+  totalQuantity,
+  breakdown,
+}: {
+  code: string;
+  color: string;
+  title: string;
+  desc: string;
+  totalQuantity: number;
+  breakdown: TicketBreakdownItem[];
+}) => (
   <View style={styles.row}>
     <View style={styles.rowLeft}>
-      <Badge label={item.code} color={item.color} />
+      <Badge label={code} color={color} />
       <AppText style={styles.rowTitle}>
-        {item.title} - {item.value}개
+        {title} - {totalQuantity}개
       </AppText>
     </View>
-    <AppText style={styles.rowDesc}>{item.desc}</AppText>
+    <AppText style={styles.rowDesc}>{desc}</AppText>
+
+    {/* 데이터 확인용 임시 UI (정상 동작 확인 후 제거 예정) */}
+    <View style={styles.breakdownContainer}>
+      <AppText style={styles.breakdownTitle}>[데이터 확인용 Breakdown]</AppText>
+      {breakdown.map((item, index) => (
+        <AppText key={index} style={styles.breakdownText}>
+          - Type: {item.sourceType}, Qty: {item.quantity}, Expires:{" "}
+          {item.expiresAt}
+        </AppText>
+      ))}
+    </View>
   </View>
 );
 
 const TicketsSheet = (
-  { snapPoints }: TicketsSheetProps,
+  { snapPoints }: { snapPoints?: ReadonlyArray<string | number> },
   ref: ForwardedRef<BottomSheetModal>
 ) => {
-  const dismiss = () => (ref as any)?.current?.dismiss?.();
+  // 변경점 1: TicketsView와 동일하게, initialized 상태를 함께 가져옵니다.
+  const data = useTicketsStore((s) => s.data);
+  const initialized = useTicketsStore((s) => s.initialized);
 
-  const { CHAT, VIEW_RESPONSE } = useTicketsStore((s) => s.counts);
+  // 변경점 2: 데이터가 준비되지 않았다면 렌더링하지 않도록 안전장치를 추가합니다.
+  if (!initialized) {
+    return null;
+  }
 
-  const items: TicketItem[] = [
-    {
-      code: "C",
-      title: "대화요청권",
-      desc: "마음에 드는 상대방에게 대화를 요청할 수 있어요",
-      color: "#FF8A5B",
-      value: CHAT ?? 0,
-    },
-    {
-      code: "M",
-      title: "답변 보기",
-      desc: "상대방이 남긴 답변을 볼 수 있어요",
-      color: "#BFDCAB",
-      value: VIEW_RESPONSE ?? 0,
-    },
-  ];
-
-  const handlePurchase = () => {
-    dismiss();
-    // TODO: 구매 화면으로 이동
-    // router.push("/tickets/purchase");
-  };
+  // 이 시점부터 data는 안전하게 사용할 수 있습니다.
+  const { CHAT, VIEW_RESPONSE } = data;
 
   return (
     <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
       <View style={styles.container}>
-        {/* 제목 */}
         <AppText style={styles.header}>현재 보유중인 사용권</AppText>
-
-        {/* 리스트 */}
         <View style={styles.listCard}>
-          {items.map((it, i) => (
-            <View key={it.code}>
-              <Row item={it} />
-              {i < items.length - 1 && <View style={styles.divider} />}
-            </View>
-          ))}
+          <Row
+            code="C"
+            color="#FF8A5B"
+            title="대화요청권"
+            desc="마음에 드는 상대방에게 대화를 요청할 수 있어요"
+            totalQuantity={CHAT.totalQuantity}
+            breakdown={CHAT.breakdown}
+          />
+          <View style={styles.divider} />
+          <Row
+            code="M"
+            color="#BFDCAB"
+            title="답변 보기"
+            desc="상대방이 남긴 답변을 볼 수 있어요"
+            totalQuantity={VIEW_RESPONSE.totalQuantity}
+            breakdown={VIEW_RESPONSE.breakdown}
+          />
         </View>
-
-        {/* CTA */}
-        {/* <ScalePressable style={styles.cta} onPress={handlePurchase}>
-          <AppText style={styles.ctaText}>사용권 구매하러 </AppText>
-          <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
-        </ScalePressable> */}
       </View>
     </AppBottomSheetModal>
   );
@@ -169,5 +168,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#FF6B6B",
+  },
+  // --- 데이터 확인용 임시 스타일 ---
+  breakdownContainer: {
+    marginTop: 8,
+    marginLeft: 32,
+    padding: 8,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 4,
+  },
+  breakdownTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  breakdownText: {
+    fontSize: 11,
+    color: "#555",
   },
 });

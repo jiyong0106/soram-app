@@ -1,34 +1,56 @@
 import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import { StyleSheet, View } from "react-native";
 import AppText from "../common/AppText";
-import { Ionicons } from "@expo/vector-icons";
 import TicketsSheet from "./TicketsSheet";
 import { useRef } from "react";
 import ScalePressable from "../common/ScalePressable";
 
 const TicketsView = () => {
-  const { CHAT, VIEW_RESPONSE } = useTicketsStore((s) => s.counts);
+  // 변경점: 스토어에서 데이터를 각각의 selector로 가져와 무한 루프를 방지합니다.
+  const storeState = useTicketsStore();
+  console.log(
+    "--- [TicketsView파일] 스토어 상태를 사용한 렌더링:",
+    JSON.stringify(storeState, null, 2)
+  );
+
+  const { data, initialized } = storeState;
   const actionSheetRef = useRef<any>(null);
 
-  const itmes = [
-    { color: "#FF8A5B", value: CHAT },
-    { color: "#72635C", value: VIEW_RESPONSE },
+  if (!initialized) {
+    return null;
+  }
+
+  const { CHAT, VIEW_RESPONSE } = data;
+
+  const items = [
+    { color: "#FF8A5B", value: CHAT.totalQuantity },
+    { color: "#BFDCAB", value: VIEW_RESPONSE.totalQuantity },
   ];
+
   return (
     <ScalePressable
       style={styles.container}
       onPress={() => actionSheetRef.current?.present?.()}
     >
-      <AppText style={styles.headerText}>내 티켓</AppText>
+      <AppText style={styles.headerText}>보유 중인 사용권</AppText>
       <View style={styles.ticketWrap}>
-        {itmes.map(({ color, value }, id) => (
+        {items.map(({ color, value }, id) => (
           <View key={id} style={styles.ticket}>
-            <Ionicons name="ticket-sharp" size={24} color={color} />
+            <View
+              style={[
+                styles.iconBadge,
+                { backgroundColor: color, marginRight: 4 },
+              ]}
+            >
+              <AppText style={styles.iconBadgeText}>
+                {id === 0 ? "C" : "M"}
+              </AppText>
+            </View>
             <AppText style={styles.ticketText}>{value}</AppText>
           </View>
         ))}
       </View>
-      <TicketsSheet ref={actionSheetRef} snapPoints={["40%"]} />
+      <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
     </ScalePressable>
   );
 };
@@ -37,33 +59,49 @@ export default TicketsView;
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 15,
+    borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#FF6B6B",
-    marginVertical: 7,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    borderColor: "#ddd",
+    marginVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 20,
-    width: "60%",
-    marginHorizontal: "auto",
+    justifyContent: "space-between",
+    alignSelf: "center",
+    width: "90%",
+    backgroundColor: "#fff",
   },
   headerText: {
-    fontSize: 13,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#4A4A4A",
   },
   ticketWrap: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 16,
   },
   ticket: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    gap: 4,
   },
   ticketText: {
-    fontSize: 11,
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#4A4A4A",
+  },
+  iconBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconBadgeText: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#fff",
   },
 });

@@ -2,49 +2,75 @@
 import { create } from "zustand";
 import type { getTicketsResponse, TicketKind } from "@/utils/types/auth";
 
-type Counts = Record<TicketKind, number>;
+type TicketData = getTicketsResponse[TicketKind];
+type DataStore = Record<TicketKind, TicketData>;
 
 type TicketsState = {
-  counts: Counts;
+  data: DataStore;
   initialized: boolean;
   setFromResponse: (resp: getTicketsResponse) => void;
   has: (kind: TicketKind) => boolean;
   consumeLocal: (kind: TicketKind, n?: number) => void;
   restoreLocal: (kind: TicketKind, n?: number) => void;
-  reset: () => void; // 👈 추가
+  reset: () => void;
+};
+
+const initialState = {
+  CHAT: { totalQuantity: 0, breakdown: [] },
+  VIEW_RESPONSE: { totalQuantity: 0, breakdown: [] },
 };
 
 export const useTicketsStore = create<TicketsState>((set, get) => ({
-  counts: { CHAT: 0, VIEW_RESPONSE: 0 },
+  data: initialState,
   initialized: false,
 
-  setFromResponse: (resp) =>
+  setFromResponse: (resp) => {
     set((s) => {
-      const next: Counts = {
-        CHAT: resp.CHAT?.totalQuantity ?? 0,
-        VIEW_RESPONSE: resp.VIEW_RESPONSE?.totalQuantity ?? 0,
+      const responseData = resp || {};
+
+      const next: DataStore = {
+        CHAT: responseData.CHAT ?? initialState.CHAT,
+        VIEW_RESPONSE: responseData.VIEW_RESPONSE ?? initialState.VIEW_RESPONSE,
       };
-      const same =
-        s.counts.CHAT === next.CHAT &&
-        s.counts.VIEW_RESPONSE === next.VIEW_RESPONSE;
 
-      if (same && s.initialized) return s;
-      return { counts: next, initialized: true };
-    }),
+      if (JSON.stringify(s.data) === JSON.stringify(next) && s.initialized) {
+        return s;
+      }
+      return { data: next, initialized: true };
+    });
+  },
 
-  has: (kind) => get().counts[kind] > 0,
+  has: (kind) => (get().data[kind]?.totalQuantity ?? 0) > 0,
 
   consumeLocal: (kind, n = 1) =>
-    set((s) => ({
-      counts: { ...s.counts, [kind]: Math.max(0, s.counts[kind] - n) },
-    })),
+    set((s) => {
+      const currentTicket = s.data[kind];
+      if (!currentTicket) return s;
+      const nextQuantity = Math.max(0, currentTicket.totalQuantity - n);
+      return {
+        data: {
+          ...s.data,
+          [kind]: { ...currentTicket, totalQuantity: nextQuantity },
+        },
+      };
+    }),
 
   restoreLocal: (kind, n = 1) =>
-    set((s) => ({ counts: { ...s.counts, [kind]: s.counts[kind] + n } })),
+    set((s) => {
+      const currentTicket = s.data[kind];
+      if (!currentTicket) return s;
+      const nextQuantity = currentTicket.totalQuantity + n;
+      return {
+        data: {
+          ...s.data,
+          [kind]: { ...currentTicket, totalQuantity: nextQuantity },
+        },
+      };
+    }),
 
   reset: () =>
     set({
-      counts: { CHAT: 0, VIEW_RESPONSE: 0 },
+      data: initialState,
       initialized: false,
-    }), // 👈
+    }),
 }));

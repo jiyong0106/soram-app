@@ -7,24 +7,21 @@ import { useRouter } from "expo-router";
 const CurrencySection = () => {
   const router = useRouter();
 
-  // TODO: 실제 사용자 재화 정보를 API로 조회하여 연동해야 합니다.
-  const chatTickets = 10;
-  const viewTickets = 3;
-
   const handleHistory = () => {
     // 재화 사용내역 페이지로 이동
     router.push("/profile/setting/ticketHistory");
+  };
+  const handleOwnedTickets = () => {
+    // 재화 구매 페이지로 이동
+    alert("재화 구매 페이지로 이동합니다.");
   };
 
   return (
     <SettingSection title="보유 재화">
       <SettingRow
-        title="대화 요청권"
-        rightText={`${chatTickets}개`} // 👈 보유량을 rightText로 표시
-      />
-      <SettingRow
-        title="이야기 보기권"
-        rightText={`${viewTickets}개`} // 👈 보유량을 rightText로 표시
+        title="현재 보유중인 사용권"
+        onPress={handleOwnedTickets}
+        variant="link"
       />
       <SettingRow
         title="사용내역"

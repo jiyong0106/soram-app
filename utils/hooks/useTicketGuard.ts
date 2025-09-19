@@ -13,12 +13,14 @@ const useTicketGuard = (kind: TicketKind, opts?: Options) => {
   const optimistic = opts?.optimistic ?? true;
   const onInsufficient = opts?.onInsufficient;
 
-  // 렌더 중에는 "읽기"만
-  const available = useTicketsStore((s) => s.counts[kind]);
+  // 변경점: s.counts[kind] -> s.data[kind]?.totalQuantity ?? 0
+  // 새로운 데이터 구조에서 totalQuantity를 읽어오도록 수정합니다.
+  // 옵셔널 체이닝(?.)과 nullish coalescing(??)으로 안전하게 접근합니다.
+  const available = useTicketsStore((s) => s.data[kind]?.totalQuantity ?? 0);
   const consumeLocal = useTicketsStore((s) => s.consumeLocal);
   const restoreLocal = useTicketsStore((s) => s.restoreLocal);
 
-  // 상태 변경은 onPress 시점에만
+  // 아래 로직은 변경할 필요 없습니다.
   const ensure = useCallback(
     (onPass: () => void) => {
       if (amount <= 0 || available < amount) {
