@@ -11,6 +11,10 @@ import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../common/LoadingSpinner";
 
+// GiftedChat 래퍼 컴포넌트
+// - 목적: 메시지 정렬(위→아래), 시간 라벨 배치, 시스템 메시지 표현 일관화
+// - 주의: 상위에서 messages는 오름차순 제공 권장. 아니면 내부에서 정렬합니다.
+
 export type GiftedChatViewProps = {
   messages: IMessage[];
   onSend: (newMessages?: IMessage[]) => void;
