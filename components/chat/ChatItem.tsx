@@ -9,6 +9,7 @@ import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
+import { getInitials } from "@/utils/util/uiHelpers";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -19,7 +20,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { id, opponent } = item;
+  const { id, opponent, isLeave } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -52,6 +53,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
         id: String(id),
         peerUserId: opponent.id,
         peerUserName: opponent.nickname,
+        isLeave: String(isLeave),
       },
     });
   };
@@ -77,13 +79,19 @@ const ChatItem = ({ item }: ChatItemProps) => {
       ) => <SwipeActions prog={prog} drag={drag} connectionId={id} />}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
-        <View style={styles.avatar} />
+        <View style={styles.avatar}>
+          <AppText style={styles.avatarText}>
+            {getInitials(opponent?.nickname)}
+          </AppText>
+        </View>
         <View style={styles.rowTextWrap}>
           <AppText style={styles.rowTitle} numberOfLines={1}>
             {opponent.nickname}
           </AppText>
           <AppText style={styles.rowSubtitle} numberOfLines={1}>
-            {opponent.nickname}
+            {isLeave
+              ? `${opponent.nickname}님이 방을 나갔어요`
+              : opponent.nickname}
           </AppText>
         </View>
       </ScalePressable>
@@ -99,13 +107,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 15,
+    gap: 12,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#E9ECEF",
-    marginRight: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FFE2E2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    color: "#ff6b6b",
+    fontWeight: "800",
   },
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },

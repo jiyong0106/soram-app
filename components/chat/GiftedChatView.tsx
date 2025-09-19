@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import {
   GiftedChat,
@@ -19,6 +19,8 @@ export type GiftedChatViewProps = {
   onLoadEarlier?: () => void;
   canLoadEarlier?: boolean;
   isLoadingEarlier?: boolean;
+  isLeaveUser?: boolean;
+  leaveUserName?: string; // 상대방 닉네임(선택)
 };
 
 const GiftedChatView = ({
@@ -29,6 +31,8 @@ const GiftedChatView = ({
   onLoadEarlier,
   canLoadEarlier,
   isLoadingEarlier,
+  isLeaveUser,
+  leaveUserName,
 }: GiftedChatViewProps) => {
   // 시간 라벨 포맷터
   const formatTimeLabel = useCallback((date?: Date | number | string) => {
@@ -149,6 +153,28 @@ const GiftedChatView = ({
     );
   }, []);
 
+  // 시스템 메시지(상대 퇴장 안내) 주입
+  // - 한글 주석: isLeaveUser가 true이면 시스템 메시지를 1회만 추가
+  const decoratedMessages = useMemo(() => {
+    if (!isLeaveUser) return messages;
+    const alreadyHas = messages.some(
+      (m) => (m as any)?.system && (m as any)?._id === "system-leave"
+    );
+    if (alreadyHas) return messages;
+
+    const name = leaveUserName ?? "상대방";
+    const sysMsg: IMessage = {
+      _id: "system-leave",
+      text: `${name}님이 채팅방을 나갔습니다`,
+      createdAt: new Date(),
+      system: true,
+      user: { _id: "system" as any },
+    } as any;
+
+    // 한글 주석: 최신 메시지로 노출되도록 배열 뒤에 추가
+    return [...messages, sysMsg];
+  }, [messages, isLeaveUser, leaveUserName]);
+
   // Day(날짜 배지) 포맷: YYYY-MM-DD
   const renderDay = useCallback((props: any) => {
     const createdAt = props?.createdAt ?? props?.currentMessage?.createdAt;
@@ -255,7 +281,7 @@ const GiftedChatView = ({
 
   return (
     <GiftedChat
-      messages={messages}
+      messages={decoratedMessages}
       onSend={onSend}
       user={currentUser}
       placeholder={placeholder}
