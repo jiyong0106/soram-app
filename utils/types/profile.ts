@@ -37,3 +37,12 @@ export interface BlockedListResponse {
 export interface UnblockResponse {
   message: string;
 }
+
+//계정삭제
+export interface DeleteAccountBody {
+  reason: string;
+}
+
+export interface DeleteAccountResponse {
+  message: string;
+}

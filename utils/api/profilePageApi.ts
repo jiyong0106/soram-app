@@ -1,6 +1,11 @@
 //로그아웃
 
-import { BlockedListResponse, LogoutResponse } from "../types/profile";
+import {
+  BlockedListResponse,
+  DeleteAccountBody,
+  DeleteAccountResponse,
+  LogoutResponse,
+} from "../types/profile";
 import instance from "./axios";
 
 export const postLogout = async () => {
@@ -30,5 +35,13 @@ export const getBlockedList = async ({
 export const deleteUserBlock = async (userId: number) => {
   // DELETE /blocks/{userId}
   const { data } = await instance.delete(`/blocks/${userId}`);
+  return data;
+};
+
+//계정삭제
+export const deleteAccount = async (body: DeleteAccountBody) => {
+  const { data } = await instance.delete<DeleteAccountResponse>("/users/me", {
+    data: body,
+  });
   return data;
 };

@@ -35,6 +35,11 @@ const AccountSection = () => {
       }
     });
   };
+
+  const handleDeleteAccount = () => {
+    router.push("/profile/setting/deleteAccount");
+  };
+
   return (
     <SettingSection title="계정">
       <SettingRow
@@ -46,17 +51,10 @@ const AccountSection = () => {
       <SettingRow
         title="계정 삭제"
         variant="danger"
-        onPress={() => showAlert("계정삭제!")}
+        onPress={handleDeleteAccount}
       />
     </SettingSection>
   );
 };
 
 export default AccountSection;
-
-// const styles = StyleSheet.create({
-//   divider: {
-//     height: StyleSheet.hairlineWidth,
-//     backgroundColor: "#ECEFF1",
-//   },
-// });
