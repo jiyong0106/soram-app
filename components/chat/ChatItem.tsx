@@ -20,7 +20,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { id, opponent, isLeave, isBlocked } = item;
+  const { id, opponent, isLeave, isBlocked, lastMessage } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -92,7 +92,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
           <AppText style={styles.rowSubtitle} numberOfLines={1}>
             {isLeave || isBlocked
               ? `${opponent.nickname}님이 방을 나갔어요`
-              : opponent.nickname}
+              : lastMessage?.content}
           </AppText>
         </View>
       </ScalePressable>
@@ -124,5 +124,5 @@ const styles = StyleSheet.create({
   },
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
-  rowSubtitle: { color: "#8A8F98" },
+  rowSubtitle: { color: "#8A8F98", fontSize: 12 },
 });

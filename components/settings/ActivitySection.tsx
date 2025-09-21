@@ -20,6 +20,10 @@ const ActivitySection = () => {
     showAlert("지난 이야기들 보기 페이지로 이동합니다.");
   };
 
+  const handleBolcked = () => {
+    router.push("/profile/setting/blocked");
+  };
+
   return (
     <SettingSection title="활동">
       <SettingRow
@@ -30,6 +34,11 @@ const ActivitySection = () => {
       <SettingRow
         title="지난 이야기들 보기"
         onPress={handlePastStories}
+        variant="link" // 👈 아이콘 추가
+      />
+      <SettingRow
+        title="차단 목록"
+        onPress={handleBolcked}
         variant="link" // 👈 아이콘 추가
       />
       <View style={styles.divider} />
