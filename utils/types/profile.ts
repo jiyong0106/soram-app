@@ -1,4 +1,4 @@
-import { UserType } from "./common";
+import { metaType, UserType } from "./common";
 
 // 프로필 관련 타입 정의
 export interface Answer {
@@ -23,9 +23,14 @@ export interface LogoutResponse {
 }
 
 //차단목록 조회
-export interface BlockedListResponse {
+export interface BlockedListType {
   blockedAt: string;
   user: UserType;
+}
+
+export interface BlockedListResponse {
+  data: BlockedListType[];
+  meta: metaType;
 }
 
 //차단 해제

@@ -8,9 +8,21 @@ export const postLogout = async () => {
   return data;
 };
 
-//차단목록 조회
-export const getBlockedList = async () => {
-  const { data } = await instance.get<BlockedListResponse>("/blocks");
+//차단목록 조회 (무한스크롤용)
+interface BlockListParams {
+  take?: number;
+  cursor?: number | undefined;
+}
+export const getBlockedList = async ({
+  take,
+  cursor,
+}: BlockListParams = {}) => {
+  const params: Record<string, any> = {};
+  if (typeof take === "number") params.take = take;
+  if (typeof cursor === "number") params.cursor = cursor;
+  const { data } = await instance.get<BlockedListResponse>("/blocks", {
+    params,
+  });
   return data;
 };
 

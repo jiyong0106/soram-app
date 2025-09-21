@@ -1,15 +1,20 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
-import React, { useCallback } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useCallback, useMemo, useRef } from "react";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { deleteUserBlock, getBlockedList } from "@/utils/api/profilePageApi";
-import { BlockedListResponse } from "@/utils/types/profile";
+import { BlockedListResponse, BlockedListType } from "@/utils/types/profile";
 import AppText from "../common/AppText";
 import { getInitials } from "@/utils/util/uiHelpers";
 import ScalePressable from "../common/ScalePressable";
 import useAlert from "@/utils/hooks/useAlert";
 
 interface BlockItemProps {
-  item: BlockedListResponse;
+  item: BlockedListType;
 }
 
 // 단일 차단 항목 카드
@@ -20,16 +25,48 @@ const BlockItem = ({ item }: BlockItemProps) => {
   const dateText = blockedAt?.slice(0, 10) ?? "";
   const queryClient = useQueryClient();
 
+  // 낙관적 업데이트: 차단 해제 시 즉시 리스트에서 제거, 실패 시 롤백
+  const { mutate: unblock } = useMutation({
+    mutationFn: (userId: number) => deleteUserBlock(userId),
+    onMutate: async (userId: number) => {
+      await queryClient.cancelQueries({ queryKey: ["blockedListKey"] });
+      const previous = queryClient.getQueryData(["blockedListKey"]);
+      const next = (() => {
+        const data = queryClient.getQueryData<any>(["blockedListKey"]);
+        if (!data) return data;
+        if (data.pages) {
+          return {
+            ...data,
+            pages: data.pages.map((p: BlockedListResponse) => ({
+              ...p,
+              data: p.data.filter((i) => i.user.id !== userId),
+            })),
+          };
+        }
+        return data;
+      })();
+      queryClient.setQueryData(["blockedListKey"], next);
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous)
+        queryClient.setQueryData(["blockedListKey"], ctx.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["blockedListKey"] });
+    },
+  });
+
   const handleUnblock = () => {
     showActionAlert(
       `${user.nickname}님 차단을 해제하시나요?`,
       "해제",
       async () => {
         try {
-          await deleteUserBlock(user.id);
-          queryClient.invalidateQueries({ queryKey: ["blockedListKey"] });
+          unblock(user.id);
         } catch (e: any) {
-          if (e) showAlert(e.response.data.message);
+          if (e)
+            showAlert(e.response?.data?.message ?? "차단 해제에 실패했습니다.");
         }
       }
     );
@@ -54,16 +91,51 @@ const BlockItem = ({ item }: BlockItemProps) => {
 };
 
 const BlockedLists = () => {
-  // 차단 목록 조회
-  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ["blockedListKey"],
-    queryFn: () => getBlockedList(),
-  });
-  // console.log(data);
+  const queryClient = useQueryClient();
 
+  // 무한스크롤 쿼리
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+  } = useInfiniteQuery<BlockedListResponse>({
+    queryKey: ["blockedListKey"],
+    queryFn: ({ pageParam }) =>
+      getBlockedList({ take: 10, cursor: pageParam as number | undefined }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 1000,
+  });
+
+  // 병합된 리스트 아이템
+  const items: BlockedListType[] = useMemo(
+    () => data?.pages.flatMap((p) => p.data) ?? [],
+    [data]
+  );
+
+  // 풀투리프레시: 캐시 무효화로 초기 로드부터 다시 가져오기
   const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+    queryClient.invalidateQueries({ queryKey: ["blockedListKey"] });
+  }, [queryClient]);
+
+  // 중복 호출 방지를 위한 락
+  const loadingMoreRef = useRef(false);
+  const onEndReached = useCallback(async () => {
+    if (!hasNextPage || isFetchingNextPage || loadingMoreRef.current) return;
+    loadingMoreRef.current = true;
+    try {
+      await fetchNextPage();
+    } finally {
+      loadingMoreRef.current = false;
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
     // 로딩 상태: 인디케이터 중앙 배치
@@ -83,16 +155,12 @@ const BlockedLists = () => {
         <AppText style={styles.errorSub}>
           네트워크 상태를 확인한 후 다시 시도해주세요.
         </AppText>
-        <AppText onPress={onRefresh} style={styles.retry}>
+        <AppText onPress={() => refetch()} style={styles.retry}>
           다시 시도하기
         </AppText>
       </View>
     );
   }
-
-  // API 타입: BlockedListResponse 단건이 아닌 목록일 가능성 고려
-  // 서버가 배열을 반환한다고 가정하고 방어적으로 처리
-  const items = Array.isArray(data) ? data : data ? [data] : [];
 
   if (!items.length) {
     // 빈 상태
@@ -113,8 +181,18 @@ const BlockedLists = () => {
       keyExtractor={(item) => String(item.user.id)}
       contentContainerStyle={styles.listContainer}
       refreshing={isRefetching}
+      onRefresh={onRefresh}
       renderItem={({ item }) => <BlockItem item={item} />}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.2}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <View style={{ paddingVertical: 16 }}>
+            <ActivityIndicator color="#4F46E5" />
+          </View>
+        ) : null
+      }
     />
   );
 };
