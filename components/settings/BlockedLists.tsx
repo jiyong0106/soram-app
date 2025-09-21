@@ -5,6 +5,7 @@ import { getBlockedList } from "@/utils/api/profilePageApi";
 import { BlockedListResponse } from "@/utils/types/profile";
 import AppText from "../common/AppText";
 import { getInitials } from "@/utils/util/uiHelpers";
+import ScalePressable from "../common/ScalePressable";
 
 interface BlockItemProps {
   item: BlockedListResponse;
@@ -16,8 +17,14 @@ const BlockItem = ({ item }: BlockItemProps) => {
 
   // 날짜 포맷 간단 처리 (YYYY-MM-DD)
   const dateText = blockedAt?.slice(0, 10) ?? "";
+
   return (
-    <View style={styles.itemCard}>
+    <ScalePressable
+      style={styles.itemCard}
+      onPress={() => {
+        console.log(user.id);
+      }}
+    >
       <View style={styles.avatar}>
         <AppText style={styles.avatarText}>
           {getInitials(user?.nickname)}
@@ -30,7 +37,7 @@ const BlockItem = ({ item }: BlockItemProps) => {
       <View style={styles.badgeWrap}>
         <AppText style={styles.badge}>차단됨</AppText>
       </View>
-    </View>
+    </ScalePressable>
   );
 };
 
@@ -94,7 +101,6 @@ const BlockedLists = () => {
       keyExtractor={(item) => String(item.user.id)}
       contentContainerStyle={styles.listContainer}
       refreshing={isRefetching}
-      onRefresh={onRefresh}
       renderItem={({ item }) => <BlockItem item={item} />}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
     />
