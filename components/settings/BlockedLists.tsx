@@ -1,6 +1,6 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteUserBlock, getBlockedList } from "@/utils/api/profilePageApi";
 import { BlockedListResponse } from "@/utils/types/profile";
 import AppText from "../common/AppText";
@@ -18,6 +18,7 @@ const BlockItem = ({ item }: BlockItemProps) => {
   const { showActionAlert, showAlert } = useAlert();
   // 날짜 포맷 간단 처리 (YYYY-MM-DD)
   const dateText = blockedAt?.slice(0, 10) ?? "";
+  const queryClient = useQueryClient();
 
   const handleUnblock = () => {
     showActionAlert(
@@ -26,6 +27,7 @@ const BlockItem = ({ item }: BlockItemProps) => {
       async () => {
         try {
           await deleteUserBlock(user.id);
+          queryClient.invalidateQueries({ queryKey: ["blockedListKey"] });
         } catch (e: any) {
           if (e) showAlert(e.response.data.message);
         }
@@ -91,7 +93,7 @@ const BlockedLists = () => {
   // API 타입: BlockedListResponse 단건이 아닌 목록일 가능성 고려
   // 서버가 배열을 반환한다고 가정하고 방어적으로 처리
   const items = Array.isArray(data) ? data : data ? [data] : [];
-  console.log(items);
+
   if (!items.length) {
     // 빈 상태
     return (
