@@ -20,6 +20,7 @@ export type GiftedChatViewProps = {
   canLoadEarlier?: boolean;
   isLoadingEarlier?: boolean;
   isLeaveUser?: boolean;
+  isBlockedUser?: boolean;
   leaveUserName?: string; // 상대방 닉네임(선택)
 };
 
@@ -32,6 +33,7 @@ const GiftedChatView = ({
   canLoadEarlier,
   isLoadingEarlier,
   isLeaveUser,
+  isBlockedUser,
   leaveUserName,
 }: GiftedChatViewProps) => {
   // 시간 라벨 포맷터
@@ -156,7 +158,9 @@ const GiftedChatView = ({
   // 시스템 메시지(상대 퇴장 안내) 주입
   // - 한글 주석: isLeaveUser가 true이면 시스템 메시지를 1회만 추가
   const decoratedMessages = useMemo(() => {
-    if (!isLeaveUser) return messages;
+    // 한글 주석: 상대 퇴장 또는 차단 시 시스템 메시지 1회만 표시
+    const isPeerGone = !!isLeaveUser || !!isBlockedUser;
+    if (!isPeerGone) return messages;
     const alreadyHas = messages.some(
       (m) => (m as any)?.system && (m as any)?._id === "system-leave"
     );
@@ -173,7 +177,7 @@ const GiftedChatView = ({
 
     // 한글 주석: 최신 메시지로 노출되도록 배열 뒤에 추가
     return [...messages, sysMsg];
-  }, [messages, isLeaveUser, leaveUserName]);
+  }, [messages, isLeaveUser, isBlockedUser, leaveUserName]);
 
   // Day(날짜 배지) 포맷: YYYY-MM-DD
   const renderDay = useCallback((props: any) => {
