@@ -290,7 +290,7 @@ const GiftedChatView = ({
       user={currentUser}
       placeholder={placeholder}
       alwaysShowSend
-      inverted={false}
+      inverted={true}
       loadEarlier={!!canLoadEarlier}
       isLoadingEarlier={!!isLoadingEarlier}
       onLoadEarlier={onLoadEarlier}
@@ -308,6 +308,7 @@ const GiftedChatView = ({
         // iOS에서 스크롤 위치 보존 지원 (플랫폼별 동작 상이할 수 있음)
         // @ts-ignore
         maintainVisibleContentPosition: { minIndexForVisible: 1 },
+        initialNumToRender: 30,
       }}
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
