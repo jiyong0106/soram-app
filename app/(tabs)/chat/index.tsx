@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getChat } from "@/utils/api/chatPageApi";
 import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
+import { useFocusEffect } from "expo-router";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const qc = useQueryClient();
+
+  // 화면 포커스 시 최신화 보장
+  useFocusEffect(
+    useCallback(() => {
+      qc.invalidateQueries({ queryKey: ["getChatKey"] });
+    }, [qc])
+  );
 
   const {
     data,
@@ -30,14 +39,16 @@ const chatPage = () => {
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnReconnect: true,
   });
 
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
-    if (now - dataUpdatedAt < 60_000) return; // 최근 60초 내 데이터면 스킵
+    // 강제 새로고침: 데이터 업데이트 시각과 무관하게 허용
 
     setRefreshing(true);
     try {
