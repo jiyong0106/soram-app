@@ -62,10 +62,12 @@ const TopicCard = ({ item }: Props) => {
           {/* ✨ 3. 텍스트를 디자인 시안에 맞게 변경합니다. */}
           <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
           {/* ✨ 4. 아이콘 색상을 어두운 계열로 변경합니다. */}
-          <MaterialIcons name="touch-app" size={24} color="#877974" />
+          <MaterialIcons name="touch-app" size={24} color="#5C4B44" />
         </View>
         <AppText style={styles.participants}>
-          💬 {userCount}명이 이야기하고 있어요
+          {userCount === 0
+            ? "👋 이 주제의 첫 이야기가 되어주세요!"
+            : `💬 ${userCount}명이 이야기하고 있어요 `}
         </AppText>
       </LinearGradient>
     </ScalePressable>
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
     gap: 24, // 각 콘텐츠 그룹 사이의 간격
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 24,
     lineHeight: 36,
     color: "#5C4B44", // 어두운 색으로 변경
     fontWeight: "bold",
