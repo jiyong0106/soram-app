@@ -1,11 +1,12 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getBlockedList } from "@/utils/api/profilePageApi";
+import { deleteUserBlock, getBlockedList } from "@/utils/api/profilePageApi";
 import { BlockedListResponse } from "@/utils/types/profile";
 import AppText from "../common/AppText";
 import { getInitials } from "@/utils/util/uiHelpers";
 import ScalePressable from "../common/ScalePressable";
+import useAlert from "@/utils/hooks/useAlert";
 
 interface BlockItemProps {
   item: BlockedListResponse;
@@ -14,17 +15,26 @@ interface BlockItemProps {
 // 단일 차단 항목 카드
 const BlockItem = ({ item }: BlockItemProps) => {
   const { blockedAt, user } = item;
-
+  const { showActionAlert, showAlert } = useAlert();
   // 날짜 포맷 간단 처리 (YYYY-MM-DD)
   const dateText = blockedAt?.slice(0, 10) ?? "";
 
+  const handleUnblock = () => {
+    showActionAlert(
+      `${user.nickname}님 차단을 해제하시나요?`,
+      "해제",
+      async () => {
+        try {
+          await deleteUserBlock(user.id);
+        } catch (e: any) {
+          if (e) showAlert(e.response.data.message);
+        }
+      }
+    );
+  };
+
   return (
-    <ScalePressable
-      style={styles.itemCard}
-      onPress={() => {
-        console.log(user.id);
-      }}
-    >
+    <ScalePressable style={styles.itemCard} onPress={handleUnblock}>
       <View style={styles.avatar}>
         <AppText style={styles.avatarText}>
           {getInitials(user?.nickname)}

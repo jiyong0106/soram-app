@@ -1,3 +1,5 @@
+import { UserType } from "./common";
+
 // 프로필 관련 타입 정의
 export interface Answer {
   questionId: number;
@@ -23,8 +25,10 @@ export interface LogoutResponse {
 //차단목록 조회
 export interface BlockedListResponse {
   blockedAt: string;
-  user: {
-    id: number;
-    nickname: string;
-  };
+  user: UserType;
+}
+
+//차단 해제
+export interface UnblockResponse {
+  message: string;
 }
