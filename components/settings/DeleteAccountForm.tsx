@@ -12,6 +12,7 @@ import { deleteAccount } from "@/utils/api/profilePageApi";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import Button from "../common/Button";
 
 const quickReasons = [
   "더 이상 사용하지 않음",
@@ -83,63 +84,57 @@ const DeleteAccountForm = () => {
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.section}>
-        <AppText style={styles.title}>계정 삭제 전 꼭 확인해 주세요</AppText>
-        <View style={styles.bullets}>
-          <AppText style={styles.bullet}>
-            - 모든 데이터가 영구적으로 삭제됩니다.
+      <View style={styles.formWrap}>
+        <View style={[styles.section, styles.sectionWarning]}>
+          <AppText style={[styles.title, styles.titleDanger]}>
+            계정 삭제 전 꼭 확인해 주세요
           </AppText>
-          <AppText style={styles.bullet}>- 삭제 후 복구가 불가합니다.</AppText>
-          <AppText style={styles.bullet}>
-            - 진행 중인 대화/기록도 삭제됩니다.
-          </AppText>
+          <View style={styles.bullets}>
+            <AppText style={[styles.bullet, styles.bulletDanger]}>
+              - 모든 데이터가 영구적으로 삭제됩니다.
+            </AppText>
+            <AppText style={[styles.bullet, styles.bulletDanger]}>
+              - 삭제 후 복구가 불가합니다.
+            </AppText>
+            <AppText style={[styles.bullet, styles.bulletDanger]}>
+              - 진행 중인 대화/기록도 삭제됩니다.
+            </AppText>
+          </View>
+        </View>
+
+        <View style={[styles.section, styles.sectionForm]}>
+          <AppText style={styles.label}>삭제 사유</AppText>
+          <TextInput
+            value={reason}
+            onChangeText={setReason}
+            placeholder="사유를 입력해 주세요"
+            placeholderTextColor="#9CA3AF"
+            multiline
+            style={styles.input}
+            maxLength={200}
+          />
+          <View style={styles.quickWrap}>
+            {quickReasons.map((r) => (
+              <TouchableOpacity
+                key={r}
+                onPress={() => onPickQuick(r)}
+                activeOpacity={0.7}
+                style={styles.chip}
+              >
+                <AppText style={styles.chipText}>{r}</AppText>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
-
-      <View style={styles.section}>
-        <AppText style={styles.label}>삭제 사유</AppText>
-        <TextInput
-          value={reason}
-          onChangeText={setReason}
-          placeholder="사유를 입력해 주세요"
-          placeholderTextColor="#9CA3AF"
-          multiline
-          style={styles.input}
-          maxLength={200}
-        />
-        <View style={styles.quickWrap}>
-          {quickReasons.map((r) => (
-            <TouchableOpacity
-              key={r}
-              onPress={() => onPickQuick(r)}
-              activeOpacity={0.7}
-              style={styles.chip}
-            >
-              <AppText style={styles.chipText}>{r}</AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onSubmit}
-          disabled={!canSubmit}
-          style={[styles.deleteBtn, !canSubmit && styles.deleteBtnDisabled]}
-        >
-          <AppText style={styles.deleteText}>
-            {loading ? "삭제 중…" : "계정 영구 삭제"}
-          </AppText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => router.back()}
-          style={styles.cancelBtn}
-        >
-          <AppText style={styles.cancelText}>취소</AppText>
-        </TouchableOpacity>
-      </View>
+      <Button
+        label="삭제하기"
+        onPress={onSubmit}
+        disabled={!canSubmit}
+        loading={loading}
+        color="#ff6b6b"
+        textColor="#fff"
+      />
     </View>
   );
 };
@@ -151,9 +146,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     gap: 24,
+    justifyContent: "space-between",
+  },
+  formWrap: {
+    gap: 24,
   },
   section: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
     shadowColor: "#000",
@@ -162,17 +160,34 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
+  // 경고 섹션: 부드러운 핑크 틴트로 강조
+  sectionWarning: {
+    backgroundColor: "#FFF1F2", // rose-50
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#FECACA", // rose-200
+  },
+  sectionForm: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#E5E7EB",
+  },
   title: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 8,
     color: "#111827",
   },
+  titleDanger: {
+    color: "#B91C1C", // red-700
+  },
   bullets: {
     gap: 6,
   },
   bullet: {
     color: "#6B7280",
+  },
+  bulletDanger: {
+    color: "#B91C1C",
   },
   label: {
     fontWeight: "bold",
@@ -204,30 +219,6 @@ const styles = StyleSheet.create({
   chipText: {
     color: "#374151",
     fontSize: 12,
-    fontWeight: "bold",
-  },
-  footer: {
-    gap: 12,
-  },
-  deleteBtn: {
-    backgroundColor: "#EF4444",
-    paddingVertical: 14,
-    alignItems: "center",
-    borderRadius: 12,
-  },
-  deleteBtnDisabled: {
-    opacity: 0.6,
-  },
-  deleteText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  cancelBtn: {
-    alignItems: "center",
-    paddingVertical: 12,
-  },
-  cancelText: {
-    color: "#6B7280",
     fontWeight: "bold",
   },
 });
