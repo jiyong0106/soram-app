@@ -80,11 +80,13 @@ const TopicPage = () => {
               activeOpacity={0.5}
               style={styles.moreTopic}
             >
-              <AppText>더 다양한 주제 보러가기</AppText>
+              <AppText style={styles.moreTopicText}>
+                더 다양한 주제 보러가기
+              </AppText>
               <Ionicons
                 name="chevron-forward-outline"
-                size={20}
-                color="black"
+                size={14}
+                color="#5C4B44"
               />
             </TouchableOpacity>
           </>
@@ -107,9 +109,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   moreTopic: {
-    marginHorizontal: "auto",
+    alignSelf: "center",
     marginVertical: 20,
     flexDirection: "row",
     alignItems: "center",
+  },
+  moreTopicText: {
+    fontSize: 14,
+    color: "#5C4B44",
   },
 });

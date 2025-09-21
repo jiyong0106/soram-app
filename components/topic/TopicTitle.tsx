@@ -23,12 +23,12 @@ const TopicTitle = ({ onShuffle, disabled, loading }: Props) => {
       >
         {loading ? (
           <Spin active duration={800}>
-            <Ionicons name="reload" size={16} color="#FF6B3E" />
+            <Ionicons name="refresh" size={14} color="#FF6B3E" />
           </Spin>
         ) : (
           <>
             <AppText style={styles.shuffleText}>다른 주제</AppText>
-            <Ionicons name="reload" size={15} color="#8E8E8E" />
+            <Ionicons name="refresh" size={14} color="#B0A6A0" />
           </>
         )}
       </Pressable>
@@ -41,13 +41,15 @@ export default TopicTitle;
 const styles = StyleSheet.create({
   container: {
     paddingTop: 8,
-    paddingBottom: 12,
+    paddingBottom: 4,
     justifyContent: "center",
     paddingHorizontal: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     lineHeight: 30,
+    color: "#5C4B44",
+    textAlign: "center",
   },
   shuffleBtn: {
     alignSelf: "flex-end",
@@ -58,6 +60,6 @@ const styles = StyleSheet.create({
   },
   shuffleText: {
     fontSize: 14,
-    color: "#858585",
+    color: "#B0A6A0",
   },
 });
