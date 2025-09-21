@@ -182,7 +182,7 @@ export default forwardRef(TicketsSheet);
 const styles = StyleSheet.create({
   container: {
     flex: 1, // 자식 요소들을 감싸기 위해 추가
-    paddingTop: 14,
+    paddingTop: 12,
     paddingHorizontal: 20,
     paddingBottom: 50,
   },
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     color: "#5C4B44",
   },
   totalQuantityText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#5C4B44",
   },

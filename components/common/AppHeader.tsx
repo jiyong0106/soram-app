@@ -10,14 +10,14 @@ type Props = {
 const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
   return (
     <View style={styles.container}>
-      <View>
-        <AppText style={styles.logo}>SORAM</AppText>
+      <View style={styles.logoContainer}>
+                <AppText style={styles.logo}>SORAM</AppText>
         <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
       </View>
 
       {/* 오른쪽: 알림 아이콘 */}
       <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
-        <Ionicons name="notifications-outline" size={24} color="#333" />
+        <Ionicons name="notifications-outline" size={24} color="#5C4B44" />
         {hasNotification && <View style={styles.badge} />}
       </Pressable>
     </View>
@@ -39,9 +39,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FF6B3E",
   },
+  logoContainer: {
+    flexDirection: "row", // 자식 요소들을 가로로 배열
+    alignItems: "baseline",
+    gap: 8, // 로고와 슬로건 사이의 간격
+  },
   slogan: {
     fontSize: 12,
-    color: "#999",
+    color: "#5C4B44",
   },
   notificationBtn: {},
   badge: {

@@ -1,5 +1,7 @@
 import React, { memo } from "react";
-import { ImageBackground, View, StyleSheet } from "react-native";
+// ✨ 1. ImageBackground 대신 View를 import 하고, LinearGradient를 새로 import 합니다.
+import { View, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
@@ -40,69 +42,88 @@ const TopicCard = ({ item }: Props) => {
 
   return (
     <ScalePressable onPress={handlePress} style={styles.container}>
-      <ImageBackground
-        source={require("@/assets/images/1.jpg")}
-        style={styles.image}
+      {/* ✨ 2. ImageBackground를 LinearGradient로 교체합니다. */}
+      <LinearGradient
+        colors={["#FFF3EC", "#FFFFFF"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradientCard}
       >
-        <View style={styles.textWrapper}>
-          <AppText style={styles.cardTitle}>{title}</AppText>
-          {/* <View>
-            {subQuestions.map((content, index) => (
-              <AppText key={`${id}-${index}`} style={styles.cardSub}>
-                {content}
-              </AppText>
-            ))}
-          </View> */}
-
-          <View style={styles.touch}>
-            <AppText style={styles.participants}>눌러서 이야기 듣기</AppText>
-            <MaterialIcons name="touch-app" size={24} color="white" />
-          </View>
-          <AppText style={styles.participants}>
-            💬 {userCount}명이 이야기하고 있어요
-          </AppText>
+        <AppText style={styles.cardTitle}>{title}</AppText>
+        <View>
+          {subQuestions.map((content, index) => (
+            <AppText key={`${id}-${index}`} style={styles.cardSub}>
+              {content}
+            </AppText>
+          ))}
         </View>
-      </ImageBackground>
+
+        <View style={styles.touch}>
+          {/* ✨ 3. 텍스트를 디자인 시안에 맞게 변경합니다. */}
+          <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
+          {/* ✨ 4. 아이콘 색상을 어두운 계열로 변경합니다. */}
+          <MaterialIcons name="touch-app" size={24} color="#877974" />
+        </View>
+        <AppText style={styles.participants}>
+          💬 {userCount}명이 이야기하고 있어요
+        </AppText>
+      </LinearGradient>
     </ScalePressable>
   );
 };
 
 export default memo(TopicCard);
+
+// ✨ 5. 전체적인 스타일을 새로운 디자인에 맞게 대폭 수정합니다.
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 10, // 양옆 여백을 조금 더 확보
+    // 그림자가 잘리지 않도록 container 스타일에 그림자를 적용합니다.
+    shadowColor: "#D2B4AA",
+    shadowOffset: {
+      width: 2,
+      height: 6,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5, // Android용 그림자
+    marginBottom: 10,
   },
-  image: {
-    height: 420,
+  gradientCard: {
     borderRadius: 24,
-    overflow: "hidden",
-  },
-  textWrapper: {
-    padding: 20,
-    flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
+    paddingVertical: 50, // 상하 여백
+    paddingHorizontal: 20, // 좌우 여백
+    alignItems: "center", // 콘텐츠 중앙 정렬
+    gap: 24, // 각 콘텐츠 그룹 사이의 간격
   },
   cardTitle: {
     fontSize: 22,
     lineHeight: 36,
-    color: "#fff",
+    color: "#5C4B44", // 어두운 색으로 변경
     fontWeight: "bold",
+    textAlign: "center",
   },
   cardSub: {
-    marginTop: 16,
-    fontSize: 18,
-    color: "#fff",
-    lineHeight: 20,
+    marginTop: 8, // 질문 간 간격 조정
+    fontSize: 14, // 보조 질문 폰트 크기 조정
+    color: "#5C4B44", // 어두운 색으로 변경
+    lineHeight: 26,
+    textAlign: "left",
   },
   participants: {
-    marginTop: 16,
     fontSize: 14,
-    color: "#fff",
+    color: "#B0A6A0", // 어두운 색으로 변경
     fontWeight: "bold",
   },
   touch: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 8, // 텍스트와 아이콘 사이 간격
+  },
+  // ctaText 스타일을 새로 추가합니다.
+  ctaText: {
+    fontSize: 16,
+    color: "#5C4B44",
+    fontWeight: "600",
   },
 });
