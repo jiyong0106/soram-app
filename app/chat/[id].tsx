@@ -7,7 +7,7 @@ import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getAuthToken } from "@/utils/util/auth";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
@@ -40,7 +40,7 @@ const ChatIdPage = () => {
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
-  // 1) 이전 채팅 이력
+  // 1) 이전 채팅 이력 (항상 최신 보장: staleTime 0, refetchOnMount always)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["getMessagesKey", roomId],
@@ -52,8 +52,9 @@ const ChatIdPage = () => {
       initialPageParam: undefined as number | undefined,
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-      staleTime: 60 * 1000,
-      placeholderData: keepPreviousData,
+      staleTime: 0,
+      refetchOnMount: "always",
+      refetchOnReconnect: true,
     });
   const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];
