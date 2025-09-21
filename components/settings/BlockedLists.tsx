@@ -84,7 +84,7 @@ const BlockItem = ({ item }: BlockItemProps) => {
         <AppText style={styles.itemSubtitle}>{`차단일: ${dateText}`}</AppText>
       </View>
       <View style={styles.badgeWrap}>
-        <AppText style={styles.badge}>차단됨</AppText>
+        <AppText style={styles.badge}>차단</AppText>
       </View>
     </ScalePressable>
   );
