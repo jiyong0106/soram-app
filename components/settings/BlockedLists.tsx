@@ -181,7 +181,7 @@ const BlockedLists = () => {
       keyExtractor={(item) => String(item.user.id)}
       contentContainerStyle={styles.listContainer}
       refreshing={isRefetching}
-      onRefresh={onRefresh}
+      // onRefresh={onRefresh}
       renderItem={({ item }) => <BlockItem item={item} />}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       onEndReached={onEndReached}
