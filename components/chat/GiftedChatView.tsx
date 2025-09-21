@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import {
   GiftedChat,
@@ -10,6 +10,9 @@ import type { MessageProps } from "react-native-gifted-chat";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../common/LoadingSpinner";
+
+// 타입 한계상 ref 전달을 위해 any 캐스팅한 래퍼 사용
+const GiftedChatAny: any = GiftedChat as any;
 
 export type GiftedChatViewProps = {
   messages: IMessage[];
@@ -274,6 +277,20 @@ const GiftedChatView = ({
     );
   };
 
+  // 전송 직후 최하단으로 스크롤
+  const chatRef = useRef<any>(null);
+  const handleSendWithScroll = useCallback(
+    (msgs?: IMessage[]) => {
+      onSend(msgs);
+      requestAnimationFrame(() => {
+        try {
+          chatRef.current?.scrollToBottom?.();
+        } catch {}
+      });
+    },
+    [onSend]
+  );
+
   const renderLoadEarlier = useCallback(() => {
     if (!canLoadEarlier) return null; // 더 불러올 게 없으면 아무것도 안 보임
     return (
@@ -284,9 +301,10 @@ const GiftedChatView = ({
   }, [canLoadEarlier, isLoadingEarlier]);
 
   return (
-    <GiftedChat
+    <GiftedChatAny
+      ref={chatRef}
       messages={decoratedMessages}
-      onSend={onSend}
+      onSend={handleSendWithScroll}
       user={currentUser}
       placeholder={placeholder}
       alwaysShowSend
@@ -295,27 +313,13 @@ const GiftedChatView = ({
       isLoadingEarlier={!!isLoadingEarlier}
       onLoadEarlier={onLoadEarlier}
       renderLoadEarlier={renderLoadEarlier}
-      // 위로 스크롤 시 임계점에서 자동 로드
-      handleOnScroll={(e: any) => {
-        try {
-          const y = e?.contentOffset?.y ?? e?.nativeEvent?.contentOffset?.y;
-          if (y != null && y < 48 && canLoadEarlier && !isLoadingEarlier) {
-            onLoadEarlier?.();
-          }
-        } catch {}
-      }}
-      listViewProps={{
-        // iOS에서 스크롤 위치 보존 지원 (플랫폼별 동작 상이할 수 있음)
-        // @ts-ignore
-        maintainVisibleContentPosition: { minIndexForVisible: 1 },
-        initialNumToRender: 30,
-      }}
+      // maintainVisibleContentPosition는 제거하여 전송 시 하단 고정이 자연스럽게 동작하도록 함
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
       renderInputToolbar={renderInputToolbar}
       renderComposer={renderComposer}
-      renderSend={(props) => {
+      renderSend={(props: any) => {
         const canSend = !!props.text?.trim();
         return (
           <TouchableOpacity
