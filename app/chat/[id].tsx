@@ -15,19 +15,24 @@ import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
 
 const ChatIdPage = () => {
-  const { id, peerUserId, peerUserName, isLeave } = useLocalSearchParams<{
-    id: string;
-    peerUserId: string;
-    peerUserName: string;
-    isLeave: string;
-  }>();
-  // 한글 주석: 라우트 파라미터는 문자열이므로 "false"도 truthy가 됨 -> 안전 변환
-  const isLeaveUser = useMemo(() => {
-    const raw = Array.isArray(isLeave) ? isLeave[0] : isLeave;
+  const { id, peerUserId, peerUserName, isLeave, isBlocked } =
+    useLocalSearchParams<{
+      id: string;
+      peerUserId: string;
+      peerUserName: string;
+      isLeave: string;
+      isBlocked: string;
+    }>();
+  //  라우트 파라미터 불리언 안전 변환 유틸
+  const toBoolParam = (param: string | string[] | undefined): boolean => {
+    const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
     const v = String(raw).trim().toLowerCase();
     return v === "true" || v === "1" || v === "yes";
-  }, [isLeave]);
+  };
+
+  const isLeaveUser = useMemo(() => toBoolParam(isLeave), [isLeave]);
+  const isBlockedUser = useMemo(() => toBoolParam(isBlocked), [isBlocked]);
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
   const token = getAuthToken() ?? "";
@@ -134,6 +139,7 @@ const ChatIdPage = () => {
         canLoadEarlier={!!hasNextPage}
         isLoadingEarlier={!!isFetchingNextPage}
         isLeaveUser={isLeaveUser}
+        isBlockedUser={isBlockedUser}
         leaveUserName={peerUserName}
       />
 

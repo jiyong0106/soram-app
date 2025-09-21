@@ -20,7 +20,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { id, opponent, isLeave } = item;
+  const { id, opponent, isLeave, isBlocked } = item;
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -54,6 +54,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
         peerUserId: opponent.id,
         peerUserName: opponent.nickname,
         isLeave: String(isLeave),
+        isBlocked: String(isBlocked),
       },
     });
   };
@@ -89,7 +90,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
             {opponent.nickname}
           </AppText>
           <AppText style={styles.rowSubtitle} numberOfLines={1}>
-            {isLeave
+            {isLeave || isBlocked
               ? `${opponent.nickname}님이 방을 나갔어요`
               : opponent.nickname}
           </AppText>
