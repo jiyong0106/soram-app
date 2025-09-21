@@ -83,7 +83,7 @@ const ChatIdPage = () => {
     const unique = Array.from(dedupMap.values());
     unique.sort(
       (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
     return unique.map(mapToIMessage);
   }, [historyItems, realtimeItems, mapToIMessage]);

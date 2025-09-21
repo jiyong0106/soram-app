@@ -36,7 +36,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
       </View>
       <AppText style={styles.participants}>
         {userCount === 0
-          ? "아직 등록 된 답변이 없어요"
+          ? "👋 이 주제의 첫 이야기가 되어주세요!"
           : `💬 ${userCount}명이 이야기하고 있어요`}
       </AppText>
       <TopicListSheet
