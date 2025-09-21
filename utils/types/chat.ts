@@ -14,6 +14,10 @@ export interface ChatParticipant extends UserType {
 }
 
 // 1. 채팅 목록 조회 api타입
+export interface LastMessageType {
+  content: string;
+  createdAt: string;
+}
 export interface ChatItemType {
   id: number;
   requesterId: number;
@@ -25,6 +29,7 @@ export interface ChatItemType {
   opponent: UserType;
   isBlocked: boolean;
   isLeave: boolean;
+  lastMessage: LastMessageType | null;
 }
 export interface GetChatResponse {
   data: ChatItemType[];
