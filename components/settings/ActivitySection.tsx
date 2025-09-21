@@ -21,7 +21,7 @@ const ActivitySection = () => {
   };
 
   const handleBolcked = () => {
-    router.push("/profile/setting/blockedList");
+    router.push("/profile/setting/blocked");
   };
 
   return (

@@ -3,8 +3,9 @@ import React from "react";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
 import { BackButton } from "@/components/common/backbutton";
+import BlockedLists from "@/components/settings/BlockedLists";
 
-const blockedList = () => {
+const BlockedPage = () => {
   return (
     <PageContainer padded={false} edges={["bottom"]}>
       <Stack.Screen
@@ -15,12 +16,14 @@ const blockedList = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-      <View style={styles.container}></View>
+      <View style={styles.container}>
+        <BlockedLists />
+      </View>
     </PageContainer>
   );
 };
 
-export default blockedList;
+export default BlockedPage;
 
 const styles = StyleSheet.create({
   container: {

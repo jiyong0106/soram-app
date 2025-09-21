@@ -1,21 +1,30 @@
 // 프로필 관련 타입 정의
-export type Answer = {
+export interface Answer {
   questionId: number;
   content: string;
   isPrimary?: boolean;
-};
+}
 
 export type Gender = "MALE" | "FEMALE" | "OTHER";
 
-export type ProfileType = {
+export interface ProfileType {
   nickname: string;
   gender: Gender;
   birthdate: string; // ISO string (YYYY-MM-DD)
   location: string;
   answers: Answer[];
-};
+}
 
 //로그아웃
-export type LogoutResponse = {
+export interface LogoutResponse {
   message: string;
-};
+}
+
+//차단목록 조회
+export interface BlockedListResponse {
+  blockedAt: string;
+  user: {
+    id: number;
+    nickname: string;
+  };
+}
