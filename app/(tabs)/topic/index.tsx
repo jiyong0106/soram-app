@@ -83,7 +83,6 @@ const TopicPage = () => {
               <AppText style={styles.moreTopicText}>
                 더 다양한 주제 보러가기
               </AppText>
-              <AppText> </AppText>
               <Ionicons
                 name="chevron-forward-outline"
                 size={14}
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   moreTopic: {
-    marginHorizontal: "auto",
+    alignSelf: "center",
     marginVertical: 20,
     flexDirection: "row",
     alignItems: "center",

@@ -1,7 +1,15 @@
-import React, { memo } from "react";
-// ✨ 1. ImageBackground 대신 View를 import 하고, LinearGradient를 새로 import 합니다.
+import React, { memo, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  interpolate,
+  // ✨ 1. withSequence를 추가로 import 합니다.
+  withSequence,
+} from "react-native-reanimated";
 import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
@@ -18,6 +26,33 @@ const TopicCard = ({ item }: Props) => {
   const router = useRouter();
   const { title, subQuestions, id, userCount } = item;
   const { showAlert, showActionAlert } = useAlert();
+
+  // --- ✨ 2. 애니메이션 로직을 Scale(크기) 방식으로 변경합니다. ✨ ---
+  const animation = useSharedValue(0);
+
+  useEffect(() => {
+    // withSequence를 사용해 '쿵... (잠시 쉼)' 하는 심장박동 효과를 만듭니다.
+    animation.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 200 }), // 빠르게 커졌다가
+        withTiming(0, { duration: 400 }), // 천천히 돌아오고
+        withTiming(0, { duration: 1000 }) // 잠시 멈춥니다.
+      ),
+      -1 // 무한 반복
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    // animation.value가 0->1->0으로 변할 때, scale 값은 1->1.03->1로 변합니다.
+    const scale = interpolate(animation.value, [0, 1], [1, 1.03]); // 3% 커지는 효과
+
+    return {
+      // 이제 shadowOpacity 대신 transform의 scale 값을 변경합니다.
+      transform: [{ scale }],
+    };
+  });
+
+  // --- ✨ 애니메이션 로직 변경 끝 ✨ ---
 
   const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
@@ -41,8 +76,10 @@ const TopicCard = ({ item }: Props) => {
   };
 
   return (
-    <ScalePressable onPress={handlePress} style={styles.container}>
-      {/* ✨ 2. ImageBackground를 LinearGradient로 교체합니다. */}
+    <ScalePressable
+      onPress={handlePress}
+      style={[styles.container, animatedStyle]}
+    >
       <LinearGradient
         colors={["#FFF3EC", "#FFFFFF"]}
         start={{ x: 0, y: 0 }}
@@ -67,7 +104,7 @@ const TopicCard = ({ item }: Props) => {
         <AppText style={styles.participants}>
           {userCount === 0
             ? "👋 이 주제의 첫 이야기가 되어주세요!"
-            : `💬 ${userCount}명이 이야기하고 있어요 `}
+            : `💬 ${userCount}명이 이야기하고 있어요`}
         </AppText>
       </LinearGradient>
     </ScalePressable>
@@ -86,6 +123,7 @@ const styles = StyleSheet.create({
       width: 2,
       height: 6,
     },
+    // ✨ 3. 그림자 투명도는 이제 고정값으로 돌아갑니다.
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 5, // Android용 그림자

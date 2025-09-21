@@ -11,11 +11,9 @@ const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-                <AppText style={styles.logo}>SORAM</AppText>
+        <AppText style={styles.logo}>SORAM</AppText>
         <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
       </View>
-
-      {/* 오른쪽: 알림 아이콘 */}
       <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
         <Ionicons name="notifications-outline" size={24} color="#5C4B44" />
         {hasNotification && <View style={styles.badge} />}
