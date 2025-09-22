@@ -44,7 +44,7 @@ const AuthPage = () => {
       action={
         <Button
           label="인증번호 전송"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}

@@ -55,7 +55,7 @@ const FinishPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={loading}
           style={styles.button}
@@ -103,6 +103,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   inputFocused: {
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
   },
 });
