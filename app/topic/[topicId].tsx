@@ -126,16 +126,20 @@ const UserAnswerPage = () => {
                   style={styles.moreTopicWrapper}
                   onPress={() => router.push("/topic/list")}
                 >
-                  <AppText style={styles.moreTopic}>다른 주제 보기</AppText>
-                  <Ionicons name="reload" size={15} color="#8E8E8E" />
+                  <AppText style={styles.moreTopic}>
+                    이 주제의 이야기를 모두 봤어요. 다른 주제를 볼까요?
+                  </AppText>
+                  <Ionicons name="chevron-forward" size={15} color="#B0A6A0" />
                 </ScalePressable>
               ) : (
                 <ScalePressable
                   style={styles.moreTopicWrapper}
                   onPress={onShuffle}
                 >
-                  <AppText style={styles.moreTopic}>다른 이야기 보기</AppText>
-                  <Ionicons name="reload" size={15} color="#8E8E8E" />
+                  <AppText style={styles.moreTopic}>
+                    다른 사람의 이야기 보기
+                  </AppText>
+                  <Ionicons name="reload" size={15} color="#B0A6A0" />
                 </ScalePressable>
               )
             }

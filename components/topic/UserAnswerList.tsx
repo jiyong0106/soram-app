@@ -29,27 +29,34 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       voiceResponseId: id,
     };
 
-    showActionAlert("대화요청 할거임?", "요청", async () => {
-      try {
-        setLoading(true);
-        await postRequestConnection(body);
-        showAlert("요청되었어요!");
-        queryClient.invalidateQueries({ queryKey: ["getSentConnectionsKey"] });
-      } catch (e: any) {
-        const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-        showAlert(msg, () => {
-          if (e.response.data.statusCode === 403) {
-            router.push({
-              pathname: "/topic/list/[listId]",
-              params: { listId: String(topicBoxId), error: "forbidden" },
-            });
-            return;
-          }
-        });
-      } finally {
-        setLoading(false);
+    showActionAlert(
+      `대화 요청을 할까요?\n(대화 요청권 1개가 사용됩니다)`,
+      "요청",
+      async () => {
+        try {
+          setLoading(true);
+          await postRequestConnection(body);
+          showAlert(`대화 요청 완료! \n 상대방이 수락하면 알림을 보내드릴게요`);
+          queryClient.invalidateQueries({
+            queryKey: ["getSentConnectionsKey"],
+          });
+        } catch (e: any) {
+          const msg =
+            e?.response?.data?.message || "요청 중 오류가 발생했어요.";
+          showAlert(msg, () => {
+            if (e.response.data.statusCode === 403) {
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: { listId: String(topicBoxId), error: "forbidden" },
+              });
+              return;
+            }
+          });
+        } finally {
+          setLoading(false);
+        }
       }
-    });
+    );
   };
 
   return (
@@ -63,11 +70,11 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       <AppText style={styles.content}>{textContent}</AppText>
 
       {/* 작성자 닉네임 (오른쪽 정렬, 서명 느낌) */}
-      <AppText style={styles.nick}>– {user.nickname}</AppText>
+      <AppText style={styles.nick}>- {user.nickname}</AppText>
 
       {/* 메타 (필요 시 표시) */}
       <AppText style={styles.meta}>
-        {new Date(createdAt).toLocaleString()}
+        {new Date(createdAt).toLocaleDateString()}
       </AppText>
 
       {/* 하단 버튼 */}
@@ -83,7 +90,7 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         <Button
           label={`${user.nickname}님의 \n 다른 이야기 보기`}
           color="#FFFFFF"
-          textColor="#9B9B9B"
+          textColor="#B0A6A0"
           style={styles.btnOutline}
         />
       </View>
@@ -126,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     lineHeight: 22,
-    color: "#333",
+    color: "#5C4B44",
   },
   questionHighlight: {
     color: "#FF6B3E",
@@ -136,19 +143,20 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#3D3D3D",
+    color: "#5C4B44",
   },
 
   nick: {
     alignSelf: "flex-end",
     marginTop: 8,
-    color: "#7F7F7F",
-    fontSize: 13,
+    color: "#5C4B44",
+    fontSize: 14,
+    fontWeight: "bold",
     fontStyle: "italic",
   },
 
   meta: {
-    color: "#A5A5A5",
+    color: "#B0A6A0",
     marginTop: 4,
     fontSize: 12,
   },

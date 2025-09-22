@@ -16,7 +16,7 @@ const AccountSection = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
-    showActionAlert("로그아웃 하시나요?.", "확인", async () => {
+    showActionAlert("로그아웃 하시겠습니까?", "확인", async () => {
       if (loading) return;
       setLoading(true);
       try {
