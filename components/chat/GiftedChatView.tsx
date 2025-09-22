@@ -114,7 +114,12 @@ const GiftedChatView = ({
             <>
               {showTime && (
                 <Text
-                  style={{ color: "#B0A6A0", fontSize: 10, marginRight: 5 }}
+                  style={{
+                    color: "#B0A6A0",
+                    fontSize: 10,
+                    marginRight: 5,
+                    marginBottom: 2,
+                  }}
                 >
                   {timeText}
                 </Text>
@@ -137,7 +142,14 @@ const GiftedChatView = ({
                 containerStyle={containerStyle}
               />
               {showTime && (
-                <Text style={{ color: "#B0A6A0", fontSize: 10, marginLeft: 5 }}>
+                <Text
+                  style={{
+                    color: "#B0A6A0",
+                    fontSize: 10,
+                    marginLeft: 5,
+                    marginBottom: 2,
+                  }}
+                >
                   {timeText}
                 </Text>
               )}
@@ -199,7 +211,7 @@ const GiftedChatView = ({
           borderRadius: 16,
           width: "30%",
           alignSelf: "center",
-          marginTop: 20,
+          marginVertical: 10,
         }}
       >
         <AppText

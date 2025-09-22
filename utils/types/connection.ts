@@ -10,13 +10,22 @@ interface ConnectionBase {
   updatedAt: string;
 }
 
-//받은 대화 요청 목록 조회 api타입
+// 요청자의 답변 미리보기 정보 타입
+export interface RequesterResponsePreviewType {
+  id: number;
+  type: "TEXT" | "VOICE";
+  contentPreview: string | null;
+  playtime: number | null;
+}
 
+// 받은 대화 요청 목록 조회 api타입
 export interface GetConnectionsType {
   createdAt: string;
   id: number;
   requester: UserType;
   topicTitle: string;
+  // 백엔드 응답에 맞춰 미리보기 속성을 추가합니다.
+  requesterResponsePreview: RequesterResponsePreviewType;
 }
 
 export interface GetConnectionsResponse {

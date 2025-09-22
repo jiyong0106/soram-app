@@ -21,10 +21,12 @@ import {
   View,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
+import { useRouter } from "expo-router"; // 👇 [추가] 네비게이션을 위한 useRouter import
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
 
@@ -32,6 +34,7 @@ const ReceivedRequests = () => {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter(); // 👇 [추가] router 인스턴스 생성
 
   const {
     data,
@@ -129,6 +132,14 @@ const ReceivedRequests = () => {
     },
   });
 
+  const onPressCardPreview = (item: GetConnectionsType) => {
+    const responseId = item.requesterResponsePreview.id;
+    router.push({
+      pathname: "/connection/response/[id]",
+      params: { id: responseId },
+    });
+  };
+
   const onAccept = (id: number) => acceptMutation.mutate(id);
   const onReject = (id: number) => rejectMutation.mutate(id);
 
@@ -145,6 +156,8 @@ const ReceivedRequests = () => {
             item={item}
             onAccept={() => onAccept(item.id)}
             onReject={() => onReject(item.id)}
+            // 👇 [추가됨] 새로운 prop에 핸들러 함수를 연결합니다.
+            onPressPreview={() => onPressCardPreview(item)}
             disabled={processingId === item.id || isRefetching}
           />
         )}
@@ -185,13 +198,13 @@ const styles = StyleSheet.create({
   },
   empty: {
     textAlign: "center",
-    color: "#666",
+    color: "#B0A6A0",
     marginTop: 20,
     fontSize: 16,
   },
   center: {
     textAlign: "center",
     marginTop: 24,
-    color: "#666",
+    color: "#B0A6A0",
   },
 });

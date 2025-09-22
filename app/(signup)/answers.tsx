@@ -38,7 +38,7 @@ const AnswersPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={disabled}
           style={styles.button}
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlignVertical: "top",
   },
-  inputFocused: { borderColor: "#ff6b6b" },
+  inputFocused: { borderColor: "#FF7D4A" },
   counter: {
     position: "absolute",
     right: 10,
