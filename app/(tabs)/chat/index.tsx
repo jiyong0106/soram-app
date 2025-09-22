@@ -61,7 +61,7 @@ const chatPage = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <AppText style={styles.title}>채팅</AppText>
+        <AppText style={styles.title}>대화</AppText>
         <SearchBar value={query} onChangeText={setQuery} />
       </View>
       <FlatList
@@ -99,11 +99,13 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 15,
+    paddingVertical: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 16,
+    color: "#5C4B44",
   },
   rowTextWrap: {
     flex: 1,

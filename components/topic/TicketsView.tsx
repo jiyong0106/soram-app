@@ -2,49 +2,16 @@ import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import { StyleSheet, View } from "react-native";
 import AppText from "../common/AppText";
 import TicketsSheet from "./TicketsSheet";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import ScalePressable from "../common/ScalePressable";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-// 🚨 1. BottomSheetModal의 타입을 import 합니다.
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const TicketsView = () => {
   const storeState = useTicketsStore();
   const { data, initialized } = storeState;
 
-  // 🚨 2. useRef에 BottomSheetModal 타입을 명시해줍니다.
   const actionSheetRef = useRef<BottomSheetModal>(null);
-
-  const [containerWidth, setContainerWidth] = useState(0);
-  const translateX = useSharedValue(0);
-
-  useEffect(() => {
-    if (containerWidth === 0) return;
-    const gradientWidth = containerWidth * 3;
-    const animationRange = gradientWidth - containerWidth;
-    translateX.value = withRepeat(
-      withTiming(-animationRange, {
-        duration: 500,
-        easing: Easing.linear,
-      }),
-      -1,
-      true
-    );
-  }, [containerWidth, translateX]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-    };
-  });
 
   if (!initialized) {
     return null;
@@ -66,39 +33,17 @@ const TicketsView = () => {
   ];
 
   return (
-    // ✅ 이제 이 부분에서 오류가 발생하지 않습니다.
     <ScalePressable onPress={() => actionSheetRef.current?.present?.()}>
-      <View
-        style={styles.gradientBorderContainer}
-        onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
-      >
-        {containerWidth > 0 && (
-          <Animated.View
-            style={[
-              { width: containerWidth * 3 },
-              styles.gradientAnimator,
-              animatedStyle,
-            ]}
-          >
-            <LinearGradient
-              colors={["#E86A78", "#A89CF7", "#72D6EE"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradient}
-            />
-          </Animated.View>
-        )}
-
-        <View style={styles.innerContainer}>
-          <AppText style={styles.headerText}>보유중인 이용권</AppText>
-          <View style={styles.ticketWrap}>
-            {items.map(({ icon, value }, id) => (
-              <View key={id} style={styles.ticket}>
-                {icon}
-                <AppText style={styles.ticketText}>{value}</AppText>
-              </View>
-            ))}
-          </View>
+      {/* ✨ 이제 이 View가 버튼의 전체적인 모양을 담당합니다. */}
+      <View style={styles.buttonContainer}>
+        <AppText style={styles.headerText}>보유중인 이용권</AppText>
+        <View style={styles.ticketWrap}>
+          {items.map(({ icon, value }, id) => (
+            <View key={id} style={styles.ticket}>
+              {icon}
+              <AppText style={styles.ticketText}>{value}</AppText>
+            </View>
+          ))}
         </View>
       </View>
       <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
@@ -108,27 +53,30 @@ const TicketsView = () => {
 
 export default TicketsView;
 
+// ✨ StyleSheet가 훨씬 간결해졌습니다.
 const styles = StyleSheet.create({
-  gradientBorderContainer: {
+  buttonContainer: {
+    // 테두리 설정
+    // borderWidth: 1,
+    // borderColor: "#FFB591",
+
+    // 그림자 설정 (iOS & Android 호환)
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5, // Android용 그림자
+
+    // 기존 레이아웃 스타일
+    backgroundColor: "#fff",
     borderRadius: 30,
-    overflow: "hidden",
-    // width: "90%",
     alignSelf: "center",
     marginVertical: 10,
-  },
-  gradientAnimator: {
-    ...StyleSheet.absoluteFillObject,
-    height: "100%",
-  },
-  gradient: {
-    flex: 1,
-  },
-  innerContainer: {
-    backgroundColor: "#fff",
-    margin: 1.25,
-    borderRadius: 28,
     paddingHorizontal: 32,
-    paddingVertical: 4,
+    paddingVertical: 4, // 패딩 값 조정
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

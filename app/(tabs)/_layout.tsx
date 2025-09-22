@@ -9,14 +9,20 @@ const TabLayout = () => {
 
   return (
     <Tabs
-      screenOptions={{ tabBarActiveTintColor: "#ff6b6b", headerShown: false }}
+      screenOptions={{
+        tabBarActiveTintColor: "#FF7D4A",
+        headerShown: false,
+        tabBarLabelStyle: {
+          marginTop: 5,
+        },
+      }}
     >
       <Tabs.Screen
         name="chat"
         options={{
           title: "대화",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbox-ellipses-outline" size={28} color={color} />
+            <Ionicons name="chatbubbles" size={28} color={color} />
           ),
         }}
       />
@@ -25,7 +31,7 @@ const TabLayout = () => {
         options={{
           title: "요청",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="happy-outline" size={28} color={color} />
+            <Ionicons name="send" size={26} color={color} />
           ),
         }}
       />
@@ -34,7 +40,7 @@ const TabLayout = () => {
         options={{
           title: "주제",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="rocket-outline" size={28} color={color} />
+            <Ionicons name="flame" size={28} color={color} />
           ),
         }}
       />
@@ -43,7 +49,7 @@ const TabLayout = () => {
         options={{
           title: "프로필",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={28} color={color} />
+            <Ionicons name="person" size={28} color={color} />
           ),
         }}
       />

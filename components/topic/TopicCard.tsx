@@ -61,7 +61,7 @@ const TopicCard = ({ item }: Props) => {
 
   const handlePress = () => {
     showActionAlert(
-      "다른 사람들의 이야기를 보시겠어요? \n (이야기 보기권 1장 사용)",
+      "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
       "확인",
       () => {
         // 비관적: 페이지 진입 시점에서 차감하도록 보장 (useTicketGuard 내부 optimistic=false)

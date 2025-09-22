@@ -12,6 +12,7 @@ import AppText from "../common/AppText";
 import { getInitials } from "@/utils/util/uiHelpers";
 import ScalePressable from "../common/ScalePressable";
 import useAlert from "@/utils/hooks/useAlert";
+import { Ionicons } from "@expo/vector-icons";
 
 interface BlockItemProps {
   item: BlockedListType;
@@ -166,10 +167,15 @@ const BlockedLists = () => {
     // 빈 상태
     return (
       <View style={styles.emptyWrap}>
-        <View style={styles.emptyIcon} />
+        <Ionicons
+          name="close-circle-sharp"
+          size={64} // 크기를 키워 균형을 맞춥니다.
+          color="#E5E7EB" // 색상을 주변과 맞춥니다.
+          style={{ marginBottom: 12 }} // 기존 여백을 유지합니다.
+        />
         <AppText style={styles.emptyTitle}>차단한 사용자가 없어요</AppText>
         <AppText style={styles.emptySub}>
-          불쾌한 유저를 만나면 언제든 차단할 수 있어요.
+          원한다면 언제든 상대방을 차단할 수 있어요
         </AppText>
       </View>
     );
@@ -234,21 +240,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
   },
-  emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    backgroundColor: "#E5E7EB",
-    marginBottom: 12,
-  },
   emptyTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#111827",
+    color: "#5C4B44",
   },
   emptySub: {
     marginTop: 4,
-    color: "#6B7280",
+    color: "#B0A6A0",
   },
   separator: {
     height: 12,
