@@ -114,15 +114,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFE2E2",
+    backgroundColor: "#FFF3EC",
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: "#ff6b6b",
+    color: "#FF7D4A",
     fontWeight: "800",
   },
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
-  rowSubtitle: { color: "#8A8F98", fontSize: 12 },
+  rowSubtitle: { color: "#B0A6A0", fontSize: 12 },
 });

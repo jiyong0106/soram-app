@@ -38,11 +38,11 @@ const Row = ({
     const getExpiresText = (expiresAt: string) => {
       const diff = dayjs(expiresAt).diff(dayjs(), "day");
       if (diff < 0) return "(기간 만료)";
-      if (diff === 0) return "오늘 사라져요";
+      if (diff === 0) return "오늘이 사용할 수 있는 마지막 날이에요!";
       return `${diff + 1}일 뒤에 사라져요`;
     };
     const getSourceTypeText = (sourceType: TicketSourceType) => {
-      if (sourceType === "EVENT") return "보유중인 이용권";
+      if (sourceType === "EVENT") return "기간 한정 이용권";
       if (sourceType === "PAID") return "구매한 이용권";
       return "보관중인 이용권";
     };
@@ -107,7 +107,7 @@ const Row = ({
             <AnimatedAppText
               style={[styles.breakdownText, styles.dailyText, animatedStyle]}
             >
-              {`• 오늘 사라지는 이용권 ${processedBreakdown.daily.quantity}개`}
+              {`• 오늘 무료로 받은 이용권 ${processedBreakdown.daily.quantity}개`}
             </AnimatedAppText>
           </View>
         )}

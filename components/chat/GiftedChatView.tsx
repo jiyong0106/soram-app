@@ -114,7 +114,7 @@ const GiftedChatView = ({
             <>
               {showTime && (
                 <Text
-                  style={{ color: "#8E8E93", fontSize: 12, marginRight: 4 }}
+                  style={{ color: "#B0A6A0", fontSize: 10, marginRight: 5 }}
                 >
                   {timeText}
                 </Text>
@@ -137,7 +137,7 @@ const GiftedChatView = ({
                 containerStyle={containerStyle}
               />
               {showTime && (
-                <Text style={{ color: "#8E8E93", fontSize: 12, marginLeft: 4 }}>
+                <Text style={{ color: "#B0A6A0", fontSize: 10, marginLeft: 5 }}>
                   {timeText}
                 </Text>
               )}
@@ -195,17 +195,17 @@ const GiftedChatView = ({
         style={{
           paddingVertical: 5,
           paddingHorizontal: 3,
-          backgroundColor: "#E5E7EB",
+          backgroundColor: "#f0f0f0ff",
           borderRadius: 16,
           width: "30%",
           alignSelf: "center",
-          marginVertical: 30,
+          marginTop: 20,
         }}
       >
         <AppText
           style={{
             color: "#6B7280",
-            fontSize: 11,
+            fontSize: 10,
             textAlign: "center",
             fontWeight: "bold",
           }}
@@ -235,7 +235,7 @@ const GiftedChatView = ({
   const renderComposer = (props: any) => {
     const {
       placeholder = "메시지 입력",
-      placeholderTextColor = "#b2b2b2",
+      placeholderTextColor = "#B0A6A0",
       multiline = true,
       textInputAutoFocus = false,
       keyboardAppearance = "default",
@@ -264,7 +264,8 @@ const GiftedChatView = ({
             minHeight: 40,
             backgroundColor: "#f2f2f7",
             borderRadius: 20,
-            padding: 10,
+            padding: 12,
+            textAlignVertical: "center",
           },
         ]}
         autoFocus={textInputAutoFocus}
@@ -295,7 +296,7 @@ const GiftedChatView = ({
     if (!canLoadEarlier) return null; // 더 불러올 게 없으면 아무것도 안 보임
     return (
       <View style={{ paddingVertical: 12, alignItems: "center" }}>
-        {isLoadingEarlier ? <LoadingSpinner color="#ff6b6b" /> : null}
+        {isLoadingEarlier ? <LoadingSpinner color="#FF7D4A" /> : null}
       </View>
     );
   }, [canLoadEarlier, isLoadingEarlier]);
@@ -331,9 +332,10 @@ const GiftedChatView = ({
               paddingLeft: 10,
               marginHorizontal: "auto",
               justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Ionicons name="send" size={25} color="#ff6b6b" />
+            <Ionicons name="send" size={25} color="#FF7D4A" />
           </TouchableOpacity>
         );
       }}

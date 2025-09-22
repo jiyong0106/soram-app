@@ -11,8 +11,8 @@ type Route = { key: "received" | "sent" };
 const ROUTES: Route[] = [{ key: "received" }, { key: "sent" }]; //  고정 탭
 const TAB_COUNT = ROUTES.length;
 
-const THEME = "#ff6b6b";
-const INACTIVE = "#8E9499";
+const THEME = "#FF7D4A";
+const INACTIVE = "#B0A6A0";
 const TAB_HEIGHT = 48;
 const H_PADDING = 10; // 탭바 좌우 여백
 

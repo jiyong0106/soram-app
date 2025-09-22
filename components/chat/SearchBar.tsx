@@ -20,12 +20,12 @@ const SearchBar = ({
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor="#9AA0A6"
+        placeholderTextColor="#B0A6A0"
       />
       <Ionicons
         name="search"
         size={20}
-        color="#222"
+        color="#B0A6A0"
         style={styles.searchIcon}
       />
     </View>
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: "#DADCE0",
+    borderColor: "#B0A6A0",
     paddingLeft: 16,
     paddingRight: 40,
     justifyContent: "center",
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   searchInput: {
     fontSize: 16,

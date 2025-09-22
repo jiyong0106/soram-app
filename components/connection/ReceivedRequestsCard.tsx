@@ -15,7 +15,7 @@ interface ReceivedRequestsCardProps {
   disabled?: boolean;
 }
 
-const THEME = "#ff6b6b";
+const THEME = "#FF7D4A";
 
 const ReceivedRequestsCard = ({
   item,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFE2E2",
+    backgroundColor: "#FFF3EC",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   ghost: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: THEME,
   },
   acceptWrap: {
