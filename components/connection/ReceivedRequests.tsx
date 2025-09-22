@@ -21,6 +21,7 @@ import {
   View,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -129,6 +130,16 @@ const ReceivedRequests = () => {
     },
   });
 
+  // 👇 [추가됨] 미리보기 카드 터치 핸들러
+  // 추후 이 함수 내에서 상세 보기 화면으로 이동하는 네비게이션 로직을 구현합니다.
+  const onPressCardPreview = (item: GetConnectionsType) => {
+    const { id, type } = item.requesterResponsePreview;
+    Alert.alert(
+      "답변 상세보기",
+      `VoiceResponse ID: ${id}\n답변 타입: ${type}\n\n이곳에서 상세보기 화면으로 이동합니다.`
+    );
+  };
+
   const onAccept = (id: number) => acceptMutation.mutate(id);
   const onReject = (id: number) => rejectMutation.mutate(id);
 
@@ -145,6 +156,8 @@ const ReceivedRequests = () => {
             item={item}
             onAccept={() => onAccept(item.id)}
             onReject={() => onReject(item.id)}
+            // 👇 [추가됨] 새로운 prop에 핸들러 함수를 연결합니다.
+            onPressPreview={() => onPressCardPreview(item)}
             disabled={processingId === item.id || isRefetching}
           />
         )}
