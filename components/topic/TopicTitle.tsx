@@ -27,7 +27,7 @@ const TopicTitle = ({ onShuffle, disabled, loading }: Props) => {
           </Spin>
         ) : (
           <>
-            <AppText style={styles.shuffleText}>다른 주제</AppText>
+            <AppText style={styles.shuffleText}>새로운 주제 보기</AppText>
             <Ionicons name="refresh" size={14} color="#B0A6A0" />
           </>
         )}
