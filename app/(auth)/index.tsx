@@ -64,6 +64,7 @@ const AuthPage = () => {
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
             placeholder="휴대폰 번호"
+            placeholderTextColor={"#B0A6A0"}
             keyboardType="number-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -87,9 +88,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#5C4B44",
   },
   desc: {
-    color: "#888",
+    color: "#B0A6A0",
     marginBottom: 32,
   },
   inputRow: {
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
   },
   countryCode: {
     fontSize: 18,
-    color: "#222",
+    color: "#5C4B44",
     marginRight: 8,
   },
   input: {
@@ -113,6 +115,6 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   inputFocused: {
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
   },
 });

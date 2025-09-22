@@ -62,7 +62,7 @@ const VerifyCodeInputPage = () => {
     try {
       setLoading(true);
       await postRequestOtp({ phoneNumber });
-      showAlert("인증번호를 다시 전송했어요");
+      showAlert("인증번호가 전송되었습니다.");
     } catch (e: any) {
       if (e) {
         showAlert(e.response.data.message);
@@ -90,11 +90,12 @@ const VerifyCodeInputPage = () => {
       <View style={styles.container}>
         <AppText style={styles.title}>인증번호를 입력해 주세요</AppText>
         <AppText style={styles.desc}>
-          인증번호가 전송됐어요. 받은 번호를 입력하면 인증이 완료돼요.
+          {"\n인증번호가 전송됐어요.\n\n받은 번호를 입력하면 인증이 완료돼요."}
         </AppText>
         <TextInput
           style={[styles.input, focused && styles.inputFocused]}
           placeholder="4자리 숫자"
+          placeholderTextColor={"#B0A6A0"}
           keyboardType="number-pad"
           value={otp}
           onChangeText={setotp}
@@ -103,7 +104,7 @@ const VerifyCodeInputPage = () => {
           onBlur={() => setFocused(false)}
         />
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <AppText style={styles.desc}>인증번호 다시 요청하기</AppText>
+          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기"}</AppText>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
@@ -120,9 +121,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#5C4B44",
   },
   desc: {
-    color: "#888",
+    color: "#5C4B44",
     marginBottom: 32,
   },
   input: {
@@ -136,6 +138,6 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   inputFocused: {
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
   },
 });
