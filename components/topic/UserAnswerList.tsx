@@ -11,9 +11,14 @@ import { useQueryClient } from "@tanstack/react-query";
 interface UserAnswerListProps {
   item: UserAnswerResponse;
   title: string | string[];
+  showActions?: boolean; // 버튼 표시 여부를 제어하는 prop
 }
 
-const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
+const UserAnswerList = ({
+  item,
+  title,
+  showActions = true, // 👇 2. 기본값을 true로 설정하여 기존 코드가 깨지지 않도록 함
+}: UserAnswerListProps) => {
   const { textContent, id, userId, user, createdAt, topicBoxId } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
@@ -77,23 +82,25 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
         {new Date(createdAt).toLocaleDateString()}
       </AppText>
 
-      {/* 하단 버튼 */}
-      <View style={styles.btnWrapper}>
-        <Button
-          label="대화 요청하기"
-          color="#FFF5F0"
-          textColor="#FF6B3E"
-          style={styles.btnEmphasis}
-          disabled={loading}
-          onPress={handlePress}
-        />
-        <Button
-          label={`${user.nickname}님의 \n 다른 이야기 보기`}
-          color="#FFFFFF"
-          textColor="#B0A6A0"
-          style={styles.btnOutline}
-        />
-      </View>
+      {/* 👇 3. 조건부 렌더링: showActions가 true일 때만 버튼 영역을 보여줌 */}
+      {showActions && (
+        <View style={styles.btnWrapper}>
+          <Button
+            label="대화 요청하기"
+            color="#FFF5F0"
+            textColor="#FF6B3E"
+            style={styles.btnEmphasis}
+            disabled={loading}
+            onPress={handlePress}
+          />
+          <Button
+            label={`${user.nickname}님의 \n 다른 이야기 보기`}
+            color="#FFFFFF"
+            textColor="#B0A6A0"
+            style={styles.btnOutline}
+          />
+        </View>
+      )}
     </View>
   );
 };

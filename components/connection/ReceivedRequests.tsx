@@ -26,6 +26,7 @@ import {
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
+import { useRouter } from "expo-router"; // 👇 [추가] 네비게이션을 위한 useRouter import
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
 
@@ -33,6 +34,7 @@ const ReceivedRequests = () => {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter(); // 👇 [추가] router 인스턴스 생성
 
   const {
     data,
@@ -130,14 +132,12 @@ const ReceivedRequests = () => {
     },
   });
 
-  // 👇 [추가됨] 미리보기 카드 터치 핸들러
-  // 추후 이 함수 내에서 상세 보기 화면으로 이동하는 네비게이션 로직을 구현합니다.
   const onPressCardPreview = (item: GetConnectionsType) => {
-    const { id, type } = item.requesterResponsePreview;
-    Alert.alert(
-      "답변 상세보기",
-      `VoiceResponse ID: ${id}\n답변 타입: ${type}\n\n이곳에서 상세보기 화면으로 이동합니다.`
-    );
+    const responseId = item.requesterResponsePreview.id;
+    router.push({
+      pathname: "/connection/response/[id]",
+      params: { id: responseId },
+    });
   };
 
   const onAccept = (id: number) => acceptMutation.mutate(id);
@@ -198,13 +198,13 @@ const styles = StyleSheet.create({
   },
   empty: {
     textAlign: "center",
-    color: "#666",
+    color: "#B0A6A0",
     marginTop: 20,
     fontSize: 16,
   },
   center: {
     textAlign: "center",
     marginTop: 24,
-    color: "#666",
+    color: "#B0A6A0",
   },
 });

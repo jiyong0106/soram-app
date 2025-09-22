@@ -6,6 +6,7 @@ import AppText from "../common/AppText";
 import Button from "../common/Button";
 import { formatRelative } from "@/utils/util/formatRelative";
 import { getInitials } from "@/utils/util/uiHelpers";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons"; // 👇 셰브론 아이콘을 위해 import
 
 // --- Types ---
 // 백엔드 응답에 맞춘 새로운 타입 정의
@@ -29,12 +30,11 @@ interface ReceivedRequestItem {
   createdAt: string;
 }
 
-// 3. 컴포넌트 Props 타입
 interface ReceivedRequestsCardProps {
   item: ReceivedRequestItem;
   onAccept: () => void;
   onReject: () => void;
-  onPressPreview: () => void; // 답변 미리보기 영역 터치 이벤트
+  onPressPreview: () => void;
   disabled?: boolean;
 }
 
@@ -50,7 +50,6 @@ const ReceivedRequestsCard = ({
 }: ReceivedRequestsCardProps) => {
   const { requester, createdAt, topicTitle, requesterResponsePreview } = item;
 
-  // playtime(초)을 "M:SS" 형식의 문자열로 변환하는 함수
   const formatPlaytime = (seconds: number | null) => {
     if (seconds === null) return "0:00";
     const min = Math.floor(seconds / 60);
@@ -69,40 +68,48 @@ const ReceivedRequestsCard = ({
         </View>
         <View style={{ flex: 1 }}>
           <AppText style={styles.name}>{requester?.nickname}</AppText>
-          <AppText style={styles.sub}>
-            {formatRelative(createdAt)} • ID {requester.id}
-          </AppText>
+          <AppText style={styles.sub}>{formatRelative(createdAt)}</AppText>
         </View>
       </View>
 
-      {/* 👇 [변경됨] 인용문(Quote Block) 형태의 답변 미리보기 */}
+      {/* 👇 [변경됨] 인용문(Quote Block) 구조 수정 */}
       <TouchableOpacity
         style={styles.quoteBlock}
         onPress={onPressPreview}
         disabled={disabled}
       >
-        <AppText style={styles.questionText}>Q. {topicTitle}</AppText>
-
-        {/* 답변 유형에 따라 다른 UI 렌더링 */}
-        {requesterResponsePreview.type === "TEXT" ? (
-          // 텍스트 답변
-          <View style={styles.previewRow}>
-            <AppText style={styles.previewIcon}>💬</AppText>
-            <AppText style={styles.previewText} numberOfLines={2}>
-              "{requesterResponsePreview.contentPreview}"
-            </AppText>
-          </View>
-        ) : (
-          // 음성 답변
-          <View style={styles.previewRow}>
-            <AppText style={styles.previewIcon}>▶</AppText>
-            <AppText style={styles.previewText}>음성 답변</AppText>
-            <AppText style={styles.playtimeText}>
-              {formatPlaytime(requesterResponsePreview.playtime)}
-            </AppText>
-          </View>
-        )}
+        {/* 텍스트 컨텐츠를 담을 View */}
+        <View style={styles.quoteContentWrapper}>
+          <AppText style={styles.questionText}>
+            <AppText style={styles.questionHighlight}>Q. </AppText>
+            {topicTitle}
+          </AppText>
+          {requesterResponsePreview.type === "TEXT" ? (
+            <View style={styles.previewRow}>
+              <AppText style={styles.previewIcon}>💬</AppText>
+              <AppText style={styles.previewText} numberOfLines={2}>
+                "{requesterResponsePreview.contentPreview}"
+              </AppText>
+            </View>
+          ) : (
+            <View style={styles.previewRow}>
+              <AppText style={styles.previewIcon}>▶</AppText>
+              <AppText style={styles.previewText}>음성 답변</AppText>
+              <AppText style={styles.playtimeText}>
+                {formatPlaytime(requesterResponsePreview.playtime)}
+              </AppText>
+            </View>
+          )}
+        </View>
+        {/* 오른쪽 셰브론 아이콘 추가 */}
+        <Ionicons name="chevron-forward" size={20} color="#FF7D4A" />
       </TouchableOpacity>
+      <View></View>
+      <View>
+        <AppText style={styles.captionText}>
+          위를 클릭해서 {requester?.nickname}님의 이야기를 확인해보세요.
+        </AppText>
+      </View>
 
       {/* 액션 버튼 */}
       <View style={styles.btnRow}>
@@ -139,11 +146,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "#E6E8EC",
-    padding: 16, // 패딩 조정
+    padding: 16,
     backgroundColor: "#fff",
-    gap: 16, // 간격 조정
+    gap: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
@@ -168,45 +175,55 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1F2937",
+    color: "#5C4B44",
   },
   sub: {
     fontSize: 12,
-    color: "#6B7280",
-    marginTop: 2,
+    color: "#B0A6A0",
+    marginTop: 4,
   },
-  // 👇 [변경됨] 기존 metaBlock -> quoteBlock
+  // 👇 [변경됨] quoteBlock 스타일 수정
   quoteBlock: {
-    backgroundColor: "#F9FAFB", // 약간 더 밝은 회색
+    backgroundColor: "#F9FAFB",
     borderRadius: 12,
-    padding: 14,
-    gap: 8, // 내부 간격
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#EEEEEE",
   },
-  // 👇 [추가됨] 질문 텍스트 스타일
+  // 👇 [추가됨] 텍스트 영역을 감싸는 래퍼
+  quoteContentWrapper: {
+    flex: 1, // 셰브론 아이콘을 제외한 나머지 공간을 모두 차지
+    gap: 8,
+  },
+
   questionText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
-    color: "#4B5563",
+    color: "#5C4B44", // topicTitle 색상
     marginBottom: 4,
   },
-  // 👇 [추가됨] 미리보기 영역 행 스타일
+  // 👇 [추가됨] 'Q.' 부분에만 적용될 강조 스타일
+  questionHighlight: {
+    color: THEME, // 강조 색상
+  },
   previewRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  // 👇 [추가됨] 미리보기 아이콘 스타일
   previewIcon: {
     fontSize: 16,
   },
-  // 👇 [추가됨] 미리보기 텍스트 스타일
   previewText: {
-    flex: 1, // 텍스트가 길어지면 줄바꿈 되도록
+    flex: 1,
     fontSize: 14,
     color: "#374151",
     lineHeight: 20,
   },
-  // 👇 [추가됨] 음성 재생시간 스타일
   playtimeText: {
     fontSize: 13,
     fontWeight: "500",
@@ -221,10 +238,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   ghost: {
-    borderWidth: 1.5, // 테두리 강조
+    borderWidth: 1,
     borderColor: THEME,
   },
   btnWrap: {
     flex: 1,
+  },
+  captionText: {
+    fontSize: 12,
+    color: "#B0A6A0", // 연한 회색
+    textAlign: "center",
+    paddingHorizontal: 10, // 좌우 여백
+    marginBottom: 5,
+    marginTop: -10,
   },
 });
