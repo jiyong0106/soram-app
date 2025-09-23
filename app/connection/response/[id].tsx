@@ -4,20 +4,19 @@ import { useLocalSearchParams, Stack } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-// 👇 [수정됨] 올바른 경로와 이름으로 API 인스턴스를 가져옵니다.
 import instance from "@/utils/api/axios";
 import { UserAnswerResponse } from "@/utils/types/topic";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
 import UserAnswerList from "@/components/topic/UserAnswerList";
+import { backHeaderOptions } from "@/components/common/backbutton";
 
 // --- API ---
 type VoiceResponseDetail = UserAnswerResponse & {
   topicBox: { title: string };
 };
 
-// 👇 [수정됨] authClient 대신 'instance'를 사용합니다.
 const getVoiceResponseById = async (
   voiceResponseId: string
 ): Promise<VoiceResponseDetail[]> => {
@@ -53,18 +52,38 @@ const VoiceResponseDetailPage = () => {
   const responseData = data[0];
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: responseData.topicBox.title }} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-          <UserAnswerList
-            item={responseData}
-            title={responseData.topicBox.title}
-            showActions={false}
-          />
-        </View>
-      </ScrollView>
-    </View>
+    <>
+      {/* 👇 2. Stack.Screen을 최상단으로 이동시킵니다. */}
+      <Stack.Screen
+        options={{
+          ...backHeaderOptions,
+          title: `${responseData.user.nickname}님의 이야기`,
+          headerTitleStyle: {
+            color: "#5C4B44", // 원하는 색상 코드를 입력하세요.
+            fontWeight: "bold", // 폰트 두께 등 다른 스타일도 가능합니다.
+          },
+        }}
+      />
+      <View style={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            <UserAnswerList
+              item={responseData}
+              title={responseData.topicBox.title}
+              showActions={false}
+            />
+          </View>
+          <View style={styles.center}>
+            <AppText style={styles.promptText1}>
+              이야기가 와닿으셨다면 대화를 시작해보세요!
+            </AppText>
+            <AppText style={styles.promptText2}>
+              어쩌면, 새로운 인연의 시작일지도 몰라요 ☺️
+            </AppText>
+          </View>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
@@ -73,7 +92,7 @@ export default VoiceResponseDetailPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFB",
+    backgroundColor: "#FFFFFF",
   },
   content: {
     padding: 10,
@@ -82,5 +101,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  promptText1: {
+    color: "#5C4B44",
+    fontSize: 14,
+    marginVertical: 6,
+  },
+  promptText2: {
+    color: "#5C4B44",
+    fontSize: 14,
+    marginVertical: 6,
+    fontWeight: "bold",
   },
 });
