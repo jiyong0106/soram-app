@@ -107,7 +107,7 @@ const ReceivedRequestsCard = ({
       <View></View>
       <View>
         <AppText style={styles.captionText}>
-          위를 클릭해서 {requester?.nickname}님의 이야기를 확인해보세요.
+          {requester?.nickname}님의 이야기를 확인해보세요
         </AppText>
       </View>
 
@@ -216,16 +216,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   previewIcon: {
-    fontSize: 16,
+    fontSize: 14,
   },
   previewText: {
     flex: 1,
-    fontSize: 14,
-    color: "#374151",
+    fontSize: 12,
+    color: "#6B7280",
     lineHeight: 20,
   },
   playtimeText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "500",
     color: "#6B7280",
   },
