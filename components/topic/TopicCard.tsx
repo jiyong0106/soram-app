@@ -1,5 +1,5 @@
-import React, { memo, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { memo, useEffect, useState } from "react";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
@@ -7,8 +7,8 @@ import Animated, {
   withRepeat,
   withTiming,
   interpolate,
-  // ✨ 1. withSequence를 추가로 import 합니다.
   withSequence,
+  cancelAnimation,
 } from "react-native-reanimated";
 import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
@@ -20,46 +20,63 @@ import useAlert from "@/utils/hooks/useAlert";
 
 type Props = {
   item: TopicListType;
+  loading?: boolean;
 };
 
-const TopicCard = ({ item }: Props) => {
+const TopicCard = ({ item, loading }: Props) => {
   const router = useRouter();
-  const { title, subQuestions, id, userCount } = item;
+  // ✨ 2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
+  const [displayItem, setDisplayItem] = useState(item);
+  const { title, subQuestions, id, userCount } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
+
   const { showAlert, showActionAlert } = useAlert();
 
-  // --- ✨ 2. 애니메이션 로직을 Scale(크기) 방식으로 변경합니다. ✨ ---
-  const animation = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const scaleAnimation = useSharedValue(0);
 
   useEffect(() => {
-    // withSequence를 사용해 '쿵... (잠시 쉼)' 하는 심장박동 효과를 만듭니다.
-    animation.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 200 }), // 빠르게 커졌다가
-        withTiming(0, { duration: 400 }), // 천천히 돌아오고
-        withTiming(0, { duration: 1000 }) // 잠시 멈춥니다.
-      ),
-      -1 // 무한 반복
-    );
-  }, []);
+    if (loading) {
+      opacity.value = withTiming(0, { duration: 200 }); // 사라지는 애니메이션
+      cancelAnimation(scaleAnimation);
+      scaleAnimation.value = withTiming(0);
+    } else {
+      // ✨ 3. 로딩이 끝나면, 그 때 새로운 데이터로 '표시용 데이터'를 업데이트합니다.
+      setDisplayItem(item);
+      opacity.value = withTiming(1, { duration: 200 }); // 나타나는 애니메이션
+      scaleAnimation.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 200 }),
+          withTiming(0, { duration: 400 }),
+          withTiming(0, { duration: 1000 })
+        ),
+        -1
+      );
+    }
+  }, [loading, item]); // item도 dependency 배열에 추가해줘야 합니다.
 
-  const animatedStyle = useAnimatedStyle(() => {
-    // animation.value가 0->1->0으로 변할 때, scale 값은 1->1.03->1로 변합니다.
-    const scale = interpolate(animation.value, [0, 1], [1, 1.03]); // 3% 커지는 효과
+  const animatedBodyStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
+  const animatedSpinnerStyle = useAnimatedStyle(() => ({
+    // 스피너는 로딩 중일 때만 보이도록 명확하게 제어합니다.
+    opacity: loading ? 1 : 0,
+  }));
+
+  const animatedScaleStyle = useAnimatedStyle(() => {
+    const scale = interpolate(scaleAnimation.value, [0, 1], [1, 1.03]);
     return {
-      // 이제 shadowOpacity 대신 transform의 scale 값을 변경합니다.
       transform: [{ scale }],
     };
   });
 
-  // --- ✨ 애니메이션 로직 변경 끝 ✨ ---
-
   const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
-    optimistic: false, // 서버 성공 확인 후 차감
+    optimistic: false,
   });
 
   const handlePress = () => {
+    if (loading) return;
     showActionAlert(
       "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
       "확인",
@@ -78,7 +95,7 @@ const TopicCard = ({ item }: Props) => {
   return (
     <ScalePressable
       onPress={handlePress}
-      style={[styles.container, animatedStyle]}
+      style={[styles.container, animatedScaleStyle]}
     >
       <LinearGradient
         colors={["#FFF3EC", "#FFFFFF"]}
@@ -86,26 +103,29 @@ const TopicCard = ({ item }: Props) => {
         end={{ x: 1, y: 1 }}
         style={styles.gradientCard}
       >
-        <AppText style={styles.cardTitle}>{title}</AppText>
-        <View>
-          {subQuestions.map((content, index) => (
-            <AppText key={`${id}-${index}`} style={styles.cardSub}>
-              {content}
-            </AppText>
-          ))}
-        </View>
+        <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
+          <ActivityIndicator size="large" color="#FF6B3E" />
+        </Animated.View>
 
-        <View style={styles.touch}>
-          {/* ✨ 3. 텍스트를 디자인 시안에 맞게 변경합니다. */}
-          <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
-          {/* ✨ 4. 아이콘 색상을 어두운 계열로 변경합니다. */}
-          <MaterialIcons name="touch-app" size={24} color="#5C4B44" />
-        </View>
-        <AppText style={styles.participants}>
-          {userCount === 0
-            ? "👋 이 주제의 첫 이야기가 되어주세요!"
-            : `💬 ${userCount}명이 이야기하고 있어요`}
-        </AppText>
+        <Animated.View style={[styles.bodyContainer, animatedBodyStyle]}>
+          <AppText style={styles.cardTitle}>{title}</AppText>
+          <View>
+            {subQuestions.map((content, index) => (
+              <AppText key={`${id}-${index}`} style={styles.cardSub}>
+                {content}
+              </AppText>
+            ))}
+          </View>
+          <View style={styles.touch}>
+            <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
+            <MaterialIcons name="touch-app" size={20} color="#5C4B44" />
+          </View>
+          <AppText style={styles.participants}>
+            {userCount === 0
+              ? "👋 이 주제의 첫 이야기가 되어주세요!"
+              : `💬 ${userCount}명이 이야기하고 있어요`}
+          </AppText>
+        </Animated.View>
       </LinearGradient>
     </ScalePressable>
   );
@@ -113,54 +133,57 @@ const TopicCard = ({ item }: Props) => {
 
 export default memo(TopicCard);
 
-// ✨ 5. 전체적인 스타일을 새로운 디자인에 맞게 대폭 수정합니다.
+// Styles는 이전과 동일하므로 생략합니다.
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10, // 양옆 여백을 조금 더 확보
-    // 그림자가 잘리지 않도록 container 스타일에 그림자를 적용합니다.
+    paddingHorizontal: 10,
     shadowColor: "#D2B4AA",
-    shadowOffset: {
-      width: 2,
-      height: 6,
-    },
-    // ✨ 3. 그림자 투명도는 이제 고정값으로 돌아갑니다.
+    shadowOffset: { width: 2, height: 6 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 5, // Android용 그림자
+    elevation: 5,
     marginBottom: 10,
   },
   gradientCard: {
     borderRadius: 24,
-    paddingVertical: 50, // 상하 여백
-    paddingHorizontal: 20, // 좌우 여백
-    alignItems: "center", // 콘텐츠 중앙 정렬
-    gap: 24, // 각 콘텐츠 그룹 사이의 간격
+    paddingVertical: 50,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    minHeight: 300,
+    justifyContent: "center",
+  },
+  spinnerContainer: {
+    position: "absolute",
+  },
+  bodyContainer: {
+    alignItems: "center",
+    gap: 24,
+    width: "100%",
   },
   cardTitle: {
     fontSize: 24,
     lineHeight: 36,
-    color: "#5C4B44", // 어두운 색으로 변경
+    color: "#5C4B44",
     fontWeight: "bold",
     textAlign: "center",
   },
   cardSub: {
-    marginTop: 8, // 질문 간 간격 조정
-    fontSize: 14, // 보조 질문 폰트 크기 조정
-    color: "#5C4B44", // 어두운 색으로 변경
+    marginTop: 8,
+    fontSize: 14,
+    color: "#5C4B44",
     lineHeight: 26,
     textAlign: "left",
   },
   participants: {
     fontSize: 14,
-    color: "#B0A6A0", // 어두운 색으로 변경
+    color: "#B0A6A0",
     fontWeight: "bold",
   },
   touch: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8, // 텍스트와 아이콘 사이 간격
+    gap: 8,
   },
-  // ctaText 스타일을 새로 추가합니다.
   ctaText: {
     fontSize: 16,
     color: "#5C4B44",
