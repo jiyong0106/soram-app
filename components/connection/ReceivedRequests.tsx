@@ -7,6 +7,7 @@ import {
 import {
   GetConnectionsResponse,
   GetConnectionsType,
+  PostConnectionsAcceptResponse,
 } from "@/utils/types/connection";
 import {
   useMutation,
@@ -21,12 +22,12 @@ import {
   View,
   ActivityIndicator,
   RefreshControl,
-  Alert,
 } from "react-native";
 import ReceivedRequestsCard from "./ReceivedRequestsCard";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { useOptimisticInfiniteRemove } from "@/utils/hooks/useOptimisticInfiniteRemove";
-import { useRouter } from "expo-router"; // 👇 [추가] 네비게이션을 위한 useRouter import
+import { useRouter } from "expo-router";
+import useAlert from "@/utils/hooks/useAlert";
 
 const QUERY_KEY = ["getConnectionsKey"] as const;
 
@@ -34,7 +35,8 @@ const ReceivedRequests = () => {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const router = useRouter(); // 👇 [추가] router 인스턴스 생성
+  const router = useRouter();
+  const { showAlert } = useAlert();
 
   const {
     data,
@@ -86,24 +88,46 @@ const ReceivedRequests = () => {
     GetConnectionsResponse
   >(QUERY_KEY);
 
-  // 수락
-  const acceptMutation = useMutation<unknown, unknown, number, Ctx>({
+  // ✨ `acceptMutation`의 `onSuccess` 부분을 `ChatItem.tsx`를 참고하여 수정합니다.
+  const acceptMutation = useMutation<
+    PostConnectionsAcceptResponse,
+    Error,
+    number
+  >({
     mutationFn: (connectionId: number) =>
       postConnectionsAccept({ connectionId }),
 
-    onMutate: async (id) => {
+    onMutate: (id) => {
       setProcessingId(id);
-      return await optimisticRemove(id);
     },
 
-    onError: (_err, _id, ctx) => {
-      if (ctx?.prev) {
-        queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
-      }
-    },
+    onSuccess: (response) => {
+      // ✨ 1. API 응답에서 상대방(요청자) 정보를 직접 사용합니다.
+      const opponent = response.requester;
 
-    onSuccess: () => {
+      showAlert(
+        `${opponent.nickname}님과 대화가 연결되었어요!\n해당 주제로 이야기를 시작해보시는 건 어떠세요?☺️`,
+        () => {
+          // ✨ 2. ChatItem.tsx를 참고하여 올바른 경로와 파라미터로 수정합니다.
+          router.push({
+            pathname: "/chat/[id]",
+            params: {
+              id: String(response.id), // connectionId
+              peerUserId: String(opponent.id), // 상대방 userId
+              peerUserName: opponent.nickname, // 상대방 닉네임
+              isLeave: "false", // 새로 연결되었으므로 false
+              isBlocked: "false", // 새로 연결되었으므로 false
+            },
+          });
+        }
+      );
+
       queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+
+    onError: () => {
+      showAlert("요청 수락 중 오류가 발생했습니다. 다시 시도해 주세요.");
     },
 
     onSettled: () => {
@@ -125,6 +149,7 @@ const ReceivedRequests = () => {
       if (ctx?.prev) {
         queryClient.setQueryData<ConnInfinite>(QUERY_KEY, ctx.prev);
       }
+      showAlert("요청 거절 중 오류가 발생했습니다.");
     },
 
     onSettled: () => {
@@ -156,7 +181,6 @@ const ReceivedRequests = () => {
             item={item}
             onAccept={() => onAccept(item.id)}
             onReject={() => onReject(item.id)}
-            // 👇 [추가됨] 새로운 prop에 핸들러 함수를 연결합니다.
             onPressPreview={() => onPressCardPreview(item)}
             disabled={processingId === item.id || isRefetching}
           />
