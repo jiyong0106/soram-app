@@ -1,22 +1,28 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
-import { TopicListType } from "@/utils/types/topic";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import ScalePressable from "../common/ScalePressable";
 import { useRouter } from "expo-router";
 
-interface ItemProps {
-  item: TopicListType;
+interface MyResponseCardProps {
+  item: {
+    id: number;
+    title: string;
+    category: string;
+    textContent: string | null;
+  };
 }
 
-const MyResponseCard = ({ item }: ItemProps) => {
-  const { id, title, category, userCount } = item;
+const MyResponseCard = ({ item }: MyResponseCardProps) => {
+  // ✅ 새로운 props 타입을 사용
+  const { id, title, category, textContent } = item;
   const router = useRouter();
 
-  // TODO: 추후 주제 상세 페이지로 이동하는 로직 구현
   const handlePress = () => {
-    router.push(`/topic/detail/${id}`);
+    // TODO: 추후 주제 상세가 아닌 '내 답변 상세' 페이지로 이동
+    console.log(`Card pressed, response ID: ${id}`);
+    // router.push(`/profile/my-responses/${id}`);
   };
 
   return (
@@ -31,12 +37,13 @@ const MyResponseCard = ({ item }: ItemProps) => {
           {title}
         </AppText>
       </View>
-      {/* subQuestions가 있던 부분이 제거되었습니다. */}
-      <AppText style={styles.participants}>
-        {userCount === 0
-          ? "👋 아직 아무도 참여하지 않았어요."
-          : `💬 ${userCount}명이 이야기하고 있어요`}
-      </AppText>
+      {textContent && (
+        <View style={styles.responseWrapper}>
+          <AppText style={styles.responseText} numberOfLines={2}>
+            {textContent}
+          </AppText>
+        </View>
+      )}
     </ScalePressable>
   );
 };
@@ -89,5 +96,16 @@ const styles = StyleSheet.create({
     color: "#FF6B3E",
     fontWeight: "bold",
     fontSize: 16, // title과 사이즈 통일
+  },
+  responseWrapper: {
+    marginTop: 4,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderColor: "#d9d9d9",
+  },
+  responseText: {
+    fontSize: 14,
+    color: "#B0A6A0", // 주제목보다 약간 연한 색상
+    lineHeight: 21,
   },
 });
