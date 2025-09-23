@@ -35,13 +35,18 @@ const UserAnswerList = ({
     };
 
     showActionAlert(
-      `대화 요청을 할까요?\n(대화 요청권 1개가 사용됩니다)`,
+      `대화를 요청할까요?\n\n${user.nickname}님이 요청을 수락하면\n\n대화 요청권이 1개 차감됩니다.`,
       "요청",
       async () => {
         try {
           setLoading(true);
           await postRequestConnection(body);
-          showAlert(`대화 요청 완료! \n 상대방이 수락하면 알림을 보내드릴게요`);
+          showAlert(
+            `대화 요청 완료!\n\n${user.nickname}님이 수락하면 알림을 보내드릴게요.`,
+            () => {
+              router.push("/(tabs)/topic/list");
+            }
+          );
           queryClient.invalidateQueries({
             queryKey: ["getSentConnectionsKey"],
           });
