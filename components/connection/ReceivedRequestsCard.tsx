@@ -6,7 +6,7 @@ import AppText from "../common/AppText";
 import Button from "../common/Button";
 import { formatRelative } from "@/utils/util/formatRelative";
 import { getInitials } from "@/utils/util/uiHelpers";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons"; // 👇 셰브론 아이콘을 위해 import
+import { Ionicons } from "@expo/vector-icons";
 
 // --- Types ---
 // 백엔드 응답에 맞춘 새로운 타입 정의
@@ -71,7 +71,9 @@ const ReceivedRequestsCard = ({
           <AppText style={styles.sub}>{formatRelative(createdAt)}</AppText>
         </View>
       </View>
-
+      <AppText style={styles.captionText}>
+        {requester?.nickname}님이 남긴 이야기를 보시고 결정해 보세요!
+      </AppText>
       {/* 👇 [변경됨] 인용문(Quote Block) 구조 수정 */}
       <TouchableOpacity
         style={styles.quoteBlock}
@@ -86,7 +88,12 @@ const ReceivedRequestsCard = ({
           </AppText>
           {requesterResponsePreview.type === "TEXT" ? (
             <View style={styles.previewRow}>
-              <AppText style={styles.previewIcon}>💬</AppText>
+              <Ionicons
+                name="book-sharp"
+                size={24}
+                color="#6A839A"
+                style={styles.previewIcon} //
+              />
               <AppText style={styles.previewText} numberOfLines={2}>
                 "{requesterResponsePreview.contentPreview}"
               </AppText>
@@ -104,12 +111,6 @@ const ReceivedRequestsCard = ({
         {/* 오른쪽 셰브론 아이콘 추가 */}
         <Ionicons name="chevron-forward" size={20} color="#FF7D4A" />
       </TouchableOpacity>
-      <View></View>
-      <View>
-        <AppText style={styles.captionText}>
-          {requester?.nickname}님의 이야기를 확인해보세요
-        </AppText>
-      </View>
 
       {/* 액션 버튼 */}
       <View style={styles.btnRow}>
@@ -152,8 +153,9 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 4, height: 4 },
     elevation: 4,
+    marginVertical: 2,
   },
   row: {
     flexDirection: "row",
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   previewIcon: {
-    fontSize: 14,
+    fontSize: 16,
   },
   previewText: {
     flex: 1,
@@ -246,10 +248,9 @@ const styles = StyleSheet.create({
   },
   captionText: {
     fontSize: 12,
-    color: "#B0A6A0", // 연한 회색
+    color: "#5C4B44",
     textAlign: "center",
-    paddingHorizontal: 10, // 좌우 여백
-    marginBottom: 5,
-    marginTop: -10,
+    paddingHorizontal: 10,
+    marginBottom: -8,
   },
 });
