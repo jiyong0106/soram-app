@@ -52,8 +52,8 @@ const TopicSection = ({ category }: { category: Category }) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff6b6b"]}
-            tintColor="#ff6b6b"
+            colors={["#FF7D4A"]}
+            tintColor="#FF7D4A"
           />
         }
         onEndReached={() => {

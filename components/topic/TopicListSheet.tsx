@@ -15,7 +15,7 @@ interface TopicListSheetProps {
   id: number;
   subQuestions: string[];
 }
-const THEME = "#ff6b6b";
+const THEME = "#FF7D4A";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
@@ -72,7 +72,9 @@ const TopicListSheet = (
             <AppText style={styles.ctaPrimaryText}>
               다른 사람의 답변 보러가기
             </AppText>
-            <AppText style={styles.ctaPrimarySub}>마음 탐색권 1개 사용</AppText>
+            <AppText style={styles.ctaPrimarySub}>
+              이야기 보기권 1개 사용
+            </AppText>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#fff" />
         </ScalePressable>
@@ -109,8 +111,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     lineHeight: 26,
-    color: "#3a3a3a",
-    fontWeight: "700",
+    color: "#5C4B44",
+    fontWeight: "bold",
     flexShrink: 1,
   },
 
@@ -137,13 +139,13 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
   },
-  ctaPrimaryText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  ctaPrimaryText: { color: "#fff", fontSize: 14, fontWeight: "700" },
   ctaPrimarySub: { color: "#fff", opacity: 0.95, marginTop: 4, fontSize: 12 },
 
   ctaGhost: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: THEME,
     backgroundColor: "#fff",
   },
-  ctaGhostText: { color: THEME, fontSize: 16, fontWeight: "700" },
+  ctaGhostText: { color: THEME, fontSize: 14, fontWeight: "700" },
 });
