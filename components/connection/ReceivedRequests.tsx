@@ -106,7 +106,7 @@ const ReceivedRequests = () => {
       const opponent = response.requester;
 
       showAlert(
-        `${opponent.nickname}님과 대화가 연결되었어요!\n해당 주제로 이야기를 시작해보시는 건 어떠세요?☺️`,
+        `${opponent.nickname}님과 대화가 연결되었어요!\n\n해당 주제로 대화를 시작해보세요☺️`,
         () => {
           // ✨ 2. ChatItem.tsx를 참고하여 올바른 경로와 파라미터로 수정합니다.
           router.push({
