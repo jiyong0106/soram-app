@@ -14,6 +14,7 @@ import AppText from "@/components/common/AppText";
 import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import PulsatingSpinner from "../common/PulsatingSpinner";
 import useTicketGuard from "@/utils/hooks/useTicketGuard";
 import ScalePressable from "../common/ScalePressable";
 import useAlert from "@/utils/hooks/useAlert";
@@ -36,7 +37,7 @@ const TopicCard = ({ item, loading }: Props) => {
 
   useEffect(() => {
     if (loading) {
-      opacity.value = withTiming(0, { duration: 200 }); // 사라지는 애니메이션
+      opacity.value = withTiming(0, { duration: 100 }); // 사라지는 애니메이션
       cancelAnimation(scaleAnimation);
       scaleAnimation.value = withTiming(0);
     } else {
@@ -77,19 +78,36 @@ const TopicCard = ({ item, loading }: Props) => {
 
   const handlePress = () => {
     if (loading) return;
-    showActionAlert(
-      "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
-      "확인",
-      () => {
-        // 비관적: 페이지 진입 시점에서 차감하도록 보장 (useTicketGuard 내부 optimistic=false)
-        ensureNewResponse.ensure(() => {
+
+    // userCount가 0인지 아닌지에 따라 로직을 분기합니다.
+    if (userCount === 0) {
+      // 이야기가 없는 경우: 이야기 작성을 유도합니다.
+      showActionAlert(
+        "첫 이야기를 남겨주세요.\n\n내 이야기에 공감한 누군가가\n\n대화를 요청할지도 몰라요!",
+        "작성하러 가기", // 버튼 텍스트를 더 명확하게 변경
+        () => {
+          // 이야기 '작성' 페이지로 이동시킵니다.
           router.push({
-            pathname: "/topic/[topicId]",
-            params: { topicId: id, title },
+            pathname: "/topic/list/[listId]",
+            params: { listId: id },
           });
-        });
-      }
-    );
+        }
+      );
+    } else {
+      // 이야기가 있는 경우: 기존 로직을 그대로 실행합니다.
+      showActionAlert(
+        "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
+        "확인",
+        () => {
+          ensureNewResponse.ensure(() => {
+            router.push({
+              pathname: "/topic/[topicId]",
+              params: { topicId: id, title },
+            });
+          });
+        }
+      );
+    }
   };
 
   return (
@@ -104,7 +122,7 @@ const TopicCard = ({ item, loading }: Props) => {
         style={styles.gradientCard}
       >
         <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
-          <ActivityIndicator size="large" color="#FF6B3E" />
+          <PulsatingSpinner />
         </Animated.View>
 
         <Animated.View style={[styles.bodyContainer, animatedBodyStyle]}>

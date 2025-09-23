@@ -11,7 +11,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react"; // ✨ useEffect, useRef는 이제 필요 없습니다.
+import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 // ✨ 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
