@@ -10,7 +10,7 @@ const TopicTabBarLists = (props: TabBarProps<any>) => {
       tabStyle={styles.tab}
       indicatorStyle={styles.indicator}
       pressColor="transparent"
-      activeColor="#ff6b6b"
+      activeColor="#FF7D4A"
       inactiveColor="#8E9499"
       scrollEnabled
     />
@@ -23,14 +23,14 @@ const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: "#fff",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#1E1F22",
+    borderBottomColor: "#fff",
   },
   tab: {
     width: "auto",
     paddingHorizontal: 12,
   },
   indicator: {
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF7D4A",
     height: 3,
     borderRadius: 2,
   },

@@ -5,6 +5,7 @@ import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import TopicListSheet from "./TopicListSheet";
 import ScalePressable from "../common/ScalePressable";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface ItemProps {
   item: TopicListType;
@@ -21,7 +22,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
     >
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
-        <Ionicons name="chevron-forward-outline" size={20} color="black" />
+        <Ionicons name="chevron-forward-outline" size={20} color="#5C4B44" />
       </View>
       <View style={styles.titleWrapper}>
         <AppText style={styles.questionHighlight}>Q.</AppText>
@@ -80,22 +81,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     lineHeight: 22,
-    color: "#333",
+    color: "#5C4B44",
   },
   desc: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#555",
+    color: "#5C4B44",
   },
   participants: {
     marginTop: 12,
     fontSize: 13,
-    color: "#999",
+    color: "#B0A6A0",
   },
   category: {
     fontSize: 13,
     fontWeight: "bold",
-    color: "#888",
+    color: "#B0A6A0",
   },
 
   questionHighlight: {
@@ -106,5 +107,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 13,
     lineHeight: 20,
+    color: "#5C4B44",
   },
 });
