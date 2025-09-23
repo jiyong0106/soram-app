@@ -5,6 +5,7 @@ import {
   DeleteAccountBody,
   DeleteAccountResponse,
   LogoutResponse,
+  GetMyVoiceResponsesResponse,
 } from "../types/profile";
 import instance from "./axios";
 
@@ -43,5 +44,28 @@ export const deleteAccount = async (body: DeleteAccountBody) => {
   const { data } = await instance.delete<DeleteAccountResponse>("/users/me", {
     data: body,
   });
+  return data;
+};
+
+// 내가 남긴 이야기 보기
+interface MyVoiceResponsesParams {
+  take?: number;
+  cursor?: number | undefined;
+}
+
+export const getMyVoiceResponses = async ({
+  take = 10, // 기본값 10으로 설정
+  cursor,
+}: MyVoiceResponsesParams = {}) => {
+  const params: Record<string, any> = { take };
+  if (cursor) {
+    params.cursor = cursor;
+  }
+
+  const { data } = await instance.get<GetMyVoiceResponsesResponse>(
+    "/users/me/voices",
+    { params }
+  );
+
   return data;
 };

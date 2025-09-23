@@ -10,8 +10,7 @@ const ActivitySection = () => {
   const router = useRouter();
 
   const handleMyAnswers = () => {
-    // TODO: 내가 답변한 이야기 페이지로 이동하는 로직 구현
-    showAlert("내가 답변한 이야기 페이지로 이동합니다.");
+    router.push("/profile/setting/myResponses");
   };
 
   const handlePastStories = () => {
@@ -27,20 +26,16 @@ const ActivitySection = () => {
   return (
     <SettingSection title="활동">
       <SettingRow
-        title="내가 답변한 이야기"
+        title="내가 남긴 이야기들"
         onPress={handleMyAnswers}
-        variant="link" // 👈 아이콘 추가
+        variant="link"
       />
       <SettingRow
         title="지난 이야기들 보기"
         onPress={handlePastStories}
-        variant="link" // 👈 아이콘 추가
+        variant="link"
       />
-      <SettingRow
-        title="차단 목록"
-        onPress={handleBolcked}
-        variant="link" // 👈 아이콘 추가
-      />
+      <SettingRow title="차단 목록" onPress={handleBolcked} variant="link" />
       <View style={styles.divider} />
     </SettingSection>
   );

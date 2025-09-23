@@ -46,3 +46,20 @@ export interface DeleteAccountBody {
 export interface DeleteAccountResponse {
   message: string;
 }
+
+export interface MyVoiceResponseItem {
+  id: number;
+  createdAt: string;
+  textContent: string | null;
+  audioUrl: string | null;
+  playtime: number | null;
+  topic: {
+    title: string;
+    category: string;
+  };
+}
+
+export interface GetMyVoiceResponsesResponse {
+  data: MyVoiceResponseItem[];
+  meta: metaType; // 기존 파일의 metaType을 재사용합니다.
+}
