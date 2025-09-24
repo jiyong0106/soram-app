@@ -15,17 +15,18 @@ interface TopicListSheetProps {
   id: number;
   subQuestions: string[];
   userCount: number;
+  myAnswerId: number | null;
 }
 const THEME = "#FF7D4A";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id, userCount }: TopicListSheetProps,
+  { snapPoints, title, id, userCount, myAnswerId }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
-  const { showAlert } = useAlert();
+  const { showAlert, showActionAlert } = useAlert(); // 👈 showActionAlert 사용
   const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
     optimistic: true,
@@ -45,12 +46,26 @@ const TopicListSheet = (
   };
 
   const handleWriteAnswer = () => {
-    dismiss(); // 시트 닫기(애니메이션 시작)
+    dismiss(); // 우선 시트는 닫습니다.
+
     InteractionManager.runAfterInteractions(() => {
-      router.push({
-        pathname: "/topic/list/[listId]",
-        params: { listId: String(id) },
-      });
+      if (myAnswerId) {
+        // 이미 답변한 경우
+        showActionAlert(
+          "이미 이야기를 남기셨네요!", // 메시지
+          "내 이야기 보러가기", // 액션 버튼 텍스트
+          () => {
+            // 이전에 만들어 둔 '내 답변 상세' 페이지로 이동시킵니다.
+            router.push(`/profile/setting/my-responses/${myAnswerId}`);
+          }
+        );
+      } else {
+        // 아직 답변하지 않은 경우 (기존 로직과 동일)
+        router.push({
+          pathname: "/topic/list/[listId]",
+          params: { listId: String(id) },
+        });
+      }
     });
   };
 

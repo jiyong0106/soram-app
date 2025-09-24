@@ -22,6 +22,7 @@ export interface TopicListType {
   createdAt: string;
   updatedAt: string;
   userCount: number;
+  myAnswerId: number | null;
 }
 
 export interface GetTopicListResponse {

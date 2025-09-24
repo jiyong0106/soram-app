@@ -12,7 +12,7 @@ interface ItemProps {
 }
 
 const TopicSectionLists = ({ item }: ItemProps) => {
-  const { id, title, subQuestions, category, userCount } = item;
+  const { id, title, subQuestions, category, userCount, myAnswerId } = item;
   const actionSheetRef = useRef<any>(null);
 
   return (
@@ -46,6 +46,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         id={id}
         subQuestions={subQuestions}
         userCount={userCount}
+        myAnswerId={myAnswerId}
       />
     </ScalePressable>
   );
