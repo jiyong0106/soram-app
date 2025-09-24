@@ -11,7 +11,7 @@ const MyResponsesPage = () => {
     <PageContainer padded={false} edges={["bottom"]}>
       <Stack.Screen
         options={{
-          title: "내가 작성한 이야기들",
+          title: "내가 남긴 이야기들",
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,

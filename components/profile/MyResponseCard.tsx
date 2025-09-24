@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
   },
   category: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#B0A6A0",
   },
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     color: "#FF6B3E",
     fontWeight: "bold",
     fontSize: 16, // title과 사이즈 통일
+    lineHeight: 22,
   },
   responseWrapper: {
     marginTop: 4,
