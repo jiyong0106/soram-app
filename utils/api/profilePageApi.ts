@@ -7,8 +7,10 @@ import {
   LogoutResponse,
   GetMyVoiceResponsesResponse,
   GetMyVoiceResponseDetailResponse,
+  UpdateTextResponsePayload,
 } from "../types/profile";
 import instance from "./axios";
+import { TextResponse } from "../types/topic"; // 기존 응답 타입 재사용
 
 export const postLogout = async () => {
   const { data } = await instance.post<LogoutResponse>("/auth/logout");
@@ -80,4 +82,22 @@ export const getMyVoiceResponseDetail = async (voiceId: number) => {
     `/voices/${voiceId}/me`
   );
   return data[0];
+};
+
+/**
+ * 내 텍스트 답변 수정 API
+ * @param responseId - 수정할 답변의 ID
+ * @param textContent - 새로운 답변 내용
+ */
+export const updateTextResponse = async ({
+  responseId,
+  textContent,
+}: UpdateTextResponsePayload) => {
+  // 백엔드 API 명세에 따라 PATCH 메서드를 사용하고,
+  // URL에는 responseId를, body에는 textContent를 전달합니다.
+  const { data } = await instance.patch<TextResponse>(`/voices/${responseId}`, {
+    textContent,
+  });
+
+  return data;
 };

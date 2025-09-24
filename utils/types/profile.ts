@@ -75,3 +75,9 @@ export interface GetMyVoiceResponseDetailResponse {
     category: string;
   };
 }
+
+// 답변 수정을 위한 요청(Payload) 타입
+export interface UpdateTextResponsePayload {
+  responseId: number; // 수정할 답변의 고유 ID
+  textContent: string; // 새로 수정할 내용
+}

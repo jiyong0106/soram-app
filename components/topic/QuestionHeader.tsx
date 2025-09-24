@@ -42,8 +42,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#fff",
     paddingVertical: 20,
+    paddingHorizontal: 16,
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     gap: 5,
 
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     lineHeight: 22,
-    color: "#333",
+    color: "#5C4B44",
   },
   questionHighlight: {
     color: "#FF6B3E",
