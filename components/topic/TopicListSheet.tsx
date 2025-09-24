@@ -70,7 +70,7 @@ const TopicListSheet = (
         >
           <View style={{ flexShrink: 1 }}>
             <AppText style={styles.ctaPrimaryText}>
-              다른 사람의 답변 보러가기
+              다른 사람의 이야기 보러가기
             </AppText>
             <AppText style={styles.ctaPrimarySub}>
               이야기 보기권 1개 사용
@@ -84,7 +84,7 @@ const TopicListSheet = (
           style={[styles.ctaBase, styles.ctaGhost]}
           onPress={handleWriteAnswer}
         >
-          <AppText style={styles.ctaGhostText}>내 답변 남기기</AppText>
+          <AppText style={styles.ctaGhostText}>내 이야기 남기기</AppText>
           <Ionicons name="chevron-forward" size={20} color={THEME} />
         </ScalePressable>
       </View>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingHorizontal: 2,
   },
-  q: { color: THEME, fontWeight: "800", fontSize: 18 },
+  q: { color: THEME, fontWeight: "bold", fontSize: 18 },
   title: {
     fontSize: 18,
     lineHeight: 26,
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
   },
-  ctaPrimaryText: { color: "#fff", fontSize: 14, fontWeight: "700" },
+  ctaPrimaryText: { color: "#fff", fontSize: 14, fontWeight: "bold" },
   ctaPrimarySub: { color: "#fff", opacity: 0.95, marginTop: 4, fontSize: 12 },
 
   ctaGhost: {
@@ -147,5 +147,5 @@ const styles = StyleSheet.create({
     borderColor: THEME,
     backgroundColor: "#fff",
   },
-  ctaGhostText: { color: THEME, fontSize: 14, fontWeight: "700" },
+  ctaGhostText: { color: THEME, fontSize: 14, fontWeight: "bold" },
 });

@@ -10,7 +10,7 @@ const MyResponseDetailPage = () => {
     <PageContainer padded={false} edges={["bottom"]}>
       <Stack.Screen
         options={{
-          title: "내 답변 상세",
+          title: "내가 남긴 이야기",
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,

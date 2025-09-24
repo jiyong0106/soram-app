@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   nick: {
     alignSelf: "flex-end",
     marginTop: 8,
+    marginRight: 8,
     color: "#5C4B44",
     fontSize: 14,
     fontWeight: "bold",
