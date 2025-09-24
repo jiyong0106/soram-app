@@ -56,8 +56,9 @@ const AuthPage = () => {
       <View style={styles.container}>
         <AppText style={styles.title}>휴대폰 번호를 입력해 주세요</AppText>
         <AppText style={styles.desc}>
-          허위/중복 가입을 막고, 악성 사용자를 제재하는데 사용해요. 입력한
-          번호는 절대 공개되지 않아요.
+          {
+            "허위/중복 가입을 막고, 악성 사용자에 제재에 사용해요.\n입력한 번호는 절대 공개되지 않아요."
+          }
         </AppText>
         <View style={styles.inputRow}>
           <AppText style={styles.countryCode}>+82</AppText>

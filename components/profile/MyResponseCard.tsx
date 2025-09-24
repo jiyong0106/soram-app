@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
     gap: 12, // 간격 조정
-    marginHorizontal: 16, // 좌우 여백 추가
+    marginHorizontal: 10, // 좌우 여백 추가
   },
   categoryWrapper: {
     flexDirection: "row",
