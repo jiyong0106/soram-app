@@ -14,12 +14,13 @@ interface TopicListSheetProps {
   title: string;
   id: number;
   subQuestions: string[];
+  userCount: number;
 }
 const THEME = "#FF7D4A";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id }: TopicListSheetProps,
+  { snapPoints, title, id, userCount }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
@@ -63,30 +64,43 @@ const TopicListSheet = (
         </View>
         <View></View>
 
-        {/* 1) 꽉 찬 테마 버튼 */}
-        <ScalePressable
-          style={[styles.ctaBase, styles.ctaPrimary]}
-          onPress={handleSeeOthers}
-        >
-          <View style={{ flexShrink: 1 }}>
-            <AppText style={styles.ctaPrimaryText}>
-              다른 사람의 이야기 보러가기
-            </AppText>
-            <AppText style={styles.ctaPrimarySub}>
-              이야기 보기권 1개 사용
-            </AppText>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#fff" />
-        </ScalePressable>
+        {userCount > 0 ? (
+          <>
+            <ScalePressable
+              style={[styles.ctaBase, styles.ctaPrimary]}
+              onPress={handleSeeOthers}
+            >
+              <View style={{ flexShrink: 1 }}>
+                <AppText style={styles.ctaPrimaryText}>
+                  다른 사람의 이야기 보러가기
+                </AppText>
+                <AppText style={styles.ctaPrimarySub}>
+                  이야기 보기권 1개 사용
+                </AppText>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#fff" />
+            </ScalePressable>
 
-        {/* 2) 아웃라인 버튼 */}
-        <ScalePressable
-          style={[styles.ctaBase, styles.ctaGhost]}
-          onPress={handleWriteAnswer}
-        >
-          <AppText style={styles.ctaGhostText}>내 이야기 남기기</AppText>
-          <Ionicons name="chevron-forward" size={20} color={THEME} />
-        </ScalePressable>
+            <ScalePressable
+              style={[styles.ctaBase, styles.ctaGhost]}
+              onPress={handleWriteAnswer}
+            >
+              <AppText style={styles.ctaGhostText}>내 이야기 남기기</AppText>
+              <Ionicons name="chevron-forward" size={20} color={THEME} />
+            </ScalePressable>
+          </>
+        ) : (
+          // 4-2. 참여자가 없을 경우 (개선된 UI)
+          <ScalePressable
+            style={[styles.ctaBase, styles.ctaGhost]}
+            onPress={handleWriteAnswer}
+          >
+            <AppText style={styles.ctaGhostText}>
+              이 주제의 첫 이야기 남기기
+            </AppText>
+            <Ionicons name="chevron-forward" size={20} color={THEME} />
+          </ScalePressable>
+        )}
       </View>
     </AppBottomSheetModal>
   );

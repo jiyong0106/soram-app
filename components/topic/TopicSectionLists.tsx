@@ -45,6 +45,7 @@ const TopicSectionLists = ({ item }: ItemProps) => {
         title={title}
         id={id}
         subQuestions={subQuestions}
+        userCount={userCount}
       />
     </ScalePressable>
   );
