@@ -52,7 +52,7 @@ const EditMyResponsePage = () => {
     control,
     handleSubmit,
     watch,
-    // 1. isDirty를 formState에서 가져옵니다. 사용자가 폼을 수정했는지 여부를 알려줍니다.
+    reset,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<Form>({
     defaultValues: { content: initialContent || "" },
@@ -71,8 +71,8 @@ const EditMyResponsePage = () => {
       return;
     }
     try {
-      // 새로 만들 API 함수를 호출합니다.
       await updateTextResponse({ responseId, textContent: text });
+      reset({ content: text });
       showAlert("수정이 완료되었습니다.", () => {
         if (router.canGoBack()) {
           router.back();
@@ -87,7 +87,7 @@ const EditMyResponsePage = () => {
     }
   };
 
-  // 2. 뒤로가기 이벤트 처리를 위한 useEffect 추가
+  // 뒤로가기 이벤트 처리를 위한 useEffect 추가
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       // isDirty가 false이거나, 제출 중일 때는 아무것도 하지 않고 뒤로가기를 허용합니다.
@@ -114,7 +114,6 @@ const EditMyResponsePage = () => {
 
   return (
     <PageContainer edges={[]} padded={false}>
-      {/* --- 👇 [추가] 이 부분을 추가하면 됩니다 --- */}
       <Stack.Screen
         options={{
           title: "수정하기",
