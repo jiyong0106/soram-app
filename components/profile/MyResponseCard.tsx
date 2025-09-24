@@ -11,18 +11,17 @@ interface MyResponseCardProps {
     title: string;
     category: string;
     textContent: string | null;
+    createdAt: string;
   };
 }
 
 const MyResponseCard = ({ item }: MyResponseCardProps) => {
   // ✅ 새로운 props 타입을 사용
-  const { id, title, category, textContent } = item;
+  const { id, title, category, textContent, createdAt } = item;
   const router = useRouter();
 
   const handlePress = () => {
-    // TODO: 추후 주제 상세가 아닌 '내 답변 상세' 페이지로 이동
-    console.log(`Card pressed, response ID: ${id}`);
-    // router.push(`/profile/my-responses/${id}`);
+    router.push(`/profile/setting/my-responses/${id}`);
   };
 
   return (
@@ -42,6 +41,9 @@ const MyResponseCard = ({ item }: MyResponseCardProps) => {
           <AppText style={styles.responseText} numberOfLines={2}>
             {textContent}
           </AppText>
+          <AppText style={styles.createdAt}>
+            {createdAt.split("T")[0]} 작성
+          </AppText>
         </View>
       )}
     </ScalePressable>
@@ -55,7 +57,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     backgroundColor: "#fff",
-    paddingVertical: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
     paddingHorizontal: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -107,5 +110,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#B0A6A0", // 주제목보다 약간 연한 색상
     lineHeight: 21,
+  },
+  createdAt: {
+    marginTop: 12,
+    fontSize: 10,
+    color: "#B0A6A0",
+    textAlign: "right",
   },
 });
