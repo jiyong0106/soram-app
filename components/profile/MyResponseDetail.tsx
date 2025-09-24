@@ -1,8 +1,6 @@
-// app/components/profile/MyResponseDetail.tsx
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import AppText from "@/components/common/AppText";
 import { getMyVoiceResponseDetail } from "@/utils/api/profilePageApi";
 import { GetMyVoiceResponseDetailResponse } from "@/utils/types/profile";
@@ -20,31 +18,47 @@ const MyResponseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // ... useEffect 로직은 변경 없습니다 ...
-    const responseId = Number(id);
-    if (!responseId) {
-      setError("유효하지 않은 접근입니다.");
-      setLoading(false);
-      return;
-    }
-    const fetchResponseDetail = async () => {
-      try {
-        setLoading(true);
-        const result = await getMyVoiceResponseDetail(responseId);
-        setResponse(result);
-      } catch (err) {
-        setError("답변을 불러오는 데 실패했습니다.");
-        console.error(err);
-      } finally {
+  // 2. 기존 useEffect를 useFocusEffect로 교체합니다.
+  useFocusEffect(
+    useCallback(() => {
+      const responseId = Number(id);
+      if (!responseId) {
+        setError("유효하지 않은 접근입니다.");
         setLoading(false);
+        return;
       }
-    };
-    fetchResponseDetail();
-  }, [id]);
+
+      const fetchResponseDetail = async () => {
+        try {
+          setLoading(true);
+          const result = await getMyVoiceResponseDetail(responseId);
+          setResponse(result);
+        } catch (err) {
+          setError("답변을 불러오는 데 실패했습니다.");
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchResponseDetail();
+
+      // useFocusEffect는 cleanup 함수를 반환할 수 있습니다. (필요 없을 경우 비워둠)
+      return () => {};
+    }, [id]) // 의존성 배열은 그대로 유지합니다.
+  );
 
   const handleEdit = () => {
-    console.log("수정 버튼 클릭");
+    if (!response) return;
+
+    router.push({
+      pathname: "/profile/setting/my-responses/[id]/edit",
+      params: {
+        id: id,
+        topicId: response.topicBox.id,
+        initialContent: response.textContent,
+      },
+    });
   };
 
   if (loading) {
@@ -89,7 +103,6 @@ const MyResponseDetail = () => {
         </View>
       </ScrollView>
 
-      {/* ❗️ 1. JSX 구조는 유지하고, 아이콘에만 새로운 스타일을 적용합니다. */}
       <View style={styles.buttonContainer}>
         <ScalePressable
           style={[styles.buttonBase, styles.editButton]}

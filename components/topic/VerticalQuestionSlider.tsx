@@ -41,7 +41,7 @@ const VerticalQuestionSlider = ({ subQuestions }: Props) => {
           }}
         />
       )}
-      <Entypo name="select-arrows" size={18} color="black" />
+      <Entypo name="select-arrows" size={18} color="#5C4B44" />
     </View>
   );
 };
@@ -66,6 +66,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#ff6b6b",
+    color: "#FF7D4A",
   },
 });
