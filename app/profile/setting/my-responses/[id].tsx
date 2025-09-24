@@ -1,30 +1,29 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Stack } from "expo-router";
-
 import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
-import MyResponseList from "@/components/profile/MyResponseList";
+import MyResponseDetail from "@/components/profile/MyResponseDetail";
 
-const MyResponsesPage = () => {
+const MyResponseDetailPage = () => {
   return (
     <PageContainer padded={false} edges={["bottom"]}>
       <Stack.Screen
         options={{
-          title: "내가 작성한 이야기들",
+          title: "내 답변 상세",
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,
         }}
       />
       <View style={styles.container}>
-        <MyResponseList />
+        <MyResponseDetail />
       </View>
     </PageContainer>
   );
 };
 
-export default MyResponsesPage;
+export default MyResponseDetailPage;
 
 const styles = StyleSheet.create({
   container: {

@@ -61,5 +61,17 @@ export interface MyVoiceResponseItem {
 
 export interface GetMyVoiceResponsesResponse {
   data: MyVoiceResponseItem[];
-  meta: metaType; // 기존 파일의 metaType을 재사용합니다.
+  meta: metaType;
+}
+
+// 내 답변 상세 조회 응답 타입
+export interface GetMyVoiceResponseDetailResponse {
+  id: number;
+  textContent: string;
+  updatedAt: string;
+  topicBox: {
+    id: number;
+    title: string;
+    category: string;
+  };
 }

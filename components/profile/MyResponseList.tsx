@@ -10,6 +10,7 @@ import {
 
 import MyResponseCard from "@/components/profile/MyResponseCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { create } from "domain";
 
 const MyResponseList = () => {
   const {
@@ -36,6 +37,7 @@ const MyResponseList = () => {
         title: item.topic.title,
         category: item.topic.category,
         textContent: item.textContent,
+        createdAt: item.createdAt,
       }))
     );
   }, [data]);
