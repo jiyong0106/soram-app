@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
     color: "#5C4B44",
@@ -115,12 +115,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 4,
   },
-  rowSubtitle: {
-    color: "#8A8F98",
-  },
   empty: {
     textAlign: "center",
-    color: "#666",
+    color: "#B0A6A0",
     marginTop: 20,
     fontSize: 16,
   },

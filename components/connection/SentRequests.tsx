@@ -155,13 +155,13 @@ const styles = StyleSheet.create({
   },
   empty: {
     textAlign: "center",
-    color: "#666",
+    color: "#B0A6A0",
     marginTop: 20,
     fontSize: 16,
   },
   center: {
     textAlign: "center",
     marginTop: 24,
-    color: "#666",
+    color: "#B0A6A0",
   },
 });
