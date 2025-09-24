@@ -113,7 +113,7 @@ const EditMyResponsePage = () => {
   }, [navigation, isDirty, isSubmitting, showActionAlert]);
 
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: "수정하기",
