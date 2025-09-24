@@ -50,11 +50,14 @@ const MyResponseDetail = () => {
 
   const handleEdit = () => {
     if (!response) return;
-
+    // --- 👇 [수정] 이 부분을 추가하여 id 타입을 명확히 합니다. ---
+    // id가 배열이면 첫 번째 요소를, 아니면 id 그대로 사용합니다.
+    const responseId = Array.isArray(id) ? id[0] : id; // 👈 안전한 responseId 생성
+    if (!responseId) return;
     router.push({
       pathname: "/profile/setting/my-responses/[id]/edit",
       params: {
-        id: id,
+        id: responseId,
         topicId: response.topicBox.id,
         initialContent: response.textContent,
       },
