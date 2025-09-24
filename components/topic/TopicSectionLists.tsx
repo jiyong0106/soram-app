@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
   },
   category: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#B0A6A0",
   },
