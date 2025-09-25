@@ -2,17 +2,19 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AppText from "@/components/common/AppText";
+import ScalePressable from "../common/ScalePressable";
 
 type Props = {
   title: string;
   expanded: boolean;
-  onToggle: () => void;
+  onTitlePress: () => void; // 탭 접기/펼치기
 };
 
-const ChatTriggerHeader = ({ title, expanded, onToggle }: Props) => {
+const ChatTriggerHeader = ({ title, expanded, onTitlePress }: Props) => {
   return (
-    <TouchableOpacity activeOpacity={0.7} onPress={onToggle} style={s.header}>
+    <ScalePressable style={s.header} onPress={onTitlePress}>
       <Ionicons name="link-outline" size={24} color="black" />
+
       <AppText style={s.headerText}>{title}</AppText>
       <View>
         {expanded ? (
@@ -21,7 +23,7 @@ const ChatTriggerHeader = ({ title, expanded, onToggle }: Props) => {
           <Ionicons name="chevron-up-outline" size={24} color="#9CA3AF" />
         )}
       </View>
-    </TouchableOpacity>
+    </ScalePressable>
   );
 };
 

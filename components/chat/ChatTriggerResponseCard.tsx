@@ -1,26 +1,17 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import AppText from "@/components/common/AppText";
+import { ChatTriggerDto } from "@/utils/types/chat";
 
 type Props = {
-  type: "TEXT" | "VOICE";
-  textContent: string | null;
-  audioUrl: string | null;
-  playtime: number | null;
-  topicTitle: string;
+  item: ChatTriggerDto;
 };
 
-const ChatTriggerResponseCard = ({
-  type,
-  textContent,
-  audioUrl,
-  playtime,
-  topicTitle,
-}: Props) => {
+const ChatTriggerResponseCard = ({ item }: Props) => {
+  const { type, textContent, audioUrl, playtime } = item;
   if (type === "VOICE") {
     return (
       <View style={s.card}>
-        <AppText style={s.topic}>{topicTitle}</AppText>
         <View style={s.voiceRow}>
           <AppText>음성 답변</AppText>
           {playtime ? <AppText style={s.dimText}>{playtime}s</AppText> : null}
@@ -30,7 +21,6 @@ const ChatTriggerResponseCard = ({
   }
   return (
     <View style={s.card}>
-      <AppText style={s.topic}>{topicTitle}</AppText>
       <AppText style={s.text}>
         {textContent ?? "작성된 답변이 없습니다"}
       </AppText>

@@ -92,23 +92,19 @@ export interface ChatLeaveResponse {
 }
 
 //연결의 계기가 된 답변 조회 타입
+export interface ChatTriggerDto {
+  id: number;
+  type: "TEXT" | "VOICE";
+  textContent: string | null;
+  audioUrl: string | null;
+  playtime: number | null;
+}
+
 export interface GetTriggerResponse {
   topic: {
     id: number;
     title: string;
   };
-  myResponse: {
-    id: number;
-    type: "TEXT" | "VOICE";
-    textContent: string | null;
-    audioUrl: string | null;
-    playtime: number | null;
-  };
-  opponentResponse: {
-    id: number;
-    type: "TEXT" | "VOICE";
-    textContent: string | null;
-    audioUrl: string | null;
-    playtime: number | null;
-  };
+  myResponse: ChatTriggerDto;
+  opponentResponse: ChatTriggerDto;
 }

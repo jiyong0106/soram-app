@@ -8,7 +8,6 @@ import useAlert from "@/utils/hooks/useAlert";
 import { postChatLeave, postUserBlock } from "@/utils/api/chatPageApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import AppText from "@/components/common/AppText";
 
 interface ChatActionSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
