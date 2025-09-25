@@ -27,7 +27,7 @@ interface GenericTabBarProps<TRoute extends { key: string }> {
   swipeEnabled?: boolean;
 }
 
-const TopicTabBar = <TRoute extends { key: string }>({
+const TopTabBar = <TRoute extends { key: string }>({
   routes,
   renderScene,
   initialIndex = 0,
@@ -66,4 +66,4 @@ const TopicTabBar = <TRoute extends { key: string }>({
   );
 };
 
-export default TopicTabBar;
+export default TopTabBar;
