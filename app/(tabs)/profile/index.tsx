@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 import AccountSection from "@/components/settings/AccountSection";
 import SupportSection from "@/components/settings/SupportSection";
 import PolicySection from "@/components/settings/PolicySection";
-import ActivitySection from "@/components/settings/ActivitySection";
+// import ActivitySection from "@/components/settings/ActivitySection";
 import CurrencySection from "@/components/settings/CurrencySection";
 
 const ProfilePage = () => {
@@ -19,7 +19,7 @@ const ProfilePage = () => {
         }}
       />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <ActivitySection />
+        {/* <ActivitySection /> */}
         <CurrencySection />
         <SupportSection />
         <PolicySection />
