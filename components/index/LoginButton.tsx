@@ -5,11 +5,11 @@ const LoginButton = () => {
   const router = useRouter();
   return (
     <Button
-      label="바로들어감"
+      label="회원가입 바로들어감"
       color="#fff"
       textColor="#222"
       borderColor="#FF835C"
-      onPress={() => router.replace("/topic")}
+      onPress={() => router.push("/(signup)")}
     />
   );
 };
