@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import TopTabBar from "@/components/topic/TopTabBar";
+import TopTabBar from "@/components/common/TopTabBar";
 import { CATEGORIES, RouteType } from "@/utils/types/topic";
 import { useCallback, useMemo } from "react";
 import TopicSection from "@/components/topic/TopicSection";

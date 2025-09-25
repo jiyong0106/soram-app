@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { TabView } from "react-native-tab-view";
-import TopicTabBarLists from "./TopicTabBarLists";
+import TopicTabBarLists from "../topic/TopicTabBarLists";
 
 // 재사용 가능한 탭 라우트 기본 타입
 export type TabRoute = {
