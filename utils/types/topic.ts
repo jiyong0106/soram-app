@@ -92,4 +92,4 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number];
 
-export type RouteType = { key: Category; title: string };
+export type RouteType = { key: Category; label: string };

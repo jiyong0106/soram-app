@@ -65,3 +65,5 @@ export const getTransactions = async ({
 
   return data;
 };
+
+export type HistoryTabKey = "ALL" | "EARN" | "USE";
