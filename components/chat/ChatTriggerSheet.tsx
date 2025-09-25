@@ -135,7 +135,7 @@ const s = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 10,
-    paddingBottom: 16,
+    paddingBottom: 30,
     backgroundColor: COLORS.bg,
   },
 
@@ -221,7 +221,7 @@ const s = StyleSheet.create({
   cardWrap: {
     // 카드가 떠보이도록 마진 조절
     marginBottom: 16,
-    maxHeight: 400,
+    maxHeight: 450,
   },
 
   footer: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import AppText from "@/components/common/AppText";
 import { ChatTriggerDto } from "@/utils/types/chat";
 
@@ -20,11 +20,11 @@ const ChatTriggerResponseCard = ({ item }: Props) => {
     );
   }
   return (
-    <View style={s.card}>
+    <ScrollView style={s.card}>
       <AppText style={s.text}>
         {textContent ?? "작성된 답변이 없습니다"}
       </AppText>
-    </View>
+    </ScrollView>
   );
 };
 
