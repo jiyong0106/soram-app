@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { useState } from "react";
 import SettingSection from "@/components/settings/SettingSection";
 import SettingRow from "@/components/settings/SettingRow";
 import { postLogout } from "@/utils/api/profilePageApi";
@@ -16,7 +15,7 @@ const AccountSection = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
-    showActionAlert("로그아웃 하시겠습니까?", "확인", async () => {
+    showActionAlert("로그아웃 하시겠어요?", "확인", async () => {
       if (loading) return;
       setLoading(true);
       try {

@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
@@ -83,8 +83,8 @@ const TopicCard = ({ item, loading }: Props) => {
     if (userCount === 0) {
       // 이야기가 없는 경우: 이야기 작성을 유도합니다.
       showActionAlert(
-        "첫 이야기를 남겨주세요.\n\n내 이야기에 공감한 누군가가\n\n대화를 요청할지도 몰라요!",
-        "작성하러 가기", // 버튼 텍스트를 더 명확하게 변경
+        "첫 이야기를 남겨주세요.\n내 이야기에 공감한 누군가가\n대화를 요청할지도 몰라요!",
+        "작성하기", // 버튼 텍스트를 더 명확하게 변경
         () => {
           // 이야기 '작성' 페이지로 이동시킵니다.
           router.push({
