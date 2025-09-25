@@ -45,7 +45,6 @@ const chatPage = () => {
     refetchOnMount: "always",
     refetchOnReconnect: true,
   });
-
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
   const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
 

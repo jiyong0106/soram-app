@@ -5,7 +5,6 @@ import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
-import { getAuthToken } from "@/utils/util/auth";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
@@ -14,6 +13,8 @@ import { useChat } from "@/utils/hooks/useChat";
 import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import { useAuthStore } from "@/utils/store/useAuthStore";
+import ChatTriggerBanner from "@/components/chat/ChatTriggerBanner";
 
 const ChatIdPage = () => {
   const { id, peerUserId, peerUserName, isLeave, isBlocked } =
@@ -36,7 +37,8 @@ const ChatIdPage = () => {
   const isBlockedUser = useMemo(() => toBoolParam(isBlocked), [isBlocked]);
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
-  const token = getAuthToken() ?? "";
+  const token = useAuthStore((s) => s.token) ?? "";
+
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
@@ -142,6 +144,7 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
+      <ChatTriggerBanner roomId={roomId} />
       <GiftedChatView
         messages={giftedMessages}
         onSend={handleSendGifted}
