@@ -9,12 +9,10 @@ import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
-import ChatTriggerTabs from "@/components/chat/ChatTriggerTabs";
-import ChatTriggerResponseCard from "@/components/chat/ChatTriggerResponseCard";
 import AppText from "@/components/common/AppText";
 import { GetTriggerResponse } from "@/utils/types/chat";
-import ScalePressable from "../common/ScalePressable";
 import Button from "../common/Button";
+import ChatTriggerResponseCard from "@/components/chat/ChatTriggerResponseCard";
 
 export type ChatTriggerSheetRef = {
   present: (tab?: "mine" | "opponent") => void;
@@ -33,7 +31,14 @@ const COLORS = {
   sub: "#6B7280",
   border: "#E5E7EB",
   fill: "#F9FAFB",
-  icon: "#111827",
+  icon: "#1F2937",
+  badgeBg: "#EEF2FF",
+  badgeText: "#3730A3",
+  divider: "#F3F4F6",
+  shadow: "#00000022",
+  topicPillBg: "#F3F4F6",
+  topicPillText: "#6B7280",
+  accent: "#ff6b6b",
 };
 
 const ChatTriggerSheet = (
@@ -43,6 +48,7 @@ const ChatTriggerSheet = (
   const bottomRef = useRef<BottomSheetModal>(null);
   const [active, setActive] = useState<"mine" | "opponent">(initialTab);
   const { myResponse, opponentResponse, topic } = item;
+
   useImperativeHandle(ref, () => ({
     present: (tab) => {
       if (tab) setActive(tab);
@@ -53,24 +59,73 @@ const ChatTriggerSheet = (
 
   const dismiss = () => bottomRef.current?.dismiss?.();
 
+  const activeLabel = active === "mine" ? "내 답변" : "상대 답변";
+
   return (
     <AppBottomSheetModal ref={bottomRef} snapPoints={snapPoints}>
       <View style={s.container}>
-        <AppText style={s.subtitle} numberOfLines={2}>
-          {topic.title}
-        </AppText>
+        {/* 헤더 */}
+        <View style={s.header}>
+          <View style={s.headerLeft}>
+            <View style={s.topicPill}>
+              <Ionicons
+                name="chatbubbles-outline"
+                size={14}
+                color={COLORS.sub}
+              />
+              <AppText style={s.topicPillText} numberOfLines={1}>
+                연결 주제
+              </AppText>
+            </View>
 
-        {active === "mine" ? (
-          <ChatTriggerResponseCard item={myResponse} />
-        ) : (
-          <ChatTriggerResponseCard item={opponentResponse} />
-        )}
-        <Button
-          onPress={dismiss}
-          label="닫기"
-          color="#ff6b6b"
-          textColor="#fff"
-        />
+            <AppText style={s.title} numberOfLines={2}>
+              {topic.title}
+            </AppText>
+
+            <View style={s.metaRow}>
+              <View style={s.badge}>
+                <Ionicons
+                  name={
+                    active === "mine"
+                      ? "person-circle-outline"
+                      : "person-outline"
+                  }
+                  size={14}
+                  color={COLORS.badgeText}
+                />
+                <AppText style={s.badgeText}>{activeLabel}</AppText>
+              </View>
+            </View>
+          </View>
+
+          {/* 우측 아이콘 영역(디자인용, 기능 X) */}
+          <View style={s.headerRight}>
+            <View style={s.iconBadge}>
+              <Ionicons name="sparkles-outline" size={18} color={COLORS.icon} />
+            </View>
+          </View>
+        </View>
+
+        <View style={s.divider} />
+
+        {/* 컨텐츠 카드 */}
+        <View style={s.cardWrap}>
+          {active === "mine" ? (
+            <ChatTriggerResponseCard item={myResponse} />
+          ) : (
+            <ChatTriggerResponseCard item={opponentResponse} />
+          )}
+        </View>
+
+        {/* 하단 액션 */}
+        <View style={s.footer}>
+          <Button
+            onPress={dismiss}
+            label="닫기"
+            color={COLORS.accent}
+            textColor="#fff"
+          />
+        </View>
       </View>
     </AppBottomSheetModal>
   );
@@ -81,17 +136,97 @@ export default forwardRef(ChatTriggerSheet);
 const s = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 10,
     paddingBottom: 16,
     backgroundColor: COLORS.bg,
   },
-  headerRow: {
+
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  headerLeft: { flex: 1 },
+  headerRight: { paddingLeft: 8 },
+
+  topicPill: {
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 6,
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: COLORS.topicPillBg,
+    borderRadius: 999,
+    marginBottom: 8,
   },
-  title: { fontWeight: "700", color: COLORS.text },
-  subtitle: { color: COLORS.sub, marginBottom: 12 },
-  closeButton: { marginTop: 12 },
+  topicPillText: {
+    color: COLORS.topicPillText,
+    fontSize: 12,
+  },
+
+  title: {
+    color: COLORS.text,
+    fontWeight: "bold",
+    fontSize: 18,
+    lineHeight: 24,
+  },
+
+  metaRow: {
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: COLORS.badgeBg,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.border,
+  },
+  badgeText: {
+    color: COLORS.badgeText,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  iconBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.fill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.border,
+    shadowColor: COLORS.shadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.divider,
+    marginTop: 14,
+    marginBottom: 12,
+  },
+
+  cardWrap: {
+    // 카드가 떠보이도록 마진 조절
+    marginBottom: 16,
+    maxHeight: 400,
+  },
+
+  footer: {
+    marginTop: 6,
+  },
 });
