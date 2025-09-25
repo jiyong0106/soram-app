@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
@@ -8,6 +8,8 @@ import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
 import { useFocusEffect } from "expo-router";
+import { getAuthToken } from "@/utils/util/auth";
+import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
@@ -45,6 +47,11 @@ const chatPage = () => {
   });
 
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
+  const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
+
+  // 실시간 목록 갱신: 소켓으로 newMessage 수신 시 캐시 업데이트
+  const jwt = getAuthToken() ?? "";
+  useChatListRealtime(jwt, connectionIds);
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
