@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useQueryClient, InfiniteData } from "@tanstack/react-query";
 import { connectSocket } from "../libs/getSocket";
 import { ChatItemType, GetChatResponse, ChatMessageType } from "../types/chat";
+import { useChatUnreadStore } from "../store/useChatUnreadStore";
 
 /**
  * 채팅 목록(대화방 리스트)을 소켓 이벤트로 실시간 업데이트하는 훅
@@ -81,6 +82,14 @@ export function useChatListRealtime(jwt: string, connectionIds: number[]) {
           return { ...old, pages: newPages };
         }
       );
+
+      // 안읽은 카운트 증가 (현재 방이 아니고, 내가 보낸게 아닐 때)
+      try {
+        const myUserId = (global as any)?.CURRENT_USER_ID as number | undefined;
+        if (!myUserId || msg.senderId !== myUserId) {
+          useChatUnreadStore.getState().incrementUnread(connectionId, msg.id);
+        }
+      } catch {}
     };
 
     socket.on("newMessage", onNewMessage);

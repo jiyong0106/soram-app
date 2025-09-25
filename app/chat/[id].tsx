@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useEffect } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,6 +13,7 @@ import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
 import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
 const ChatIdPage = () => {
   const { id, peerUserId, peerUserName, isLeave, isBlocked } =
@@ -39,6 +40,15 @@ const ChatIdPage = () => {
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
+
+  // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
+  const { setActiveConnection, resetUnread } = useChatUnreadStore();
+  useEffect(() => {
+    setActiveConnection(roomId);
+    // 진입 시 해당 방의 배지 제거
+    resetUnread(roomId);
+    return () => setActiveConnection(null);
+  }, [roomId, setActiveConnection, resetUnread]);
 
   // 1) 이전 채팅 이력 (항상 최신 보장: staleTime 0, refetchOnMount always)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =

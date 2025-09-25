@@ -10,6 +10,7 @@ import ScalePressable from "../common/ScalePressable";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { getInitials } from "@/utils/util/uiHelpers";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -21,6 +22,9 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { id, opponent, isLeave, isBlocked, lastMessage } = item;
+  const unread = useChatUnreadStore(
+    (s) => s.unreadCountByConnectionId[id] ?? 0
+  );
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -95,6 +99,13 @@ const ChatItem = ({ item }: ChatItemProps) => {
               : lastMessage?.content}
           </AppText>
         </View>
+        {unread > 0 && (
+          <View style={styles.badge}>
+            <AppText style={styles.badgeText}>
+              {unread > 99 ? "99+" : unread}
+            </AppText>
+          </View>
+        )}
       </ScalePressable>
     </ReanimatedSwipeable>
   );
@@ -125,4 +136,18 @@ const styles = StyleSheet.create({
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
   rowSubtitle: { color: "#B0A6A0", fontSize: 12 },
+  badge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#FF3B30",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "800",
+  },
 });
