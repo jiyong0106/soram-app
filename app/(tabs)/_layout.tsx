@@ -45,6 +45,15 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="activity"
+        options={{
+          title: "활동",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="compass-sharp" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile/index"
         options={{
           title: "프로필",
