@@ -110,11 +110,9 @@ const ChatTriggerSheet = (
 
         {/* 컨텐츠 카드 */}
         <View style={s.cardWrap}>
-          {active === "mine" ? (
-            <ChatTriggerResponseCard item={myResponse} />
-          ) : (
-            <ChatTriggerResponseCard item={opponentResponse} />
-          )}
+          <ChatTriggerResponseCard
+            item={active === "mine" ? myResponse : opponentResponse}
+          />
         </View>
 
         {/* 하단 액션 */}
