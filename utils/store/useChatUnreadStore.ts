@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { debouncedAsyncStorage } from "./debouncedAsyncStorage";
 
 type UnreadState = {
-  // 현재 사용자가 보고 있는 방 id (읽음 처리 기준)
   activeConnectionId: number | null;
-  // 방별 안읽은 수
   unreadCountByConnectionId: Record<number, number>;
-  // 방별 마지막으로 처리한 메시지 id (중복 증가 방지)
+  // 메모리 전용(영속화하지 않음): 중복 증가 방지용
   lastSeenMessageIdByConnectionId: Record<number, number>;
 
   setActiveConnection: (id: number | null) => void;
@@ -26,9 +25,7 @@ export const useChatUnreadStore = create<UnreadState>()(
 
       incrementUnread: (connectionId, messageId) => {
         const { activeConnectionId, lastSeenMessageIdByConnectionId } = get();
-        // 현재 보고있는 방이면 증가하지 않음
         if (connectionId === activeConnectionId) return;
-        // 같은 메시지를 두 번 처리하지 않음
         if (lastSeenMessageIdByConnectionId[connectionId] === messageId) return;
 
         set((state) => {
@@ -54,15 +51,21 @@ export const useChatUnreadStore = create<UnreadState>()(
           },
         })),
 
-      resetAll: () => set({ unreadCountByConnectionId: {} }),
+      resetAll: () =>
+        set({
+          unreadCountByConnectionId: {},
+        }),
     }),
     {
       name: "chat-unread-store",
+      storage: createJSONStorage(() => debouncedAsyncStorage as any),
       partialize: (s) => ({
         unreadCountByConnectionId: s.unreadCountByConnectionId,
-        lastSeenMessageIdByConnectionId: s.lastSeenMessageIdByConnectionId,
       }),
       version: 1,
+      // 선택: 하이드레이션 제어
+      // skipHydration: true,
+      // onRehydrateStorage: () => (state) => { ... },
     }
   )
 );
