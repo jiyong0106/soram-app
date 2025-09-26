@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   labelWrap: { flexDirection: "row", alignItems: "center", gap: 6 },
-  label: { fontSize: 14, fontWeight: "700", color: INACTIVE },
+  label: { fontSize: 14, fontWeight: "bold", color: INACTIVE },
   labelActive: { color: THEME },
 });

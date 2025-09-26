@@ -56,7 +56,10 @@ const TopicListSheet = (
           "내 이야기 보러가기", // 액션 버튼 텍스트
           () => {
             // 이전에 만들어 둔 '내 답변 상세' 페이지로 이동시킵니다.
-            router.push(`/profile/setting/my-responses/${myAnswerId}`);
+            router.push({
+              pathname: `/activity/[id]`,
+              params: { id: myAnswerId },
+            });
           }
         );
       } else {
