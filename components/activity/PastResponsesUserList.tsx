@@ -56,7 +56,7 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
   if (mappedData.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>이어 본 이야기가 없어요.</Text>
+        <Text style={styles.emptyText}>아직 확인한 이야기가 없어요</Text>
       </View>
     );
   }
@@ -64,7 +64,14 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
   return (
     <FlatList
       data={mappedData}
-      renderItem={({ item }) => <MyResponseCard item={item} />}
+      renderItem={({ item }) => (
+        <MyResponseCard
+          item={item}
+          onPress={() => {
+            console.log("특정 사용자의 답변 클릭");
+          }}
+        />
+      )}
       keyExtractor={(item) => String(item.id)}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContentContainer}

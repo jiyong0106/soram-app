@@ -19,7 +19,6 @@ const UserUnlockedResponsesPage = () => {
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,
-          // 👇 [추가] 헤더의 기본 그림자를 제거하여 콘텐츠와 자연스럽게 연결합니다.
           headerShadowVisible: false,
           headerStyle: { backgroundColor: "#fff" },
         }}

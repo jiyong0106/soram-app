@@ -160,16 +160,16 @@ const PastResponsesList = () => {
   return (
     <View style={styles.pageContainer}>
       <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
-      {/* 👇 [추가] 토글 버튼 아래에 화면 전체를 가로지르는 선 */}
       <View />
       {mappedData.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="eye-off-outline" size={48} color="#EAEAEA" />
           <Text style={styles.emptyText}>
-            아직 이어 본 다른 사람의 이야기가 없어요.
+            아직 다른 분의 이야기를 보신 적이 없어요
           </Text>
           <Text style={styles.emptySubText}>
-            마음에 드는 이야기를 발견하고 다시 꺼내보세요!
+            이야기 보기권을 사용해서 이야기를 보셨다면 이곳에서 다시 볼 수
+            있어요
           </Text>
         </View>
       ) : (
