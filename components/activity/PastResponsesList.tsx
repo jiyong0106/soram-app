@@ -65,8 +65,12 @@ const ViewModeToggle = ({
 // --- 사용자별 카드 컴포넌트 ---
 const UserCard = ({ item }: { item: UnlockedSummaryByUserItem }) => {
   const router = useRouter();
-  const handlePress = () => console.log(`Maps to user ${item.id}'s responses`);
-
+  const handlePress = () => {
+    router.push({
+      pathname: "/activity/user/[authorId]",
+      params: { authorId: item.id, nickname: item.nickname },
+    });
+  };
   return (
     <ScalePressable style={styles.cardContainer} onPress={handlePress}>
       <View style={styles.userInfo}>

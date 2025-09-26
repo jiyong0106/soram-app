@@ -1,5 +1,6 @@
 import {
   GetMyVoiceResponseDetailResponse,
+  GetMyVoiceResponsesResponse,
   GetUnlockedSummaryByUserResponse,
   GetUnlockedSummaryByTopicResponse,
 } from "../types/activity";
@@ -43,4 +44,31 @@ export const getUnlockedResponsesSummary = async (
   } else {
     return data as GetUnlockedSummaryByTopicResponse;
   }
+};
+
+// API 함수에 필요한 파라미터 타입
+interface UnlockedResponsesByUserParams {
+  authorId: number;
+  take?: number;
+  cursor?: number;
+}
+
+/**
+ * [사용자별] 특정 사용자의 잠금 해제된 답변 목록 조회
+ */
+export const getUnlockedResponsesByUser = async ({
+  authorId,
+  take = 10,
+  cursor,
+}: UnlockedResponsesByUserParams) => {
+  const params: Record<string, any> = { take };
+  if (cursor) {
+    params.cursor = cursor;
+  }
+  // GET /users/:authorId/unlocked-responses
+  const { data } = await instance.get<GetMyVoiceResponsesResponse>(
+    `/users/${authorId}/unlocked-responses`,
+    { params }
+  );
+  return data;
 };
