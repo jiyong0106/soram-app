@@ -16,7 +16,6 @@ interface MyResponseCardProps {
 }
 
 const MyResponseCard = ({ item }: MyResponseCardProps) => {
-  // ✅ 새로운 props 타입을 사용
   const { id, title, category, textContent, createdAt } = item;
   const router = useRouter();
 
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 2, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
