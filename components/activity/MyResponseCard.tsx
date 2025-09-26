@@ -16,12 +16,14 @@ interface MyResponseCardProps {
 }
 
 const MyResponseCard = ({ item }: MyResponseCardProps) => {
-  // ✅ 새로운 props 타입을 사용
   const { id, title, category, textContent, createdAt } = item;
   const router = useRouter();
 
   const handlePress = () => {
-    router.push(`/profile/setting/my-responses/${id}`);
+    router.push({
+      pathname: `/activity/[id]`,
+      params: { id },
+    });
   };
 
   return (
@@ -61,12 +63,12 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
-    gap: 12, // 간격 조정
-    marginHorizontal: 10, // 좌우 여백 추가
+    marginHorizontal: 10,
+    gap: 6,
   },
   categoryWrapper: {
     flexDirection: "row",

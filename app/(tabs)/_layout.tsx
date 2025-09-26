@@ -1,6 +1,162 @@
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Redirect, Tabs } from "expo-router";
+import { View, Pressable, StyleSheet, Text } from "react-native";
+import { LinearGradient } from "expo-linear-gradient"; // 👈 [추가] 그라데이션 라이브러리 import
+
+// 헬퍼 함수: 개별 탭 아이템 렌더링
+const renderTabItem = ({
+  route,
+  isFocused,
+  options,
+  onPress,
+  onLongPress,
+}: any) => (
+  <Pressable
+    key={route.key}
+    accessibilityRole="button"
+    accessibilityState={isFocused ? { selected: true } : {}}
+    accessibilityLabel={options.tabBarAccessibilityLabel}
+    onPress={onPress}
+    onLongPress={onLongPress}
+    style={styles.tabItem}
+  >
+    {options.tabBarIcon &&
+      options.tabBarIcon({
+        focused: isFocused,
+        color: isFocused ? "#FF7D4A" : "#B0A6A0",
+        size: 28,
+      })}
+    <Text
+      style={{
+        color: isFocused ? "#FF7D4A" : "#B0A6A0",
+        fontSize: 10,
+        marginTop: 2,
+      }}
+    >
+      {options.title}
+    </Text>
+  </Pressable>
+);
+
+// 커스텀 탭 바 컴포넌트
+const CustomTabBar = ({
+  state,
+  descriptors,
+  navigation,
+}: BottomTabBarProps) => {
+  const centerIndex = Math.floor(state.routes.length / 2);
+
+  const leftRoutes = state.routes.slice(0, centerIndex);
+  const rightRoutes = state.routes.slice(centerIndex + 1);
+  const centerRoute = state.routes[centerIndex];
+  const centerOptions = descriptors[centerRoute.key].options;
+
+  const isCenterFocused = state.index === centerIndex;
+
+  return (
+    <View style={styles.tabBarOuterContainer}>
+      <Pressable
+        key={centerRoute.key}
+        onPress={() => navigation.navigate(centerRoute.name)}
+        style={styles.centerButtonWrapper}
+      >
+        {isCenterFocused ? (
+          <LinearGradient
+            colors={["#FFF3EC", "#FF7D4A"]} // 그라데이션 색상 배열
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.75, y: 0.75 }}
+            style={styles.centerButton}
+          >
+            {centerOptions.tabBarIcon?.({
+              focused: isCenterFocused,
+              color: "white",
+              size: 34,
+            })}
+          </LinearGradient>
+        ) : (
+          <View
+            style={[
+              styles.centerButton,
+              { backgroundColor: "#B0A6A0" }, // 비활성화 시 단색
+            ]}
+          >
+            {centerOptions.tabBarIcon?.({
+              focused: isCenterFocused,
+              color: "white",
+              size: 34,
+            })}
+          </View>
+        )}
+        <Text
+          style={[
+            styles.centerButtonLabel,
+            { color: isCenterFocused ? "#FF7D4A" : "#B0A6A0" },
+          ]}
+        >
+          {centerOptions.title}
+        </Text>
+      </Pressable>
+
+      <View style={styles.tabBarContainer}>
+        <View style={styles.sideContainer}>
+          {leftRoutes.map((route) => {
+            const options = descriptors[route.key].options;
+            const isFocused = state.index === state.routes.indexOf(route);
+            const onPress = () => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+            const onLongPress = () =>
+              navigation.emit({ type: "tabLongPress", target: route.key });
+            return renderTabItem({
+              route,
+              isFocused,
+              options,
+              onPress,
+              onLongPress,
+            });
+          })}
+        </View>
+
+        <View style={styles.centerSpacer} />
+
+        <View style={styles.sideContainer}>
+          {rightRoutes.map((route) => {
+            const options = descriptors[route.key].options;
+            const isFocused = state.index === state.routes.indexOf(route);
+            const onPress = () => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+            const onLongPress = () =>
+              navigation.emit({ type: "tabLongPress", target: route.key });
+            return renderTabItem({
+              route,
+              isFocused,
+              options,
+              onPress,
+              onLongPress,
+            });
+          })}
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const TabLayout = () => {
   const token = useAuthStore((s) => s.token);
@@ -10,19 +166,16 @@ const TabLayout = () => {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#FF7D4A",
         headerShown: false,
-        tabBarLabelStyle: {
-          marginTop: 5,
-        },
       }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen
         name="chat"
         options={{
           title: "대화",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbubbles" size={28} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles" size={size} color={color} />
           ),
         }}
       />
@@ -30,8 +183,8 @@ const TabLayout = () => {
         name="connection"
         options={{
           title: "요청",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="send" size={26} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="send" size={size} color={color} />
           ),
         }}
       />
@@ -39,8 +192,22 @@ const TabLayout = () => {
         name="topic"
         options={{
           title: "주제",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="flame" size={28} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="flame" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="activity/index"
+        options={{
+          title: "활동",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name="compass"
+              size={size}
+              color={color}
+              style={{ transform: [{ scale: 1.15 }] }}
+            />
           ),
         }}
       />
@@ -48,13 +215,74 @@ const TabLayout = () => {
         name="profile/index"
         options={{
           title: "프로필",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person" size={28} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
     </Tabs>
   );
 };
+
+const styles = StyleSheet.create({
+  tabBarOuterContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 85,
+    backgroundColor: "transparent",
+  },
+  tabBarContainer: {
+    flexDirection: "row",
+    height: "100%",
+    backgroundColor: "white",
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    alignItems: "flex-start",
+    paddingTop: 16,
+  },
+  sideContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  centerSpacer: {
+    width: 70,
+  },
+  centerButtonWrapper: {
+    position: "absolute",
+    left: "50%",
+    transform: [{ translateX: -35 }],
+    top: -20,
+    width: 70,
+    height: 70,
+    zIndex: 1,
+    alignItems: "center",
+  },
+  centerButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  centerButtonLabel: {
+    fontSize: 12,
+    marginTop: 6,
+  },
+});
 
 export default TabLayout;

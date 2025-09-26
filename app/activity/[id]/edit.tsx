@@ -31,10 +31,7 @@ const MAX = 2000;
 
 type Form = { content: string };
 
-// 컴포넌트 이름을 역할에 맞게 변경합니다.
 const EditMyResponsePage = () => {
-  // 1. 파라미터 가져오기
-  // id는 수정할 답변의 ID, topicId와 initialContent는 이전 페이지에서 넘겨받은 값입니다.
   const { id, topicId, initialContent } = useLocalSearchParams<{
     id: string;
     topicId: string;

@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
-import MyResponseDetail from "@/components/profile/MyResponseDetail";
+import MyResponseDetail from "@/components/activity/MyResponseDetail";
 
 const MyResponseDetailPage = () => {
   return (

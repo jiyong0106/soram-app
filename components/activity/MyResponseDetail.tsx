@@ -55,7 +55,7 @@ const MyResponseDetail = () => {
     const responseId = Array.isArray(id) ? id[0] : id; // 👈 안전한 responseId 생성
     if (!responseId) return;
     router.push({
-      pathname: "/profile/setting/my-responses/[id]/edit",
+      pathname: "/activity/[id]/edit",
       params: {
         id: responseId,
         topicId: response.topicBox.id,
