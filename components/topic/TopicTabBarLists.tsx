@@ -11,7 +11,7 @@ const TopicTabBarLists = (props: TabBarProps<any>) => {
       indicatorStyle={styles.indicator}
       pressColor="transparent"
       activeColor="#FF7D4A"
-      inactiveColor="#B0A6A0"
+      inactiveColor="#red"
       scrollEnabled
     />
   );

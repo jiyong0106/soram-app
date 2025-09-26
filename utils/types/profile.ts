@@ -64,18 +64,6 @@ export interface GetMyVoiceResponsesResponse {
   meta: metaType;
 }
 
-// 내 답변 상세 조회 응답 타입
-export interface GetMyVoiceResponseDetailResponse {
-  id: number;
-  textContent: string;
-  updatedAt: string;
-  topicBox: {
-    id: number;
-    title: string;
-    category: string;
-  };
-}
-
 // 답변 수정을 위한 요청(Payload) 타입
 export interface UpdateTextResponsePayload {
   responseId: number; // 수정할 답변의 고유 ID

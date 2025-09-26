@@ -1,46 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  RefreshControl,
+} from "react-native";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
 import LoadingSpinner from "../common/LoadingSpinner";
-
-// --- 임시 데이터 (API 연동 후 삭제) ---
-const DUMMY_USER_DATA = [
-  {
-    user: { id: 1, nickname: "감성적인 고양이" },
-    unlockedResponsesCount: 3,
-  },
-  {
-    user: { id: 2, nickname: "보리" },
-    unlockedResponsesCount: 1,
-  },
-  {
-    user: { id: 3, nickname: "겨울잠 자는 곰" },
-    unlockedResponsesCount: 5,
-  },
-];
-
-const DUMMY_TOPIC_DATA = [
-  {
-    topic: {
-      id: 101,
-      category: "생각",
-      title: "인생의 가치관",
-    },
-    unlockedResponsesCount: 2,
-  },
-  {
-    topic: {
-      id: 102,
-      category: "여행",
-      title: "혼자 떠난 여행",
-    },
-    unlockedResponsesCount: 4,
-  },
-];
-// --- 임시 데이터 끝 ---
+import { getUnlockedResponsesSummary } from "@/utils/api/activityPageApi";
+import {
+  GetUnlockedSummaryByUserResponse,
+  GetUnlockedSummaryByTopicResponse,
+  UnlockedSummaryByUserItem,
+  UnlockedSummaryByTopicItem,
+} from "@/utils/types/activity";
 
 type ViewMode = "user" | "topic";
 
@@ -83,11 +63,9 @@ const ViewModeToggle = ({
 );
 
 // --- 사용자별 카드 컴포넌트 ---
-const UserCard = ({ item }: { item: (typeof DUMMY_USER_DATA)[0] }) => {
+const UserCard = ({ item }: { item: UnlockedSummaryByUserItem }) => {
   const router = useRouter();
-  const { user, unlockedResponsesCount } = item;
-
-  const handlePress = () => console.log(`Maps to user ${user.id}'s responses`);
+  const handlePress = () => console.log(`Maps to user ${item.id}'s responses`);
 
   return (
     <ScalePressable style={styles.cardContainer} onPress={handlePress}>
@@ -95,11 +73,11 @@ const UserCard = ({ item }: { item: (typeof DUMMY_USER_DATA)[0] }) => {
         <View style={styles.avatar}>
           <Ionicons name="person" size={18} color="#fff" />
         </View>
-        <AppText style={styles.nickname}>{user.nickname}</AppText>
+        <AppText style={styles.nickname}>{item.nickname}</AppText>
       </View>
       <View style={styles.cardRightContent}>
         <AppText style={styles.countText}>
-          이어 본 이야기 {unlockedResponsesCount}개
+          이어 본 이야기 {item.unlockedResponsesCount}개
         </AppText>
         <Ionicons name="chevron-forward" size={20} color="#D9D9D9" />
       </View>
@@ -108,22 +86,19 @@ const UserCard = ({ item }: { item: (typeof DUMMY_USER_DATA)[0] }) => {
 };
 
 // --- 주제별 카드 컴포넌트 ---
-const TopicCard = ({ item }: { item: (typeof DUMMY_TOPIC_DATA)[0] }) => {
+const TopicCard = ({ item }: { item: UnlockedSummaryByTopicItem }) => {
   const router = useRouter();
-  const { topic, unlockedResponsesCount } = item;
-
-  const handlePress = () =>
-    console.log(`Maps to topic ${topic.id}'s responses`);
+  const handlePress = () => console.log(`Maps to topic ${item.id}'s responses`);
 
   return (
     <ScalePressable style={styles.topicCardContainer} onPress={handlePress}>
       <View style={styles.topicCardHeader}>
-        <AppText style={styles.topicCategory}># {topic.category}</AppText>
+        <AppText style={styles.topicCategory}># {item.category}</AppText>
         <Ionicons name="chevron-forward" size={20} color="#B0A6A0" />
       </View>
-      <AppText style={styles.topicTitle}>Q. {topic.title}</AppText>
+      <AppText style={styles.topicTitle}>Q. {item.title}</AppText>
       <AppText style={styles.topicCountText}>
-        이어 본 이야기 {unlockedResponsesCount}개
+        이어 본 이야기 {item.unlockedResponsesCount}개
       </AppText>
     </ScalePressable>
   );
@@ -133,20 +108,57 @@ const TopicCard = ({ item }: { item: (typeof DUMMY_TOPIC_DATA)[0] }) => {
 const PastResponsesList = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("user");
 
-  // TODO: useInfiniteQuery를 사용한 실제 API 연동 로직 추가
-  const isLoading = false;
-  const userData = DUMMY_USER_DATA;
-  const topicData = DUMMY_TOPIC_DATA;
-  const isEmpty =
-    (viewMode === "user" && userData.length === 0) ||
-    (viewMode === "topic" && topicData.length === 0);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery<
+    GetUnlockedSummaryByUserResponse | GetUnlockedSummaryByTopicResponse
+  >({
+    queryKey: ["getUnlockedResponsesSummary", viewMode],
+    queryFn: ({ pageParam = 1 }) =>
+      getUnlockedResponsesSummary({
+        groupBy: viewMode,
+        page: pageParam as number,
+        limit: 10,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+  });
 
-  const renderContent = () => {
-    if (isLoading) {
-      return <LoadingSpinner />;
+  const mappedData = React.useMemo<
+    (UnlockedSummaryByUserItem | UnlockedSummaryByTopicItem)[]
+  >(() => {
+    if (!data) return [];
+    return data.pages.flatMap((page) => page.data as any);
+  }, [data]);
+
+  const renderItem = ({
+    item,
+  }: {
+    item: UnlockedSummaryByUserItem | UnlockedSummaryByTopicItem;
+  }) => {
+    if (viewMode === "user") {
+      return <UserCard item={item as UnlockedSummaryByUserItem} />;
+    } else {
+      return <TopicCard item={item as UnlockedSummaryByTopicItem} />;
     }
-    if (isEmpty) {
-      return (
+  };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <View style={styles.pageContainer}>
+      <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
+      {/* 👇 [추가] 토글 버튼 아래에 화면 전체를 가로지르는 선 */}
+      <View />
+      {mappedData.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="eye-off-outline" size={48} color="#EAEAEA" />
           <Text style={styles.emptyText}>
@@ -156,33 +168,26 @@ const PastResponsesList = () => {
             마음에 드는 이야기를 발견하고 다시 꺼내보세요!
           </Text>
         </View>
-      );
-    }
-    if (viewMode === "user") {
-      return (
+      ) : (
         <FlatList
-          data={userData}
-          renderItem={({ item }) => <UserCard item={item} />}
-          keyExtractor={(item) => `user-${item.user.id}`}
+          data={mappedData}
+          renderItem={renderItem}
+          keyExtractor={(item) => `${viewMode}-${item.id}`}
+          contentContainerStyle={styles.listContentContainer}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
+          refreshControl={
+            <RefreshControl
+              refreshing={false}
+              onRefresh={refetch}
+              tintColor="#FF7D4A"
+            />
+          }
         />
-      );
-    }
-    if (viewMode === "topic") {
-      return (
-        <FlatList
-          data={topicData}
-          renderItem={({ item }) => <TopicCard item={item} />}
-          keyExtractor={(item) => `topic-${item.topic.id}`}
-        />
-      );
-    }
-    return null;
-  };
-
-  return (
-    <View style={styles.pageContainer}>
-      <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
-      {renderContent()}
+      )}
     </View>
   );
 };
@@ -192,15 +197,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  // --- 토글 스타일 ---
+  listContentContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 10, // 토글과의 간격을 위해 추가
+  },
   toggleContainer: {
     flexDirection: "row",
     backgroundColor: "#F7F7F7",
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginTop: 16, // 위쪽 간격
     borderRadius: 10,
     padding: 2,
   },
+  // 구분선 스타일
+  // divider: {},
   toggleButton: {
     flex: 1,
     paddingVertical: 10,
@@ -223,28 +233,21 @@ const styles = StyleSheet.create({
     color: "#FF7D4A",
     fontWeight: "bold",
   },
-
-  // --- 사용자별 카드 ---
   cardContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginVertical: 6,
+    marginBottom: 12,
     padding: 16,
     borderRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 4,
   },
-  userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
+  userInfo: { flexDirection: "row", alignItems: "center", gap: 12 },
   avatar: {
     width: 32,
     height: 32,
@@ -253,26 +256,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  nickname: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "#5C4B44",
-  },
-  cardRightContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  countText: {
-    fontSize: 13,
-    color: "#B0A6A0",
-  },
-
-  // --- 주제별 카드 ---
+  nickname: { fontSize: 15, fontWeight: "bold", color: "#5C4B44" },
+  cardRightContent: { flexDirection: "row", alignItems: "center", gap: 4 },
+  countText: { fontSize: 13, color: "#B0A6A0" },
   topicCardContainer: {
     backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginVertical: 6,
+    marginBottom: 12,
     padding: 16,
     borderRadius: 16,
     shadowColor: "#000",
@@ -287,39 +276,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  topicCategory: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#B0A6A0",
-  },
+  topicCategory: { fontSize: 12, fontWeight: "bold", color: "#B0A6A0" },
   topicTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#5C4B44",
     lineHeight: 22,
   },
-  topicCountText: {
-    fontSize: 13,
-    color: "#B0A6A0",
-    marginTop: 8,
-  },
-
-  // --- 빈 화면 ---
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#B0A6A0",
-    marginTop: 16,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: "#D9D9D9",
-    marginTop: 8,
-  },
+  topicCountText: { fontSize: 13, color: "#B0A6A0", marginTop: 8 },
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  emptyText: { fontSize: 16, color: "#B0A6A0", marginTop: 16 },
+  emptySubText: { fontSize: 14, color: "#D9D9D9", marginTop: 8 },
 });
 
 export default PastResponsesList;
