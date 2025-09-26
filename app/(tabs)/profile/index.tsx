@@ -13,7 +13,7 @@ const ProfilePage = () => {
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
-          title: "프로필 설정",
+          title: "더보기",
           headerShown: true,
           headerBackVisible: false,
         }}

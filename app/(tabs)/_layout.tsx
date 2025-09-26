@@ -191,7 +191,7 @@ const TabLayout = () => {
       <Tabs.Screen
         name="topic"
         options={{
-          title: "주제",
+          title: "홈",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="flame" size={size} color={color} />
           ),
@@ -214,9 +214,9 @@ const TabLayout = () => {
       <Tabs.Screen
         name="profile/index"
         options={{
-          title: "프로필",
+          title: "더보기",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons name="grid" size={size} color={color} />
           ),
         }}
       />
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   centerSpacer: {
-    width: 70,
+    width: 90,
   },
   centerButtonWrapper: {
     position: "absolute",
