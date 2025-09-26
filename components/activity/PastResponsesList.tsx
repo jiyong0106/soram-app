@@ -77,9 +77,9 @@ const UserCard = ({ item }: { item: UnlockedSummaryByUserItem }) => {
       </View>
       <View style={styles.cardRightContent}>
         <AppText style={styles.countText}>
-          이어 본 이야기 {item.unlockedResponsesCount}개
+          {item.unlockedResponsesCount}개
         </AppText>
-        <Ionicons name="chevron-forward" size={20} color="#D9D9D9" />
+        <Ionicons name="chevron-forward" size={20} color="#5C4B44" />
       </View>
     </ScalePressable>
   );
@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  nickname: { fontSize: 15, fontWeight: "bold", color: "#5C4B44" },
+  nickname: { fontSize: 14, fontWeight: "bold", color: "#5C4B44" },
   cardRightContent: { flexDirection: "row", alignItems: "center", gap: 4 },
-  countText: { fontSize: 13, color: "#B0A6A0" },
+  countText: { fontSize: 12, color: "#B0A6A0" },
   topicCardContainer: {
     backgroundColor: "#fff",
     marginBottom: 12,
