@@ -48,6 +48,8 @@ const QuestionPageSheet = (
       }}
     >
       <View style={s.container}>
+        {/* 타이틀 카테고리가 들어갈거임*/}
+        {/* <View style={s.titleRow}></View> */}
         {/* Group: 일반 */}
         <View style={s.group}>
           <SheetRow
@@ -62,43 +64,6 @@ const QuestionPageSheet = (
             onPress={onPress}
           />
         </View>
-
-        {/* Group: 파괴적(빨간 아이콘으로 강조) */}
-        <View style={s.group}>
-          <SheetRow
-            icon={
-              <Ionicons
-                name="close-circle-outline"
-                size={18}
-                color={COLORS.danger}
-              />
-            }
-            label="두번째 질문"
-          />
-          <View style={s.divider} />
-          <SheetRow
-            icon={
-              <Ionicons name="exit-outline" size={18} color={COLORS.danger} />
-            }
-            label="세번째 질문"
-          />
-        </View>
-
-        {/* Group: 유틸 */}
-        <View style={s.group}>
-          <SheetRow
-            icon={
-              <Ionicons
-                name="notifications-off-outline"
-                size={18}
-                color={COLORS.icon}
-              />
-            }
-            label="네번째 질문"
-          />
-        </View>
-
-        <View style={{ height: 8 }} />
       </View>
     </AppBottomSheetModal>
   );
