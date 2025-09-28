@@ -1,10 +1,21 @@
 import { StyleSheet, View } from "react-native";
-import TopicTabBar from "@/components/topic/TopicTabBar";
+import TopTabBar from "@/components/common/TopTabBar";
+import { CATEGORIES, RouteType } from "@/utils/types/topic";
+import { useCallback, useMemo } from "react";
+import TopicSection from "@/components/topic/TopicSection";
 
 const TopicListPage = () => {
+  const routes: RouteType[] = useMemo(
+    () => CATEGORIES.map((c) => ({ key: c, label: c })),
+    []
+  );
+
+  const renderScene = useCallback(({ route }: { route: RouteType }) => {
+    return <TopicSection category={route.key} />;
+  }, []);
   return (
     <View style={styles.container}>
-      <TopicTabBar />
+      <TopTabBar routes={routes} renderScene={renderScene} />
     </View>
   );
 };

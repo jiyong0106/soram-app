@@ -1,94 +1,177 @@
-import React, { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
-import ScalePressable from "../common/ScalePressable";
-import { useTicketsStore } from "@/utils/sotre/useTicketsStore";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
+import type { TicketBreakdownItem, TicketSourceType } from "@/utils/types/auth";
+import dayjs from "dayjs";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
 
-interface TicketsSheetProps {
-  snapPoints?: ReadonlyArray<string | number>;
-}
+const AnimatedAppText = Animated.createAnimatedComponent(AppText);
 
-type TicketItem = {
-  code: "C" | "N" | "M";
+const Row = ({
+  icon, // 변경점 3: code, color 대신 icon prop을 받습니다.
+  title,
+  // desc,
+  totalQuantity,
+  breakdown,
+}: {
+  icon: React.ReactNode; // React 컴포넌트를 받을 수 있도록 타입을 지정합니다.
   title: string;
   desc: string;
-  color: string; // badge color
-  value: number;
-};
+  totalQuantity: number;
+  breakdown: TicketBreakdownItem[];
+}) => {
+  const processedBreakdown = useMemo(() => {
+    const dailyTicket = breakdown.find((item) => item.sourceType === "DAILY");
+    const storedTickets = breakdown.filter(
+      (item) => item.sourceType !== "DAILY"
+    );
+    const getExpiresText = (expiresAt: string) => {
+      const diff = dayjs(expiresAt).diff(dayjs(), "day");
+      if (diff < 0) return "(기간 만료)";
+      if (diff === 0) return "오늘이 사용할 수 있는 마지막 날이에요!";
+      return `${diff + 1}일 뒤에 사라져요`;
+    };
+    const getSourceTypeText = (sourceType: TicketSourceType) => {
+      if (sourceType === "EVENT") return "기간 한정 이용권";
+      if (sourceType === "PAID") return "구매한 이용권";
+      return "보관중인 이용권";
+    };
+    return {
+      daily: dailyTicket
+        ? {
+            quantity: dailyTicket.quantity,
+          }
+        : null,
+      stored: storedTickets.map((item) => ({
+        quantity: item.quantity,
+        text: `${getSourceTypeText(item.sourceType)}`,
+        expiresText: getExpiresText(item.expiresAt),
+      })),
+    };
+  }, [breakdown]);
 
-const Badge = ({ label, color }: { label: string; color: string }) => (
-  <View style={[styles.badge, { backgroundColor: color }]}>
-    <AppText style={styles.badgeText}>{label}</AppText>
-  </View>
-);
+  const dailyRatio = useMemo(() => {
+    if (!processedBreakdown.daily || totalQuantity === 0) {
+      return 0;
+    }
+    return (processedBreakdown.daily.quantity / totalQuantity) * 100;
+  }, [processedBreakdown.daily, totalQuantity]);
 
-const Row = ({ item }: { item: TicketItem }) => (
-  <View style={styles.row}>
-    <View style={styles.rowLeft}>
-      <Badge label={item.code} color={item.color} />
-      <AppText style={styles.rowTitle}>
-        {item.title} - {item.value}개
-      </AppText>
-    </View>
-    <AppText style={styles.rowDesc}>{item.desc}</AppText>
-  </View>
-);
+  const opacity = useSharedValue(1);
 
-const TicketsSheet = (
-  { snapPoints }: TicketsSheetProps,
-  ref: ForwardedRef<BottomSheetModal>
-) => {
-  const dismiss = () => (ref as any)?.current?.dismiss?.();
+  useEffect(() => {
+    if (processedBreakdown.daily) {
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0.25, { duration: 500 }),
+          withTiming(1, { duration: 500 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [processedBreakdown.daily, opacity]);
 
-  const { CHAT, VIEW_RESPONSE } = useTicketsStore((s) => s.counts);
-
-  const items: TicketItem[] = [
-    {
-      code: "C",
-      title: "대화요청권",
-      desc: "마음에 드는 상대방에게 대화를 요청할 수 있어요",
-      color: "#FF8A5B",
-      value: CHAT ?? 0,
-    },
-    {
-      code: "M",
-      title: "답변 보기",
-      desc: "상대방이 남긴 답변을 볼 수 있어요",
-      color: "#BFDCAB",
-      value: VIEW_RESPONSE ?? 0,
-    },
-  ];
-
-  const handlePurchase = () => {
-    dismiss();
-    // TODO: 구매 화면으로 이동
-    // router.push("/tickets/purchase");
-  };
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
 
   return (
-    <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
-      <View style={styles.container}>
-        {/* 제목 */}
-        <AppText style={styles.header}>현재 보유중인 사용권</AppText>
-
-        {/* 리스트 */}
-        <View style={styles.listCard}>
-          {items.map((it, i) => (
-            <View key={it.code}>
-              <Row item={it} />
-              {i < items.length - 1 && <View style={styles.divider} />}
-            </View>
-          ))}
+    <View style={styles.row}>
+      {/* --- 상단 UI 부분 --- */}
+      <View style={styles.rowTop}>
+        <View style={styles.rowLeft}>
+          {icon}
+          <AppText style={styles.rowTitle}>{title}</AppText>
         </View>
+        <AppText style={styles.totalQuantityText}>총 {totalQuantity}개</AppText>
+      </View>
+      {/* <AppText style={styles.rowDesc}>{desc}</AppText> */}
+      {/* --- 하단 상세 내역 부분 --- */}
+      <View style={styles.breakdownList}>
+        {processedBreakdown.daily && (
+          <View style={styles.breakdownItem}>
+            {/* 변경점 1: 텍스트와 변수를 하나의 문자열로 합쳐줍니다. */}
+            <AnimatedAppText
+              style={[styles.breakdownText, styles.dailyText, animatedStyle]}
+            >
+              {`• 오늘 무료로 받은 이용권 ${processedBreakdown.daily.quantity}개`}
+            </AnimatedAppText>
+          </View>
+        )}
+        {processedBreakdown.stored.map((item, index) => (
+          <View key={index} style={styles.breakdownItem}>
+            <AppText style={styles.breakdownText}>
+              {`• ${item.text} ${item.quantity}개`}
+            </AppText>
+            <AppText style={styles.expiresText}>{item.expiresText}</AppText>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
 
-        {/* CTA */}
-        {/* <ScalePressable style={styles.cta} onPress={handlePurchase}>
-          <AppText style={styles.ctaText}>사용권 구매하러 </AppText>
-          <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
-        </ScalePressable> */}
+// --- 변경점: 누락된 props와 ref를 다시 받도록 함수 시그니처 수정 ---
+const TicketsSheet = (
+  { snapPoints }: { snapPoints?: ReadonlyArray<string | number> },
+  ref: ForwardedRef<BottomSheetModal>
+) => {
+  // 변경점 1: TicketsView와 동일하게, initialized 상태를 함께 가져옵니다.
+  const data = useTicketsStore((s) => s.data);
+  const initialized = useTicketsStore((s) => s.initialized);
+
+  // 변경점 2: 데이터가 준비되지 않았다면 렌더링하지 않도록 안전장치를 추가합니다.
+  if (!initialized) {
+    return null;
+  }
+
+  // 이 시점부터 data는 안전하게 사용할 수 있습니다.
+  const { CHAT, VIEW_RESPONSE } = data;
+
+  return (
+    <AppBottomSheetModal
+      ref={ref}
+      snapPoints={snapPoints}
+      backgroundStyle={{ backgroundColor: "#FFFFFF" }}
+    >
+      <View style={styles.container}>
+        {/* 변경점 2: LinearGradient 컴포넌트를 배경으로 추가 */}
+        <AppText style={styles.header}>보유중인 이용권</AppText>
+        <Row
+          icon={
+            <Ionicons
+              name="chatbubble-ellipses-sharp"
+              size={22}
+              color="#FF8A5B"
+            />
+          }
+          title="대화 요청권"
+          desc="마음에 드는 상대방에게 대화를 요청할 수 있어요"
+          totalQuantity={CHAT.totalQuantity}
+          breakdown={CHAT.breakdown}
+        />
+        <View style={styles.divider} />
+        {/* '이야기 보기권'에도 어울리는 아이콘을 추가했습니다. */}
+        <Row
+          icon={<Ionicons name="book" size={22} color="#6A839A" />}
+          title="이야기 보기권"
+          desc="다양한 주제에 남겨진 이야기들을 볼 수 있어요"
+          totalQuantity={VIEW_RESPONSE.totalQuantity}
+          breakdown={VIEW_RESPONSE.breakdown}
+        />
       </View>
     </AppBottomSheetModal>
   );
@@ -98,76 +181,86 @@ export default forwardRef(TicketsSheet);
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 14,
+    flex: 1, // 자식 요소들을 감싸기 위해 추가
+    paddingTop: 12,
     paddingHorizontal: 20,
     paddingBottom: 50,
-    gap: 14,
   },
   header: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#8E6F5A", // 살짝 톤 다운된 브라운 계열 (스샷 느낌)
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#5C4B44",
     textAlign: "center",
   },
-  listCard: {
-    borderRadius: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    backgroundColor: "#FFF7F1", // 은은한 베이지 톤
-  },
   row: {
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 10,
-    gap: 6,
+    gap: 10,
+  },
+  rowTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   rowLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   rowTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#4A4A4A",
+    fontSize: 18,
+    color: "#5C4B44",
+  },
+  totalQuantityText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#5C4B44",
   },
   rowDesc: {
-    fontSize: 12,
-    color: "#8E8E8E",
-    lineHeight: 18,
-    marginLeft: 32, // 배지+여백만큼 들여쓰기
-  },
-  badge: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#fff",
+    fontSize: 14,
+    color: "#B0A6A0",
+    textAlign: "left",
   },
   divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#EADDD3",
-    marginHorizontal: 10,
+    height: 0.5,
+    backgroundColor: "#5C4B44",
+    marginHorizontal: 15,
+    marginVertical: 10,
   },
-  cta: {
+  // stackedBarContainer: {
+  //   height: 24,
+  //   borderRadius: 2,
+  //   backgroundColor: "#5C4B44", // 기본 배경색
+  //   marginVertical: 10,
+  //   marginHorizontal: 5,
+  //   overflow: "hidden", // 자식 요소가 부모 밖으로 나가지 않도록 설정
+  // },
+  // stackedBarFilled: {
+  //   height: "100%",
+  //   backgroundColor: "#B0A6A0", // 오늘 소멸 재화 색상
+  //   borderRadius: 2,
+  // },
+  breakdownList: {
+    marginLeft: 5,
+    gap: 12,
+    marginVertical: 2,
+  },
+  breakdownItem: {
+    gap: 4,
+  },
+  breakdownText: {
+    fontSize: 14,
+    color: "#5C4B44",
+    marginVertical: 2,
+  },
+  dailyText: {
+    fontWeight: "bold",
+    color: "#5C4B44",
+  },
+  expiresText: {
+    fontSize: 12,
+    color: "#B0A6A0",
+    marginLeft: 12,
     marginTop: 4,
-    alignSelf: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#FF6B6B",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  ctaText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#FF6B6B",
   },
 });

@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import LocationActionModal, {
   LocationActionModalRef,
 } from "@/components/signup/LocationActionModal";
@@ -20,7 +20,7 @@ const LocationPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
     borderRadius: 10,
     backgroundColor: "#fff",
     height: 55,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF7D4A",
   },
   locationText: {},
 });

@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Gender } from "@/utils/types/signup";
 import AppText from "@/components/common/AppText";
@@ -23,7 +23,7 @@ const GenderPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={!gender}
           style={styles.button}
@@ -61,7 +61,7 @@ const GenderPage = () => {
                 <Ionicons
                   name="checkmark"
                   size={20}
-                  color={gender === key ? "#ff6b6b" : "#D0D0D0"}
+                  color={gender === key ? "#FF7D4A" : "#D0D0D0"}
                 />
               </View>
             </Pressable>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   selected: {
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF7D4A",
     borderWidth: 0,
   },
   selectLabel: {
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioChecked: {
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
     backgroundColor: "#fff",
   },
 });

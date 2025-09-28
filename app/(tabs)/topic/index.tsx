@@ -1,3 +1,5 @@
+// app/(tabs)/topic/index.tsx
+
 import AppHeader from "@/components/common/AppHeader";
 import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
@@ -9,15 +11,18 @@ import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+
+// ✨ 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
+const MIN_SHUFFLE_DURATION = 800;
 
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
-  // 내부 락/타이머 레퍼런스 (리렌더 영향 X)
-  const lockRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ✨ 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
+  const [isShuffling, setIsShuffling] = useState(false);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["getTopicRandomKey"],
@@ -25,64 +30,64 @@ const TopicPage = () => {
     placeholderData: keepPreviousData,
   });
 
-  const [cooldown, setCooldown] = useState(false);
   const showInitSkeleton = !data && isLoading;
 
-  // 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
+  // ✨ 3. onShuffle 함수를 Promise.all을 사용하는 방식으로 완전히 교체합니다.
   const onShuffle = useCallback(async () => {
-    // 1) 네트워크 로딩 중이거나 쿨다운 중이면 무시
-    if (isFetching || lockRef.current) return;
+    if (isShuffling) return; // 이미 셔플 중이면 중복 실행 방지
 
-    // 2) 쿨다운 시작
-    lockRef.current = true;
-    setCooldown(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      lockRef.current = false;
-      setCooldown(false);
-    }, 1000);
+    setIsShuffling(true);
 
-    // 3) 호출
     try {
-      await refetch({ throwOnError: true });
+      // 두 개의 비동기 작업을 준비합니다.
+      const refetchPromise = refetch({ throwOnError: true });
+      const delayPromise = new Promise((resolve) =>
+        setTimeout(resolve, MIN_SHUFFLE_DURATION)
+      );
+
+      // '데이터 리프레시'와 '최소 시간 지연'이 모두 끝날 때까지 기다립니다.
+      await Promise.all([refetchPromise, delayPromise]);
     } catch (e: any) {
       showAlert(e?.response?.data?.message ?? "주제를 불러오지 못했어요.");
+    } finally {
+      // 모든 작업이 끝나면 로딩 상태를 해제합니다.
+      setIsShuffling(false);
     }
-  }, [isFetching, refetch, showAlert]);
+  }, [isShuffling, refetch, showAlert]);
 
   return (
     <View style={styles.container}>
       <AppHeader />
-      <TicketsView />
       {showInitSkeleton ? (
         <TopicSkeleton />
       ) : (
         data && (
           <>
+            <TicketsView />
+            {/* ✨ 4. loading과 disabled prop에 isShuffling을 전달합니다. */}
             <TopicTitle
               onShuffle={onShuffle}
-              disabled={isFetching || cooldown}
-              loading={isFetching || cooldown}
+              disabled={isShuffling}
+              loading={isShuffling}
             />
-            <TopicCard item={data} />
+            <TopicCard item={data} loading={isShuffling} />
+            <TouchableOpacity
+              onPress={() => router.push("/topic/list")}
+              activeOpacity={0.5}
+              style={styles.moreTopic}
+            >
+              <AppText style={styles.moreTopicText}>
+                더 다양한 주제 보러가기
+              </AppText>
+              <Ionicons
+                name="chevron-forward-outline"
+                size={14}
+                color="#5C4B44"
+              />
+            </TouchableOpacity>
           </>
         )
       )}
-
-      <TouchableOpacity
-        onPress={() => router.push("/topic/list")}
-        activeOpacity={0.5}
-        style={styles.moreTopic}
-      >
-        <AppText>더 다양한 주제 보러가기</AppText>
-        <Ionicons name="chevron-forward-outline" size={20} color="black" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -100,9 +105,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   moreTopic: {
-    marginHorizontal: "auto",
+    alignSelf: "center",
     marginVertical: 20,
     flexDirection: "row",
     alignItems: "center",
+  },
+  moreTopicText: {
+    fontSize: 14,
+    color: "#5C4B44",
   },
 });

@@ -1,13 +1,13 @@
 import QueryProvider from "@/utils/libs/QueryProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { Stack } from "expo-router";
+import { Stack, usePathname, Redirect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import TicketsBootstrap from "@/components/auth/TicketsBootstrap";
-import { useAuthStore } from "@/utils/sotre/useAuthStore";
+import { useAuthStore } from "@/utils/store/useAuthStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,24 +18,28 @@ export default function RootLayout() {
     nsBol: require("../assets/fonts/NanumSquareNeo-cBd.ttf"),
     // 필요하면 추가:
   });
-  const [bootstrapped, setBootstrapped] = useState(false);
+  const pathname = usePathname();
+  const hydrated = useAuthStore((s) => s.hydrated);
+  const token = useAuthStore((s) => s.token);
+  const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
 
   // 폰트 로드 후 스플래시 종료
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
+    if (fontsLoaded && hydrated) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, hydrated]);
 
+  // 준비 완료 시 스플래시 안전하게 해제 (Redirect 경로에서도 보장)
   useEffect(() => {
-    (async () => {
-      await useAuthStore.getState().bootstrap();
-      setBootstrapped(true);
-    })();
-  }, []);
+    if (fontsLoaded && hydrated) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, hydrated]);
 
-  // 폰트 로드 전엔 렌더링 보류
-  if (!fontsLoaded || !bootstrapped) return null; // 토큰/폰트 준비 전 렌더 보류
+  // 폰트/스토어 로드 전엔 렌더링 보류
+  if (!fontsLoaded || !hydrated) return null;
+  if (needsRedirect) return <Redirect href="/topic" />;
 
   return (
     <GestureHandlerRootView onLayout={onLayoutRootView}>

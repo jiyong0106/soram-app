@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getChat } from "@/utils/api/chatPageApi";
 import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
+import { useFocusEffect } from "expo-router";
+import { getAuthToken } from "@/utils/util/auth";
+import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const qc = useQueryClient();
+
+  // 화면 포커스 시 최신화 보장
+  useFocusEffect(
+    useCallback(() => {
+      qc.invalidateQueries({ queryKey: ["getChatKey"] });
+    }, [qc])
+  );
 
   const {
     data,
@@ -30,15 +41,20 @@ const chatPage = () => {
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnReconnect: true,
   });
-
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
+  const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
 
+  // 실시간 목록 갱신: 소켓으로 newMessage 수신 시 캐시 업데이트
+  const jwt = getAuthToken() ?? "";
+  useChatListRealtime(jwt, connectionIds);
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
-    if (now - dataUpdatedAt < 60_000) return; // 최근 60초 내 데이터면 스킵
+    // 강제 새로고침: 데이터 업데이트 시각과 무관하게 허용
 
     setRefreshing(true);
     try {
@@ -51,7 +67,7 @@ const chatPage = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <AppText style={styles.title}>채팅</AppText>
+        <AppText style={styles.title}>대화</AppText>
         <SearchBar value={query} onChangeText={setQuery} />
       </View>
       <FlatList
@@ -89,11 +105,13 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 15,
+    paddingVertical: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
+    color: "#5C4B44",
   },
   rowTextWrap: {
     flex: 1,
@@ -103,12 +121,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 4,
   },
-  rowSubtitle: {
-    color: "#8A8F98",
-  },
   empty: {
     textAlign: "center",
-    color: "#666",
+    color: "#B0A6A0",
     marginTop: 20,
     fontSize: 16,
   },

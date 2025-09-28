@@ -1,5 +1,6 @@
 import {
   GetChatResponse,
+  GetTriggerResponse,
   UserBlockResponse,
   UserReportBody,
   UserReportResponse,
@@ -54,4 +55,17 @@ export const postUserBlock = async (blockedId: number) => {
   });
   return data.data;
 };
-// /blocks
+
+//채팅방 나가기
+export const postChatLeave = async (connectionId: number) => {
+  const { data } = await instance.delete(`/connections/${connectionId}/leave`);
+  return data;
+};
+
+//연결의 계기가 된 답변 조회
+export const getConnectionTrigger = async (id: number) => {
+  const { data } = await instance.get<GetTriggerResponse>(
+    `/connections/${id}/trigger`
+  );
+  return data;
+};

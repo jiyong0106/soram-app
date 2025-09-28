@@ -9,7 +9,7 @@ const PersonalityPage = () => {
     Alert.alert("", "프로필 입력 완료!", [
       {
         text: "확인",
-        onPress: () => router.push("/(tabs)/chatList"),
+        onPress: () => router.push("/(tabs)/topic"),
       },
     ]);
   };
@@ -18,7 +18,7 @@ const PersonalityPage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}

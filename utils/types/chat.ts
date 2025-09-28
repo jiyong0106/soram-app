@@ -14,6 +14,10 @@ export interface ChatParticipant extends UserType {
 }
 
 // 1. 채팅 목록 조회 api타입
+export interface LastMessageType {
+  content: string;
+  createdAt: string;
+}
 export interface ChatItemType {
   id: number;
   requesterId: number;
@@ -24,6 +28,8 @@ export interface ChatItemType {
   updatedAt: string;
   opponent: UserType;
   isBlocked: boolean;
+  isLeave: boolean;
+  lastMessage: LastMessageType | null;
 }
 export interface GetChatResponse {
   data: ChatItemType[];
@@ -75,4 +81,30 @@ export interface UserReportResponse {
   status: ReportStatusType;
   createdAt: string;
   updatedAt: string;
+}
+
+//채팅방 나가기
+export interface ChatLeaveResponse {
+  id: number;
+  connectionId: number;
+  userId: number;
+  createdAt: string;
+}
+
+//연결의 계기가 된 답변 조회 타입
+export interface ChatTriggerDto {
+  id: number;
+  type: "TEXT" | "VOICE";
+  textContent: string | null;
+  audioUrl: string | null;
+  playtime: number | null;
+}
+
+export interface GetTriggerResponse {
+  topic: {
+    id: number;
+    title: string;
+  };
+  myResponse: ChatTriggerDto;
+  opponentResponse: ChatTriggerDto;
 }

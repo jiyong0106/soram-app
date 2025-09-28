@@ -14,17 +14,19 @@ interface TopicListSheetProps {
   title: string;
   id: number;
   subQuestions: string[];
+  userCount: number;
+  myAnswerId: number | null;
 }
-const THEME = "#ff6b6b";
+const THEME = "#FF7D4A";
 const BTN_MIN_HEIGHT = 64; //  두 버튼 최소 높이 통일
 
 const TopicListSheet = (
-  { snapPoints, title, id }: TopicListSheetProps,
+  { snapPoints, title, id, userCount, myAnswerId }: TopicListSheetProps,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
-  const { showAlert } = useAlert();
+  const { showAlert, showActionAlert } = useAlert(); // 👈 showActionAlert 사용
   const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
     onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
     optimistic: true,
@@ -44,12 +46,29 @@ const TopicListSheet = (
   };
 
   const handleWriteAnswer = () => {
-    dismiss(); // 시트 닫기(애니메이션 시작)
+    dismiss(); // 우선 시트는 닫습니다.
+
     InteractionManager.runAfterInteractions(() => {
-      router.push({
-        pathname: "/topic/list/[listId]",
-        params: { listId: String(id) },
-      });
+      if (myAnswerId) {
+        // 이미 답변한 경우
+        showActionAlert(
+          "이미 이야기를 남기셨네요!", // 메시지
+          "내 이야기 보러가기", // 액션 버튼 텍스트
+          () => {
+            // 이전에 만들어 둔 '내 답변 상세' 페이지로 이동시킵니다.
+            router.push({
+              pathname: `/activity/[id]`,
+              params: { id: myAnswerId },
+            });
+          }
+        );
+      } else {
+        // 아직 답변하지 않은 경우 (기존 로직과 동일)
+        router.push({
+          pathname: "/topic/list/[listId]",
+          params: { listId: String(id) },
+        });
+      }
     });
   };
 
@@ -63,28 +82,43 @@ const TopicListSheet = (
         </View>
         <View></View>
 
-        {/* 1) 꽉 찬 테마 버튼 */}
-        <ScalePressable
-          style={[styles.ctaBase, styles.ctaPrimary]}
-          onPress={handleSeeOthers}
-        >
-          <View style={{ flexShrink: 1 }}>
-            <AppText style={styles.ctaPrimaryText}>
-              다른 사람의 답변 보러가기
-            </AppText>
-            <AppText style={styles.ctaPrimarySub}>마음 탐색권 1개 사용</AppText>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#fff" />
-        </ScalePressable>
+        {userCount > 0 ? (
+          <>
+            <ScalePressable
+              style={[styles.ctaBase, styles.ctaPrimary]}
+              onPress={handleSeeOthers}
+            >
+              <View style={{ flexShrink: 1 }}>
+                <AppText style={styles.ctaPrimaryText}>
+                  다른 사람의 이야기 보러가기
+                </AppText>
+                <AppText style={styles.ctaPrimarySub}>
+                  이야기 보기권 1개 사용
+                </AppText>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#fff" />
+            </ScalePressable>
 
-        {/* 2) 아웃라인 버튼 */}
-        <ScalePressable
-          style={[styles.ctaBase, styles.ctaGhost]}
-          onPress={handleWriteAnswer}
-        >
-          <AppText style={styles.ctaGhostText}>내 답변 남기기</AppText>
-          <Ionicons name="chevron-forward" size={20} color={THEME} />
-        </ScalePressable>
+            <ScalePressable
+              style={[styles.ctaBase, styles.ctaGhost]}
+              onPress={handleWriteAnswer}
+            >
+              <AppText style={styles.ctaGhostText}>내 이야기 남기기</AppText>
+              <Ionicons name="chevron-forward" size={20} color={THEME} />
+            </ScalePressable>
+          </>
+        ) : (
+          // 4-2. 참여자가 없을 경우 (개선된 UI)
+          <ScalePressable
+            style={[styles.ctaBase, styles.ctaGhost]}
+            onPress={handleWriteAnswer}
+          >
+            <AppText style={styles.ctaGhostText}>
+              이 주제의 첫 이야기 남기기
+            </AppText>
+            <Ionicons name="chevron-forward" size={20} color={THEME} />
+          </ScalePressable>
+        )}
       </View>
     </AppBottomSheetModal>
   );
@@ -105,12 +139,12 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingHorizontal: 2,
   },
-  q: { color: THEME, fontWeight: "800", fontSize: 18 },
+  q: { color: THEME, fontWeight: "bold", fontSize: 18 },
   title: {
     fontSize: 18,
     lineHeight: 26,
-    color: "#3a3a3a",
-    fontWeight: "700",
+    color: "#5C4B44",
+    fontWeight: "bold",
     flexShrink: 1,
   },
 
@@ -137,13 +171,13 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
   },
-  ctaPrimaryText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  ctaPrimaryText: { color: "#fff", fontSize: 14, fontWeight: "bold" },
   ctaPrimarySub: { color: "#fff", opacity: 0.95, marginTop: 4, fontSize: 12 },
 
   ctaGhost: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: THEME,
     backgroundColor: "#fff",
   },
-  ctaGhostText: { color: THEME, fontSize: 16, fontWeight: "700" },
+  ctaGhostText: { color: THEME, fontSize: 14, fontWeight: "bold" },
 });

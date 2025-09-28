@@ -23,8 +23,12 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId } = useLocalSearchParams();
-  const topicId = Number(listId);
+  const { listId, error } = useLocalSearchParams();
+  // 파라미터 안전 파싱
+  const rawListId = Array.isArray(listId) ? listId[0] : listId;
+  const topicId = Number(rawListId);
+  const rawError = Array.isArray(error) ? error[0] : error;
+  const hasError = typeof rawError !== "undefined";
   const { bottom } = useSafeArea();
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -48,10 +52,18 @@ const TopicListIdPage = () => {
       showAlert("내용을 입력해 주세요.");
       return;
     }
+    if (text.length < 20) {
+      showAlert("최소 20자 이상 입력해 주세요.");
+      return;
+    }
     try {
       await postText({ topicId, textContent: text });
       showAlert("답변이 등록되었어요.", () => {
         reset({ content: "" });
+        if (hasError && router.canGoBack()) {
+          router.back();
+          return;
+        }
         router.dismissTo("/(tabs)/topic/list");
       });
     } catch (e: any) {
@@ -66,7 +78,7 @@ const TopicListIdPage = () => {
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
-          title: "",
+          title: "이야기 남기기",
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <TouchableOpacity
@@ -111,7 +123,7 @@ const TopicListIdPage = () => {
                 style={styles.input}
                 multiline
                 placeholder="부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
-                placeholderTextColor="#888888"
+                placeholderTextColor="#B0A6A0"
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}

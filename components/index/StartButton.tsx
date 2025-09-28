@@ -7,7 +7,7 @@ const StartButton = () => {
   return (
     <Button
       label="시작하기"
-      color="#ff6b6b"
+      color="#FF7D4A"
       textColor="#fff"
       onPress={() => router.push("/(auth)")}
     />

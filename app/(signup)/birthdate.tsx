@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useMemo, useRef, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/sotre/useSignupDraftStore";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { FieldKey } from "@/utils/types/signup";
 import {
   FIELDS,
@@ -53,7 +53,7 @@ const BirthdatePage = () => {
     const dd = date.day.padStart(2, "0");
     const birthdate = `${date.year}-${mm}-${dd}`;
     patch({ birthdate });
-    router.push("/(signup)/answers");
+    router.push("/(signup)/question");
   };
 
   const setInputRef = (k: FieldKey) => (r: TextInput | null) => {
@@ -65,7 +65,7 @@ const BirthdatePage = () => {
       action={
         <Button
           label="계속하기"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}
@@ -149,5 +149,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     fontSize: 14,
   },
-  inputFocused: { borderColor: "#ff6b6b" },
+  inputFocused: { borderColor: "#FF7D4A" },
 });

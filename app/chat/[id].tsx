@@ -1,45 +1,58 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TouchableOpacity, View, Text, Keyboard, Platform } from "react-native";
+import React, { useCallback, useMemo, useRef, useEffect } from "react";
+import { TouchableOpacity, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
-import StickyBottom from "@/components/common/StickyBottom";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
-import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
-import useSafeArea from "@/utils/hooks/useSafeArea";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
-import { getAuthToken } from "@/utils/util/auth";
-import MessageInputBar from "@/components/chat/MessageInputBar";
-import MessageList from "@/components/chat/MessageList";
-import { getSocket } from "@/utils/libs/getSocket";
-import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT ";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
+import { IMessage } from "react-native-gifted-chat";
+import GiftedChatView from "@/components/chat/GiftedChatView";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import { useAuthStore } from "@/utils/store/useAuthStore";
+import ChatTriggerBanner from "@/components/chat/ChatTriggerBanner";
 
 const ChatIdPage = () => {
-  const { id, peerUserId, peerUserName } = useLocalSearchParams<{
-    id: string;
-    peerUserId: string;
-    peerUserName: string;
-  }>();
+  const { id, peerUserId, peerUserName, isLeave, isBlocked } =
+    useLocalSearchParams<{
+      id: string;
+      peerUserId: string;
+      peerUserName: string;
+      isLeave: string;
+      isBlocked: string;
+    }>();
+  //  라우트 파라미터 불리언 안전 변환 유틸
+  const toBoolParam = (param: string | string[] | undefined): boolean => {
+    const raw = Array.isArray(param) ? param[0] : param;
+    if (raw == null) return false;
+    const v = String(raw).trim().toLowerCase();
+    return v === "true" || v === "1" || v === "yes";
+  };
 
+  const isLeaveUser = useMemo(() => toBoolParam(isLeave), [isLeave]);
+  const isBlockedUser = useMemo(() => toBoolParam(isBlocked), [isBlocked]);
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
-  const token = getAuthToken() ?? "";
+  const token = useAuthStore((s) => s.token) ?? "";
 
-  const [text, setText] = useState("");
-  const [inputBarHeight, setInputBarHeight] = useState(40);
-  const { height } = useReanimatedKeyboardAnimation();
-  const { bottom } = useSafeArea();
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
-  // 1) 이전 채팅
+  // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
+  const { setActiveConnection, resetUnread } = useChatUnreadStore();
+  useEffect(() => {
+    setActiveConnection(roomId);
+    // 진입 시 해당 방의 배지 제거
+    resetUnread(roomId);
+    return () => setActiveConnection(null);
+  }, [roomId, setActiveConnection, resetUnread]);
 
+  // 1) 이전 채팅 이력 (항상 최신 보장: staleTime 0, refetchOnMount always)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["getMessagesKey", roomId],
@@ -48,41 +61,71 @@ const ChatIdPage = () => {
           connectionId: roomId,
           cursor: pageParam,
         }),
-
       initialPageParam: undefined as number | undefined,
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-      staleTime: 60 * 1000,
+      staleTime: 0,
+      refetchOnMount: "always",
+      refetchOnReconnect: true,
     });
-  const items: ChatMessageType[] =
+  const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];
 
-  // 2) 실시간
-  const { messages, sendMessage } = useChat(token, roomId);
+  // 2) 실시간 수신
+  const { messages: realtimeItems, sendMessage } = useChat(token, roomId);
 
-  // 소켓 에러 수신(선택)
-  useEffect(() => {
-    const s = getSocket();
-    const onError = (e: any) => console.log("[page] socket error:", e);
-    s?.on("error", onError);
-    return () => {
-      s?.off("error", onError);
-    };
-  }, [token]);
+  // 서버 ChatMessageType -> GiftedChat IMessage 매핑
+  const mapToIMessage = useCallback(
+    (m: ChatMessageType): IMessage => ({
+      _id: String(m.id),
+      text: m.content ?? "",
+      createdAt: new Date(m.createdAt),
+      user: {
+        _id: m.senderId,
+        name: m.sender?.nickname,
+      },
+    }),
+    []
+  );
 
-  const animatedListStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: height.value }],
-  }));
+  // 이전 이력 + 실시간 합치기(중복 제거, 오름차순 정렬)
+  const giftedMessages = useMemo(() => {
+    const merged = [...historyItems, ...realtimeItems];
+    const dedupMap = new Map<number, ChatMessageType>();
+    for (const m of merged) dedupMap.set(m.id, m);
+    const unique = Array.from(dedupMap.values());
+    unique.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return unique.map(mapToIMessage);
+  }, [historyItems, realtimeItems, mapToIMessage]);
 
-  const onSend = () => {
-    const msg = text.trim();
-    if (!msg || !token) return;
-    sendMessage(msg);
-    setText("");
-  };
+  // GiftedChat onSend -> 소켓 전송만 수행(낙관적 추가는 서버 에코로 처리)
+  const handleSendGifted = useCallback(
+    (newMessages?: IMessage[]) => {
+      const t = newMessages?.[0]?.text?.trim();
+      if (!t) return;
+      sendMessage(t);
+    },
+    [sendMessage]
+  );
+
+  // 스크롤 최상단 자동 로드 시 다중 호출 방지용 락
+  const loadingEarlierRef = useRef(false);
+  const handleLoadEarlier = useCallback(async () => {
+    // 이미 로딩 중이면 추가 호출 무시
+    if (loadingEarlierRef.current) return;
+    loadingEarlierRef.current = true;
+    try {
+      await fetchNextPage();
+    } finally {
+      loadingEarlierRef.current = false;
+    }
+  }, [fetchNextPage]);
 
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: peerUserName,
@@ -101,37 +144,25 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
+      <ChatTriggerBanner roomId={roomId} />
+      <GiftedChatView
+        messages={giftedMessages}
+        onSend={handleSendGifted}
+        currentUser={{ _id: myUserId ?? "me" }}
+        onLoadEarlier={handleLoadEarlier}
+        canLoadEarlier={!!hasNextPage}
+        isLoadingEarlier={!!isFetchingNextPage}
+        isLeaveUser={isLeaveUser}
+        isBlockedUser={isBlockedUser}
+        leaveUserName={peerUserName}
+      />
 
-      <View style={{ flex: 1 }}>
-        <Animated.View style={[{ flex: 1 }, animatedListStyle]}>
-          <MessageList
-            myUserId={myUserId}
-            items={items}
-            live={messages}
-            onLoadMore={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            isFetchingNextPage={isFetchingNextPage}
-            paddingBottom={bottom}
-          />
-        </Animated.View>
-
-        <StickyBottom
-          style={{ backgroundColor: "#fff" }}
-          onHeightChange={(h) => setInputBarHeight(h)}
-          bottomInset={bottom}
-        >
-          <MessageInputBar
-            value={text}
-            onChangeText={setText}
-            onSend={onSend}
-          />
-        </StickyBottom>
-
-        <ChatActionSheet ref={actionSheetRef} blockedId={blockedId} />
-      </View>
+      <ChatActionSheet
+        ref={actionSheetRef}
+        blockedId={blockedId}
+        roomId={roomId}
+        peerUserName={peerUserName}
+      />
     </PageContainer>
   );
 };

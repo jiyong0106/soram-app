@@ -1,37 +1,65 @@
+// app/components/connection/ReceivedRequestsCard.tsx
+
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import AppText from "../common/AppText";
 import Button from "../common/Button";
-import { GetConnectionsType } from "@/utils/types/connection";
 import { formatRelative } from "@/utils/util/formatRelative";
+import { getInitials } from "@/utils/util/uiHelpers";
+import { Ionicons } from "@expo/vector-icons";
+
+// --- Types ---
+// 백엔드 응답에 맞춘 새로운 타입 정의
+// 1. 답변 미리보기 타입
+interface RequesterResponsePreview {
+  id: number;
+  type: "TEXT" | "VOICE";
+  contentPreview: string | null;
+  playtime: number | null;
+}
+
+// 2. 받은 요청 데이터의 전체 타입
+interface ReceivedRequestItem {
+  id: number; // connectionId
+  requester: {
+    id: number;
+    nickname: string;
+  };
+  topicTitle: string;
+  requesterResponsePreview: RequesterResponsePreview;
+  createdAt: string;
+}
 
 interface ReceivedRequestsCardProps {
-  item: GetConnectionsType;
+  item: ReceivedRequestItem;
   onAccept: () => void;
   onReject: () => void;
+  onPressPreview: () => void;
   disabled?: boolean;
 }
 
-const THEME = "#ff6b6b";
+const THEME = "#FF7D4A";
 
+// --- Component ---
 const ReceivedRequestsCard = ({
   item,
   onAccept,
   onReject,
+  onPressPreview,
   disabled,
 }: ReceivedRequestsCardProps) => {
-  const { id, requesterId, addresseeId, status, requester, createdAt } = item;
+  const { requester, createdAt, topicTitle, requesterResponsePreview } = item;
 
-  const statusColor =
-    status === "PENDING"
-      ? "#F59E0B"
-      : status === "ACCEPTED"
-      ? "#10B981"
-      : "#EF4444";
+  const formatPlaytime = (seconds: number | null) => {
+    if (seconds === null) return "0:00";
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  };
 
   return (
     <View style={styles.card}>
-      {/* 헤더: 아바타 + 닉네임 + 상태 배지 */}
+      {/* 헤더: 아바타 + 닉네임 + 시간 */}
       <View style={styles.row}>
         <View style={styles.avatar}>
           <AppText style={styles.avatarText}>
@@ -40,51 +68,70 @@ const ReceivedRequestsCard = ({
         </View>
         <View style={{ flex: 1 }}>
           <AppText style={styles.name}>{requester?.nickname}</AppText>
-          <AppText style={styles.sub}>
-            {formatRelative(createdAt)} • ID {requesterId}
-          </AppText>
-        </View>
-        <View
-          style={[
-            styles.badge,
-            {
-              backgroundColor: hexWithAlpha(statusColor, 0.12),
-              borderColor: statusColor,
-            },
-          ]}
-        >
-          <AppText style={[styles.badgeText, { color: statusColor }]}>
-            {statusLabel(status)}
-          </AppText>
+          <AppText style={styles.sub}>{formatRelative(createdAt)}</AppText>
         </View>
       </View>
+      <AppText style={styles.captionText}>
+        {requester?.nickname}님이 남긴 이야기를 보시고 결정해 보세요!
+      </AppText>
+      {/* 👇 [변경됨] 인용문(Quote Block) 구조 수정 */}
+      <TouchableOpacity
+        style={styles.quoteBlock}
+        onPress={onPressPreview}
+        disabled={disabled}
+      >
+        {/* 텍스트 컨텐츠를 담을 View */}
+        <View style={styles.quoteContentWrapper}>
+          <AppText style={styles.questionText}>
+            <AppText style={styles.questionHighlight}>Q. </AppText>
+            {topicTitle}
+          </AppText>
+          {requesterResponsePreview.type === "TEXT" ? (
+            <View style={styles.previewRow}>
+              <Ionicons
+                name="book-sharp"
+                size={24}
+                color="#6A839A"
+                style={styles.previewIcon} //
+              />
+              <AppText style={styles.previewText} numberOfLines={2}>
+                "{requesterResponsePreview.contentPreview}"
+              </AppText>
+            </View>
+          ) : (
+            <View style={styles.previewRow}>
+              <AppText style={styles.previewIcon}>▶</AppText>
+              <AppText style={styles.previewText}>음성 답변</AppText>
+              <AppText style={styles.playtimeText}>
+                {formatPlaytime(requesterResponsePreview.playtime)}
+              </AppText>
+            </View>
+          )}
+        </View>
+        {/* 오른쪽 셰브론 아이콘 추가 */}
+        <Ionicons name="chevron-forward" size={20} color="#FF7D4A" />
+      </TouchableOpacity>
 
-      {/* 메타 블록 (접을 수도 있음) */}
-      <View style={styles.metaBlock}>
-        <AppText style={styles.meta}>요청 ID: {id}</AppText>
-        <AppText style={styles.meta}>내 ID: {addresseeId}</AppText>
-      </View>
-
-      {/* 액션: Primary(수락) + Ghost(거절) */}
+      {/* 액션 버튼 */}
       <View style={styles.btnRow}>
-        <View style={styles.acceptWrap}>
-          <Button
-            label="수락"
-            color={THEME}
-            textColor="#fff"
-            style={styles.btn}
-            onPress={onAccept}
-            disabled={disabled || status !== "PENDING"}
-          />
-        </View>
-        <View style={styles.rejWrap}>
+        <View style={styles.btnWrap}>
           <Button
             label="거절"
             color="#fff"
             textColor={THEME}
             style={[styles.btn, styles.ghost]}
             onPress={onReject}
-            disabled={disabled || status !== "PENDING"}
+            disabled={disabled}
+          />
+        </View>
+        <View style={styles.btnWrap}>
+          <Button
+            label="수락"
+            color={THEME}
+            textColor="#fff"
+            style={styles.btn}
+            onPress={onAccept}
+            disabled={disabled}
           />
         </View>
       </View>
@@ -94,48 +141,21 @@ const ReceivedRequestsCard = ({
 
 export default ReceivedRequestsCard;
 
-/* --- helpers --- */
-const getInitials = (name?: string) => {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  const a = parts[0]?.[0] ?? "";
-  const b = parts[1]?.[0] ?? "";
-  return (a + b).toUpperCase();
-};
-
-const hexWithAlpha = (hex: string, a = 0.15) => {
-  // #RRGGBB -> rgba
-  const m = hex.replace("#", "");
-  const r = parseInt(m.slice(0, 2), 16);
-  const g = parseInt(m.slice(2, 4), 16);
-  const b = parseInt(m.slice(4, 6), 16);
-  return `rgba(${r},${g},${b},${a})`;
-};
-
-const statusLabel = (s: string) =>
-  s === "PENDING"
-    ? "대기"
-    : s === "ACCEPTED"
-    ? "수락됨"
-    : s === "REJECTED"
-    ? "거절됨"
-    : s;
-
+// --- Styles ---
 const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "#E6E8EC",
-    padding: 10,
+    padding: 16,
     backgroundColor: "#fff",
-    gap: 12,
-
+    gap: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    // Android
+    shadowOffset: { width: 4, height: 4 },
     elevation: 4,
+    marginVertical: 2,
   },
   row: {
     flexDirection: "row",
@@ -146,7 +166,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFE2E2",
+    backgroundColor: "#FFF3EC",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -157,31 +177,58 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1F2937",
+    color: "#5C4B44",
   },
   sub: {
     fontSize: 12,
-    color: "#6B7280",
-    marginTop: 2,
+    color: "#B0A6A0",
+    marginTop: 4,
   },
-  badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  metaBlock: {
-    backgroundColor: "#FAFAFB",
+  // 👇 [변경됨] quoteBlock 스타일 수정
+  quoteBlock: {
+    backgroundColor: "#F9FAFB",
     borderRadius: 12,
-    padding: 10,
-    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#EEEEEE",
   },
-  meta: {
+  // 👇 [추가됨] 텍스트 영역을 감싸는 래퍼
+  quoteContentWrapper: {
+    flex: 1, // 셰브론 아이콘을 제외한 나머지 공간을 모두 차지
+    gap: 8,
+  },
+
+  questionText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#5C4B44", // topicTitle 색상
+    marginBottom: 4,
+  },
+  // 👇 [추가됨] 'Q.' 부분에만 적용될 강조 스타일
+  questionHighlight: {
+    color: THEME, // 강조 색상
+  },
+  previewRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  previewIcon: {
+    fontSize: 16,
+  },
+  previewText: {
+    flex: 1,
     fontSize: 12,
+    color: "#6B7280",
+    lineHeight: 20,
+  },
+  playtimeText: {
+    fontSize: 12,
+    fontWeight: "500",
     color: "#6B7280",
   },
   btnRow: {
@@ -193,13 +240,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   ghost: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: THEME,
   },
-  acceptWrap: {
+  btnWrap: {
     flex: 1,
   },
-  rejWrap: {
-    flex: 1,
+  captionText: {
+    fontSize: 12,
+    color: "#5C4B44",
+    textAlign: "center",
+    paddingHorizontal: 10,
+    marginBottom: -8,
   },
 });

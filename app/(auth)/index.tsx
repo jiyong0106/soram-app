@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
-import { usePhoneNumberStore } from "@/utils/sotre/usePhoneNumberStore";
+import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
 
@@ -44,7 +44,7 @@ const AuthPage = () => {
       action={
         <Button
           label="인증번호 전송"
-          color="#ff6b6b"
+          color="#FF7D4A"
           textColor="#fff"
           disabled={!isValid}
           style={styles.button}
@@ -56,14 +56,16 @@ const AuthPage = () => {
       <View style={styles.container}>
         <AppText style={styles.title}>휴대폰 번호를 입력해 주세요</AppText>
         <AppText style={styles.desc}>
-          허위/중복 가입을 막고, 악성 사용자를 제재하는데 사용해요. 입력한
-          번호는 절대 공개되지 않아요.
+          {
+            "허위/중복 가입을 막고, 악성 사용자에 제재에 사용해요.\n입력한 번호는 절대 공개되지 않아요."
+          }
         </AppText>
         <View style={styles.inputRow}>
           <AppText style={styles.countryCode}>+82</AppText>
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
             placeholder="휴대폰 번호"
+            placeholderTextColor={"#B0A6A0"}
             keyboardType="number-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -87,9 +89,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#5C4B44",
   },
   desc: {
-    color: "#888",
+    color: "#B0A6A0",
     marginBottom: 32,
   },
   inputRow: {
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
   },
   countryCode: {
     fontSize: 18,
-    color: "#222",
+    color: "#5C4B44",
     marginRight: 8,
   },
   input: {
@@ -113,6 +116,6 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   inputFocused: {
-    borderColor: "#ff6b6b",
+    borderColor: "#FF7D4A",
   },
 });

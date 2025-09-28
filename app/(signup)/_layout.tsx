@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
-import { BackButton, backHeaderOptions } from "@/components/common/backbutton";
+import { BackButton } from "@/components/common/backbutton";
 
 const SignupLayout = () => {
   return (
@@ -18,7 +18,7 @@ const SignupLayout = () => {
         <Stack.Screen name="location" />
         <Stack.Screen name="interests" />
         <Stack.Screen name="personality" />
-        <Stack.Screen name="answers" />
+        <Stack.Screen name="question/index" />
         <Stack.Screen name="finish" />
       </Stack>
     </PageContainer>

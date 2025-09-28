@@ -6,17 +6,24 @@ import { useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UserAnswerListProps {
   item: UserAnswerResponse;
   title: string | string[];
+  showActions?: boolean; // 버튼 표시 여부를 제어하는 prop
 }
 
-const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
+const UserAnswerList = ({
+  item,
+  title,
+  showActions = true, // 👇 2. 기본값을 true로 설정하여 기존 코드가 깨지지 않도록 함
+}: UserAnswerListProps) => {
   const { textContent, id, userId, user, createdAt, topicBoxId } = item;
   const { showAlert, showActionAlert } = useAlert();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   //대화 요청하기
   const handlePress = () => {
@@ -27,26 +34,39 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       voiceResponseId: id,
     };
 
-    showActionAlert("대화요청 할거임?", "요청", async () => {
-      try {
-        setLoading(true);
-        await postRequestConnection(body);
-        showAlert("요청되었어요!");
-      } catch (e: any) {
-        const msg = e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-        showAlert(msg, () => {
-          if (e.response.data.statusCode === 403) {
-            router.push({
-              pathname: "/topic/list/[listId]",
-              params: { listId: String(topicBoxId) },
-            });
-            return;
-          }
-        });
-      } finally {
-        setLoading(false);
+    showActionAlert(
+      `대화를 요청할까요?\n\n${user.nickname}님이 요청을 수락하면\n\n대화 요청권이 1개 차감됩니다.`,
+      "요청",
+      async () => {
+        try {
+          setLoading(true);
+          await postRequestConnection(body);
+          showAlert(
+            `대화 요청 완료!\n\n${user.nickname}님이 수락하면 알림을 보내드릴게요.`,
+            () => {
+              router.push("/(tabs)/topic/list");
+            }
+          );
+          queryClient.invalidateQueries({
+            queryKey: ["getSentConnectionsKey"],
+          });
+        } catch (e: any) {
+          const msg =
+            e?.response?.data?.message || "요청 중 오류가 발생했어요.";
+          showAlert(msg, () => {
+            if (e.response.data.statusCode === 403) {
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: { listId: String(topicBoxId), error: "forbidden" },
+              });
+              return;
+            }
+          });
+        } finally {
+          setLoading(false);
+        }
       }
-    });
+    );
   };
 
   return (
@@ -60,30 +80,32 @@ const UserAnswerList = ({ item, title }: UserAnswerListProps) => {
       <AppText style={styles.content}>{textContent}</AppText>
 
       {/* 작성자 닉네임 (오른쪽 정렬, 서명 느낌) */}
-      <AppText style={styles.nick}>– {user.nickname}</AppText>
+      <AppText style={styles.nick}>- {user.nickname}</AppText>
 
       {/* 메타 (필요 시 표시) */}
       <AppText style={styles.meta}>
-        {new Date(createdAt).toLocaleString()}
+        {new Date(createdAt).toLocaleDateString()}
       </AppText>
 
-      {/* 하단 버튼 */}
-      <View style={styles.btnWrapper}>
-        <Button
-          label="대화 요청하기"
-          color="#FFF5F0"
-          textColor="#FF6B3E"
-          style={styles.btnEmphasis}
-          disabled={loading}
-          onPress={handlePress}
-        />
-        <Button
-          label={`${user.nickname}님의 \n 다른 이야기 보기`}
-          color="#FFFFFF"
-          textColor="#9B9B9B"
-          style={styles.btnOutline}
-        />
-      </View>
+      {/* 👇 3. 조건부 렌더링: showActions가 true일 때만 버튼 영역을 보여줌 */}
+      {showActions && (
+        <View style={styles.btnWrapper}>
+          <Button
+            label="대화 요청하기"
+            color="#FFF5F0"
+            textColor="#FF6B3E"
+            style={styles.btnEmphasis}
+            disabled={loading}
+            onPress={handlePress}
+          />
+          <Button
+            label={`${user.nickname}님의 \n 다른 이야기 보기`}
+            color="#FFFFFF"
+            textColor="#B0A6A0"
+            style={styles.btnOutline}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -123,7 +145,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     lineHeight: 22,
-    color: "#333",
+    color: "#5C4B44",
   },
   questionHighlight: {
     color: "#FF6B3E",
@@ -133,19 +155,21 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#3D3D3D",
+    color: "#5C4B44",
   },
 
   nick: {
     alignSelf: "flex-end",
     marginTop: 8,
-    color: "#7F7F7F",
-    fontSize: 13,
+    marginRight: 8,
+    color: "#5C4B44",
+    fontSize: 14,
+    fontWeight: "bold",
     fontStyle: "italic",
   },
 
   meta: {
-    color: "#A5A5A5",
+    color: "#B0A6A0",
     marginTop: 4,
     fontSize: 12,
   },

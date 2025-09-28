@@ -22,6 +22,7 @@ export interface TopicListType {
   createdAt: string;
   updatedAt: string;
   userCount: number;
+  myAnswerId: number | null;
 }
 
 export interface GetTopicListResponse {
@@ -91,4 +92,4 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number];
 
-export type RouteType = { key: Category; title: string };
+export type RouteType = { key: Category; label: string };

@@ -6,16 +6,23 @@ import Reanimated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useQueryClient } from "@tanstack/react-query";
+import { postChatLeave } from "@/utils/api/chatPageApi";
+import useAlert from "@/utils/hooks/useAlert";
 
 type SwipeActionsProps = {
   prog: SharedValue<number>;
   drag: SharedValue<number>;
+  connectionId: number;
 };
 
 const ACTION_WIDTH = 72; // 버튼 하나의 최대 폭
 const MAX_REVEAL = ACTION_WIDTH * 2; // 두 버튼 합
 
-const SwipeActions = ({ drag }: SwipeActionsProps) => {
+const SwipeActions = ({ drag, connectionId }: SwipeActionsProps) => {
+  const queryClient = useQueryClient();
+  const { showActionAlert, showAlert } = useAlert();
+
   // 왼쪽으로 당긴 절대거리(px) 0 ~ MAX_REVEAL 로 clamp
   const reveal = useDerivedValue(() => {
     "worklet";
@@ -31,10 +38,26 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
     return { width: w };
   });
 
+  //채팅방 알림 끄기
+
+  //채팅방 나가기
+  const handleChatLeave = () => {
+    showActionAlert("채팅방을 나가시나요?", "확인", async () => {
+      try {
+        await postChatLeave(connectionId);
+        queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+      } catch (e: any) {
+        if (e) {
+          showAlert(e.response.data.message || "다시 시도해 주세요");
+          return;
+        }
+      }
+    });
+  };
+
   return (
     <Reanimated.View style={styles.actionsContainer}>
       <Reanimated.View style={[styles.actionButton, styles.noti, buttonStyle]}>
-        {/* <Ionicons name="notifications-off-outline" size={26} color="#fff" /> */}
         <TouchableOpacity
           onPress={() => Alert.alert("알림 끄기")}
           activeOpacity={0.5}
@@ -45,10 +68,7 @@ const SwipeActions = ({ drag }: SwipeActionsProps) => {
       <Reanimated.View
         style={[styles.actionButton, styles.delete, buttonStyle]}
       >
-        <TouchableOpacity
-          onPress={() => Alert.alert("삭제 완료")}
-          activeOpacity={0.5}
-        >
+        <TouchableOpacity onPress={handleChatLeave} activeOpacity={0.5}>
           <AntDesign name="delete" size={26} color="#fff" />
         </TouchableOpacity>
       </Reanimated.View>
