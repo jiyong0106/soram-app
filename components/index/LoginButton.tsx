@@ -9,7 +9,7 @@ const LoginButton = () => {
       color="#fff"
       textColor="#222"
       borderColor="#FF835C"
-      onPress={() => router.push("/(signup)")}
+      onPress={() => router.push("/(signup)/answers")}
     />
   );
 };
