@@ -4,6 +4,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
+import { useRouter } from "expo-router";
 
 interface Props {
   snapPoints?: ReadonlyArray<string | number>;
@@ -19,15 +20,16 @@ const COLORS = {
   icon: "#111827",
 };
 
-const AnswerPageSheet = (
+const QuestionPageSheet = (
   { snapPoints }: Props,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
+  const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
 
   const onPress = () => {
     dismiss();
-    console.log("onPress");
+    router.push("/(signup)/question/qanswer");
   };
 
   return (
@@ -44,6 +46,7 @@ const AnswerPageSheet = (
               />
             }
             label="첫번째 질문"
+            onPress={onPress}
           />
         </View>
 
@@ -88,7 +91,7 @@ const AnswerPageSheet = (
   );
 };
 
-export default forwardRef(AnswerPageSheet);
+export default forwardRef(QuestionPageSheet);
 
 const s = StyleSheet.create({
   container: {

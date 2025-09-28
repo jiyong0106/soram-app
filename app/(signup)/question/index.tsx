@@ -1,15 +1,15 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore"; // (오탈자면 store로 수정)
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import AppText from "@/components/common/AppText";
 import RequiredInfoForm from "@/components/signup/RequiredInfoForm";
-import AnswerPageSheet from "@/components/signup/AnswerPageSheet";
+import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-const AnswersPage = () => {
+const QuestionPage = () => {
   const router = useRouter();
   const nickname = useSignupDraftStore((s) => s.draft.nickname);
   const answers = useSignupDraftStore((s) => s.draft.answers);
@@ -17,7 +17,6 @@ const AnswersPage = () => {
 
   const sheetRef = useRef<BottomSheetModal>(null);
 
-  //  대표 답변(고정: questionId=1, isPrimary=true)을 선택
   const primary = useMemo(
     () => answers?.find((a) => a.isPrimary) ?? { content: "" },
     [answers]
@@ -56,12 +55,12 @@ const AnswersPage = () => {
           <RequiredInfoForm optional onPress={openSheet} />
         </View>
       </View>
-      <AnswerPageSheet ref={sheetRef} />
+      <QuestionPageSheet ref={sheetRef} />
     </ScreenWithStickyAction>
   );
 };
 
-export default AnswersPage;
+export default QuestionPage;
 
 const styles = StyleSheet.create({
   container: {
