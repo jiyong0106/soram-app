@@ -1,5 +1,5 @@
-import React, { ForwardedRef, forwardRef } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { ForwardedRef, forwardRef, useState } from "react";
+import { View, StyleSheet, InteractionManager } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
@@ -24,16 +24,29 @@ const QuestionPageSheet = (
   { snapPoints }: Props,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
+  const [navigateNext, setNavigateNext] = useState(false);
+
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
 
   const onPress = () => {
+    setNavigateNext(true);
     dismiss();
-    router.push("/(signup)/question/qanswer");
   };
 
   return (
-    <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
+    <AppBottomSheetModal
+      ref={ref}
+      snapPoints={snapPoints}
+      onDismiss={() => {
+        if (navigateNext) {
+          setNavigateNext(false);
+          InteractionManager.runAfterInteractions(() => {
+            router.push("/(signup)/question/qanswer");
+          });
+        }
+      }}
+    >
       <View style={s.container}>
         {/* Group: 일반 */}
         <View style={s.group}>
