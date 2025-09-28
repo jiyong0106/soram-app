@@ -1,10 +1,12 @@
-import React, { ForwardedRef, forwardRef, useState } from "react";
-import { View, StyleSheet, InteractionManager } from "react-native";
+import React, { ForwardedRef, forwardRef, useMemo, useState } from "react";
+import { View, StyleSheet, InteractionManager, FlatList } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
+import QuestionCategoryTabs from "@/components/signup/QuestionCategoryTabs";
+import { CATEGORY_DEF, QUESTIONS } from "@/utils/dummy/test";
 
 interface Props {
   snapPoints?: ReadonlyArray<string | number>;
@@ -20,11 +22,20 @@ const COLORS = {
   icon: "#111827",
 };
 
+// 한글 주석: 카테고리/질문 더미 데이터(추후 API 연동 시 교체)
+
 const QuestionPageSheet = (
   { snapPoints }: Props,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const [navigateNext, setNavigateNext] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    CATEGORY_DEF[0]?.id ?? ""
+  );
+  const visibleQuestions = useMemo(
+    () => QUESTIONS.filter((q) => q.categoryId === selectedCategoryId),
+    [selectedCategoryId]
+  );
 
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
@@ -48,20 +59,33 @@ const QuestionPageSheet = (
       }}
     >
       <View style={s.container}>
-        {/* 타이틀 카테고리가 들어갈거임*/}
-        {/* <View style={s.titleRow}></View> */}
-        {/* Group: 일반 */}
+        {/* 한글 주석: 카테고리 탭 */}
+        <QuestionCategoryTabs
+          categories={CATEGORY_DEF}
+          selectedId={selectedCategoryId}
+          onChange={setSelectedCategoryId}
+        />
+
+        {/* 한글 주석: 질문 리스트 */}
         <View style={s.group}>
-          <SheetRow
-            icon={
-              <Ionicons
-                name="alert-circle-outline"
-                size={18}
-                color={COLORS.icon}
+          <FlatList
+            data={visibleQuestions}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <SheetRow
+                icon={
+                  <Ionicons
+                    name="help-circle-outline"
+                    size={18}
+                    color={COLORS.icon}
+                  />
+                }
+                label={item.title}
+                onPress={onPress}
               />
-            }
-            label="첫번째 질문"
-            onPress={onPress}
+            )}
+            ItemSeparatorComponent={() => <View style={s.divider} />}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </View>
@@ -77,6 +101,12 @@ const s = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     backgroundColor: COLORS.bg,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
   },
   header: {
     alignItems: "center",
@@ -108,6 +138,7 @@ const s = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: COLORS.border,
     marginTop: 12,
+    maxHeight: "80%",
   },
   divider: {
     height: StyleSheet.hairlineWidth,

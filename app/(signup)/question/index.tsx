@@ -55,7 +55,7 @@ const QuestionPage = () => {
           <RequiredInfoForm optional onPress={openSheet} />
         </View>
       </View>
-      <QuestionPageSheet ref={sheetRef} />
+      <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} />
     </ScreenWithStickyAction>
   );
 };
