@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     gap: 12,
     paddingVertical: 10,
+    paddingBottom: 100,
   },
   emptyContainer: {
     flex: 1,

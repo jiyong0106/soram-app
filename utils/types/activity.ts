@@ -12,6 +12,10 @@ export interface MyVoiceResponseItem {
     title: string;
     category: string;
   };
+  user?: {
+    id: number;
+    nickname: string;
+  };
 }
 
 export interface GetMyVoiceResponsesResponse {

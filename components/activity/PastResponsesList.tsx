@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
   listContentContainer: {
     paddingHorizontal: 16,
     paddingTop: 10, // 토글과의 간격을 위해 추가
+    paddingBottom: 100,
   },
   toggleContainer: {
     flexDirection: "row",
