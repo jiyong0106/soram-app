@@ -9,6 +9,7 @@ import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -88,10 +89,12 @@ const VerifyCodeInputPage = () => {
       }
     >
       <View style={styles.container}>
-        <AppText style={styles.title}>인증번호를 입력해 주세요</AppText>
-        <AppText style={styles.desc}>
-          {"\n인증번호가 전송됐어요.\n\n받은 번호를 입력하면 인증이 완료돼요."}
-        </AppText>
+        <SignupHeader
+          title="인증번호를 입력해 주세요"
+          subtitle={
+            "인증번호가 전송됐어요.\n받은 번호를 입력하면 인증이 완료돼요."
+          }
+        />
         <TextInput
           style={[styles.input, focused && styles.inputFocused]}
           placeholder="4자리 숫자"
@@ -117,15 +120,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#5C4B44",
-  },
   desc: {
     color: "#5C4B44",
     marginBottom: 32,
+    fontSize: 12,
   },
   input: {
     borderBottomWidth: 2,

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const MAX_LEN = 10;
 
@@ -36,12 +37,10 @@ const SignupPage = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.headerTitle}>
-          <AppText style={styles.title}>닉네임을 설정해 주세요</AppText>
-          <AppText style={styles.subtitle}>
-            사용 할 닉네임을 알려주세요, 언제든 바꿀 수 있어요!
-          </AppText>
-        </View>
+        <SignupHeader
+          title="닉네임을 설정해 주세요"
+          subtitle="사용 할 닉네임을 알려주세요, 언제든 바꿀 수 있어요!"
+        />
         <View style={styles.inputWrap}>
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
@@ -72,20 +71,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
-  },
-  headerTitle: {
-    marginBottom: 30,
-    gap: 10,
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#222",
-  },
-  subtitle: {
-    fontSize: 15,
-    color: "#666666",
   },
   inputWrap: {
     position: "relative",

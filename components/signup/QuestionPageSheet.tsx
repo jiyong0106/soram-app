@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import QuestionCategoryTabs from "@/components/signup/QuestionCategoryTabs";
 import { CATEGORY_DEF, QUESTIONS } from "@/utils/dummy/test";
 
@@ -29,6 +30,7 @@ const QuestionPageSheet = (
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const [navigateNext, setNavigateNext] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     CATEGORY_DEF[0]?.id ?? ""
   );
@@ -39,8 +41,12 @@ const QuestionPageSheet = (
 
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
+  const setOptionalTitle = useSignupDraftStore((s) => s.setOptionalTitle);
 
-  const onPress = () => {
+  const onPress = (title: string) => {
+    // 한글 주석: 선택된 질문의 타이틀을 저장한 뒤 시트 닫기
+    setOptionalTitle?.(title);
+    setSelectedTitle(title);
     setNavigateNext(true);
     dismiss();
   };
@@ -53,7 +59,14 @@ const QuestionPageSheet = (
         if (navigateNext) {
           setNavigateNext(false);
           InteractionManager.runAfterInteractions(() => {
-            router.push("/(signup)/question/qanswer");
+            router.push({
+              pathname: "/(signup)/question/qanswer",
+              params: {
+                variant: "optional",
+                label: selectedTitle,
+                questionId: 3, // 한글 주석: 선택 질문은 3으로 고정(요구사항)
+              },
+            });
           });
         }
       }}
@@ -81,7 +94,7 @@ const QuestionPageSheet = (
                   />
                 }
                 label={item.title}
-                onPress={onPress}
+                onPress={() => onPress(item.title)}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}

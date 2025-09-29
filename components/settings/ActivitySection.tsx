@@ -19,9 +19,9 @@
 //     showAlert("지난 이야기들 보기 페이지로 이동합니다.");
 //   };
 
-//   const handleBolcked = () => {
-//     router.push("/profile/setting/blocked");
-//   };
+  // const handleBolcked = () => {
+  //   router.push("/profile/setting/blocked");
+  // };
 
 //   return (
 //     <SettingSection title="활동">

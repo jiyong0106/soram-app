@@ -11,7 +11,7 @@ import {
   parseBirth,
   validBirth,
 } from "@/utils/util/birthdate";
-import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const order: FieldKey[] = ["year", "month", "day"];
 
@@ -53,7 +53,7 @@ const BirthdatePage = () => {
     const dd = date.day.padStart(2, "0");
     const birthdate = `${date.year}-${mm}-${dd}`;
     patch({ birthdate });
-    router.push("/(signup)/question");
+    router.push("/(signup)/location");
   };
 
   const setInputRef = (k: FieldKey) => (r: TextInput | null) => {
@@ -74,14 +74,10 @@ const BirthdatePage = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.headerTitle}>
-          <AppText style={styles.title}>
-            {nickname}님의 생년월일을 알려주세요
-          </AppText>
-          <AppText style={styles.subtitle}>
-            생년월일은 나이 표시 용도로만 사용돼요!
-          </AppText>
-        </View>
+        <SignupHeader
+          title={`${nickname}님의 생년월일을 알려주세요`}
+          subtitle="생년월일은 나이 표시 용도로만 사용돼요!"
+        />
 
         <View style={styles.birthRow}>
           {FIELDS.map(({ key, ph, max, width }) => {
@@ -121,20 +117,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
-  },
-  headerTitle: {
-    marginBottom: 30,
-    marginTop: 15,
-    gap: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#222",
-  },
-  subtitle: {
-    fontSize: 15,
-    color: "#666666",
   },
   birthRow: {
     flexDirection: "row",
