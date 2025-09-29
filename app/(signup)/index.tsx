@@ -84,7 +84,7 @@ const SignupPage = () => {
           controllerRef.current = null;
         }
       }
-    }, 1000);
+    }, 700);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
