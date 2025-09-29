@@ -1,6 +1,10 @@
 import { StyleSheet, View } from "react-native";
 import ScalePressable from "../common/ScalePressable";
 import AppText from "../common/AppText";
+import { Ionicons } from "@expo/vector-icons";
+
+// 한글 주석: 시각 톤 정의 - default(선택 톤), emphasis(필수 톤)
+type Tone = "default" | "emphasis";
 
 type Variant = "required" | "optional";
 
@@ -8,24 +12,39 @@ interface Props {
   variant: Variant;
   label: string; // "1. 인생의 목표는 무엇인가요?" 같은 문구
   onPress?: () => void;
+  tone?: Tone; // 한글 주석: 시각 톤(선택 질문이 답변 완료 시 필수와 같은 톤으로 표시)
+  checked?: boolean; // 한글 주석: 답변 완료 여부
 }
 
-const QuestionTile = ({ variant, label, onPress }: Props) => {
+const QuestionTile = ({
+  variant,
+  label,
+  onPress,
+  tone = "default",
+  checked,
+}: Props) => {
   const isOptional = variant === "optional";
+  const isEmphasis = tone === "emphasis";
+  // 한글 주석: 선택이지만 강조 톤이면 필수와 동일한 스타일 적용
+  const containerStyle = [
+    styles.container,
+    isOptional && !isEmphasis && styles.containerOptional,
+  ];
+  const textStyle = [styles.label, isOptional && !isEmphasis && styles.gray];
+  const badgeStyle = [styles.badge, isOptional && !isEmphasis && styles.gray];
+
   return (
-    <ScalePressable
-      style={[styles.container, isOptional && styles.containerOptional]}
-      onPress={onPress}
-    >
+    <ScalePressable style={containerStyle} onPress={onPress}>
       {/* 좌측 체크/순번 영역 등 확장 여지 */}
-      <View style={{ flex: 1 }}>
-        <AppText style={[styles.label, isOptional && styles.gray]}>
-          {label}
-        </AppText>
+      <View
+        style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 6 }}
+      >
+        {checked ? (
+          <Ionicons name="checkmark-circle" size={18} color="#10B981" />
+        ) : null}
+        <AppText style={textStyle}>{label}</AppText>
       </View>
-      <AppText style={[styles.badge, isOptional && styles.gray]}>
-        {isOptional ? "(선택)" : "(필수)"}
-      </AppText>
+      <AppText style={badgeStyle}>{isOptional ? "(선택)" : "(필수)"}</AppText>
     </ScalePressable>
   );
 };

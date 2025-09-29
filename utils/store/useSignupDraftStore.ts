@@ -20,6 +20,9 @@ type SignupDraftStore = {
   }) => void;
   removeAnswer: (questionId: number) => void;
   getAnswerById: (questionId: number) => SignupAnswer | undefined;
+  // 한글 주석: UI 전용 상태 - 선택 질문 타이틀(백엔드 전송 대상 아님)
+  optionalTitle?: string | null;
+  setOptionalTitle: (title: string | null) => void;
 };
 
 // ✅ 기본 필수 답변 2개를 초기 생성(1: isPrimary=true, 2: isPrimary=false)
@@ -46,10 +49,11 @@ const EMPTY: SignupDraftType = {
 
 export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
   draft: { ...EMPTY },
+  optionalTitle: null,
 
   patch: (p) => set({ draft: { ...get().draft, ...p } }),
 
-  reset: () => set({ draft: { ...EMPTY } }),
+  reset: () => set({ draft: { ...EMPTY }, optionalTitle: null }),
 
   buildPayload: (signupToken) => ({ signupToken, ...get().draft }),
 
@@ -121,4 +125,6 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
   getAnswerById: (questionId: number) => {
     return get().draft.answers?.find((a) => a.questionId === questionId);
   },
+
+  setOptionalTitle: (title) => set({ optionalTitle: title }),
 }));

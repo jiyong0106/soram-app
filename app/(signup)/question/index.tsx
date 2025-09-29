@@ -28,8 +28,6 @@ const QuestionPage = () => {
     sheetRef.current?.present?.();
   };
 
-  console.log("answers==>", answers);
-
   return (
     <ScreenWithStickyAction
       action={

@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import QuestionTile from "./QuestionTile";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 
 interface Props {
   label: string;
@@ -7,6 +8,12 @@ interface Props {
 }
 const RequiredQuestionItem = ({ label, questionId = 1 }: Props) => {
   const router = useRouter();
+  const hasAnswer = useSignupDraftStore(
+    (s) =>
+      !!s.draft.answers
+        .find((a) => a.questionId === questionId)
+        ?.content?.trim()
+  );
 
   const onPress = () => {
     router.push({
@@ -18,7 +25,14 @@ const RequiredQuestionItem = ({ label, questionId = 1 }: Props) => {
       },
     });
   };
-  return <QuestionTile variant="required" label={label} onPress={onPress} />;
+  return (
+    <QuestionTile
+      variant="required"
+      label={label}
+      checked={hasAnswer}
+      onPress={onPress}
+    />
+  );
 };
 
 export default RequiredQuestionItem;
