@@ -1,11 +1,12 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Gender } from "@/utils/types/signup";
 import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const OPTIONS: Array<{ key: Gender; label: string }> = [
   { key: "MALE", label: "남자" },
@@ -32,14 +33,10 @@ const GenderPage = () => {
       }
     >
       <View style={styles.container}>
-        <View style={styles.headerTitle}>
-          <AppText style={styles.title}>
-            {nickname}님의 성별을 선택해 주세요
-          </AppText>
-          <AppText style={styles.subtitle}>
-            성별 정보를 기반 좋은 인연을 찾아드려요!
-          </AppText>
-        </View>
+        <SignupHeader
+          title={`${nickname}님의 성별을 선택해 주세요`}
+          subtitle="성별 정보를 기반 좋은 인연을 찾아드려요!"
+        />
         <View style={styles.selectList}>
           {OPTIONS.map(({ key, label }) => (
             <Pressable
@@ -80,20 +77,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 32,
-  },
-  headerTitle: {
-    marginBottom: 30,
-    gap: 10,
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#222",
-  },
-  subtitle: {
-    fontSize: 15,
-    color: "#666666",
   },
   selectList: {
     gap: 10,

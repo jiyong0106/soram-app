@@ -4,7 +4,7 @@ import { BackButton } from "@/components/common/backbutton";
 
 const AuthLayout = () => {
   return (
-    <PageContainer edges={["top", "bottom"]} padded={false}>
+    <PageContainer edges={["top"]} padded={false}>
       <Stack
         screenOptions={{
           headerLeft: () => <BackButton />,
