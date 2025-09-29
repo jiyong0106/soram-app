@@ -37,7 +37,7 @@ const QuestionPage = () => {
       // 한글 주석: 빈 선택 답변은 제출에서 제외
       store.removeAnswer?.(optional.questionId);
     }
-    router.push("/(signup)/finish");
+    router.push("/(signup)/interests");
   };
 
   return (
