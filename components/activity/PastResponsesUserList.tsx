@@ -1,7 +1,7 @@
 import React from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
-import { useRouter } from "expo-router"; // useRouter import 추가
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 
 import { getUnlockedResponsesByUser } from "@/utils/api/activityPageApi";
 import {
@@ -52,7 +52,7 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
         category: item.topic.category,
         textContent: item.textContent,
         createdAt: item.createdAt,
-        author: (item as any).user, // 작성자 정보 추가
+        author: item.user,
       }))
     );
   }, [data]);
@@ -65,6 +65,10 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
       return;
     }
 
+    // [수정] API 응답의 meta 객체에서 connectionStatus 값을 가져옵니다.
+    // useInfiniteQuery의 data 구조에 따라 첫 번째 페이지의 메타 정보를 사용합니다.
+    const connectionStatus = data?.pages?.[0]?.meta?.connectionStatus || null;
+
     router.push({
       pathname: "/activity/user/response/[responseId]", // 새로 만들 상세 페이지 경로
       params: {
@@ -75,6 +79,7 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
         topicCategory: item.category,
         textContent: item.textContent,
         createdAt: item.createdAt,
+        connectionStatus: connectionStatus, // [수정] params에 connectionStatus 추가
       },
     });
   };

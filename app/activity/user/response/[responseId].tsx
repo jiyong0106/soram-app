@@ -10,7 +10,7 @@ import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
 import useAlert from "@/utils/hooks/useAlert";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { ConnectionStatus } from "@/utils/types/common";
 
 const UnlockedResponseDetailScreen = () => {
   const router = useRouter();
@@ -24,18 +24,46 @@ const UnlockedResponseDetailScreen = () => {
     topicTitle,
     textContent,
     createdAt,
+    connectionStatus, // [1단계] 이전 화면에서 전달받은 connectionStatus
   } = useLocalSearchParams();
+
+  // [2단계] connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
+  const buttonState = React.useMemo(() => {
+    const status = connectionStatus as ConnectionStatus | "null" | null;
+
+    if (status === "PENDING") {
+      return {
+        text: `이미 요청을 보내셨어요!`,
+        disabled: true,
+      };
+    }
+    if (status === "ACCEPTED") {
+      return {
+        text: "이미 대화방이 있어요!",
+        disabled: true,
+      };
+    }
+    return {
+      text: "대화 요청하기",
+      disabled: false,
+    };
+  }, [connectionStatus]);
 
   const { mutate: requestConnection, isPending } = useMutation({
     mutationFn: postRequestConnection,
     onSuccess: (data) => {
+      // 대화 요청 후에는 이전 화면의 연결 상태가 바뀌었을 것이므로,
+      // 관련 쿼리를 무효화하여 돌아갔을 때 최신 상태를 볼 수 있도록 합니다.
+      queryClient.invalidateQueries({
+        queryKey: ["getUnlockedResponsesByUser", Number(authorId)],
+      });
       queryClient.invalidateQueries({
         queryKey: ["getSentConnectionsKey"],
       });
 
       const successMessage =
         data.status === "ACCEPTED"
-          ? "상대방도 대화를 원했어요! 대화가 바로 시작됩니다."
+          ? "이미 대화방이 있어요!"
           : `대화 요청 완료!\n\n${authorNickname}님이 수락하면 알림을 보내드릴게요.`;
       showAlert(successMessage, () => {
         router.back();
@@ -112,14 +140,28 @@ const UnlockedResponseDetailScreen = () => {
 
         <View style={styles.buttonContainer}>
           <ScalePressable
-            style={[styles.buttonBase, styles.requestButton]}
+            // [3단계] 결정된 버튼 상태를 UI에 적용
+            style={[
+              styles.buttonBase,
+              buttonState.disabled
+                ? styles.disabledButton
+                : styles.requestButton,
+            ]}
             onPress={handleRequestConnection}
-            disabled={isPending}
+            disabled={isPending || buttonState.disabled}
           >
             {isPending ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <AppText style={styles.requestButtonText}>대화 요청하기</AppText>
+              <AppText
+                style={
+                  buttonState.disabled
+                    ? styles.disabledButtonText
+                    : styles.requestButtonText
+                }
+              >
+                {buttonState.text}
+              </AppText>
             )}
           </ScalePressable>
         </View>
@@ -211,6 +253,15 @@ const styles = StyleSheet.create({
   },
   requestButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  // [4단계] 비활성화된 버튼을 위한 스타일 추가
+  disabledButton: {
+    backgroundColor: "#D9D9D9",
+  },
+  disabledButtonText: {
+    color: "#B0A6A0",
     fontWeight: "bold",
     fontSize: 16,
   },

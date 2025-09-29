@@ -1,5 +1,13 @@
 // app/utils/types/activity.ts
-import { metaType, OffsetMetaType } from "./common";
+import {
+  metaType as baseMetaType,
+  OffsetMetaType,
+  ConnectionStatus,
+} from "./common";
+
+export interface metaType extends baseMetaType {
+  connectionStatus?: ConnectionStatus | null;
+}
 
 // --- '내가 남긴 이야기' 관련 타입 ---
 export interface MyVoiceResponseItem {
@@ -20,7 +28,7 @@ export interface MyVoiceResponseItem {
 
 export interface GetMyVoiceResponsesResponse {
   data: MyVoiceResponseItem[];
-  meta: metaType; // 커서 기반 페이지네이션
+  meta: metaType; // 수정된 metaType 적용
 }
 
 // --- '지난 이야기' (잠금 해제한 답변 요약) 관련 타입 ---
@@ -43,13 +51,13 @@ export interface UnlockedSummaryByTopicItem {
 // 사용자별 요약 응답
 export interface GetUnlockedSummaryByUserResponse {
   data: UnlockedSummaryByUserItem[];
-  meta: OffsetMetaType; // 오프셋 기반 페이지네이션
+  meta: OffsetMetaType;
 }
 
 // 주제별 요약 응답
 export interface GetUnlockedSummaryByTopicResponse {
   data: UnlockedSummaryByTopicItem[];
-  meta: OffsetMetaType; // 오프셋 기반 페이지네이션
+  meta: OffsetMetaType;
 }
 
 export interface GetMyVoiceResponseDetailResponse {
