@@ -2,18 +2,20 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import LocationActionModal, {
-  LocationActionModalRef,
-} from "@/components/signup/LocationActionModal";
+import LocationSheet from "@/components/signup/LocationSheet";
+import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import ScalePressable from "@/components/common/ScalePressable";
 
 const LocationPage = () => {
   const router = useRouter();
-  // const location = useSignupDraftStore((s) => s.draft.location);
-  // const patch = useSignupDraftStore((s) => s.patch);
-  // const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
+  const location = useSignupDraftStore((s) => s.draft.location);
+  const patch = useSignupDraftStore((s) => s.patch);
+  const sheetRef = useRef<BottomSheetModal>(null);
 
   return (
     <ScreenWithStickyAction
@@ -29,22 +31,25 @@ const LocationPage = () => {
       }
     >
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/test.png")}
-          style={styles.heroImage}
-          resizeMode="contain"
+        <SignupHeader
+          title="거주지를 알려주세요"
+          subtitle="거주지와 관심사를 기반으로 좋은 인연을 찾아드려요!"
         />
-        <Text style={styles.title}>거주지를 알려주세요</Text>
-        <TouchableOpacity
+        <ScalePressable
           style={styles.locationBox}
-          activeOpacity={0.5}
-          // onPress={() => actionModalRef.current?.present?.()}
+          onPress={() => sheetRef.current?.present?.()}
         >
           <Ionicons name="map-outline" size={24} color="black" />
-          <Text style={styles.locationText}>지역</Text>
-        </TouchableOpacity>
+          <AppText style={styles.locationText}>{location || "지역"}</AppText>
+        </ScalePressable>
       </View>
-      {/* <LocationActionModal ref={actionModalRef} /> */}
+      <LocationSheet
+        ref={sheetRef}
+        snapPoints={["90%"]}
+        onSelect={(code, name) => {
+          patch({ location: name });
+        }}
+      />
     </ScreenWithStickyAction>
   );
 };
@@ -58,34 +63,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 32,
   },
-  heroRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  heroImage: {
-    width: 150,
-    height: 150,
-  },
-  speechBubble: {
-    marginLeft: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-  },
-  speechText: {
-    fontSize: 12,
-    color: "#555",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 12,
-    color: "#222",
-  },
-
   locationBox: {
     flexDirection: "row",
     alignItems: "center",
