@@ -5,9 +5,10 @@ import { StyleSheet, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore"; // (오탈자면 store로 수정)
 import { useMemo, useRef } from "react";
 import AppText from "@/components/common/AppText";
-import RequiredInfoForm from "@/components/signup/RequiredInfoForm";
 import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import RequiredQuestionItem from "@/components/signup/RequiredQuestionItem";
+import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
 
 const QuestionPage = () => {
   const router = useRouter();
@@ -50,9 +51,12 @@ const QuestionPage = () => {
         </View>
 
         <View style={styles.inputWrap}>
-          <RequiredInfoForm onPress={openSheet} />
-          <RequiredInfoForm onPress={openSheet} />
-          <RequiredInfoForm optional onPress={openSheet} />
+          <RequiredQuestionItem label="1. 인생의 목표는 무엇인가요?" />
+          <RequiredQuestionItem label="2. 이런 사람에게 호감을 느껴요" />
+          <OptionalQuestionItem
+            label="질문을 선택해 주세요"
+            onOpenPicker={openSheet}
+          />
         </View>
       </View>
       <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} />
