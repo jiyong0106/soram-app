@@ -17,11 +17,12 @@ const SignupPage = () => {
   const nickname = useSignupDraftStore((s) => s.draft.nickname);
   const patch = useSignupDraftStore((s) => s.patch);
   const [focused, setFocused] = useState(false);
-  // 한글 주석: 닉네임 중복 체크 상태
+  // 닉네임 중복 체크 상태
   const [checking, setChecking] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [message, setMessage] = useState("");
   const timerRef = useRef<any>(null);
+  const controllerRef = useRef<AbortController | null>(null);
 
   const raw = nickname;
   const trimmed = raw.trim();
@@ -29,7 +30,7 @@ const SignupPage = () => {
   const regexValid = /^[A-Za-z0-9가-힣]+$/.test(trimmed);
   const isValid = basicValid && regexValid && trimmed.length <= MAX_LEN;
 
-  // 한글 주석: 닉네임 변경 시 1초 디바운스 후 중복 체크
+  //  닉네임 변경 시 1초 디바운스 + 이전 요청 AbortController로 취소
   useEffect(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -45,15 +46,19 @@ const SignupPage = () => {
     if (!regexValid) {
       setChecking(false);
       setAvailable(false);
-      setMessage("공백·특수문자 없이 1~10자로 입력해 주세요");
+      setMessage("공백·특수문자 없이 2~10자로 입력해 주세요");
       return;
     }
 
     setChecking(true);
     const current = trimmed;
     timerRef.current = setTimeout(async () => {
+      // 진행 중 요청이 있으면 취소
+      controllerRef.current?.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
       try {
-        const res = await getNickname(current);
+        const res = await getNickname(current, controller.signal);
         setAvailable(!!res?.isAvailable);
         setMessage(
           res?.isAvailable
@@ -61,8 +66,12 @@ const SignupPage = () => {
             : "이미 사용 중인 닉네임이에요"
         );
       } catch (e: any) {
+        if (e?.name === "AbortError" || e?.code === "ERR_CANCELED") {
+          // 취소된 요청은 무시
+          return;
+        }
         if (e?.response?.status === 400) {
-          // 한글 주석: 유효성에 맞지 않는 닉네임(형식/금칙어 등)
+          // 유효성에 맞지 않는 닉네임
           setAvailable(false);
           setMessage("유효하지 않은 닉네임이에요");
         } else {
@@ -70,14 +79,18 @@ const SignupPage = () => {
           setMessage("닉네임 확인 중 오류가 발생했어요");
         }
       } finally {
-        setChecking(false);
+        if (controllerRef.current === controller) {
+          setChecking(false);
+          controllerRef.current = null;
+        }
       }
     }, 1000);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      controllerRef.current?.abort();
+      controllerRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trimmed]);
 
   const handlePress = () => {
@@ -112,7 +125,7 @@ const SignupPage = () => {
               available === false && styles.inputError,
               available === true && styles.inputSuccess,
             ]}
-            placeholder="공백 · 특수문자 없이 1~10자"
+            placeholder="공백 · 특수문자 없이 2~10자"
             value={nickname}
             onChangeText={(t) => patch({ nickname: t.slice(0, MAX_LEN) })}
             maxLength={MAX_LEN}

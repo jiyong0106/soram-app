@@ -13,10 +13,10 @@ export const postSignupSumbit = async (body: SignupSumbitBody) => {
   return data;
 };
 
-export const getNickname = async (nickname: string) => {
+export const getNickname = async (nickname: string, signal?: AbortSignal) => {
   const { data } = await instance.get<getNicknameResponse>(
     `/users/nickname/check`,
-    { params: { nickname } }
+    { params: { nickname }, signal }
   );
   return data;
 };
