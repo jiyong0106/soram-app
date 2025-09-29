@@ -13,6 +13,7 @@ import { useAuthStore } from "@/utils/store/useAuthStore";
 import SummaryCard from "@/components/signup/SummaryCard";
 import InfoRow from "@/components/signup/InfoRow";
 import AnswerBox from "@/components/signup/AnswerBox";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const FinishPage = () => {
   const router = useRouter();
@@ -22,6 +23,8 @@ const FinishPage = () => {
   const signupToken = useSignupTokenStore.getState().signupToken;
   const { showAlert } = useAlert();
   const [loading, setLoading] = React.useState(false);
+  // 한글 주석: 선택(옵션) 답변 3번 존재 여부를 사전에 계산
+  const optionalAnswer3 = getAnswerContent(draft.answers, 3);
 
   const handlePress = async () => {
     if (loading) return;
@@ -68,7 +71,10 @@ const FinishPage = () => {
       }
     >
       <View style={styles.container}>
-        <AppText style={styles.title}>입력한 정보를 확인하세요</AppText>
+        <SignupHeader
+          title={`${draft.nickname}님의 정보를 확인하세요`}
+          subtitle="마지막으로 회원가입을 진행합니다."
+        />
 
         {/* 기본 정보 카드 */}
         <SummaryCard title="기본 정보">
@@ -98,16 +104,22 @@ const FinishPage = () => {
         {/* 프로필 답변 카드 */}
         <SummaryCard title="프로필 답변">
           <AnswerBox
-            title="대표 답변"
+            title="필수 답변 1"
             icon="chatbubble-ellipses-outline"
             content={getAnswerContent(draft.answers, 1)}
           />
           <AnswerBox
-            title="추가 답변"
-            icon="chatbubble-outline"
+            title="필수 답변 2"
+            icon="chatbubble-ellipses-outline"
             content={getAnswerContent(draft.answers, 2)}
-            placeholder="작성하지 않았습니다"
           />
+          {optionalAnswer3 ? (
+            <AnswerBox
+              title="선택 답변"
+              icon="chatbubble-outline"
+              content={optionalAnswer3}
+            />
+          ) : null}
         </SummaryCard>
       </View>
     </ScreenWithStickyAction>
