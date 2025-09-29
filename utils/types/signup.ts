@@ -41,3 +41,13 @@ export type SignupSumbitBody = {
 export interface SignupSumbitResponse {
   accessToken: string;
 }
+
+// 2 닉네임 중복 체크 응답값
+export interface getNicknameResponse {
+  isAvailable: boolean;
+}
+
+// 2 닉네임 중복 체크 요청값
+export interface getNicknameRequest {
+  nickname: string;
+}

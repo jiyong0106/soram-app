@@ -25,7 +25,7 @@ const QuestionTile = ({
 }: Props) => {
   const isOptional = variant === "optional";
   const isEmphasis = tone === "emphasis";
-  // 한글 주석: 선택이지만 강조 톤이면 필수와 동일한 스타일 적용
+  //  선택이지만 강조 톤이면 필수와 동일한 스타일 적용
   const containerStyle = [
     styles.container,
     isOptional && !isEmphasis && styles.containerOptional,
@@ -39,9 +39,12 @@ const QuestionTile = ({
       <View
         style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 6 }}
       >
-        {checked ? (
-          <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-        ) : null}
+        <Ionicons
+          name={checked ? "checkmark-circle" : "ellipse-outline"}
+          size={18}
+          color={checked ? "#10B981" : "#B0A6A0"}
+        />
+
         <AppText style={textStyle}>{label}</AppText>
       </View>
       <AppText style={badgeStyle}>{isOptional ? "(선택)" : "(필수)"}</AppText>
