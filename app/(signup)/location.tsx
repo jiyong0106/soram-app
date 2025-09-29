@@ -26,7 +26,7 @@ const LocationPage = () => {
           textColor="#fff"
           // disabled={!isValid}
           style={styles.button}
-          onPress={() => router.push("/(signup)/interests")}
+          onPress={() => router.push("/(signup)/question")}
         />
       }
     >
@@ -36,11 +36,22 @@ const LocationPage = () => {
           subtitle="거주지와 관심사를 기반으로 좋은 인연을 찾아드려요!"
         />
         <ScalePressable
-          style={styles.locationBox}
+          style={[styles.locationBox, location && styles.locationBoxFocused]}
           onPress={() => sheetRef.current?.present?.()}
         >
-          <Ionicons name="map-outline" size={24} color="black" />
-          <AppText style={styles.locationText}>{location || "지역"}</AppText>
+          <Ionicons
+            name="map-outline"
+            size={24}
+            color={location ? "#222" : "#B0A6A0"}
+          />
+          <AppText
+            style={[
+              styles.locationText,
+              location && styles.locationTextFocused,
+            ]}
+          >
+            {location || "지역"}
+          </AppText>
         </ScalePressable>
       </View>
       <LocationSheet
@@ -67,18 +78,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#FF7D4A",
+    borderColor: "#B0A6A0",
     borderRadius: 10,
     backgroundColor: "#fff",
     height: 55,
     paddingHorizontal: 10,
     gap: 8,
   },
-  locationIcon: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: "#FF7D4A",
+  locationText: {
+    color: "#B0A6A0",
   },
-  locationText: {},
+  locationBoxFocused: {
+    borderColor: "#FF7D4A",
+  },
+  locationTextFocused: {
+    color: "#222",
+  },
 });
