@@ -4,7 +4,7 @@ import { BackButton } from "@/components/common/backbutton";
 
 const SignupLayout = () => {
   return (
-    <PageContainer edges={["top", "bottom"]} padded={false}>
+    <PageContainer edges={["top"]} padded={false}>
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: "#fff" },

@@ -6,13 +6,17 @@ interface Props {
 }
 const RequiredQuestionItem = ({ label }: Props) => {
   const router = useRouter();
-  return (
-    <QuestionTile
-      variant="required"
-      label={label}
-      onPress={() => router.push("/(signup)/question/qanswer")}
-    />
-  );
+
+  const onPress = () => {
+    router.push({
+      pathname: "/(signup)/question/qanswer",
+      params: {
+        label,
+        variant: "required",
+      },
+    });
+  };
+  return <QuestionTile variant="required" label={label} onPress={onPress} />;
 };
 
 export default RequiredQuestionItem;
