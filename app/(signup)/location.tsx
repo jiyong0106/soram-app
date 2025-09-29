@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import LocationSheet from "@/components/signup/LocationSheet";
