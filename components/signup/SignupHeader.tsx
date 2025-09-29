@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import AppText from "../common/AppText";
 
@@ -20,9 +20,9 @@ export default SignupHeader;
 
 const styles = StyleSheet.create({
   headerTitle: {
-    marginBottom: 30,
-    gap: 10,
     marginTop: 15,
+    marginBottom: 30,
+    gap: 5,
   },
   title: {
     fontSize: 20,
@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   subtitle: {
-    fontSize: 15,
-    color: "#666666",
+    color: "#B0A6A0",
   },
 });

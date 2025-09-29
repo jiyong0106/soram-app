@@ -7,6 +7,7 @@ import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
 
 const AuthPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
@@ -54,12 +55,12 @@ const AuthPage = () => {
       }
     >
       <View style={styles.container}>
-        <AppText style={styles.title}>휴대폰 번호를 입력해 주세요</AppText>
-        <AppText style={styles.desc}>
-          {
+        <SignupHeader
+          title="휴대폰 번호를 입력해 주세요"
+          subtitle={
             "허위/중복 가입을 막고, 악성 사용자에 제재에 사용해요.\n입력한 번호는 절대 공개되지 않아요."
           }
-        </AppText>
+        />
         <View style={styles.inputRow}>
           <AppText style={styles.countryCode}>+82</AppText>
           <TextInput
@@ -84,16 +85,6 @@ export default AuthPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#5C4B44",
-  },
-  desc: {
-    color: "#B0A6A0",
-    marginBottom: 32,
   },
   inputRow: {
     flexDirection: "row",
