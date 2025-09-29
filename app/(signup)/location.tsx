@@ -24,7 +24,7 @@ const LocationPage = () => {
           label="계속하기"
           color="#FF7D4A"
           textColor="#fff"
-          // disabled={!isValid}
+          disabled={!location}
           style={styles.button}
           onPress={() => router.push("/(signup)/question")}
         />
