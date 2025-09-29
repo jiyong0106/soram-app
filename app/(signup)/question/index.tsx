@@ -2,7 +2,7 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore"; // (오탈자면 store로 수정)
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { useMemo, useRef } from "react";
 import AppText from "@/components/common/AppText";
 import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
