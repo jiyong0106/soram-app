@@ -5,12 +5,11 @@ import { Stack } from "expo-router";
 import AccountSection from "@/components/settings/AccountSection";
 import SupportSection from "@/components/settings/SupportSection";
 import PolicySection from "@/components/settings/PolicySection";
-// import ActivitySection from "@/components/settings/ActivitySection";
 import CurrencySection from "@/components/settings/CurrencySection";
 
 const ProfilePage = () => {
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: "더보기",
@@ -19,7 +18,6 @@ const ProfilePage = () => {
         }}
       />
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* <ActivitySection /> */}
         <CurrencySection />
         <SupportSection />
         <PolicySection />
@@ -37,6 +35,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA",
   },
   scroll: {
-    paddingVertical: 16,
+    paddingBottom: 60,
   },
 });

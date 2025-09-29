@@ -39,8 +39,13 @@ const AccountSection = () => {
     router.push("/profile/setting/deleteAccount");
   };
 
+  const handleBolcked = () => {
+    router.push("/profile/setting/blocked");
+  };
+
   return (
     <SettingSection title="계정">
+      <SettingRow title="차단목록" variant="link" onPress={handleBolcked} />
       <SettingRow
         title="로그아웃"
         variant="danger"
