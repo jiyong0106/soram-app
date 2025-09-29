@@ -18,16 +18,17 @@ const QuestionPage = () => {
 
   const sheetRef = useRef<BottomSheetModal>(null);
 
-  const primary = useMemo(
-    () => answers?.find((a) => a.isPrimary) ?? { content: "" },
-    [answers]
-  );
-
-  const disabled = !(primary?.content ?? "").trim();
+  const disabled = useMemo(() => {
+    const a1 = answers?.find((a) => a.questionId === 1)?.content?.trim();
+    const a2 = answers?.find((a) => a.questionId === 2)?.content?.trim();
+    return !(a1 && a1.length > 0 && a2 && a2.length > 0);
+  }, [answers]);
 
   const openSheet = () => {
     sheetRef.current?.present?.();
   };
+
+  console.log("answers==>", answers);
 
   return (
     <ScreenWithStickyAction
@@ -51,8 +52,14 @@ const QuestionPage = () => {
         </View>
 
         <View style={styles.inputWrap}>
-          <RequiredQuestionItem label="1. 인생의 목표는 무엇인가요?" />
-          <RequiredQuestionItem label="2. 이런 사람에게 호감을 느껴요" />
+          <RequiredQuestionItem
+            questionId={1}
+            label="1. 인생의 목표는 무엇인가요?"
+          />
+          <RequiredQuestionItem
+            questionId={2}
+            label="2. 이런 사람에게 호감을 느껴요"
+          />
           <OptionalQuestionItem
             label="질문을 선택해 주세요"
             onOpenPicker={openSheet}

@@ -41,6 +41,7 @@ const QuestionPageSheet = (
   const dismiss = () => (ref as any)?.current?.dismiss?.();
 
   const onPress = () => {
+    // 한글 주석: 선택 질문의 답변 페이지로 이동하도록 플래그 설정
     setNavigateNext(true);
     dismiss();
   };
@@ -53,7 +54,13 @@ const QuestionPageSheet = (
         if (navigateNext) {
           setNavigateNext(false);
           InteractionManager.runAfterInteractions(() => {
-            router.push("/(signup)/question/qanswer");
+            router.push({
+              pathname: "/(signup)/question/qanswer",
+              params: {
+                variant: "optional",
+                questionId: 3, // 한글 주석: 선택 질문은 3으로 고정(요구사항)
+              },
+            });
           });
         }
       }}

@@ -3,8 +3,9 @@ import QuestionTile from "./QuestionTile";
 
 interface Props {
   label: string;
+  questionId?: 1 | 2; // 한글 주석: 명시적으로 필수 질문 번호 전달
 }
-const RequiredQuestionItem = ({ label }: Props) => {
+const RequiredQuestionItem = ({ label, questionId = 1 }: Props) => {
   const router = useRouter();
 
   const onPress = () => {
@@ -13,6 +14,7 @@ const RequiredQuestionItem = ({ label }: Props) => {
       params: {
         label,
         variant: "required",
+        questionId,
       },
     });
   };

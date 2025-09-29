@@ -1,16 +1,26 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, TextInput, ScrollView } from "react-native";
 import AppText from "@/components/common/AppText";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 
 const MAX_LEN = 1000;
 
 const QanswerPage = () => {
-  const { label, variant } = useLocalSearchParams();
-  // UI 전용 상태 (기능 연동 전)
+  const router = useRouter();
+  const { label, variant, questionId } = useLocalSearchParams();
+  const qid = Number(questionId ?? 1);
+  const getAnswerById = useSignupDraftStore((s) => s.getAnswerById);
+  const upsertAnswer = useSignupDraftStore((s) => s.upsertAnswer);
+  // 한글 주석: 초기값은 스토어에서 가져오기
   const [text, setText] = useState("");
+
+  useEffect(() => {
+    const existing = getAnswerById?.(qid)?.content ?? "";
+    setText(existing);
+  }, [qid, getAnswerById]);
 
   const countColor = useMemo(() => {
     if (text.length === 0) return styles.countNeutral.color as string;
@@ -21,6 +31,11 @@ const QanswerPage = () => {
 
   const isOver = text.length > MAX_LEN;
 
+  const onNext = () => {
+    upsertAnswer?.({ questionId: qid, content: text, isPrimary: qid === 1 });
+    router.back();
+  };
+
   return (
     <ScreenWithStickyAction
       action={
@@ -29,7 +44,7 @@ const QanswerPage = () => {
           color="#FF7D4A"
           textColor="#fff"
           disabled={text.trim().length === 0 || isOver}
-          onPress={() => {}}
+          onPress={onNext}
         />
       }
     >
