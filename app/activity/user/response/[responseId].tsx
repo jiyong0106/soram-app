@@ -3,6 +3,14 @@ import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withSpring,
+} from "react-native-reanimated";
 
 import AppText from "@/components/common/AppText";
 import ScalePressable from "@/components/common/ScalePressable";
@@ -26,6 +34,42 @@ const UnlockedResponseDetailScreen = () => {
     createdAt,
     connectionStatus, // [1단계] 이전 화면에서 전달받은 connectionStatus
   } = useLocalSearchParams();
+
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(0.8);
+  const opacity = useSharedValue(0);
+
+  const bubbleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+    };
+  });
+
+  // setTimeout을 사용하여 1초 딜레이 추가
+  React.useEffect(() => {
+    // 1초 후에 애니메이션을 시작하도록 타이머 설정
+    const animationTimer = setTimeout(() => {
+      // 1단계: 등장 애니메이션 (Pop & Fade-in)
+      opacity.value = withTiming(1, { duration: 500 });
+      scale.value = withSpring(1, undefined, (isFinished) => {
+        // 2단계: 등장 애니메이션이 끝나면, 떠다니는 애니메이션 시작
+        if (isFinished) {
+          translateY.value = withRepeat(
+            withSequence(
+              withTiming(-5, { duration: 600 }),
+              withTiming(0, { duration: 600 })
+            ),
+            -1,
+            true
+          );
+        }
+      });
+    }, 1000); // 1000ms = 1초
+
+    // 컴포넌트가 언마운트될 때 타이머를 정리하여 메모리 누수 방지
+    return () => clearTimeout(animationTimer);
+  }, []);
 
   // [2단계] connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
   const buttonState = React.useMemo(() => {
@@ -114,30 +158,46 @@ const UnlockedResponseDetailScreen = () => {
         }}
       />
       <View style={styles.pageWrapper}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.titleWrapper}>
-              <AppText style={styles.questionHighlight}>Q.</AppText>
-              <AppText style={styles.title}>{topicTitle}</AppText>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <View style={styles.titleWrapper}>
+                <AppText style={styles.questionHighlight}>Q.</AppText>
+                <AppText style={styles.title}>{topicTitle}</AppText>
+              </View>
+
+              <AppText style={styles.content}>{textContent}</AppText>
+
+              <AppText style={styles.nick}>- {authorNickname}</AppText>
+
+              <AppText style={styles.meta}>
+                {new Date(
+                  Array.isArray(createdAt) ? createdAt[0] : createdAt
+                ).toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+                에 남긴 이야기
+              </AppText>
             </View>
-
-            <AppText style={styles.content}>{textContent}</AppText>
-
-            <AppText style={styles.nick}>- {authorNickname}</AppText>
-
-            <AppText style={styles.meta}>
-              {new Date(
-                Array.isArray(createdAt) ? createdAt[0] : createdAt
-              ).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-              에 남긴 이야기
-            </AppText>
           </View>
+          {!buttonState.disabled && ( // 대화 요청이 가능할 때만 말풍선을 보여줍니다.
+            <Animated.View
+              style={[styles.speechBubbleContainer, bubbleAnimatedStyle]}
+            >
+              <View style={styles.speechBubble}>
+                <AppText style={styles.bubbleText}>
+                  이야기가 와닿으셨다면 대화를 시작해보세요!
+                </AppText>
+                <AppText style={[styles.bubbleText, { fontWeight: "bold" }]}>
+                  어쩌면, 새로운 인연의 시작일지도 몰라요 😉
+                </AppText>
+                <View style={styles.bubbleTail} />
+              </View>
+            </Animated.View>
+          )}
         </ScrollView>
-
         <View style={styles.buttonContainer}>
           <ScalePressable
             // [3단계] 결정된 버튼 상태를 UI에 적용
@@ -238,8 +298,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 34,
     backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
   },
   buttonBase: {
     flexDirection: "row",
@@ -264,5 +322,32 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  speechBubbleContainer: {
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 12, // 버튼 컨테이너와의 간격
+  },
+  speechBubble: {
+    backgroundColor: "#F7F5F4", // 기존 배경과 어울리는 부드러운 색상
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    position: "relative", // 꼬리 위치 조정을 위해
+  },
+  bubbleText: {
+    textAlign: "center",
+    fontSize: 14,
+    color: "#5C4B44",
+    lineHeight: 20,
+  },
+  bubbleTail: {
+    position: "absolute",
+    bottom: -7, // 몸체와 살짝 겹치도록
+    alignSelf: "center",
+    width: 14,
+    height: 14,
+    backgroundColor: "#F7F5F4",
+    transform: [{ rotate: "45deg" }],
   },
 });

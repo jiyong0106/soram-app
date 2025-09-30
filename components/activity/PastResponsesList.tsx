@@ -163,13 +163,12 @@ const PastResponsesList = () => {
       <View />
       {mappedData.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="eye-off-outline" size={48} color="#EAEAEA" />
+          <Ionicons name="eye-off-outline" size={48} color="#B0A6A0" />
           <Text style={styles.emptyText}>
             아직 다른 분의 이야기를 보신 적이 없어요
           </Text>
           <Text style={styles.emptySubText}>
-            이야기 보기권을 사용해서 이야기를 보셨다면 이곳에서 다시 볼 수
-            있어요
+            다른 분의 이야기를 보셨다면 이곳에서 다시 볼 수 있어요
           </Text>
         </View>
       ) : (
@@ -289,7 +288,11 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   topicCountText: { fontSize: 13, color: "#B0A6A0", marginTop: 8 },
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   emptyText: { fontSize: 16, color: "#B0A6A0", marginTop: 16 },
   emptySubText: { fontSize: 14, color: "#D9D9D9", marginTop: 8 },
 });
