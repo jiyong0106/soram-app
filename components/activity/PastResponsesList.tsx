@@ -92,7 +92,19 @@ const UserCard = ({ item }: { item: UnlockedSummaryByUserItem }) => {
 // --- 주제별 카드 컴포넌트 ---
 const TopicCard = ({ item }: { item: UnlockedSummaryByTopicItem }) => {
   const router = useRouter();
-  const handlePress = () => console.log(`Maps to topic ${item.id}'s responses`);
+  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+  // handlePress 함수를 console.log에서 router.push로 수정합니다.
+  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+  const handlePress = () => {
+    router.push({
+      pathname: "/activity/topic/[topicId]", // 새로 만든 화면 경로
+      params: {
+        topicId: item.id, // topicId 전달
+        title: item.title, // 헤더에 표시할 title 전달
+      },
+    });
+  };
+  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
   return (
     <ScalePressable style={styles.topicCardContainer} onPress={handlePress}>
@@ -100,9 +112,12 @@ const TopicCard = ({ item }: { item: UnlockedSummaryByTopicItem }) => {
         <AppText style={styles.topicCategory}># {item.category}</AppText>
         <Ionicons name="chevron-forward" size={20} color="#B0A6A0" />
       </View>
-      <AppText style={styles.topicTitle}>Q. {item.title}</AppText>
+      <View style={styles.quoteContentWrapper}>
+        <AppText style={styles.questionHighlight}>Q. </AppText>
+        <AppText style={styles.topicTitle}>{item.title}</AppText>
+      </View>
       <AppText style={styles.topicCountText}>
-        이어 본 이야기 {item.unlockedResponsesCount}개
+        조회한 이야기 {item.unlockedResponsesCount}개
       </AppText>
     </ScalePressable>
   );
@@ -295,6 +310,15 @@ const styles = StyleSheet.create({
   },
   emptyText: { fontSize: 16, color: "#B0A6A0", marginTop: 16 },
   emptySubText: { fontSize: 14, color: "#D9D9D9", marginTop: 8 },
+  questionHighlight: {
+    color: "#FF6B3E",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  quoteContentWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });
 
 export default PastResponsesList;

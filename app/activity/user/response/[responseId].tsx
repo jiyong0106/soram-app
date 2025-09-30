@@ -77,13 +77,13 @@ const UnlockedResponseDetailScreen = () => {
 
     if (status === "PENDING") {
       return {
-        text: `이미 요청을 보내셨어요!`,
+        text: `이미 요청을 보낸 사용자입니다`,
         disabled: true,
       };
     }
     if (status === "ACCEPTED") {
       return {
-        text: "이미 대화방이 있어요!",
+        text: "이미 대화중인 사용자입니다",
         disabled: true,
       };
     }
