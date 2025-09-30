@@ -188,7 +188,7 @@ const UnlockedResponseDetailScreen = () => {
             >
               <View style={styles.speechBubble}>
                 <AppText style={styles.bubbleText}>
-                  이야기가 와닿으셨다면 대화를 시작해보세요!
+                  이야기가 와닿으셨다면 대화를 요청해 보세요!
                 </AppText>
                 <AppText style={[styles.bubbleText, { fontWeight: "bold" }]}>
                   어쩌면, 새로운 인연의 시작일지도 몰라요 😉
