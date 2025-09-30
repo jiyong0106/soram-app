@@ -8,7 +8,6 @@ import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
-import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import SummaryCard from "@/components/signup/SummaryCard";
 import InfoRow from "@/components/signup/InfoRow";
