@@ -6,7 +6,6 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
 import useAlert from "@/utils/hooks/useAlert";
-import AppText from "@/components/common/AppText";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const AuthPage = () => {
