@@ -24,7 +24,7 @@ const FinishPage = () => {
   const [loading, setLoading] = React.useState(false);
   // 한글 주석: 선택(옵션) 답변 3번 존재 여부를 사전에 계산
   const optionalAnswer3 = getAnswerContent(draft.answers, 3);
-
+  console.log(draft);
   const handlePress = async () => {
     if (loading) return;
     setLoading(true);

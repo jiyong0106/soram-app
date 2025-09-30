@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useMemo, useState } from "react";
+import React, { ForwardedRef, forwardRef, useState } from "react";
 import { View, StyleSheet, InteractionManager, FlatList } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,11 +6,16 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import QuestionCategoryTabs from "@/components/signup/QuestionCategoryTabs";
-import { CATEGORY_DEF, QUESTIONS } from "@/utils/dummy/test";
+// 더미 데이터 제거: 카테고리/질문은 상위에서 API 응답을 내려받아 props로 전달
+
+interface QuestionItemProp {
+  id: number;
+  content: string;
+}
 
 interface Props {
   snapPoints?: ReadonlyArray<string | number>;
+  questions?: QuestionItemProp[]; // 상위에서 내려주는 선택 질문 목록(필수 1,2 제외)
 }
 
 const COLORS = {
@@ -26,18 +31,11 @@ const COLORS = {
 // 한글 주석: 카테고리/질문 더미 데이터(추후 API 연동 시 교체)
 
 const QuestionPageSheet = (
-  { snapPoints }: Props,
+  { snapPoints, questions = [] }: Props,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const [navigateNext, setNavigateNext] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    CATEGORY_DEF[0]?.id ?? ""
-  );
-  const visibleQuestions = useMemo(
-    () => QUESTIONS.filter((q) => q.categoryId === selectedCategoryId),
-    [selectedCategoryId]
-  );
 
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
@@ -72,18 +70,11 @@ const QuestionPageSheet = (
       }}
     >
       <View style={s.container}>
-        {/* 한글 주석: 카테고리 탭 */}
-        <QuestionCategoryTabs
-          categories={CATEGORY_DEF}
-          selectedId={selectedCategoryId}
-          onChange={setSelectedCategoryId}
-        />
-
         {/* 한글 주석: 질문 리스트 */}
         <View style={s.group}>
           <FlatList
-            data={visibleQuestions}
-            keyExtractor={(item) => item.id}
+            data={questions}
+            keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <SheetRow
                 icon={
@@ -93,8 +84,8 @@ const QuestionPageSheet = (
                     color={COLORS.icon}
                   />
                 }
-                label={item.title}
-                onPress={() => onPress(item.title)}
+                label={item.content}
+                onPress={() => onPress(item.content)}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}

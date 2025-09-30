@@ -51,3 +51,12 @@ export interface getNicknameResponse {
 export interface getNicknameRequest {
   nickname: string;
 }
+
+// 회원가입 필수질문 조회 응답값
+export interface getProfileQuestionsResponse {
+  id: number;
+  content: string;
+  subQuestions: string[];
+  createdAt: string;
+  updatedAt: string;
+}

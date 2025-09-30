@@ -2,12 +2,14 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import RequiredQuestionItem from "@/components/signup/RequiredQuestionItem";
 import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
 import SignupHeader from "@/components/signup/SignupHeader";
+import { getProfileQuestions } from "@/utils/api/signupPageApi";
+import { getProfileQuestionsResponse } from "@/utils/types/signup";
 
 const QuestionPage = () => {
   const router = useRouter();
@@ -15,6 +17,25 @@ const QuestionPage = () => {
   const answers = useSignupDraftStore((s) => s.draft.answers);
 
   const sheetRef = useRef<BottomSheetModal>(null);
+
+  // 한글 주석: 프로필 질문 API 로드
+  const [questions, setQuestions] = useState<
+    getProfileQuestionsResponse[] | null
+  >(null);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getProfileQuestions();
+        if (mounted) setQuestions(data);
+      } catch (e) {
+        if (mounted) setQuestions([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const disabled = useMemo(() => {
     const a1 = answers?.find((a) => a.questionId === 1)?.content?.trim();
@@ -51,11 +72,11 @@ const QuestionPage = () => {
         <View style={styles.inputWrap}>
           <RequiredQuestionItem
             questionId={1}
-            label="1. 인생의 목표는 무엇인가요?"
+            label={`1. ${questions?.find((q) => q.id === 1)?.content ?? ""}`}
           />
           <RequiredQuestionItem
             questionId={2}
-            label="2. 이런 사람에게 호감을 느껴요"
+            label={`2. ${questions?.find((q) => q.id === 2)?.content ?? ""}`}
           />
           <OptionalQuestionItem
             label="질문을 선택해 주세요"
@@ -71,7 +92,11 @@ const QuestionPage = () => {
         style={styles.button}
         onPress={handleContinue}
       />
-      <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} />
+      <QuestionPageSheet
+        ref={sheetRef}
+        snapPoints={["90%"]}
+        questions={(questions || []).filter((q) => q.id !== 1 && q.id !== 2)}
+      />
     </View>
   );
 };
