@@ -11,7 +11,10 @@ import {
 import MyResponseCard from "@/components/activity/MyResponseCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
+import { useRouter } from "expo-router";
+
 const MyResponsesList = () => {
+  const router = useRouter();
   const {
     data,
     fetchNextPage,
@@ -56,7 +59,17 @@ const MyResponsesList = () => {
   return (
     <FlatList
       data={mappedData}
-      renderItem={({ item }) => <MyResponseCard item={item} />}
+      renderItem={({ item }) => (
+        <MyResponseCard
+          item={item}
+          onPress={() =>
+            router.push({
+              pathname: `/activity/[id]`,
+              params: { id: item.id },
+            })
+          }
+        />
+      )}
       keyExtractor={(item) => String(item.id)}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContentContainer}
@@ -81,6 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     gap: 12,
     paddingVertical: 10,
+    paddingBottom: 100,
   },
   emptyContainer: {
     flex: 1,

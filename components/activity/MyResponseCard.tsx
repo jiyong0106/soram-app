@@ -3,7 +3,6 @@ import React from "react";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import ScalePressable from "../common/ScalePressable";
-import { useRouter } from "expo-router";
 
 interface MyResponseCardProps {
   item: {
@@ -13,21 +12,14 @@ interface MyResponseCardProps {
     textContent: string | null;
     createdAt: string;
   };
+  onPress?: () => void;
 }
 
-const MyResponseCard = ({ item }: MyResponseCardProps) => {
+const MyResponseCard = ({ item, onPress }: MyResponseCardProps) => {
   const { id, title, category, textContent, createdAt } = item;
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push({
-      pathname: `/activity/[id]`,
-      params: { id },
-    });
-  };
 
   return (
-    <ScalePressable style={styles.container} onPress={handlePress}>
+    <ScalePressable style={styles.container} onPress={onPress}>
       <View style={styles.categoryWrapper}>
         <AppText style={styles.category}># {category}</AppText>
         <Ionicons name="chevron-forward-outline" size={20} color="#5C4B44" />

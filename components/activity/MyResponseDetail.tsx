@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import AppText from "@/components/common/AppText";
-import { getMyVoiceResponseDetail } from "@/utils/api/profilePageApi";
-import { GetMyVoiceResponseDetailResponse } from "@/utils/types/profile";
+import { getMyVoiceResponseDetail } from "@/utils/api/activityPageApi";
+import { GetMyVoiceResponseDetailResponse } from "@/utils/types/activity";
 import useAlert from "@/utils/hooks/useAlert";
 import ScalePressable from "../common/ScalePressable";
 import { Ionicons } from "@expo/vector-icons";
@@ -50,9 +50,8 @@ const MyResponseDetail = () => {
 
   const handleEdit = () => {
     if (!response) return;
-    // --- 👇 [수정] 이 부분을 추가하여 id 타입을 명확히 합니다. ---
     // id가 배열이면 첫 번째 요소를, 아니면 id 그대로 사용합니다.
-    const responseId = Array.isArray(id) ? id[0] : id; // 👈 안전한 responseId 생성
+    const responseId = Array.isArray(id) ? id[0] : id;
     if (!responseId) return;
     router.push({
       pathname: "/activity/[id]/edit",

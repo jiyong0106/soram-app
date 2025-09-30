@@ -96,7 +96,7 @@ const TopicCard = ({ item, loading }: Props) => {
     } else {
       // 이야기가 있는 경우: 기존 로직을 그대로 실행합니다.
       showActionAlert(
-        "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
+        "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.\n\n한 번 확인한 이야기는 언제든\n'활동'에서 다시 볼 수 있어요.",
         "확인",
         () => {
           ensureNewResponse.ensure(() => {

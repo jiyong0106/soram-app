@@ -6,7 +6,6 @@ import {
   DeleteAccountResponse,
   LogoutResponse,
   GetMyVoiceResponsesResponse,
-  GetMyVoiceResponseDetailResponse,
   UpdateTextResponsePayload,
 } from "../types/profile";
 import instance from "./axios";
@@ -71,17 +70,6 @@ export const getMyVoiceResponses = async ({
   );
 
   return data;
-};
-
-/**
- * 내가 남긴 이야기 상세 조회
- * @param voiceId - 조회할 답변의 ID
- */
-export const getMyVoiceResponseDetail = async (voiceId: number) => {
-  const { data } = await instance.get<GetMyVoiceResponseDetailResponse[]>(
-    `/voices/${voiceId}/me`
-  );
-  return data[0];
 };
 
 /**

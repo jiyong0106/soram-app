@@ -1,16 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { useLocalSearchParams, Stack } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 import instance from "@/utils/api/axios";
 import { UserAnswerResponse } from "@/utils/types/topic";
+import {
+  postConnectionsAccept,
+  postConnectionsReject,
+} from "@/utils/api/connectionPageApi";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
 import UserAnswerList from "@/components/topic/UserAnswerList";
 import { backHeaderOptions } from "@/components/common/backbutton";
+import Button from "@/components/common/Button";
+import useAlert from "@/utils/hooks/useAlert";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withSpring,
+} from "react-native-reanimated";
 
 // --- API ---
 type VoiceResponseDetail = UserAnswerResponse & {
@@ -26,7 +40,48 @@ const getVoiceResponseById = async (
 
 // --- Screen Component ---
 const VoiceResponseDetailPage = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, connectionId } = useLocalSearchParams<{
+    id: string;
+    connectionId: string;
+  }>();
+
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+  // 1. useAlert 훅에서 showActionAlert를 가져옵니다.
+  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+  const { showAlert, showActionAlert } = useAlert();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(0.8);
+  const opacity = useSharedValue(0);
+
+  const bubbleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+    };
+  });
+
+  React.useEffect(() => {
+    const animationTimer = setTimeout(() => {
+      opacity.value = withTiming(1, { duration: 500 });
+      scale.value = withSpring(1, undefined, (isFinished) => {
+        if (isFinished) {
+          translateY.value = withRepeat(
+            withSequence(
+              withTiming(-5, { duration: 600 }),
+              withTiming(0, { duration: 600 })
+            ),
+            -1,
+            true
+          );
+        }
+      });
+    }, 1000);
+
+    return () => clearTimeout(animationTimer);
+  }, []);
 
   const { data, isLoading, isError } = useQuery<
     VoiceResponseDetail[],
@@ -36,6 +91,61 @@ const VoiceResponseDetailPage = () => {
     queryFn: () => getVoiceResponseById(id!),
     enabled: !!id,
   });
+
+  const acceptMutation = useMutation({
+    mutationFn: (connId: number) =>
+      postConnectionsAccept({ connectionId: connId }),
+    onSuccess: (response) => {
+      showAlert(
+        `${response.requester.nickname}님과 대화가 연결되었어요!`,
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+          queryClient.invalidateQueries({ queryKey: ["getConnectionsKey"] });
+          router.replace({
+            pathname: "/chat/[id]",
+            params: {
+              id: String(response.id),
+              peerUserId: String(response.requester.id),
+              peerUserName: response.requester.nickname,
+              isLeave: "false",
+              isBlocked: "false",
+            },
+          });
+        }
+      );
+    },
+    onError: () => showAlert("요청 수락 중 오류가 발생했습니다."),
+    onSettled: () => setIsProcessing(false),
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: (connId: number) =>
+      postConnectionsReject({ connectionId: connId }),
+    onSuccess: () => {
+      showAlert("요청을 거절했어요.", () => {
+        queryClient.invalidateQueries({ queryKey: ["getConnectionsKey"] });
+        router.back();
+      });
+    },
+    onError: () => showAlert("요청 거절 중 오류가 발생했습니다."),
+    onSettled: () => setIsProcessing(false),
+  });
+
+  const handleAccept = () => {
+    if (!connectionId || isProcessing) return;
+    showActionAlert(`요청을 수락할까요?`, "수락", () => {
+      setIsProcessing(true);
+      acceptMutation.mutate(Number(connectionId));
+    });
+  };
+
+  const handleReject = () => {
+    if (!connectionId || isProcessing) return;
+    showActionAlert("거절하시겠습니까?", "거절", () => {
+      setIsProcessing(true);
+      rejectMutation.mutate(Number(connectionId));
+    });
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -53,15 +163,10 @@ const VoiceResponseDetailPage = () => {
 
   return (
     <>
-      {/* 👇 2. Stack.Screen을 최상단으로 이동시킵니다. */}
       <Stack.Screen
         options={{
           ...backHeaderOptions,
           title: `${responseData.user.nickname}님의 이야기`,
-          headerTitleStyle: {
-            color: "#5C4B44", // 원하는 색상 코드를 입력하세요.
-            fontWeight: "bold", // 폰트 두께 등 다른 스타일도 가능합니다.
-          },
         }}
       />
       <View style={styles.container}>
@@ -73,15 +178,35 @@ const VoiceResponseDetailPage = () => {
               showActions={false}
             />
           </View>
-          <View style={styles.center}>
-            <AppText style={styles.promptText1}>
-              이야기가 와닿으셨다면 대화를 시작해보세요!
-            </AppText>
-            <AppText style={styles.promptText2}>
-              어쩌면, 새로운 인연의 시작일지도 몰라요 ☺️
-            </AppText>
-          </View>
         </ScrollView>
+        <View style={styles.bottomActionContainer}>
+          <Animated.View
+            style={[styles.speechBubbleContainer, bubbleAnimatedStyle]}
+          >
+            <View style={styles.speechBubble}>
+              <AppText style={styles.bubbleText}>
+                이야기가 와닿으셨다면 대화를 시작해보세요😉
+              </AppText>
+              <View style={styles.bubbleTail} />
+            </View>
+          </Animated.View>
+          <Button
+            label="수락하기"
+            color="#FF7D4A"
+            textColor="#FFFFFF"
+            style={styles.btnEmphasis}
+            onPress={handleAccept}
+            disabled={isProcessing}
+          />
+          <Button
+            label="거절하기"
+            color="#FFFFFF"
+            textColor="#B0A6A0"
+            style={styles.btnOutline}
+            onPress={handleReject}
+            disabled={isProcessing}
+          />
+        </View>
       </View>
     </>
   );
@@ -93,6 +218,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+    justifyContent: "space-between",
   },
   content: {
     padding: 10,
@@ -102,15 +228,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  promptText1: {
-    color: "#5C4B44",
-    fontSize: 14,
-    marginVertical: 6,
+  bottomActionContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 34,
+    gap: 12,
   },
-  promptText2: {
-    color: "#5C4B44",
+  btnOutline: {
+    borderWidth: 1,
+    borderColor: "#E6E6E6",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    minHeight: 52,
+  },
+  btnEmphasis: {
+    backgroundColor: "#FF7D4A",
+    borderRadius: 12,
+    minHeight: 52,
+  },
+  speechBubbleContainer: {
+    alignItems: "center",
+    paddingTop: 12,
+    marginBottom: 12, // 버튼과의 간격
+  },
+  speechBubble: {
+    backgroundColor: "#F7F5F4",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    position: "relative",
+  },
+  bubbleText: {
+    textAlign: "center",
     fontSize: 14,
-    marginVertical: 6,
-    fontWeight: "bold",
+    color: "#5C4B44",
+    lineHeight: 24,
+  },
+  bubbleTail: {
+    position: "absolute",
+    bottom: -7,
+    alignSelf: "center",
+    width: 14,
+    height: 14,
+    backgroundColor: "#F7F5F4",
+    transform: [{ rotate: "45deg" }],
   },
 });
