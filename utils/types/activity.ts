@@ -24,6 +24,7 @@ export interface MyVoiceResponseItem {
     id: number;
     nickname: string;
   };
+  connectionStatus?: ConnectionStatus | null;
 }
 
 export interface GetMyVoiceResponsesResponse {

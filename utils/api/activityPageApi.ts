@@ -72,3 +72,30 @@ export const getUnlockedResponsesByUser = async ({
   );
   return data;
 };
+
+// API 함수에 필요한 파라미터 타입
+interface UnlockedResponsesByTopicParams {
+  topicId: number;
+  take?: number;
+  cursor?: number;
+}
+
+/**
+ * [주제별] 특정 주제의 잠금 해제된 답변 목록 조회
+ */
+export const getUnlockedResponsesByTopic = async ({
+  topicId,
+  take = 10,
+  cursor,
+}: UnlockedResponsesByTopicParams) => {
+  const params: Record<string, any> = { take };
+  if (cursor) {
+    params.cursor = cursor;
+  }
+  // GET /users/me/unlocked-responses/by-topic/:topicId
+  const { data } = await instance.get<GetMyVoiceResponsesResponse>(
+    `/users/me/unlocked-responses/by-topic/${topicId}`,
+    { params }
+  );
+  return data;
+};
