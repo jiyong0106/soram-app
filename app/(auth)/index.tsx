@@ -6,7 +6,6 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import { postRequestOtp } from "@/utils/api/authPageApi";
 import { usePhoneNumberStore } from "@/utils/store/usePhoneNumberStore";
 import useAlert from "@/utils/hooks/useAlert";
-import AppText from "@/components/common/AppText";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const AuthPage = () => {
@@ -58,11 +57,10 @@ const AuthPage = () => {
         <SignupHeader
           title="휴대폰 번호를 입력해 주세요"
           subtitle={
-            "허위/중복 가입을 막고, 악성 사용자에 제재에 사용해요.\n입력한 번호는 절대 공개되지 않아요."
+            "안전하고 깨끗한 서비스를 위해 본인 인증이 필요해요.\n입력한 번호는 절대 공개되지 않아요."
           }
         />
         <View style={styles.inputRow}>
-          <AppText style={styles.countryCode}>+82</AppText>
           <TextInput
             style={[styles.input, focused && styles.inputFocused]}
             placeholder="휴대폰 번호"

@@ -14,6 +14,7 @@ import ScalePressable from "@/components/common/ScalePressable";
 const LocationPage = () => {
   const router = useRouter();
   const location = useSignupDraftStore((s) => s.draft.location);
+  const nickname = useSignupDraftStore((s) => s.draft.nickname);
   const patch = useSignupDraftStore((s) => s.patch);
   const sheetRef = useRef<BottomSheetModal>(null);
 
@@ -24,7 +25,7 @@ const LocationPage = () => {
           label="계속하기"
           color="#FF7D4A"
           textColor="#fff"
-          // disabled={!isValid}
+          disabled={!location}
           style={styles.button}
           onPress={() => router.push("/(signup)/question")}
         />
@@ -32,7 +33,7 @@ const LocationPage = () => {
     >
       <View style={styles.container}>
         <SignupHeader
-          title="거주지를 알려주세요"
+          title={`${nickname}님의 거주지를 알려주세요`}
           subtitle="거주지와 관심사를 기반으로 좋은 인연을 찾아드려요!"
         />
         <ScalePressable
