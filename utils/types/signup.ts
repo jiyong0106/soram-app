@@ -20,6 +20,7 @@ export type SignupDraftType = {
   gender: Gender | ""; // 아직 미선택이면 ""
   birthdate: string; // "YYYY-MM-DD"
   answers: SignupAnswer[];
+  interestIds: number[]; // 관심사 ID 배열 필드 추가
   location?: string | null;
   authProvider?: AuthProvider | null; // 소셜 연결 시 사용
   providerId?: string | null; // 소셜의 UID 등
@@ -32,6 +33,7 @@ export type SignupSumbitBody = {
   gender: Gender | ""; // 아직 미선택이면 ""
   birthdate: string; // "YYYY-MM-DD"
   answers: SignupAnswer[];
+  interestIds: number[];
   location?: string | null;
   authProvider?: AuthProvider | null; // 소셜 연결 시 사용
   providerId?: string | null; // 소셜의 UID 등
@@ -59,4 +61,10 @@ export interface getProfileQuestionsResponse {
   subQuestions: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+// 관심사 목록 조회 API 응답 아이템 타입
+export interface Interest {
+  id: number;
+  name: string;
 }

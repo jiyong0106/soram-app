@@ -42,6 +42,7 @@ const EMPTY: SignupDraftType = {
   gender: "",
   birthdate: "",
   answers: [REQUIRED_ANSWER_1, REQUIRED_ANSWER_2], // 🔁 필수 2개 유지
+  interestIds: [], // [수정] 관심사 ID 배열 초기화
   location: null,
   authProvider: null,
   providerId: null,
