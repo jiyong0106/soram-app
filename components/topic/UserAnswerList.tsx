@@ -2,7 +2,7 @@ import { UserAnswerResponse, RequestConnectionBody } from "@/utils/types/topic";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import Animated, {
   useSharedValue,
@@ -15,7 +15,6 @@ import Animated, {
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 
 interface UserAnswerListProps {
@@ -46,7 +45,7 @@ const UserAnswerList = ({
     };
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const animationTimer = setTimeout(() => {
       opacity.value = withTiming(1, { duration: 500 });
       scale.value = withSpring(1, undefined, (isFinished) => {
