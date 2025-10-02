@@ -6,7 +6,7 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import AppText from "../common/AppText";
 import { useRouter } from "expo-router";
 import ScalePressable from "../common/ScalePressable";
-import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import useAlert from "@/utils/hooks/useAlert";
 
 interface TopicListSheetProps {
@@ -27,20 +27,21 @@ const TopicListSheet = (
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
   const { showAlert, showActionAlert } = useAlert(); // 👈 showActionAlert 사용
-  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
-    onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
-    optimistic: true,
-  });
+  const ticketsHas = useTicketsStore((s) => s.has);
 
   //여기서
   const handleSeeOthers = () => {
     dismiss();
-    ensureNewResponse.ensure(() => {
-      InteractionManager.runAfterInteractions(() => {
-        router.push({
-          pathname: "/topic/[topicId]",
-          params: { topicId: id, title },
-        });
+    // 한글 주석: 낙관적 차감 제거. 보유 여부만 게이트하고, 페이지에서 성공 시 차감
+    const has = ticketsHas("VIEW_RESPONSE");
+    if (!has) {
+      showAlert("일일 티켓을 모두 소모했어요!");
+      return;
+    }
+    InteractionManager.runAfterInteractions(() => {
+      router.push({
+        pathname: "/topic/[topicId]",
+        params: { topicId: id, title },
       });
     });
   };
