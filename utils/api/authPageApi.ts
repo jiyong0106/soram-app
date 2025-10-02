@@ -7,6 +7,7 @@ import {
   VerifyOtpBody,
   VerifyOtpResponse,
 } from "@/utils/types/auth";
+import { Interest } from "../types/signup";
 
 // 1. 핸드폰 인증번호 요청
 
@@ -32,5 +33,11 @@ export const postVerifyOtp = async (body: VerifyOtpBody) => {
 // 4. 내 보유 재화 갯수 확인
 export const getTickets = async () => {
   const { data } = await instance.get<getTicketsResponse>("/users/me/tickets");
+  return data;
+};
+
+// 전체 관심사 목록 조회 API
+export const getInterests = async () => {
+  const { data } = await instance.get<Interest[]>("/auth/interests");
   return data;
 };
