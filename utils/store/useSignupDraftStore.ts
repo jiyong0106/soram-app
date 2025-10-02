@@ -92,19 +92,13 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
           : next[index].isPrimary && questionId === 1,
       };
     } else {
-      // 선택 질문(3 이상) 또는 누락된 필수 보정
+      // 한글 주석: 신규 답변은 그대로 추가(필수/선택 구분 로직은 화면/추후로 이관)
       const newAnswer: SignupAnswer = {
         questionId,
         content,
         isPrimary: normalizedIsPrimary,
       };
-      if (questionId === 1 || questionId === 2) {
-        next.push(newAnswer);
-      } else {
-        // 한글 주석: 선택 답변은 하나만 유지 -> 기존 선택 삭제 후 추가
-        next = next.filter((a) => a.questionId === 1 || a.questionId === 2);
-        next.push(newAnswer);
-      }
+      next.push(newAnswer);
     }
 
     // 한글 주석: isPrimary는 정확히 하나만 true가 되도록 정규화(기본적으로 1만 true)

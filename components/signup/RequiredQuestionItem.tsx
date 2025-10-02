@@ -1,34 +1,32 @@
 import { useRouter } from "expo-router";
 import QuestionTile from "./QuestionTile";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
+import { getProfileQuestionsResponse } from "@/utils/types/signup";
 
 interface Props {
-  label: string;
-  questionId?: 1 | 2; // 한글 주석: 명시적으로 필수 질문 번호 전달
+  item: getProfileQuestionsResponse;
 }
-const RequiredQuestionItem = ({ label, questionId = 1 }: Props) => {
+const RequiredQuestionItem = ({ item }: Props) => {
+  const { id, content } = item;
   const router = useRouter();
   const hasAnswer = useSignupDraftStore(
-    (s) =>
-      !!s.draft.answers
-        .find((a) => a.questionId === questionId)
-        ?.content?.trim()
+    (s) => !!s.draft.answers.find((a) => a.questionId === id)?.content?.trim()
   );
 
   const onPress = () => {
     router.push({
       pathname: "/(signup)/question/qanswer",
       params: {
-        label,
+        label: content,
         variant: "required",
-        questionId,
+        questionId: id,
       },
     });
   };
   return (
     <QuestionTile
       variant="required"
-      label={label}
+      label={content}
       checked={hasAnswer}
       onPress={onPress}
     />
