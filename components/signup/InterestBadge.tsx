@@ -11,18 +11,42 @@ interface Props {
   onPress?: () => void;
   /** 좌측 아이콘 이름(Ionicons) */
   iconName?: keyof typeof Ionicons.glyphMap;
+  /** [추가] 비활성화 여부 */
+  disabled?: boolean;
 }
 
-const InterestBadge = ({ tag, selected, onPress, iconName }: Props) => {
-  // 선택/비선택에 따른 색상 정의
-  // 비선택: 회색 톤, 선택: 코랄(#FF6B6B) 톤
-  const backgroundColor = selected ? "#FFF1EF" : "#fff";
-  const borderColor = selected ? "#FF6B6B" : "#E5E5EA";
-  const textColor = selected ? "#FF6B6B" : "#8E8E93";
+const InterestBadge = ({
+  tag,
+  selected,
+  onPress,
+  iconName,
+  disabled, // [추가] disabled prop 받기
+}: Props) => {
+  // [수정] disabled 상태에 따른 색상 정의 추가
+  // 비활성화 상태: 매우 연한 회색 톤
+  const DISABLED_COLOR = "#F2F2F7";
+
+  // 상태에 따른 색상 결정 로직
+  const backgroundColor = selected
+    ? "#FFF1EF"
+    : disabled
+    ? DISABLED_COLOR
+    : "#fff";
+  const borderColor = selected
+    ? "#FF6B6B"
+    : disabled
+    ? DISABLED_COLOR
+    : "#E5E5EA";
+  const textColor = selected
+    ? "#FF6B6B"
+    : disabled
+    ? "#AEAEB2" // 비활성화 시 텍스트/아이콘 색상도 연하게
+    : "#8E8E93";
 
   return (
     <Pressable
-      onPress={onPress}
+      // [수정] disabled 상태일 때는 onPress 이벤트가 동작하지 않도록 설정
+      onPress={disabled ? undefined : onPress}
       style={[styles.container, { borderColor, backgroundColor }]}
     >
       <View style={styles.contentRow}>
