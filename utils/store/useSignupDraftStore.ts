@@ -15,6 +15,7 @@ type SignupDraftStore = {
   // 한글 주석: 답변 조작용 액션들
   upsertAnswer: (args: {
     questionId: number;
+    title?: string;
     content: string;
     isPrimary?: boolean;
   }) => void;
@@ -28,11 +29,13 @@ type SignupDraftStore = {
 // ✅ 기본 필수 답변 2개를 초기 생성(1: isPrimary=true, 2: isPrimary=false)
 const REQUIRED_ANSWER_1: SignupAnswer = {
   questionId: 1,
+  title: undefined,
   content: "",
   isPrimary: true,
 };
 const REQUIRED_ANSWER_2: SignupAnswer = {
   questionId: 2,
+  title: undefined,
   content: "",
   isPrimary: false,
 };
@@ -74,7 +77,7 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
   },
 
   // 한글 주석: 답변 추가/갱신. isPrimary는 호출자가 전달한 값을 그대로 반영
-  upsertAnswer: ({ questionId, content, isPrimary }) => {
+  upsertAnswer: ({ questionId, title, content, isPrimary }) => {
     const current = get().draft.answers ?? [];
 
     let next = [...current];
@@ -83,11 +86,17 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
     const normalizedIsPrimary = !!isPrimary; // 한글 주석: 호출자 의도 반영
 
     if (index >= 0) {
-      next[index] = { ...next[index], content, isPrimary: normalizedIsPrimary };
+      next[index] = {
+        ...next[index],
+        title: title ?? next[index].title,
+        content,
+        isPrimary: normalizedIsPrimary,
+      };
     } else {
       // 한글 주석: 신규 답변은 그대로 추가(필수/선택 구분 로직은 화면/추후로 이관)
       const newAnswer: SignupAnswer = {
         questionId,
+        title,
         content,
         isPrimary: normalizedIsPrimary,
       };
