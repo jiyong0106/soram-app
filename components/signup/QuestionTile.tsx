@@ -37,15 +37,21 @@ const QuestionTile = ({
     <ScalePressable style={containerStyle} onPress={onPress}>
       {/* 좌측 체크/순번 영역 등 확장 여지 */}
       <View
-        style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 6 }}
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "flex-start",
+          gap: 6,
+        }}
       >
         <Ionicons
           name={checked ? "checkmark-circle" : "ellipse-outline"}
           size={18}
           color={checked ? "#10B981" : "#B0A6A0"}
         />
-
-        <AppText style={textStyle}>{label}</AppText>
+        <View style={{ flex: 1 }}>
+          <AppText style={[textStyle, { flexShrink: 1 }]}>{label}</AppText>
+        </View>
       </View>
       <AppText style={badgeStyle}>{isOptional ? "(선택)" : "(필수)"}</AppText>
     </ScalePressable>

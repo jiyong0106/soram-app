@@ -36,15 +36,17 @@ const QuestionPageSheet = (
 ) => {
   const [navigateNext, setNavigateNext] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
   const setOptionalTitle = useSignupDraftStore((s) => s.setOptionalTitle);
 
-  const onPress = (title: string) => {
+  const onPress = (title: string, id: number) => {
     // 한글 주석: 선택된 질문의 타이틀을 저장한 뒤 시트 닫기
     setOptionalTitle?.(title);
     setSelectedTitle(title);
+    setSelectedId(id);
     setNavigateNext(true);
     dismiss();
   };
@@ -62,7 +64,7 @@ const QuestionPageSheet = (
               params: {
                 variant: "optional",
                 label: selectedTitle,
-                questionId: 3, // 한글 주석: 선택 질문은 3으로 고정(요구사항)
+                questionId: selectedId ?? 0,
               },
             });
           });
@@ -85,7 +87,7 @@ const QuestionPageSheet = (
                   />
                 }
                 label={item.content}
-                onPress={() => onPress(item.content)}
+                onPress={() => onPress(item.content, item.id)}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}
