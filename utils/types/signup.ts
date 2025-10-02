@@ -9,9 +9,10 @@ export type FieldKey = "year" | "month" | "day";
 
 //필수질문 타입 역 ㅣ들어가야함
 export type SignupAnswer = {
-  questionId: number; // 고정: 1
-  content: string; // 사용자가 입력한 자기소개 본문
-  isPrimary: boolean; // 고정: true
+  questionId: number; // 질문 ID
+  title?: string; // 한글 주석: 질문 제목(스토어에서 보존하여 쿼리 없이 사용)
+  content: string; // 사용자가 입력한 본문
+  isPrimary: boolean; // 필수 여부 표시(앞 2개만 true)
 };
 
 // 사인업 토큰을 제외한 드래프트 타입입
@@ -20,7 +21,8 @@ export type SignupDraftType = {
   gender: Gender | ""; // 아직 미선택이면 ""
   birthdate: string; // "YYYY-MM-DD"
   answers: SignupAnswer[];
-  interestIds: number[]; // 관심사 ID 배열 필드 추가
+  interestIds: number[]; // 관심사 ID 배열
+  interestNames?: string[]; // 한글 주석: 관심사 이름 배열(쿼리 없이 피니시에서 표시)
   location?: string | null;
   authProvider?: AuthProvider | null; // 소셜 연결 시 사용
   providerId?: string | null; // 소셜의 UID 등
