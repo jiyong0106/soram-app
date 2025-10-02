@@ -32,7 +32,9 @@ const QanswerPage = () => {
   const isOver = text.length > MAX_LEN;
 
   const onNext = () => {
-    upsertAnswer?.({ questionId: qid, content: text, isPrimary: qid === 1 });
+    // 한글 주석: 필수(RequiredQuestionItem)로 들어온 앞 2개만 isPrimary=true, 선택은 false
+    const isPrimary = variant === "required" && (qid === 1 || qid === 2);
+    upsertAnswer?.({ questionId: qid, content: text, isPrimary });
     router.back();
   };
 

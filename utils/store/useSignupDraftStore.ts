@@ -72,25 +72,17 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
     );
   },
 
-  // 한글 주석: 답변 추가/갱신. 선택 질문은 하나만 유지
+  // 한글 주석: 답변 추가/갱신. isPrimary는 호출자가 전달한 값을 그대로 반영
   upsertAnswer: ({ questionId, content, isPrimary }) => {
     const current = get().draft.answers ?? [];
 
-    // 한글 주석: 필수 질문 1,2는 항상 존재. 없으면 생성
     let next = [...current];
 
     const index = next.findIndex((a) => a.questionId === questionId);
-    const normalizedIsPrimary =
-      questionId === 1 ? true : !!isPrimary && questionId !== 2;
+    const normalizedIsPrimary = !!isPrimary; // 한글 주석: 호출자 의도 반영
 
     if (index >= 0) {
-      next[index] = {
-        ...next[index],
-        content,
-        isPrimary: normalizedIsPrimary
-          ? true
-          : next[index].isPrimary && questionId === 1,
-      };
+      next[index] = { ...next[index], content, isPrimary: normalizedIsPrimary };
     } else {
       // 한글 주석: 신규 답변은 그대로 추가(필수/선택 구분 로직은 화면/추후로 이관)
       const newAnswer: SignupAnswer = {
@@ -100,9 +92,6 @@ export const useSignupDraftStore = create<SignupDraftStore>((set, get) => ({
       };
       next.push(newAnswer);
     }
-
-    // 한글 주석: isPrimary는 정확히 하나만 true가 되도록 정규화(기본적으로 1만 true)
-    next = next.map((a) => ({ ...a, isPrimary: a.questionId === 1 }));
 
     set({ draft: { ...get().draft, answers: next } });
   },
