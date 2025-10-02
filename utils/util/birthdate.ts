@@ -1,5 +1,3 @@
-//  birthdate 페이지 유틸 및 옵션
-
 import { FieldKey } from "../types/signup";
 
 export const onlyDigits = (s: string, max: number) =>
@@ -22,7 +20,7 @@ export const validBirth = ({
   const y = +year,
     m = +month,
     d = +day;
-  if (!y || m < 1 || m > 12) return false;
+  if (!y || y < 1950 || m < 1 || m > 12) return false;
   const dim = new Date(y, m, 0).getDate();
   return d >= 1 && d <= dim;
 };

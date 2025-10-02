@@ -10,7 +10,6 @@ import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
 import SignupHeader from "@/components/signup/SignupHeader";
 import { getProfileQuestions } from "@/utils/api/signupPageApi";
 import { getProfileQuestionsResponse } from "@/utils/types/signup";
-// import { getItemAsync } from "expo-secure-store"; // 사용되지 않아 주석 처리
 
 const QuestionPage = () => {
   const router = useRouter();
