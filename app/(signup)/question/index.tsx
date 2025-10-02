@@ -10,6 +10,7 @@ import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
 import SignupHeader from "@/components/signup/SignupHeader";
 import { getProfileQuestions } from "@/utils/api/signupPageApi";
 import { getProfileQuestionsResponse } from "@/utils/types/signup";
+// import { getItemAsync } from "expo-secure-store"; // 사용되지 않아 주석 처리
 
 const QuestionPage = () => {
   const router = useRouter();
@@ -36,7 +37,14 @@ const QuestionPage = () => {
       mounted = false;
     };
   }, []);
-
+  // console.log(questions); // 디버깅 로그 제거
+  const requiredQuestions = useMemo(
+    () =>
+      (questions || [])
+        .filter((q) => q.id === 1 || q.id === 2)
+        .sort((a, b) => a.id - b.id),
+    [questions]
+  );
   const disabled = useMemo(() => {
     const a1 = answers?.find((a) => a.questionId === 1)?.content?.trim();
     const a2 = answers?.find((a) => a.questionId === 2)?.content?.trim();
@@ -70,14 +78,9 @@ const QuestionPage = () => {
         />
 
         <View style={styles.inputWrap}>
-          <RequiredQuestionItem
-            questionId={1}
-            label={`1. ${questions?.find((q) => q.id === 1)?.content ?? ""}`}
-          />
-          <RequiredQuestionItem
-            questionId={2}
-            label={`2. ${questions?.find((q) => q.id === 2)?.content ?? ""}`}
-          />
+          {requiredQuestions.map((item) => (
+            <RequiredQuestionItem key={item.id} item={item} />
+          ))}
           <OptionalQuestionItem
             label="질문을 선택해 주세요"
             onOpenPicker={openSheet}
