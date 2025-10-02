@@ -58,7 +58,7 @@ const TopicListIdPage = () => {
     }
     try {
       await postText({ topicId, textContent: text });
-      showAlert("답변이 등록되었어요.", () => {
+      showAlert("이야기가 잘 등록되었어요.", () => {
         reset({ content: "" });
         if (hasError && router.canGoBack()) {
           router.back();
@@ -122,7 +122,7 @@ const TopicListIdPage = () => {
               <TextInput
                 style={styles.input}
                 multiline
-                placeholder="부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
+                placeholder="부적절하거나 불쾌감을 줄 수 있는 콘텐츠는 제재될 수 있습니다"
                 placeholderTextColor="#B0A6A0"
                 onChangeText={onChange}
                 onBlur={onBlur}
