@@ -2,7 +2,7 @@ import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import RequiredQuestionItem from "@/components/signup/RequiredQuestionItem";
