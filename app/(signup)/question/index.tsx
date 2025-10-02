@@ -10,45 +10,18 @@ import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
 import SignupHeader from "@/components/signup/SignupHeader";
 import { getProfileQuestions } from "@/utils/api/signupPageApi";
 import { getProfileQuestionsResponse } from "@/utils/types/signup";
+import { useQuery } from "@tanstack/react-query";
 
 const QuestionPage = () => {
   const router = useRouter();
   const nickname = useSignupDraftStore((s) => s.draft.nickname);
   const answers = useSignupDraftStore((s) => s.draft.answers);
-
   const sheetRef = useRef<BottomSheetModal>(null);
 
-  // 한글 주석: 프로필 질문 API 로드
-  const [questions, setQuestions] = useState<
-    getProfileQuestionsResponse[] | null
-  >(null);
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const data = await getProfileQuestions();
-        if (mounted) setQuestions(data);
-      } catch (e) {
-        if (mounted) setQuestions([]);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  // console.log(questions); // 디버깅 로그 제거
-  const requiredQuestions = useMemo(
-    () =>
-      (questions || [])
-        .filter((q) => q.id === 1 || q.id === 2)
-        .sort((a, b) => a.id - b.id),
-    [questions]
-  );
-  const disabled = useMemo(() => {
-    const a1 = answers?.find((a) => a.questionId === 1)?.content?.trim();
-    const a2 = answers?.find((a) => a.questionId === 2)?.content?.trim();
-    return !(a1 && a1.length > 0 && a2 && a2.length > 0);
-  }, [answers]);
+  const { data = [] } = useQuery({
+    queryKey: ["requiredQuestionsKey"],
+    queryFn: getProfileQuestions,
+  });
 
   const openSheet = () => {
     sheetRef.current?.present?.();
@@ -58,13 +31,7 @@ const QuestionPage = () => {
   const handleContinue = () => {
     // 필수 질문 완료 여부는 disabled로도 제어됨
     const store = useSignupDraftStore.getState();
-    const optional = store.draft.answers.find(
-      (a) => a.questionId !== 1 && a.questionId !== 2
-    );
-    if (optional && !optional.content.trim()) {
-      // 한글 주석: 빈 선택 답변은 제출에서 제외
-      store.removeAnswer?.(optional.questionId);
-    }
+
     router.push("/(signup)/interests");
   };
 
@@ -77,28 +44,28 @@ const QuestionPage = () => {
         />
 
         <View style={styles.inputWrap}>
-          {requiredQuestions.map((item) => (
+          {data.map((item) => (
             <RequiredQuestionItem key={item.id} item={item} />
           ))}
-          <OptionalQuestionItem
+          {/* <OptionalQuestionItem
             label="질문을 선택해 주세요"
             onOpenPicker={openSheet}
-          />
+          /> */}
         </View>
       </View>
       <Button
         label="계속하기"
         color="#FF7D4A"
         textColor="#fff"
-        disabled={disabled}
+        // disabled={disabled}
         style={styles.button}
         onPress={handleContinue}
       />
-      <QuestionPageSheet
+      {/* <QuestionPageSheet
         ref={sheetRef}
         snapPoints={["90%"]}
-        questions={(questions || []).filter((q) => q.id !== 1 && q.id !== 2)}
-      />
+         questions={(questions || []).filter((q) => q.id !== 1 && q.id !== 2)}
+      /> */}
     </View>
   );
 };

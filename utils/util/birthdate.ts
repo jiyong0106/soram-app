@@ -20,7 +20,8 @@ export const validBirth = ({
   const y = +year,
     m = +month,
     d = +day;
-  if (!y || y < 1950 || m < 1 || m > 12) return false;
+  if (!y || y < 1950 || y > new Date().getFullYear() || m < 1 || m > 12)
+    return false;
   const dim = new Date(y, m, 0).getDate();
   return d >= 1 && d <= dim;
 };
