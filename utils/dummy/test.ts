@@ -338,7 +338,8 @@ export const KOREA_REGIONS: Region[] = [
   { code: "sejong", name: "세종특별자치시", type: "특별자치시" },
 
   // 도 / 특별자치도
-  { code: "gyeonggi", name: "경기도", type: "도" },
+  { code: "gyeonggi-south", name: "경기남부", type: "도" },
+  { code: "gyeonggi-north", name: "경기북부", type: "도" },
   { code: "gangwon", name: "강원특별자치도", type: "특별자치도" }, // (구 강원도)
   { code: "chungbuk", name: "충청북도", type: "도" },
   { code: "chungnam", name: "충청남도", type: "도" },
