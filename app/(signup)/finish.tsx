@@ -9,9 +9,8 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useAuthStore } from "@/utils/store/useAuthStore";
-import SummaryCard from "@/components/signup/SummaryCard";
-import InfoRow from "@/components/signup/InfoRow";
-import AnswerBox from "@/components/signup/AnswerBox";
+import AppText from "@/components/common/AppText";
+import { getAgeFromBirthdate } from "@/utils/util/birthdate";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const FinishPage = () => {
@@ -22,14 +21,29 @@ const FinishPage = () => {
   const signupToken = useSignupTokenStore.getState().signupToken;
   const { showAlert } = useAlert();
   const [loading, setLoading] = React.useState(false);
-  // 한글 주석: 선택(옵션) 답변 3번 존재 여부를 사전에 계산
-  const optionalAnswer3 = getAnswerContent(draft.answers, 3);
-  console.log(draft);
+
+  // 한글 주석: 쿼리 호출 없이 draft만 사용
   const handlePress = async () => {
     if (loading) return;
     setLoading(true);
     try {
-      const body: SignupSumbitBody = { signupToken, ...draft };
+      // 한글 주석: 서버로는 title/interestNames를 보내지 않도록 정규화
+      const sanitizedAnswers = (draft.answers || []).map((a) => ({
+        questionId: a.questionId,
+        content: a.content,
+        isPrimary: a.isPrimary,
+      }));
+      const body: SignupSumbitBody = {
+        signupToken,
+        nickname: draft.nickname,
+        gender: draft.gender as any,
+        birthdate: draft.birthdate,
+        answers: sanitizedAnswers,
+        interestIds: draft.interestIds || [],
+        location: draft.location ?? null,
+        authProvider: draft.authProvider ?? null,
+        providerId: draft.providerId ?? null,
+      };
       const res = await postSignupSumbit(body);
 
       if (!res?.accessToken) {
@@ -58,68 +72,95 @@ const FinishPage = () => {
 
   return (
     <ScreenWithStickyAction
+      scrollable
+      topPadding={0}
       action={
         <Button
           label="계속하기"
           color="#FF7D4A"
           textColor="#fff"
           disabled={loading}
-          style={styles.button}
           onPress={handlePress}
         />
       }
     >
       <View style={styles.container}>
-        <SignupHeader
-          title={`${draft.nickname}님의 정보를 확인하세요`}
-          subtitle="마지막으로 회원가입을 진행합니다."
-        />
+        {/* 헤더/베이직 정보 */}
+        <View style={{ gap: 8, paddingHorizontal: 10, paddingTop: 8 }}>
+          <SignupHeader
+            title={`${draft.nickname}님의 정보를 확인하세요`}
+            subtitle="예상 프로필을 미리 보여드려요!"
+          />
+          <AppText style={styles.brand}>SORAM</AppText>
+          <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
+          <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
+          <AppText style={styles.meta}>
+            {formatBirthAndAge(draft.birthdate)}
+          </AppText>
+          <AppText style={styles.meta}>{draft.location || "미설정"}</AppText>
+        </View>
 
-        {/* 기본 정보 카드 */}
-        <SummaryCard title="기본 정보">
-          <InfoRow
-            icon="person-outline"
-            label="닉네임"
-            value={draft.nickname || "-"}
-          />
-          <InfoRow
-            icon={draft.gender === "FEMALE" ? "woman-outline" : "man-outline"}
-            label="성별"
-            value={formatGender(draft.gender as any)}
-          />
-          <InfoRow
-            icon="calendar-outline"
-            label="생년월일"
-            value={formatBirthdate(draft.birthdate)}
-          />
-          <InfoRow
-            icon="location-outline"
-            label="지역"
-            value={draft.location || "미설정"}
-            dimWhenEmpty
-          />
-        </SummaryCard>
+        {/* 스토리 섹션들 */}
+        {(() => {
+          const answers = draft.answers || [];
+          const requiredTwo = answers.slice(0, 2);
+          const optional = answers.length > 2 ? answers[2] : undefined;
+          const optionalTitle = useSignupDraftStore.getState().optionalTitle;
 
-        {/* 프로필 답변 카드 */}
-        <SummaryCard title="프로필 답변">
-          <AnswerBox
-            title="필수 답변 1"
-            icon="chatbubble-ellipses-outline"
-            content={getAnswerContent(draft.answers, 1)}
-          />
-          <AnswerBox
-            title="필수 답변 2"
-            icon="chatbubble-ellipses-outline"
-            content={getAnswerContent(draft.answers, 2)}
-          />
-          {optionalAnswer3 ? (
-            <AnswerBox
-              title="선택 답변"
-              icon="chatbubble-outline"
-              content={optionalAnswer3}
-            />
-          ) : null}
-        </SummaryCard>
+          return (
+            <>
+              {requiredTwo[0] ? (
+                <View style={styles.section}>
+                  <AppText style={styles.sectionTitle}>
+                    {requiredTwo[0].title || "질문 1"}
+                  </AppText>
+                  <View style={styles.answerCard}>
+                    <AppText style={styles.answer}>
+                      {requiredTwo[0].content || "-"}
+                    </AppText>
+                  </View>
+                </View>
+              ) : null}
+              {requiredTwo[1] ? (
+                <View style={styles.section}>
+                  <AppText style={styles.sectionTitle}>
+                    {requiredTwo[1].title || "질문 2"}
+                  </AppText>
+                  <View style={styles.answerCard}>
+                    <AppText style={styles.answer}>
+                      {requiredTwo[1].content || "-"}
+                    </AppText>
+                  </View>
+                </View>
+              ) : null}
+              {optional?.content?.trim() ? (
+                <View style={styles.section}>
+                  <AppText style={styles.sectionTitle}>
+                    {optionalTitle || optional.title || "선택 질문"}
+                  </AppText>
+                  <View style={styles.answerCard}>
+                    <AppText style={styles.answer}>
+                      {optional.content.trim()}
+                    </AppText>
+                  </View>
+                </View>
+              ) : null}
+            </>
+          );
+        })()}
+
+        {/* 관심사 태그 */}
+        <View style={[styles.section, { paddingBottom: 8 }]}>
+          <AppText style={styles.sectionTitle}>관심있는 주제</AppText>
+          <View style={styles.tagsRow}>
+            {(draft.interestNames || []).map((name: any) => (
+              <AppText
+                key={String(name)}
+                style={styles.tag}
+              >{`#${name}`}</AppText>
+            ))}
+          </View>
+        </View>
       </View>
     </ScreenWithStickyAction>
   );
@@ -131,40 +172,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  button: {
-    marginTop: 32,
-  },
-  title: {
-    fontSize: 20,
+
+  brand: { color: "#FF7D4A", fontWeight: "bold", fontSize: 18 },
+  caption: { color: "#9CA3AF", fontSize: 12 },
+  name: { fontSize: 26, fontWeight: "bold", color: "#111827", marginTop: 8 },
+  meta: { fontSize: 16, color: "#111827" },
+  section: { paddingHorizontal: 10, paddingTop: 24 },
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: "700",
-    marginBottom: 16,
-    color: "#222",
+    color: "#4B5563",
+    marginBottom: 8,
   },
-  // 카드/행 스타일은 분리 컴포넌트 내부로 이동
+  answerCard: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 14,
+  },
+  answer: { color: "#374151", lineHeight: 22, fontSize: 15 },
+  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingTop: 6 },
+  tag: { color: "#6B7280" },
 });
 
-// =====================
-// 유틸 함수들
-
-function formatGender(gender: string): string {
-  if (gender === "MALE") return "남성";
-  if (gender === "FEMALE") return "여성";
-  return "-";
-}
-
-function formatBirthdate(s: string | undefined | null): string {
-  if (!s) return "-";
-  // 기대 포맷: YYYY-MM-DD
-  const parts = s.split("-");
-  if (parts.length !== 3) return s;
-  const [y, m, d] = parts;
-  return `${y}.${m}.${d}`;
-}
-
-function getAnswerContent(
-  answers: Array<{ questionId: number; content: string }> | undefined,
-  id: number
-): string {
-  const content = answers?.find((a) => a.questionId === id)?.content?.trim();
-  return content || "";
+// 한글 주석: 생년 + 만 나이 포맷팅
+function formatBirthAndAge(birthdate?: string | null) {
+  if (!birthdate) return "-";
+  const age = getAgeFromBirthdate(birthdate);
+  try {
+    const [y] = birthdate.split("-");
+    return age !== undefined ? `${y}년생, 만 ${age}세` : `${y}년생`;
+  } catch {
+    return birthdate as string;
+  }
 }

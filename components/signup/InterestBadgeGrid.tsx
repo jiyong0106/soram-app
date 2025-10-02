@@ -63,7 +63,10 @@ const InterestBadgeGrid = () => {
       ? interestIds.filter((selectedId) => selectedId !== id)
       : [...interestIds, id];
 
-    patch({ interestIds: nextIds });
+    const nextNames = (interests || [])
+      .filter((it) => nextIds.includes(it.id))
+      .map((it) => it.name);
+    patch({ interestIds: nextIds, interestNames: nextNames });
   };
 
   if (isLoading) {
