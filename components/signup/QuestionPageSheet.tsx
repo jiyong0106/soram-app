@@ -6,6 +6,7 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
+import { getProfileQuestionsResponse } from "@/utils/types/signup";
 // 더미 데이터 제거: 카테고리/질문은 상위에서 API 응답을 내려받아 props로 전달
 
 interface QuestionItemProp {
@@ -105,7 +106,7 @@ const s = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 40,
     backgroundColor: COLORS.bg,
   },
   titleRow: {
@@ -144,7 +145,7 @@ const s = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: COLORS.border,
     marginTop: 12,
-    maxHeight: "80%",
+    maxHeight: 650,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
