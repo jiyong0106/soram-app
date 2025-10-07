@@ -319,33 +319,25 @@ export const QUESTIONS = [
 export type Region = {
   code: string; // 영문 코드 (키로 쓰기 좋음)
   name: string; // 표기명 (한국어)
-  type: "특별시" | "광역시" | "특별자치시" | "도" | "특별자치도";
 };
 
 export const KOREA_REGIONS: Region[] = [
-  // 특별시
-  { code: "seoul", name: "서울특별시", type: "특별시" },
-
-  // 광역시
-  { code: "busan", name: "부산광역시", type: "광역시" },
-  { code: "daegu", name: "대구광역시", type: "광역시" },
-  { code: "incheon", name: "인천광역시", type: "광역시" },
-  { code: "gwangju", name: "광주광역시", type: "광역시" },
-  { code: "daejeon", name: "대전광역시", type: "광역시" },
-  { code: "ulsan", name: "울산광역시", type: "광역시" },
-
-  // 특별자치시
-  { code: "sejong", name: "세종특별자치시", type: "특별자치시" },
-
-  // 도 / 특별자치도
-  { code: "gyeonggi-south", name: "경기남부", type: "도" },
-  { code: "gyeonggi-north", name: "경기북부", type: "도" },
-  { code: "gangwon", name: "강원특별자치도", type: "특별자치도" }, // (구 강원도)
-  { code: "chungbuk", name: "충청북도", type: "도" },
-  { code: "chungnam", name: "충청남도", type: "도" },
-  { code: "jeonbuk", name: "전라북도", type: "도" },
-  { code: "jeonnam", name: "전라남도", type: "도" },
-  { code: "gyeongbuk", name: "경상북도", type: "도" },
-  { code: "gyeongnam", name: "경상남도", type: "도" },
-  { code: "jeju", name: "제주특별자치도", type: "특별자치도" },
+  { code: "seoul", name: "서울특별시" },
+  { code: "gyeonggi-south", name: "경기도(남부)" },
+  { code: "gyeonggi-north", name: "경기도(북부)" },
+  { code: "busan", name: "부산광역시" },
+  { code: "daegu", name: "대구광역시" },
+  { code: "incheon", name: "인천광역시" },
+  { code: "gwangju", name: "광주광역시" },
+  { code: "daejeon", name: "대전광역시" },
+  { code: "ulsan", name: "울산광역시" },
+  { code: "sejong", name: "세종특별자치시" },
+  { code: "gangwon", name: "강원특별자치도" },
+  { code: "chungbuk", name: "충청북도" },
+  { code: "chungnam", name: "충청남도" },
+  { code: "jeonbuk", name: "전라북도" },
+  { code: "jeonnam", name: "전라남도" },
+  { code: "gyeongbuk", name: "경상북도" },
+  { code: "gyeongnam", name: "경상남도" },
+  { code: "jeju", name: "제주특별자치도" },
 ];

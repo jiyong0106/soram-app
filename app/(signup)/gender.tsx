@@ -34,8 +34,8 @@ const GenderPage = () => {
     >
       <View style={styles.container}>
         <SignupHeader
-          title={`${nickname}님의 성별을 선택해 주세요`}
-          subtitle="성별 정보를 기반 좋은 인연을 찾아드려요!"
+          title={`안녕하세요, ${nickname}님!\n성별을 선택해 주세요`}
+          subtitle="프로필에 표시될 성별 정보예요"
         />
         <View style={styles.selectList}>
           {OPTIONS.map(({ key, label }) => (

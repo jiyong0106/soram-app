@@ -1,7 +1,7 @@
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { FieldKey } from "@/utils/types/signup";
@@ -12,6 +12,7 @@ import {
   validBirth,
 } from "@/utils/util/birthdate";
 import SignupHeader from "@/components/signup/SignupHeader";
+import AppText from "@/components/common/AppText";
 
 const order: FieldKey[] = ["year", "month", "day"];
 
@@ -23,8 +24,20 @@ const BirthdatePage = () => {
 
   const [date, setDate] = useState(() => parseBirth(draftBirthdate));
   const [focused, setFocused] = useState<FieldKey | null>(null);
+  const [showError, setShowError] = useState(false);
 
   const isValid = useMemo(() => validBirth(date), [date]);
+
+  useEffect(() => {
+    const allFieldsFilled =
+      date.year.length === 4 && date.month.length > 0 && date.day.length > 0;
+
+    if (allFieldsFilled) {
+      setShowError(!isValid);
+    } else {
+      setShowError(false);
+    }
+  }, [date, isValid]);
 
   const inputRefs = useRef<Record<FieldKey, TextInput | null>>({
     year: null,
@@ -75,8 +88,8 @@ const BirthdatePage = () => {
     >
       <View style={styles.container}>
         <SignupHeader
-          title={`${nickname}님의 생년월일을 알려주세요`}
-          subtitle="생년월일은 나이 표시 용도로만 사용돼요!"
+          title={`${nickname}님의\n생년월일을 알려주세요`}
+          subtitle={`정확한 나이는 공개되지 않고,\n\n'20대', '30대' 등 나이대로만 표시되니 안심하세요!`}
         />
 
         <View style={styles.birthRow}>
@@ -93,6 +106,7 @@ const BirthdatePage = () => {
                   isFocused && styles.inputFocused,
                 ]}
                 placeholder={ph}
+                placeholderTextColor="#B0A6A0"
                 keyboardType="number-pad"
                 value={val}
                 onChangeText={handleChange(key, max)}
@@ -104,6 +118,11 @@ const BirthdatePage = () => {
             );
           })}
         </View>
+        {showError && (
+          <AppText style={styles.errorText}>
+            올바른 생년월일을 입력해주세요.
+          </AppText>
+        )}
       </View>
     </ScreenWithStickyAction>
   );
@@ -125,11 +144,16 @@ const styles = StyleSheet.create({
   input: {
     height: 55,
     borderWidth: 1,
-    borderColor: "#E6E6E6",
+    borderColor: "#d9d9d9",
     borderRadius: 10,
     paddingHorizontal: 12,
     backgroundColor: "#fff",
     fontSize: 14,
   },
   inputFocused: { borderColor: "#FF7D4A" },
+  errorText: {
+    color: "red",
+    marginTop: 8,
+    fontSize: 12,
+  },
 });
