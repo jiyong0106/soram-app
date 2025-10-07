@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
+} from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
@@ -60,19 +66,36 @@ const VerifyCodeInputPage = () => {
   //인증번호 재요청
   const handleRequestOtp = async () => {
     if (loading) return;
-    try {
-      setLoading(true);
-      await postRequestOtp({ phoneNumber });
-      showAlert("인증번호가 전송되었습니다.");
-    } catch (e: any) {
-      if (e) {
-        showAlert(e.response.data.message);
-        return;
-      }
-      console.error("");
-    } finally {
-      setLoading(false);
-    }
+
+    Alert.alert(
+      "인증번호 재요청",
+      "인증번호를 다시 요청하시겠습니까?",
+      [
+        {
+          text: "취소",
+          style: "cancel",
+        },
+        {
+          text: "확인",
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await postRequestOtp({ phoneNumber });
+              showAlert("인증번호가 전송되었습니다.");
+            } catch (e: any) {
+              if (e) {
+                showAlert(e.response.data.message);
+                return;
+              }
+              console.error("");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -91,9 +114,7 @@ const VerifyCodeInputPage = () => {
       <View style={styles.container}>
         <SignupHeader
           title="인증번호를 입력해 주세요"
-          subtitle={
-            "인증번호가 전송됐어요.\n받은 번호를 입력하면 인증이 완료돼요."
-          }
+          subtitle={"받은 번호를 입력하면 인증이 완료돼요."}
         />
         <TextInput
           style={[styles.input, focused && styles.inputFocused]}
@@ -107,7 +128,7 @@ const VerifyCodeInputPage = () => {
           onBlur={() => setFocused(false)}
         />
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기"}</AppText>
+          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기 >"}</AppText>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
@@ -123,7 +144,9 @@ const styles = StyleSheet.create({
   desc: {
     color: "#5C4B44",
     marginBottom: 32,
+    marginRight: 10,
     fontSize: 12,
+    textAlign: "right",
   },
   input: {
     borderBottomWidth: 2,

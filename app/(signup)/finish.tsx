@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native"; // Platform 추가
 import React from "react";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
@@ -85,82 +85,90 @@ const FinishPage = () => {
       }
     >
       <View style={styles.container}>
-        {/* 헤더/베이직 정보 */}
-        <View style={{ gap: 8, paddingHorizontal: 10, paddingTop: 8 }}>
+        {/* --- ⬇️ JSX 구조가 일부 수정되었습니다 ⬇️ --- */}
+        <View style={{ paddingHorizontal: 10, paddingTop: 8 }}>
           <SignupHeader
-            title={`${draft.nickname}님의 정보를 확인하세요`}
-            subtitle="예상 프로필을 미리 보여드려요!"
+            title={`멋진 프로필이 완성됐어요!`}
+            subtitle={`다른 사람들에게 이렇게 보여질 거예요.\n\n언제든지 수정할 수 있으니 걱정 마세요.`}
           />
-          <AppText style={styles.brand}>SORAM</AppText>
-          <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
-          <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
-          <AppText style={styles.meta}>
-            {formatBirthAndAge(draft.birthdate)}
-          </AppText>
-          <AppText style={styles.meta}>{draft.location || "미설정"}</AppText>
         </View>
 
-        {/* 스토리 섹션들 */}
-        {(() => {
-          const answers = draft.answers || [];
-          const requiredTwo = answers.slice(0, 2);
-          const optional = answers.length > 2 ? answers[2] : undefined;
-          const optionalTitle = useSignupDraftStore.getState().optionalTitle;
+        {/* 프로필 콘텐츠를 감싸는 카드 View */}
+        <View style={styles.profileCard}>
+          {/* 헤더/베이직 정보 */}
+          <View style={{ gap: 8 }}>
+            <AppText style={styles.brand}>SORAM</AppText>
+            <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
+            <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
+            <AppText style={styles.meta}>
+              {formatBirthAndAge(draft.birthdate)}
+            </AppText>
+            <AppText style={styles.meta}>{draft.location || "미설정"}</AppText>
+          </View>
 
-          return (
-            <>
-              {requiredTwo[0] ? (
-                <View style={styles.section}>
-                  <AppText style={styles.sectionTitle}>
-                    {requiredTwo[0].title || "질문 1"}
-                  </AppText>
-                  <View style={styles.answerCard}>
-                    <AppText style={styles.answer}>
-                      {requiredTwo[0].content || "-"}
-                    </AppText>
-                  </View>
-                </View>
-              ) : null}
-              {requiredTwo[1] ? (
-                <View style={styles.section}>
-                  <AppText style={styles.sectionTitle}>
-                    {requiredTwo[1].title || "질문 2"}
-                  </AppText>
-                  <View style={styles.answerCard}>
-                    <AppText style={styles.answer}>
-                      {requiredTwo[1].content || "-"}
-                    </AppText>
-                  </View>
-                </View>
-              ) : null}
-              {optional?.content?.trim() ? (
-                <View style={styles.section}>
-                  <AppText style={styles.sectionTitle}>
-                    {optionalTitle || optional.title || "선택 질문"}
-                  </AppText>
-                  <View style={styles.answerCard}>
-                    <AppText style={styles.answer}>
-                      {optional.content.trim()}
-                    </AppText>
-                  </View>
-                </View>
-              ) : null}
-            </>
-          );
-        })()}
+          {/* 스토리 섹션들 */}
+          {(() => {
+            const answers = draft.answers || [];
+            const requiredTwo = answers.slice(0, 2);
+            const optional = answers.length > 2 ? answers[2] : undefined;
+            const optionalTitle = useSignupDraftStore.getState().optionalTitle;
 
-        {/* 관심사 태그 */}
-        <View style={[styles.section, { paddingBottom: 8 }]}>
-          <AppText style={styles.sectionTitle}>관심있는 주제</AppText>
-          <View style={styles.tagsRow}>
-            {(draft.interestNames || []).map((name: any) => (
-              <AppText
-                key={String(name)}
-                style={styles.tag}
-              >{`#${name}`}</AppText>
-            ))}
+            return (
+              <>
+                {requiredTwo[0] ? (
+                  <View style={styles.section}>
+                    <AppText style={styles.sectionTitle}>
+                      {requiredTwo[0].title || "질문 1"}
+                    </AppText>
+                    <View style={styles.answerCard}>
+                      <AppText style={styles.answer}>
+                        {requiredTwo[0].content || "-"}
+                      </AppText>
+                    </View>
+                  </View>
+                ) : null}
+                {requiredTwo[1] ? (
+                  <View style={styles.section}>
+                    <AppText style={styles.sectionTitle}>
+                      {requiredTwo[1].title || "질문 2"}
+                    </AppText>
+                    <View style={styles.answerCard}>
+                      <AppText style={styles.answer}>
+                        {requiredTwo[1].content || "-"}
+                      </AppText>
+                    </View>
+                  </View>
+                ) : null}
+                {optional?.content?.trim() ? (
+                  <View style={styles.section}>
+                    <AppText style={styles.sectionTitle}>
+                      {optionalTitle || optional.title || "선택 질문"}
+                    </AppText>
+                    <View style={styles.answerCard}>
+                      <AppText style={styles.answer}>
+                        {optional.content.trim()}
+                      </AppText>
+                    </View>
+                  </View>
+                ) : null}
+              </>
+            );
+          })()}
+
+          {/* 관심사 태그 */}
+          <View style={[styles.section, { paddingBottom: 8 }]}>
+            <AppText style={styles.sectionTitle}>관심있는 주제</AppText>
+            <View style={styles.tagsRow}>
+              {(draft.interestNames || []).map((name: any) => (
+                <AppText
+                  key={String(name)}
+                  style={styles.tag}
+                >{`#${name}`}</AppText>
+              ))}
+            </View>
           </View>
         </View>
+        {/* --- ⬆️ 여기까지 수정되었습니다 ⬆️ --- */}
       </View>
     </ScreenWithStickyAction>
   );
@@ -172,28 +180,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  // --- ⬇️ 이 스타일이 추가되었습니다 ⬇️ ---
+  profileCard: {
+    marginBottom: 24,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+    padding: 20,
+    // iOS를 위한 그림자
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    // Android를 위한 그림자
+    elevation: 5,
+  },
   brand: { color: "#FF7D4A", fontWeight: "bold", fontSize: 18 },
-  caption: { color: "#9CA3AF", fontSize: 12 },
-  name: { fontSize: 26, fontWeight: "bold", color: "#111827", marginTop: 8 },
-  meta: { fontSize: 16, color: "#111827" },
-  section: { paddingHorizontal: 10, paddingTop: 24 },
+  caption: { color: "#9CA3AF", fontSize: 12, marginBottom: 20 },
+  name: { fontSize: 22, fontWeight: "bold", color: "#5C4B44", marginTop: 8 },
+  meta: { fontSize: 16, color: "#5C4B44" },
+  section: { paddingTop: 20 }, // 중복되는 paddingHorizontal 제거
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#4B5563",
-    marginBottom: 8,
+    fontWeight: "bold",
+    color: "#5C4B44",
+    marginVertical: 10,
   },
   answerCard: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 14,
+    marginBottom: 10,
   },
-  answer: { color: "#374151", lineHeight: 22, fontSize: 15 },
+  answer: { color: "#5C4B44", lineHeight: 30, fontSize: 14 },
   tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingTop: 6 },
-  tag: { color: "#6B7280" },
+  tag: { color: "#5C4B44" },
 });
 
 // 한글 주석: 생년 + 만 나이 포맷팅

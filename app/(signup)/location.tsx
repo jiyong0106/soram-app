@@ -33,8 +33,8 @@ const LocationPage = () => {
     >
       <View style={styles.container}>
         <SignupHeader
-          title={`${nickname}님의 거주지를 알려주세요`}
-          subtitle="거주지와 관심사를 기반으로 좋은 인연을 찾아드려요!"
+          title={`${nickname}님,\n어느 동네에 살고 계신가요?`}
+          subtitle={`정확한 위치는 공개되지 않아요!\n\n가까이 있는 인연을 찾는 데 도움을 드릴게요.`}
         />
         <ScalePressable
           style={[styles.locationBox, location && styles.locationBoxFocused]}
@@ -43,7 +43,7 @@ const LocationPage = () => {
           <Ionicons
             name="map-outline"
             size={24}
-            color={location ? "#222" : "#B0A6A0"}
+            color={location ? "#5C4B44" : "#B0A6A0"}
           />
           <AppText
             style={[
@@ -51,7 +51,7 @@ const LocationPage = () => {
               location && styles.locationTextFocused,
             ]}
           >
-            {location || "지역"}
+            {location || "지역 선택하기"}
           </AppText>
         </ScalePressable>
       </View>
@@ -90,9 +90,9 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
   },
   locationBoxFocused: {
-    borderColor: "#FF7D4A",
+    borderColor: "#d9d9d9",
   },
   locationTextFocused: {
-    color: "#222",
+    color: "#5C4B44",
   },
 });

@@ -25,10 +25,11 @@ const QuestionTile = ({
 }: Props) => {
   const isOptional = variant === "optional";
   const isEmphasis = tone === "emphasis";
-  //  선택이지만 강조 톤이면 필수와 동일한 스타일 적용
   const containerStyle = [
     styles.container,
     isOptional && !isEmphasis && styles.containerOptional,
+    // checked가 true일 때, 완료 스타일(containerChecked)을 적용
+    checked && styles.containerChecked,
   ];
   const textStyle = [styles.label, isOptional && !isEmphasis && styles.gray];
   const badgeStyle = [styles.badge, isOptional && !isEmphasis && styles.gray];
@@ -47,7 +48,7 @@ const QuestionTile = ({
         <Ionicons
           name={checked ? "checkmark-circle" : "ellipse-outline"}
           size={18}
-          color={checked ? "#10B981" : "#B0A6A0"}
+          color={checked ? "#FF7D4A" : "#B0A6A0"}
         />
         <View style={{ flex: 1 }}>
           <AppText style={[textStyle, { flexShrink: 1 }]}>{label}</AppText>
@@ -62,11 +63,11 @@ export default QuestionTile;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF8F5",
+    backgroundColor: "#FFF",
     padding: 16,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#FF6B3E",
+    borderColor: "#D0D7DE",
     minHeight: 70,
     alignItems: "center",
     flexDirection: "row",
@@ -77,7 +78,15 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     backgroundColor: "#FFFFFF",
   },
-  label: { color: "#111827", fontSize: 15 },
-  badge: { color: "#E63946", fontWeight: "600" },
-  gray: { color: "#6B7280" },
+  // 답변 완료(checked) 상태일 때 적용될 스타일
+  containerChecked: {
+    // 체크마크 색상(#10B981)과 잘 어울리는 은은한 녹색 배경
+    backgroundColor: "#FFF3EC",
+    // 테두리 색상도 체크마크와 통일하여 완료 상태를 강조
+    borderColor: "#FF7D4A",
+  },
+  // --- ⬆️ 여기까지 추가되었습니다 ⬆️ ---
+  label: { color: "#5C4B44", fontSize: 14 },
+  badge: { color: "#FF7D4A" },
+  gray: { color: "#5C4B44" },
 });

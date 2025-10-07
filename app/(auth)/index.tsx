@@ -57,7 +57,7 @@ const AuthPage = () => {
         <SignupHeader
           title="휴대폰 번호를 입력해 주세요"
           subtitle={
-            "안전하고 깨끗한 서비스를 위해 본인 인증이 필요해요.\n입력한 번호는 절대 공개되지 않아요."
+            "안전하고 깨끗한 서비스를 위해 본인 인증이 필요해요.\n\n입력한 번호는 절대 공개되지 않아요."
           }
         />
         <View style={styles.inputRow}>
