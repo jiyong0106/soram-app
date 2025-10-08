@@ -58,14 +58,17 @@ const TopicListIdPage = () => {
     }
     try {
       await postText({ topicId, textContent: text });
-      showAlert("이야기가 잘 등록되었어요.", () => {
-        reset({ content: "" });
-        if (hasError && router.canGoBack()) {
-          router.back();
-          return;
+      showAlert(
+        `이야기 작성 완료!\n\n'활동'탭에서 언제든 수정할 수 있어요.`,
+        () => {
+          reset({ content: "" });
+          if (hasError && router.canGoBack()) {
+            router.back();
+            return;
+          }
+          router.dismissTo("/(tabs)/topic/list");
         }
-        router.dismissTo("/(tabs)/topic/list");
-      });
+      );
     } catch (e: any) {
       if (e) {
         showAlert(e.response.data.message);
