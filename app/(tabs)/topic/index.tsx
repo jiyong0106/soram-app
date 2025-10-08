@@ -8,6 +8,7 @@ import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getTopicRandom } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
+import { useAuthStore } from "@/utils/store/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -20,7 +21,8 @@ const MIN_SHUFFLE_DURATION = 800;
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
-
+  const { token } = useAuthStore();
+  console.log("token", token);
   // ✨ 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
   const [isShuffling, setIsShuffling] = useState(false);
 
