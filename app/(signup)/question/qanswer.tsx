@@ -103,7 +103,7 @@ export default QanswerPage;
 
 const styles = StyleSheet.create({
   textarea: {
-    minHeight: 200,
+    minHeight: 450,
     fontSize: 16,
     textAlignVertical: "top",
     padding: 10,
