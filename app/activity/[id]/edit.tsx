@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    minHeight: 200,
+    minHeight: 450,
     fontSize: 16,
     textAlignVertical: "top",
     padding: 10,
