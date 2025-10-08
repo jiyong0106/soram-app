@@ -17,6 +17,7 @@ export interface MyVoiceResponseItem {
   audioUrl: string | null;
   playtime: number | null;
   topic: {
+    id: number;
     title: string;
     category: string;
   };

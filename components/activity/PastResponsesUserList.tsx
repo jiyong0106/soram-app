@@ -40,16 +40,13 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
   });
 
   // --- [수정 1] ---
-  // API 응답 데이터에 포함된 작성자 정보(user)를 mappedData에 포함시킵니다.
+  // topic 객체를 해체하지 않고 그대로 전달하여 id, title, category 모두를 포함시킵니다.
   const mappedData = React.useMemo(() => {
     if (!data) return [];
     return data.pages.flatMap((page) =>
       page.data.map((item: MyVoiceResponseItem) => ({
-        // MyVoiceResponseItem 타입에는 user가 없지만, 실제 API 응답에는 포함되어 있습니다.
-        // 따라서 item as any로 임시 처리하고, user 정보를 명시적으로 추가합니다.
         id: item.id,
-        title: item.topic.title,
-        category: item.topic.category,
+        topic: item.topic, // topic 객체 전체를 전달합니다.
         textContent: item.textContent,
         createdAt: item.createdAt,
         author: item.user,
@@ -69,17 +66,20 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
     // useInfiniteQuery의 data 구조에 따라 첫 번째 페이지의 메타 정보를 사용합니다.
     const connectionStatus = data?.pages?.[0]?.meta?.connectionStatus || null;
 
+    // --- [수정 2] ---
+    // mappedData의 구조가 변경되었으므로, params를 올바른 경로에서 가져옵니다.
     router.push({
-      pathname: "/activity/user/response/[responseId]", // 새로 만들 상세 페이지 경로
+      pathname: "/activity/user/response/[responseId]",
       params: {
         responseId: item.id,
         authorId: item.author.id,
         authorNickname: item.author.nickname,
-        topicTitle: item.title,
-        topicCategory: item.category,
+        topicTitle: item.topic.title, // item.title -> item.topic.title
+        topicCategory: item.topic.category, // item.category -> item.topic.category
+        topicBoxId: item.topic.id, // 이제 item.topic.id 로 정상 접근 가능합니다.
         textContent: item.textContent,
         createdAt: item.createdAt,
-        connectionStatus: connectionStatus, // [수정] params에 connectionStatus 추가
+        connectionStatus: connectionStatus,
       },
     });
   };
@@ -100,10 +100,25 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
     <FlatList
       data={mappedData}
       // --- [수정 3] ---
-      // renderItem에서 onPress 핸들러를 연결합니다.
-      renderItem={({ item }) => (
-        <MyResponseCard item={item} onPress={() => handleCardPress(item)} />
-      )}
+      // MyResponseCard 컴포넌트는 이제 item.topic.title 등을 사용해야 합니다.
+      // (MyResponseCard 내부 코드도 이 구조에 맞게 수정 필요할 수 있습니다.)
+      renderItem={({ item }) => {
+        // MyResponseCard에 전달할 props를 재구성합니다.
+        const cardItem = {
+          id: item.id,
+          title: item.topic.title,
+          category: item.topic.category,
+          textContent: item.textContent,
+          createdAt: item.createdAt,
+          author: item.author,
+        };
+        return (
+          <MyResponseCard
+            item={cardItem}
+            onPress={() => handleCardPress(item)}
+          />
+        );
+      }}
       keyExtractor={(item) => String(item.id)}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContentContainer}
