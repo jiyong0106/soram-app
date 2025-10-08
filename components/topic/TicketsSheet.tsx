@@ -46,6 +46,9 @@ const Row = ({
       if (sourceType === "PAID") return "구매한 이용권";
       return "보관중인 이용권";
     };
+
+    console.log("breakdown", breakdown);
+    console.log("storedTickets=>daily가 아닌것", storedTickets);
     return {
       daily: dailyTicket
         ? {
@@ -124,6 +127,14 @@ const Row = ({
   );
 };
 
+//현재 문제점
+//만약 다른 사람의 이야기를 본 경우,
+//totalQuantity는 최신화가 잘 됨
+//오늘 무료로 받은 이용권은 최신화가 잘 됨
+
+//하지만 breakdown은 최신화가 안 됨
+//processedBreakdown.stored는 최신화가 안 됨
+
 // --- 변경점: 누락된 props와 ref를 다시 받도록 함수 시그니처 수정 ---
 const TicketsSheet = (
   { snapPoints }: { snapPoints?: ReadonlyArray<string | number> },
@@ -132,7 +143,7 @@ const TicketsSheet = (
   // 변경점 1: TicketsView와 동일하게, initialized 상태를 함께 가져옵니다.
   const data = useTicketsStore((s) => s.data);
   const initialized = useTicketsStore((s) => s.initialized);
-
+  console.log(data);
   // 변경점 2: 데이터가 준비되지 않았다면 렌더링하지 않도록 안전장치를 추가합니다.
   if (!initialized) {
     return null;
