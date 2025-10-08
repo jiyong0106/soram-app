@@ -1,6 +1,11 @@
 // app/utils/api/api.ts (refactor)
 import axios, { AxiosHeaders } from "axios";
-import { getAuthToken, setAuthToken } from "@/utils/util/auth";
+import {
+  getAuthToken,
+  setAuthToken,
+  getRefreshToken,
+  setRefreshToken,
+} from "@/utils/util/auth";
 
 const instance = axios.create({
   baseURL: `${process.env.EXPO_PUBLIC_API_URL}/api/v1`,
@@ -50,17 +55,31 @@ let refreshing: Promise<string | null> | null = null;
 const refreshToken = async (): Promise<string | null> => {
   try {
     console.log("[refresh] try refresh…");
+    const rt = getRefreshToken();
+    if (!rt) {
+      await setAuthToken(null);
+      await setRefreshToken(null);
+      return null;
+    }
+
     const res = await axios.post(
       `${process.env.EXPO_PUBLIC_API_URL}/api/v1/auth/refresh`,
-      {},
-      { withCredentials: true }
+      undefined,
+      {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${rt}` }, // 리프레시 토큰을 Bearer로 전송
+      }
     );
-    const newToken: string | undefined = res.data?.accessToken;
-    console.log("[refresh] success? ->", !!newToken);
-    await setAuthToken(newToken ?? null);
-    return newToken ?? null;
+    const newAccessToken: string | undefined = res.data?.accessToken;
+    const newRefreshToken: string | undefined = res.data?.refreshToken;
+    console.log("[refresh] success? ->", !!newAccessToken && !!newRefreshToken);
+
+    await setAuthToken(newAccessToken ?? null);
+    await setRefreshToken(newRefreshToken ?? null);
+    return newAccessToken ?? null;
   } catch (e) {
     await setAuthToken(null);
+    await setRefreshToken(null);
     return null;
   } finally {
     refreshing = null;
