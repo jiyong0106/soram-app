@@ -3,14 +3,22 @@
 import { Buffer } from "buffer"; // RN 환경에서 base64 디코딩용
 
 export const TOKEN_KEY = "access_token"; // (레거시 키, migrate에 활용 가능)
-let memToken: string | null = null;
+let memAccessToken: string | null = null; // 액세스 토큰(메모리)
+let memRefreshToken: string | null = null; // 리프레시 토큰(메모리)
 
+// 액세스 토큰 설정/조회 (요청 헤더 주입은 axios 인터셉터 담당)
 export const setAuthToken = (t: string | null) => {
-  // 메모리만 갱신 (헤더 주입은 axios 요청 인터셉터가 담당)
-  memToken = t;
+  memAccessToken = t;
 };
 
-export const getAuthToken = () => memToken;
+export const getAuthToken = () => memAccessToken;
+
+// 리프레시 토큰 설정/조회 (재발급 요청에만 사용)
+export const setRefreshToken = (t: string | null) => {
+  memRefreshToken = t;
+};
+
+export const getRefreshToken = () => memRefreshToken;
 
 export const isTokenExpired = (t?: string | null) => {
   if (!t) return true;
