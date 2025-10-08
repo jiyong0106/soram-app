@@ -7,7 +7,7 @@ interface Props {
   item: getProfileQuestionsResponse;
 }
 const RequiredQuestionItem = ({ item }: Props) => {
-  const { id, content } = item;
+  const { id, content, subQuestions } = item;
   const router = useRouter();
   const hasAnswer = useSignupDraftStore(
     (s) => !!s.draft.answers.find((a) => a.questionId === id)?.content?.trim()
@@ -20,6 +20,7 @@ const RequiredQuestionItem = ({ item }: Props) => {
         label: content,
         variant: "required",
         questionId: id,
+        subQuestions: JSON.stringify(subQuestions),
       },
     });
   };

@@ -28,17 +28,17 @@ const InterestBadge = ({
 
   // 상태에 따른 색상 결정 로직
   const backgroundColor = selected
-    ? "#FFF1EF"
+    ? "#FFF3EC"
     : disabled
     ? DISABLED_COLOR
     : "#fff";
   const borderColor = selected
-    ? "#FF6B6B"
+    ? "#FF7D4A"
     : disabled
     ? DISABLED_COLOR
     : "#E5E5EA";
   const textColor = selected
-    ? "#FF6B6B"
+    ? "#FF7D4A"
     : disabled
     ? "#AEAEB2" // 비활성화 시 텍스트/아이콘 색상도 연하게
     : "#8E8E93";

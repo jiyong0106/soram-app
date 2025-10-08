@@ -40,8 +40,8 @@ const QuestionPage = () => {
     <View style={styles.container}>
       <View>
         <SignupHeader
-          title={`${nickname}님의 질문을 선택해 주세요`}
-          subtitle="나를 소개하는 글을 작성해주세요"
+          title={`${nickname}님은\n어떤 사람인가요?`}
+          subtitle={`이야기가 풍성할수록 매력이 더 잘 드러날 거에요.\n\n2개 이상 작성하면 프로필이 완성돼요.`}
         />
 
         <View style={styles.inputWrap}>

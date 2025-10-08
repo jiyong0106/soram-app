@@ -134,7 +134,7 @@ const UnlockedResponseDetailScreen = () => {
   const handleRequestConnection = () => {
     if (!authorId || !responseId) return;
     showActionAlert(
-      `대화를 요청할까요?\n\n${authorNickname}님이 요청을 수락하면\n\n대화 요청권이 1개 차감됩니다.`,
+      `대화를 요청할까요?\n\n대화 요청권 1개를 사용합니다.`,
       "요청하기",
       () => {
         requestConnection({

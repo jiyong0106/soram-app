@@ -115,7 +115,7 @@ const SignupPage = () => {
       <View style={styles.container}>
         <SignupHeader
           title="닉네임을 설정해 주세요"
-          subtitle="사용 할 닉네임을 알려주세요, 언제든 바꿀 수 있어요!"
+          subtitle="다른 분들에게 보여질 이름이에요"
         />
         <View style={styles.inputWrap}>
           <TextInput
@@ -150,7 +150,7 @@ const SignupPage = () => {
             <Ionicons
               name="close-circle"
               size={18}
-              color="#EF4444"
+              color="#FF7D4A"
               style={styles.inputIcon}
             />
           ) : null}
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#F1C0B5",
+    borderColor: "#B0A6A0",
     borderRadius: 10,
     height: 55,
     paddingHorizontal: 12,
@@ -214,9 +214,9 @@ const styles = StyleSheet.create({
   status: { marginTop: 10, fontSize: 12 },
   statusNeutral: { color: "#6B7280" },
   statusOk: { color: "#10B981" },
-  statusWarn: { color: "#EF4444" },
+  statusWarn: { color: "#FF7D4A" },
   inputError: {
-    borderColor: "#EF4444",
+    borderColor: "#FF7D4A",
   },
   inputSuccess: {
     borderColor: "#10B981",

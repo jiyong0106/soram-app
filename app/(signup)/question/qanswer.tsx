@@ -1,38 +1,48 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, TextInput, ScrollView } from "react-native";
-import AppText from "@/components/common/AppText";
-import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
+import PageContainer from "@/components/common/PageContainer";
+import SignupQuestionHeader from "@/components/signup/SignupQuestionHeader";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
+import useSafeArea from "@/utils/hooks/useSafeArea";
+import ProgressFooter from "@/components/topic/ProgressFooter";
+import { Stack } from "expo-router";
+import { BackButton } from "@/components/common/backbutton";
 
 const MAX_LEN = 1000;
 
 const QanswerPage = () => {
   const router = useRouter();
-  const { label, variant, questionId } = useLocalSearchParams();
+  const {
+    label,
+    variant,
+    questionId,
+    subQuestions: rawSubQuestions,
+  } = useLocalSearchParams();
+
+  const title = String(label || "");
+  const subQuestions = rawSubQuestions
+    ? JSON.parse(String(rawSubQuestions))
+    : [];
   const qid = Number(questionId ?? 1);
+
   const getAnswerById = useSignupDraftStore((s) => s.getAnswerById);
   const upsertAnswer = useSignupDraftStore((s) => s.upsertAnswer);
-  // 한글 주석: 초기값은 스토어에서 가져오기
   const [text, setText] = useState("");
+  const { bottom } = useSafeArea();
 
   useEffect(() => {
     const existing = getAnswerById?.(qid)?.content ?? "";
     setText(existing);
   }, [qid, getAnswerById]);
 
-  const countColor = useMemo(() => {
-    if (text.length === 0) return styles.countNeutral.color as string;
-    if (text.length < 120) return styles.countGuide.color as string;
-    if (text.length > MAX_LEN) return styles.countWarn.color as string;
-    return styles.countOk.color as string;
-  }, [text.length]);
-
   const isOver = text.length > MAX_LEN;
+  const isValid = text.trim().length > 0 && !isOver;
 
   const onNext = () => {
-    // 한글 주석: 필수(RequiredQuestionItem)로 들어온 앞 2개만 isPrimary=true, 선택은 false
+    if (!isValid) return;
     const isPrimary = variant === "required" && (qid === 1 || qid === 2);
     upsertAnswer?.({
       questionId: qid,
@@ -44,134 +54,61 @@ const QanswerPage = () => {
   };
 
   return (
-    <ScreenWithStickyAction
-      action={
-        <Button
-          label="다음"
-          color="#FF7D4A"
-          textColor="#fff"
-          disabled={text.trim().length === 0 || isOver}
-          onPress={onNext}
-        />
-      }
-    >
+    <PageContainer edges={["bottom"]} padded={false}>
+      <Stack.Screen
+        options={{
+          title: "답변하기",
+          headerLeft: () => <BackButton />,
+        }}
+      />
       <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
+        style={{ backgroundColor: "#fff" }}
+        keyboardDismissMode="interactive"
+        contentContainerStyle={{ padding: 10 }}
+        automaticallyAdjustKeyboardInsets
       >
-        {/* 상단 메타 정보 */}
-        <View style={styles.metaWrap}>
-          <View style={styles.badges}>
-            <View style={styles.badgePrimary}>
-              <AppText style={styles.badgePrimaryText}>
-                {variant === "required" ? "필수" : "선택"}
-              </AppText>
-            </View>
-            <View style={styles.badgeTone}>
-              <AppText style={styles.badgeToneText}>자기소개</AppText>
-            </View>
-          </View>
-          <AppText style={styles.questionTitle}>{label}</AppText>
-        </View>
-
-        {/* 입력 영역 카드 */}
-        <View style={styles.inputCard}>
-          {/* 툴바 (톤/가이드) */}
-
-          <TextInput
-            value={text}
-            onChangeText={setText}
-            placeholder=""
-            placeholderTextColor="#9CA3AF"
-            style={styles.textarea}
-            multiline
-            textAlignVertical="top"
-            maxLength={MAX_LEN} // UI 보호용(실제 제한은 MAX_LEN)
-            numberOfLines={7}
-          />
-
-          {/* 카운터 & 가이드 */}
-          <View style={styles.counterRow}>
-            <AppText style={[styles.counter, { color: countColor }]}>
-              {text.length} / {MAX_LEN}자
-            </AppText>
-            <AppText
-              style={[styles.counterGuide, isOver && styles.counterGuideWarn]}
-            >
-              {isOver
-                ? "최대 글자 수를 초과했어요"
-                : "100자 이상이면 더 좋아요"}
-            </AppText>
-          </View>
-        </View>
+        <SignupQuestionHeader title={title} subQuestions={subQuestions} />
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="부적절하거나 불쾌감을 줄 수 있는 콘텐츠는 제재될 수 있습니다"
+          placeholderTextColor="#B0A6A0"
+          style={styles.textarea}
+          multiline
+          textAlignVertical="top"
+          maxLength={MAX_LEN}
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
       </ScrollView>
-    </ScreenWithStickyAction>
+      <KeyboardStickyView offset={{ closed: 0, opened: bottom }}>
+        <View style={styles.footer}>
+          <ProgressFooter length={text.length} max={MAX_LEN} />
+          <Button
+            label="완료"
+            color="#FF7D4A"
+            textColor="#fff"
+            disabled={!isValid}
+            onPress={onNext}
+          />
+        </View>
+      </KeyboardStickyView>
+    </PageContainer>
   );
 };
 
 export default QanswerPage;
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 18,
-    flexGrow: 1,
-  },
-
-  /* 상단 메타 */
-  metaWrap: { gap: 8, marginTop: 8 },
-  badges: { flexDirection: "row", gap: 8 },
-  badgePrimary: {
-    backgroundColor: "#FFF1EC",
-    borderColor: "#FF7D4A",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  badgePrimaryText: { color: "#FF7D4A", fontWeight: "600", fontSize: 12 },
-  badgeTone: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  badgeToneText: { color: "#6B7280", fontSize: 12 },
-  questionTitle: { fontSize: 18, color: "#111827", fontWeight: "bold" },
-
-  /* 입력 카드 */
-  inputCard: {
-    borderWidth: 1,
-    borderColor: "#FF6B3E",
-    backgroundColor: "#FFF8F5",
-    borderRadius: 12,
-    paddingBottom: 12,
-    gap: 10,
-  },
-
   textarea: {
-    minHeight: 180,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-    borderRadius: 10,
+    minHeight: 200,
+    fontSize: 16,
+    textAlignVertical: "top",
     padding: 10,
-    fontSize: 15,
-    color: "#111827",
-    lineHeight: 22,
   },
-
-  counterRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
+  footer: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
-  counter: { fontSize: 12, fontWeight: "600" },
-  countNeutral: { color: "#9CA3AF" },
-  countGuide: { color: "#6B7280" },
-  countOk: { color: "#10B981" },
-  countWarn: { color: "#EF4444" },
-
-  counterGuide: { fontSize: 12, color: "#6B7280" },
-  counterGuideWarn: { color: "#EF4444" },
 });

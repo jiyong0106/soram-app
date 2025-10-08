@@ -45,7 +45,6 @@ const LocationSheet = (
                 }}
               >
                 <AppText style={s.rowName}>{item.name}</AppText>
-                <AppText style={s.rowType}>{item.type}</AppText>
               </ScalePressable>
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}
@@ -62,8 +61,8 @@ export default forwardRef(LocationSheet);
 const s = StyleSheet.create({
   container: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 },
   header: { alignItems: "center", paddingVertical: 2 },
-  title: { fontSize: 16, fontWeight: "700", color: "#111827" },
-  subtitle: { marginTop: 4, fontSize: 12, color: "#6B7280" },
+  title: { fontSize: 16, fontWeight: "bold", color: "#5C4B44" },
+  subtitle: { marginTop: 4, fontSize: 12, color: "#B0A6A0" },
   listWrap: {
     marginTop: 12,
     backgroundColor: "#F9FAFB",
@@ -81,7 +80,6 @@ const s = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 8,
   },
-  rowName: { color: "#111827", fontSize: 15 },
-  rowType: { color: "#6B7280", fontSize: 12 },
+  rowName: { color: "#5C4B44", fontSize: 14 },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: "#E5E7EB" },
 });

@@ -12,6 +12,7 @@ import { getProfileQuestionsResponse } from "@/utils/types/signup";
 interface QuestionItemProp {
   id: number;
   content: string;
+  subQuestions?: string[];
 }
 
 interface Props {
@@ -60,12 +61,16 @@ const QuestionPageSheet = (
         if (navigateNext) {
           setNavigateNext(false);
           InteractionManager.runAfterInteractions(() => {
+            const selectedQuestion = questions.find((q) => q.id === selectedId);
+            const subQuestions = selectedQuestion?.subQuestions ?? [];
+
             router.push({
               pathname: "/(signup)/question/qanswer",
               params: {
                 variant: "optional",
                 label: selectedTitle,
                 questionId: selectedId ?? 0,
+                subQuestions: JSON.stringify(subQuestions),
               },
             });
           });
