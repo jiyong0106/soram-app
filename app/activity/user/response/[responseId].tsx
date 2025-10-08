@@ -119,7 +119,7 @@ const UnlockedResponseDetailScreen = () => {
 
       if (error.response?.data?.statusCode === 403) {
         showActionAlert(
-          "대화를 요청하려면 이 주제에 대한 나의 답변이 먼저 필요해요. 지금 바로 내 이야기를 남겨볼까요?",
+          "대화를 요청하려면 이 주제에 대한 나의 답변이 먼저 필요해요. 내 이야기를 남기러 갈까요?",
           "이야기 남기기",
           () => {
             console.log("답변 남기기 화면으로 이동");
