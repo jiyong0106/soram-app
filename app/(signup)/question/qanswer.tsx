@@ -38,8 +38,10 @@ const QanswerPage = () => {
     setText(existing);
   }, [qid, getAnswerById]);
 
+  const MIN_LEN = 20;
+
   const isOver = text.length > MAX_LEN;
-  const isValid = text.trim().length > 0 && !isOver;
+  const isValid = text.trim().length >= MIN_LEN && !isOver;
 
   const onNext = () => {
     if (!isValid) return;
@@ -57,7 +59,7 @@ const QanswerPage = () => {
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
-          title: "답변하기",
+          title: "작성하기",
           headerLeft: () => <BackButton />,
         }}
       />

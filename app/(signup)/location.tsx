@@ -43,7 +43,7 @@ const LocationPage = () => {
           <Ionicons
             name="map-outline"
             size={24}
-            color={location ? "#5C4B44" : "#B0A6A0"}
+            color={location ? "#FF7D4A" : "#B0A6A0"}
           />
           <AppText
             style={[
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     color: "#B0A6A0",
   },
   locationBoxFocused: {
-    borderColor: "#d9d9d9",
+    borderColor: "#FF7D4A",
   },
   locationTextFocused: {
     color: "#5C4B44",
