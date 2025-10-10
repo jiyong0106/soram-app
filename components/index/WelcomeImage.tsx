@@ -41,40 +41,28 @@ const WelcomeImage = () => {
   return (
     <View style={styles.container}>
       <View style={styles.heroWrapper}>
-        {/* envelope body (paper) */}
         <View style={styles.envelopeBody} />
 
-        {/* top band - subtle color stripe */}
         <LinearGradient
           colors={["#fff3ee", "#ffe6db"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.topBand}
         />
-
-        {/* triangular flap (봉투 플랩) */}
+        {/* 플랩 삼각형 */}
         <View style={styles.flapTriangleOuter}>
           <View style={styles.flapTriangle} />
         </View>
-
-        {/* flap shadow to give depth */}
+        {/* 플랩 그림자 */}
         <View style={styles.flapShadow} />
-
-        {/* fold lines (diagonal) to suggest 봉투 접힘 */}
+        {/* 접힘선 */}
         <View style={styles.foldLeft} />
         <View style={styles.foldRight} />
-
-        {/* small stamp (top-right) */}
-        <View style={styles.stamp}>
-          <View style={styles.stampInner} />
-        </View>
-
-        {/* central seal (도장) */}
+        {/* 중앙 씰 */}
         <View style={styles.sealOuter}>
           <View style={styles.sealInner} />
         </View>
-
-        {/* warm animated overlay (paper warm tone / subtle lighting) */}
+        {/* 애니메이션 그라데이션 */}
         <Animated.View style={[styles.animatedGradient, animatedStyle]}>
           <LinearGradient
             colors={["rgba(255,245,242,0.72)", "rgba(255,238,232,0.72)"]}
@@ -99,13 +87,11 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
 
-  /* envelope container */
   heroWrapper: {
     width: "100%",
     height: 200,
     borderRadius: 20,
     overflow: "hidden",
-    // subtle outer shadow for the whole card
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -113,7 +99,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  /* envelope paper */
   envelopeBody: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "#fffdfb", // warm paper
@@ -122,7 +107,6 @@ const styles = StyleSheet.create({
     borderColor: "#ffe9e0",
   },
 
-  /* top decorative band under flap */
   topBand: {
     position: "absolute",
     left: 0,
@@ -135,7 +119,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ffe6dc",
   },
 
-  /* triangular flap wrapper centers the triangle */
   flapTriangleOuter: {
     position: "absolute",
     top: -2,
@@ -147,7 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     overflow: "visible",
   },
-  /* actual triangle using border trick */
   flapTriangle: {
     width: 0,
     height: 0,
@@ -159,7 +141,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ffe4d9", // flap main color
   },
 
-  /* subtle shadow below flap to show depth */
   flapShadow: {
     position: "absolute",
     top: 52,
@@ -172,7 +153,6 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 2 }],
   },
 
-  /* diagonal fold lines for paper feel */
   foldLeft: {
     position: "absolute",
     left: 20,
@@ -194,7 +174,6 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 
-  /* small circular stamp at top-right */
   stamp: {
     position: "absolute",
     top: 12,
@@ -220,7 +199,6 @@ const styles = StyleSheet.create({
     opacity: 0.95,
   },
 
-  /* seal / sticker in center-bottom */
   sealOuter: {
     position: "absolute",
     bottom: 36,
@@ -246,7 +224,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff6b6b",
   },
 
-  /* animated warm overlay to simulate soft light on paper */
   animatedGradient: {
     position: "absolute",
     top: -12,
