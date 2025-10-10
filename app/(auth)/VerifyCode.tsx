@@ -16,6 +16,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import SignupHeader from "@/components/signup/SignupHeader";
+import { usePushTokenStore } from "@/utils/store/usePushTokenStore";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -24,6 +25,7 @@ const VerifyCodeInputPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const clearPhoneNumber = usePhoneNumberStore((s) => s.clear);
   const setSignupToken = useSignupTokenStore((s) => s.setSignupToken);
+  const pushToken = usePushTokenStore((s) => s.pushToken);
   const { showAlert } = useAlert();
   const isValid = otp.length === 4;
   const router = useRouter();
@@ -33,7 +35,11 @@ const VerifyCodeInputPage = () => {
     if (!isValid || loading) return;
     try {
       setLoading(true);
-      const res = await postVerifyOtp({ phoneNumber, otp });
+      const res = await postVerifyOtp({
+        phoneNumber,
+        otp,
+        pushToken: pushToken || undefined,
+      });
 
       // 1. 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {

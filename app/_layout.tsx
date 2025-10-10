@@ -8,10 +8,26 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import TicketsBootstrap from "@/components/auth/TicketsBootstrap";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import { registerForPushNotificationsAsync } from "@/utils/util/notificatoions";
+import { usePushTokenStore } from "@/utils/store/usePushTokenStore";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const setPushToken = usePushTokenStore((s) => s.setPushToken);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        if (token) {
+          setPushToken(token);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to get push token", error);
+      });
+  }, []);
+
   const [fontsLoaded] = useFonts({
     // 예시: Pretendard 패밀리
     nsReg: require("../assets/fonts/NanumSquareNeo-bRg.ttf"),
