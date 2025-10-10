@@ -115,12 +115,15 @@ const UnlockedResponseDetailScreen = () => {
       });
     },
     onError: (error: AxiosError | any) => {
+      const errorCode = error.response?.data?.errorCode;
       const message =
         error.response?.data?.message || "대화 요청에 실패했습니다.";
 
-      if (error.response?.data?.statusCode === 403) {
+      // 1. errorCode에 따라 분기합니다.
+      if (errorCode === "RESPONSE_REQUIRED") {
+        // 1-1. '답변 부재' 에러: 기존 로직과 동일하게 답변 작성 페이지로 유도
         showActionAlert(
-          `대화를 요청하려면\n\n이 주제에 대한 나의 이야기가 있어야 해요.\n\n이야기를 남기러 갈까요?`,
+          message, // 서버에서 온 메시지를 그대로 사용
           `이야기 남기기`,
           () => {
             router.push({
@@ -129,9 +132,14 @@ const UnlockedResponseDetailScreen = () => {
             });
           }
         );
-        return;
+      } else if (errorCode === "INSUFFICIENT_TICKETS") {
+        // 1-2. '재화 부족' 에러: 재화가 부족하다는 알림
+        // TODO: 향후 '충전하러 가기'와 같은 Action 추가하여 UX 개선
+        showAlert(message);
+      } else {
+        // 2. 그 외 모든 에러는 기존과 동일하게 서버 메시지를 그대로 표시
+        showAlert(message);
       }
-      showAlert(message);
     },
   });
 
