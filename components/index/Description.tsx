@@ -7,7 +7,6 @@ const Description = () => {
       <AppText style={styles.text}>가치있는 인연</AppText>
       <AppText style={styles.textHighlight}>진심이 닿는 연결</AppText>
       <AppText style={styles.text}>당신의 소리함, 소람</AppText>
-      {/* <AppText style={styles.text}>인연 큐레이터 소람</AppText> */}
     </View>
   );
 };
