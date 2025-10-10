@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
   },
   notice: {
     fontSize: 12,
-    color: "#888",
+    color: "#777",
     textAlign: "center",
   },
   link: {
     textDecorationLine: "underline",
-    color: "#888",
+    color: "#FF6B3E", // 한글 주석: 주 테마 컬러 적용
   },
 });

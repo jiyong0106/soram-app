@@ -14,17 +14,18 @@ export default RootHeader;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    gap: 10,
+    paddingTop: 30,
+    paddingHorizontal: 10,
+    gap: 6,
   },
   logo: {
-    fontSize: 25,
+    fontSize: 28,
     fontWeight: "bold",
-    color: "#FF6B3E",
+    color: "#fff",
   },
 
   slogan: {
-    fontSize: 12,
-    color: "#5C4B44",
+    fontSize: 13,
+    color: "#6b6b6b",
   },
 });
