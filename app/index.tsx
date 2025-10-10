@@ -89,9 +89,11 @@ const Index = () => {
         <RootHeader />
         <View style={styles.body}>
           <WelcomeImage />
-          <Description />
-          <TermsNotice />
-          <StartButton />
+          <View style={styles.content}>
+            <Description />
+            <TermsNotice />
+            <StartButton />
+          </View>
         </View>
       </View>
     </PageContainer>
@@ -108,6 +110,9 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     justifyContent: "flex-end",
+  },
+  content: {
+    width: "100%",
     gap: 10,
   },
 });
