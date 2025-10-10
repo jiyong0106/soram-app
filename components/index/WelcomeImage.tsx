@@ -42,7 +42,6 @@ const WelcomeImage = () => {
 
   return (
     <View style={styles.container}>
-      {/* 한글 주석: 가운데 영역을 은은한 블롭 그라데이션으로 장식 */}
       <View style={styles.heroWrapper}>
         <Animated.View style={[styles.animatedGradient, animatedStyle]}>
           <LinearGradient
