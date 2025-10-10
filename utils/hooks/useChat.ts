@@ -38,6 +38,8 @@ export function useChat(jwt: string, connectionId: number) {
     return () => {
       s.off("joinedRoom", onJoined);
       s.off("newMessage", onNewMessage);
+      s.emit("leaveRoom", { connectionId });
+      console.log("[socket] leaveRoom:", { connectionId });
     };
   }, [jwt, connectionId]);
 
