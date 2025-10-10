@@ -81,14 +81,14 @@ const Index = () => {
           top: 0,
           left: 0,
           right: 0,
-          height: "75%",
+          height: "85%",
         }}
       />
 
       <View style={styles.container}>
         <RootHeader />
         <View style={styles.body}>
-          {/* <WelcomeImage /> */}
+          <WelcomeImage />
           <Description />
           <TermsNotice />
           <StartButton />
