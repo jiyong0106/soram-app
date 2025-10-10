@@ -50,7 +50,7 @@ const chatPage = () => {
 
   // 실시간 목록 갱신: 소켓으로 newMessage 수신 시 캐시 업데이트
   const jwt = getAuthToken() ?? "";
-  useChatListRealtime(jwt, connectionIds);
+  useChatListRealtime(jwt);
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
