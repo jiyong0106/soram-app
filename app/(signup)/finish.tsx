@@ -60,6 +60,7 @@ const FinishPage = () => {
 
       // 5) 페이지 이동
       router.replace("/(tabs)/topic");
+      router.dismissAll();
     } catch (e: any) {
       if (e) {
         showAlert(e.response.data.message);
