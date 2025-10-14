@@ -80,7 +80,7 @@ const Button = ({
         ]}
       >
         {loading ? (
-          <LoadingSpinner color="#ff6b6b" />
+          <LoadingSpinner color="#FF6B3E" />
         ) : (
           <AppText
             style={[

@@ -132,7 +132,7 @@ const DeleteAccountForm = () => {
         onPress={onSubmit}
         disabled={!canSubmit}
         loading={loading}
-        color="#ff6b6b"
+        color="#FF6B3E"
         textColor="#fff"
       />
     </View>

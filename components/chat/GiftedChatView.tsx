@@ -77,7 +77,7 @@ const GiftedChatView = ({
 
       const wrapperStyle = {
         right: {
-          backgroundColor: "#ff6b6b",
+          backgroundColor: "#FF6B3E",
           padding: 5,
           marginLeft: 0,
           marginRight: 0,

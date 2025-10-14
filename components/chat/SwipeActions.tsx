@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noti: {
-    backgroundColor: "#FF6B6B",
+    backgroundColor: "#FF6B3E",
   },
   delete: {
     backgroundColor: "#9AA0A6",

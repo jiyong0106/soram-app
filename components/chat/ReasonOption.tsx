@@ -13,7 +13,7 @@ const ReasonOption = ({
   label,
   selected,
   onPress,
-  themeColor = "#ff6b6b",
+  themeColor = "#FF6B3E",
 }: Props) => {
   return (
     <Pressable

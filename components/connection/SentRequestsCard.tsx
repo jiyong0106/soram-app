@@ -17,7 +17,7 @@ interface SentRequestsCardProps {
   disabled?: boolean;
   onCancel: () => void;
 }
-const THEME = "#ff6b6b";
+const THEME = "#FF6B3E";
 
 const SentRequestsCard = ({
   item,

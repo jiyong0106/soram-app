@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffd9cf",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#ff6b6b",
+    shadowColor: "#FF6B3E",
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF6B3E",
     opacity: 0.95,
   },
 
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffb3a3",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#ff6b6b",
+    shadowColor: "#FF6B3E",
     shadowOpacity: 0.18,
     shadowRadius: 6,
     elevation: 4,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF6B3E",
   },
 
   animatedGradient: {

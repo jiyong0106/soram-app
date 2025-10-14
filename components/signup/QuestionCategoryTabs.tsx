@@ -55,7 +55,7 @@ const COLORS = {
   text: "#fff", // gray-900
   sub: "#6B7280", // gray-500
   border: "#E5E7EB", // gray-200
-  fill: "#ff6b6b", // gray-100
+  fill: "#FF6B3E", // gray-100
   primary: "#FF7D4A",
 };
 
