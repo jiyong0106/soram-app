@@ -14,7 +14,7 @@ const ChatTriggerTabs = ({ onChange }: Props) => {
         <Button
           label="나의 답변"
           onPress={() => onChange("mine")}
-          color={"#ff6b6b"}
+          color={"#FF6B3E"}
           textColor="#fff"
           style={s.btn}
         />
@@ -23,7 +23,7 @@ const ChatTriggerTabs = ({ onChange }: Props) => {
         <Button
           label="상대방의 답변"
           onPress={() => onChange("opponent")}
-          color={"#ff6b6b"}
+          color={"#FF6B3E"}
           textColor="#fff"
           style={s.btn}
         />

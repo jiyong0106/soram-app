@@ -19,7 +19,7 @@ const ReportDetailsInput = ({
   maxLen = 1000,
   placeholder = "상세 내용을 입력하세요.",
   helperText,
-  themeColor = "#ff6b6b",
+  themeColor = "#FF6B3E",
 }: Props) => {
   const len = value.length;
   const tooShort = len < minLen;

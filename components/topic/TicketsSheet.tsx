@@ -47,8 +47,6 @@ const Row = ({
       return "보관중인 이용권";
     };
 
-    console.log("breakdown", breakdown);
-    console.log("storedTickets=>daily가 아닌것", storedTickets);
     return {
       daily: dailyTicket
         ? {
@@ -143,7 +141,6 @@ const TicketsSheet = (
   // 변경점 1: TicketsView와 동일하게, initialized 상태를 함께 가져옵니다.
   const data = useTicketsStore((s) => s.data);
   const initialized = useTicketsStore((s) => s.initialized);
-  console.log(data);
   // 변경점 2: 데이터가 준비되지 않았다면 렌더링하지 않도록 안전장치를 추가합니다.
   if (!initialized) {
     return null;

@@ -268,8 +268,8 @@ const styles = StyleSheet.create({
   },
   userInfo: { flexDirection: "row", alignItems: "center", gap: 12 },
   avatar: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     borderRadius: 16,
     backgroundColor: "#FFD6C9",
     justifyContent: "center",

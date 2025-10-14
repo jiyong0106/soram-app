@@ -38,7 +38,7 @@ const COLORS = {
   shadow: "#00000022",
   topicPillBg: "#F3F4F6",
   topicPillText: "#6B7280",
-  accent: "#ff6b6b",
+  accent: "#FF6B3E",
 };
 
 const ChatTriggerSheet = (

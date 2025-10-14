@@ -56,9 +56,7 @@ const ReceivedRequestsCard = ({
       {/* 헤더: 아바타 + 닉네임 + 시간 */}
       <View style={styles.row}>
         <View style={styles.avatar}>
-          <AppText style={styles.avatarText}>
-            {getInitials(requester?.nickname)}
-          </AppText>
+          <Ionicons name="person" size={18} color="#fff" />
         </View>
         <View style={{ flex: 1 }}>
           <AppText style={styles.name}>{requester?.nickname}</AppText>
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFF3EC",
+    backgroundColor: "#FFD6C9",
     alignItems: "center",
     justifyContent: "center",
   },

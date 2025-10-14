@@ -54,6 +54,7 @@ const VerifyCodeInputPage = () => {
         useAuthStore.getState().setToken(res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/topic");
+        router.dismissAll();
         return;
       }
 

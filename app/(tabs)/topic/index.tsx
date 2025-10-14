@@ -22,7 +22,6 @@ const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
   const { token } = useAuthStore();
-  console.log("token", token);
   // ✨ 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
   const [isShuffling, setIsShuffling] = useState(false);
 

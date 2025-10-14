@@ -11,7 +11,7 @@ const StartButton = () => {
       textColor="#fff"
       onPress={() => router.push("/(auth)")}
       style={{
-        shadowColor: "#ff6b6b",
+        shadowColor: "#FF6B3E",
         shadowOpacity: 0.25,
         shadowRadius: 8,
         elevation: 6,
