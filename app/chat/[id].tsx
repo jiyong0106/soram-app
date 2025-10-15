@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useEffect } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
@@ -144,18 +144,32 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-      <ChatTriggerBanner roomId={roomId} />
-      <GiftedChatView
-        messages={giftedMessages}
-        onSend={handleSendGifted}
-        currentUser={{ _id: myUserId ?? "me" }}
-        onLoadEarlier={handleLoadEarlier}
-        canLoadEarlier={!!hasNextPage}
-        isLoadingEarlier={!!isFetchingNextPage}
-        isLeaveUser={isLeaveUser}
-        isBlockedUser={isBlockedUser}
-        leaveUserName={peerUserName}
-      />
+
+      {/* 변경점: ChatTriggerBanner와 GiftedChatView를 새로운 View로 감싸 레이아웃을 제어합니다. */}
+      <View style={styles.chatContainer}>
+        <GiftedChatView
+          messages={giftedMessages}
+          onSend={handleSendGifted}
+          currentUser={{ _id: myUserId ?? "me" }}
+          onLoadEarlier={handleLoadEarlier}
+          canLoadEarlier={!!hasNextPage}
+          isLoadingEarlier={!!isFetchingNextPage}
+          isLeaveUser={isLeaveUser}
+          isBlockedUser={isBlockedUser}
+          leaveUserName={peerUserName}
+          // 변경점: 배너에 가려지는 첫 메시지를 위해 상단에 패딩을 추가합니다.
+          listViewProps={{
+            contentContainerStyle: {
+              paddingTop: 60, // 배너 높이만큼 여백 확보
+            },
+          }}
+        />
+
+        {/* 변경점: 배너를 절대 위치를 가진 View로 감싸 화면 위에 띄웁니다. */}
+        <View style={styles.bannerWrapper}>
+          <ChatTriggerBanner roomId={roomId} />
+        </View>
+      </View>
 
       <ChatActionSheet
         ref={actionSheetRef}
@@ -166,5 +180,20 @@ const ChatIdPage = () => {
     </PageContainer>
   );
 };
+
+// 변경점: 레이아웃을 위한 스타일 객체 추가
+const styles = StyleSheet.create({
+  chatContainer: {
+    flex: 1, // 헤더를 제외한 모든 영역을 차지하도록 설정
+    backgroundColor: "#fff", // 채팅방 배경색 예시 (필요에 따라 수정)
+  },
+  bannerWrapper: {
+    position: "absolute", // 부모(chatContainer)를 기준으로 절대 위치 설정
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1, // 다른 요소들보다 위에 보이도록 설정
+  },
+});
 
 export default ChatIdPage;

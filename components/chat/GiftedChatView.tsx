@@ -25,6 +25,7 @@ export type GiftedChatViewProps = {
   isLeaveUser?: boolean;
   isBlockedUser?: boolean;
   leaveUserName?: string; // 상대방 닉네임(선택)
+  listViewProps?: any;
 };
 
 const GiftedChatView = ({
@@ -38,6 +39,8 @@ const GiftedChatView = ({
   isLeaveUser,
   isBlockedUser,
   leaveUserName,
+  // 변경점 2: props 객체에서 listViewProps를 추출합니다.
+  listViewProps,
 }: GiftedChatViewProps) => {
   // 시간 라벨 포맷터
   const formatTimeLabel = useCallback((date?: Date | number | string) => {
@@ -332,6 +335,8 @@ const GiftedChatView = ({
       renderDay={renderDay}
       renderInputToolbar={renderInputToolbar}
       renderComposer={renderComposer}
+      // 받아온 listViewProps를 GiftedChat 컴포넌트에 그대로 전달
+      listViewProps={listViewProps}
       renderSend={(props: any) => {
         const canSend = !!props.text?.trim();
         return (

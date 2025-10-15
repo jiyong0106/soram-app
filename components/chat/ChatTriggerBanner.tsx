@@ -31,17 +31,22 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
   };
 
   return (
+    // 변경점 1: 최상위 View는 이제 위치와 그림자만 담당합니다. (배경색 없음)
     <View style={s.wrap}>
-      <ChatTriggerHeader
-        title={title}
-        expanded={expanded}
-        onTitlePress={() => setExpanded((v) => !v)}
-      />
-      {expanded && (
-        <View style={s.body}>
-          <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
-        </View>
-      )}
+      {/* 변경점 2: 말풍선의 형태(테두리, 둥근 모서리)를 담당할 새로운 View를 추가합니다. */}
+      <View style={s.bubbleContainer}>
+        <ChatTriggerHeader
+          title={title}
+          expanded={expanded}
+          onTitlePress={() => setExpanded((v) => !v)}
+        />
+        {expanded && (
+          <View style={s.body}>
+            <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
+          </View>
+        )}
+      </View>
+
       <ChatTriggerSheet
         ref={actionSheetRef}
         snapPoints={["85%"]}
@@ -55,16 +60,32 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
 export default ChatTriggerBanner;
 
 const s = StyleSheet.create({
+  // 변경점 3: wrap 스타일을 수정합니다. 배경색과 테두리를 제거하고, 그림자 효과를 추가하여 '떠 있는' 느낌을 강조합니다.
   wrap: {
     marginHorizontal: 12,
     marginTop: 8,
     marginBottom: 4,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "red",
-    overflow: "hidden",
+    // 그림자 속성 (iOS)
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2.22,
+    // 그림자 속성 (Android)
+    elevation: 3,
   },
-
-  body: { padding: 12 },
+  // 변경점 4: bubbleContainer 스타일을 새로 추가합니다.
+  bubbleContainer: {
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "red", // 기존의 빨간색 테두리를 조금 더 부드러운 색으로 변경했습니다.
+    overflow: "hidden", // 이 속성을 통해 자식 컴포넌트들이 둥근 모서리를 따라 잘리게 됩니다.
+  },
+  // 변경점 5: body는 이제 배경색과 패딩만 담당합니다.
+  body: {
+    padding: 12,
+    backgroundColor: "#fff",
+  },
 });
