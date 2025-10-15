@@ -60,7 +60,7 @@ const s = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     borderRadius: 12,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fff",
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "red",
     overflow: "hidden",

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import AppText from "@/components/common/AppText";
 import ScalePressable from "../common/ScalePressable";
 
@@ -13,14 +13,14 @@ type Props = {
 const ChatTriggerHeader = ({ title, expanded, onTitlePress }: Props) => {
   return (
     <ScalePressable style={s.header} onPress={onTitlePress}>
-      <Ionicons name="link-outline" size={24} color="black" />
+      <Feather name="link" size={14} color="#5C4B44" />
 
       <AppText style={s.headerText}>{title}</AppText>
       <View>
         {expanded ? (
-          <Ionicons name="chevron-down-outline" size={24} color="#9CA3AF" />
+          <Ionicons name="chevron-up-outline" size={20} color="#FF7D4A" />
         ) : (
-          <Ionicons name="chevron-up-outline" size={24} color="#9CA3AF" />
+          <Ionicons name="chevron-down-outline" size={20} color="#FF7D4A" />
         )}
       </View>
     </ScalePressable>
@@ -36,8 +36,8 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fff",
     gap: 4,
   },
-  headerText: { fontWeight: "700", color: "#374151" },
+  headerText: { color: "#5C4B44" },
 });
