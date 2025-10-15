@@ -6,6 +6,7 @@ import { GetTriggerResponse } from "@/utils/types/chat";
 import ChatTriggerHeader from "@/components/chat/ChatTriggerHeader";
 import ChatTriggerTabs from "@/components/chat/ChatTriggerTabs";
 import ChatTriggerSheet from "./ChatTriggerSheet";
+import ScalePressable from "../common/ScalePressable";
 
 interface ChatTriggerBannerProps {
   roomId: number;
@@ -32,16 +33,19 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
 
   return (
     <View style={s.wrap}>
-      <ChatTriggerHeader
-        title={title}
-        expanded={expanded}
-        onTitlePress={() => setExpanded((v) => !v)}
-      />
-      {expanded && (
-        <View style={s.body}>
-          <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
+      {/* ScalePressable로 bubbleContainer 전체를 감싸고, onPress 이벤트를 여기서 처리 */}
+      <ScalePressable onPress={() => setExpanded((v) => !v)}>
+        <View style={s.bubbleContainer}>
+          {/* onTitlePress prop 제거 */}
+          <ChatTriggerHeader title={title} expanded={expanded} />
+          {expanded && (
+            <View style={s.body}>
+              <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
+            </View>
+          )}
         </View>
-      )}
+      </ScalePressable>
+
       <ChatTriggerSheet
         ref={actionSheetRef}
         snapPoints={["85%"]}
@@ -59,12 +63,23 @@ const s = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 8,
     marginBottom: 4,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  bubbleContainer: {
     borderRadius: 12,
-    backgroundColor: "#F9FAFB",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "red",
+    borderColor: "#FF7D4A",
     overflow: "hidden",
   },
-
-  body: { padding: 12 },
+  body: {
+    padding: 12,
+    backgroundColor: "#fff",
+  },
 });
