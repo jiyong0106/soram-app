@@ -75,7 +75,6 @@ const s = StyleSheet.create({
   bubbleContainer: {
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
-    // 빨간색 테두리는 디버깅용이었던 것으로 판단하여, 이전 제안드렸던 부드러운 색으로 유지하겠습니다.
     borderColor: "#FF7D4A",
     overflow: "hidden",
   },

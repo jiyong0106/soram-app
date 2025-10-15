@@ -157,15 +157,15 @@ const ChatIdPage = () => {
           isLeaveUser={isLeaveUser}
           isBlockedUser={isBlockedUser}
           leaveUserName={peerUserName}
-          // 변경점: 배너에 가려지는 첫 메시지를 위해 상단에 패딩을 추가합니다.
+          // 배너에 가려지는 첫 메시지를 위해 상단에 패딩 추가
           listViewProps={{
             contentContainerStyle: {
-              paddingTop: 60, // 배너 높이만큼 여백 확보
+              paddingBottom: 30, // 배너 높이만큼 여백 확보
             },
           }}
         />
 
-        {/* 변경점: 배너를 절대 위치를 가진 View로 감싸 화면 위에 띄웁니다. */}
+        {/* 배너를 절대 위치를 가진 View로 감싸 화면 위에 띄웁니다. */}
         <View style={styles.bannerWrapper}>
           <ChatTriggerBanner roomId={roomId} />
         </View>
@@ -181,7 +181,7 @@ const ChatIdPage = () => {
   );
 };
 
-// 변경점: 레이아웃을 위한 스타일 객체 추가
+// 레이아웃을 위한 스타일 객체 추가
 const styles = StyleSheet.create({
   chatContainer: {
     flex: 1, // 헤더를 제외한 모든 영역을 차지하도록 설정
