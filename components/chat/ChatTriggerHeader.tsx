@@ -1,21 +1,22 @@
-// app\components\chat\ChatTriggerHeader.tsx
-
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import AppText from "@/components/common/AppText";
-import ScalePressable from "../common/ScalePressable";
+// 변경점: ScalePressable import 제거
 
+// 변경점: onTitlePress를 props에서 제거
 type Props = {
   title: string;
   expanded: boolean;
-  onTitlePress: () => void;
 };
 
-const ChatTriggerHeader = ({ title, expanded, onTitlePress }: Props) => {
+// 변경점: onTitlePress를 props에서 제거
+const ChatTriggerHeader = ({ title, expanded }: Props) => {
+  // 변경점: ScalePressable을 일반 View로 변경
   return (
-    <ScalePressable style={s.header} onPress={onTitlePress}>
+    <View style={s.header}>
       <Feather name="link" size={14} color="#5C4B44" />
+
       <AppText style={s.headerText}>{title}</AppText>
       <View>
         {expanded ? (
@@ -24,7 +25,7 @@ const ChatTriggerHeader = ({ title, expanded, onTitlePress }: Props) => {
           <Ionicons name="chevron-down-outline" size={20} color="#FF7D4A" />
         )}
       </View>
-    </ScalePressable>
+    </View>
   );
 };
 
