@@ -145,7 +145,7 @@ const ChatIdPage = () => {
         }}
       />
 
-      {/* 변경점: ChatTriggerBanner와 GiftedChatView를 새로운 View로 감싸 레이아웃을 제어합니다. */}
+      {/* ChatTriggerBanner와 GiftedChatView를 새로운 View로 감싸 레이아웃을 제어 */}
       <View style={styles.chatContainer}>
         <GiftedChatView
           messages={giftedMessages}

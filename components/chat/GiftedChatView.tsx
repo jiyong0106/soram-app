@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 import {
   GiftedChat,
   Bubble,
@@ -200,33 +206,33 @@ const GiftedChatView = ({
   // Day(날짜 배지) 포맷: YYYY-MM-DD
   const renderDay = useCallback((props: any) => {
     const createdAt = props?.createdAt ?? props?.currentMessage?.createdAt;
-    const d = createdAt ? new Date(createdAt) : undefined;
-    const yyyy = d?.getFullYear();
-    const mm = d ? String(d.getMonth() + 1).padStart(2, "0") : "";
-    const dd = d ? String(d.getDate()).padStart(2, "0") : "";
-    const label = d ? `${yyyy}-${mm}-${dd}` : "";
+    if (!createdAt) return null;
+
+    const d = new Date(createdAt);
+    const days = [
+      "일요일",
+      "월요일",
+      "화요일",
+      "수요일",
+      "목요일",
+      "금요일",
+      "토요일",
+    ];
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const dayName = days[d.getDay()];
+
+    // 최종 날짜 포맷은 그대로 유지합니다.
+    const label = `${yyyy}년 ${mm}월 ${dd}일 ${dayName}`;
+
     return (
-      <View
-        style={{
-          paddingVertical: 5,
-          paddingHorizontal: 3,
-          backgroundColor: "#f0f0f0ff",
-          borderRadius: 16,
-          width: "30%",
-          alignSelf: "center",
-          marginVertical: 10,
-        }}
-      >
-        <AppText
-          style={{
-            color: "#6B7280",
-            fontSize: 10,
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          {label}
-        </AppText>
+      // 1. 아이콘과 텍스트를 나란히 배치하기 위해 View 스타일을 수정합니다.
+      <View style={styles.dayContainer}>
+        {/* 2. Ionicons에서 달력 아이콘을 추가합니다. */}
+        <Ionicons name="calendar-outline" size={14} color="#6B7280" />
+        <AppText style={styles.dayText}>{label}</AppText>
       </View>
     );
   }, []);
@@ -359,6 +365,26 @@ const GiftedChatView = ({
     />
   );
 };
+
+const styles = StyleSheet.create({
+  dayContainer: {
+    flexDirection: "row", // 아이콘과 텍스트를 가로로 나열
+    alignItems: "center", // 세로 중앙 정렬
+    justifyContent: "center", // 가로 중앙 정렬
+    gap: 6, // 아이콘과 텍스트 사이 간격
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    backgroundColor: "#f0f0f0ff",
+    borderRadius: 16,
+    alignSelf: "center",
+    marginVertical: 10,
+  },
+  dayText: {
+    color: "#6B7280",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+});
 
 export default GiftedChatView;
 
