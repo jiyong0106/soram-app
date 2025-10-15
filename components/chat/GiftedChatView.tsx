@@ -1,3 +1,5 @@
+// app/components/chat/GiftedChatView.tsx
+
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   View,
@@ -101,6 +103,36 @@ const GiftedChatView = ({
   // GiftedChat의 내부 FlatList에 접근하기 위한 ref
   const chatRef = useRef<any>(null);
 
+  // ✨ ADDED: '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
+  const messageIdToShowReceipt = useMemo(() => {
+    // 내가 보낸 마지막 읽힌 메시지를 찾습니다.
+    const lastMyReadMessage = messages.find(
+      (m) => m.user._id === currentUser._id && m.isRead
+    );
+    // 상대방이 보낸 마지막 메시지를 찾습니다.
+    const lastOpponentMessage = messages.find(
+      (m) => m.user._id !== currentUser._id
+    );
+
+    // 내가 보낸 읽힌 메시지가 없으면 '읽음'을 표시할 필요가 없습니다.
+    if (!lastMyReadMessage) {
+      return null;
+    }
+
+    // 상대방이 보낸 메시지가 아예 없거나,
+    // 내가 보낸 마지막 읽힌 메시지가 상대방의 마지막 메시지보다 최신인 경우에만 '읽음'을 표시합니다.
+    if (
+      !lastOpponentMessage ||
+      new Date(lastMyReadMessage.createdAt) >
+        new Date(lastOpponentMessage.createdAt)
+    ) {
+      return lastMyReadMessage._id;
+    }
+
+    // 그 외의 경우 (상대방이 더 최신 메시지를 보낸 경우)에는 '읽음'을 표시하지 않습니다.
+    return null;
+  }, [messages, currentUser._id]);
+
   /**
    * 메시지 생성 시간을 '오전/오후 HH:MM' 형식으로 변환하는 함수입니다.
    */
@@ -120,38 +152,30 @@ const GiftedChatView = ({
   const renderMessage = useCallback(
     (props: MessageProps<IMessage>) => {
       const current = props?.currentMessage;
-      // 현재 메시지가 없으면 렌더링하지 않습니다.
       if (!current) return <View />;
 
-      // 내가 보낸 메시지인지 여부를 판단합니다.
       const isMe = current.user?._id === currentUser._id;
-      // 표시될 시간 텍스트를 포맷팅합니다.
       const timeText = formatTimeLabel(current.createdAt);
 
-      // 다음 메시지 정보를 가져옵니다. (연속 메시지 판단에 사용)
       const nextMsg = props?.nextMessage;
-      // Date 객체를 '분' 단위의 숫자로 변환하는 헬퍼 함수
       const toMinute = (d?: Date | number | string) =>
         d ? Math.floor(new Date(d).getTime() / 60000) : NaN;
 
-      // 다음 메시지와 현재 메시지의 작성자가 같은지 확인합니다.
       const isSameUser = nextMsg && nextMsg.user?._id === current.user?._id;
-      // 다음 메시지와 현재 메시지의 작성 시간이 '분' 단위로 같은지 확인합니다.
       const isSameMinute =
         nextMsg && toMinute(nextMsg.createdAt) === toMinute(current.createdAt);
-      // 같은 사용자가 같은 '분'에 보낸 연속 메시지 묶음의 마지막에만 시간을 표시합니다.
       const showTime = !(isSameUser && isSameMinute);
 
-      // 이전 메시지 정보를 가져옵니다. (연속 메시지 판단에 사용)
       const previousMessage = props.previousMessage;
-      // 이전 메시지와 현재 메시지의 작성자 및 작성 시간이 '분' 단위로 같으면 연속 메시지로 간주합니다.
       const isContinuous =
         previousMessage &&
         previousMessage.user?._id === current.user?._id &&
         toMinute(previousMessage.createdAt) === toMinute(current.createdAt);
 
-      // 상대방의 메시지이면서, 연속 메시지가 아닐 때만 아바타를 표시합니다.
       const showAvatar = !isMe && !isContinuous;
+
+      // ✨ ADDED: 현재 메시지가 '읽음'을 표시해야 할 바로 그 메시지인지 확인합니다.
+      const shouldShowReadReceipt = current._id === messageIdToShowReceipt;
 
       return (
         <View
@@ -166,10 +190,16 @@ const GiftedChatView = ({
           {isMe ? (
             // 내가 보낸 메시지 UI
             <>
-              {showTime && <Text style={styles.timeTextRight}>{timeText}</Text>}
+              <View style={styles.rightStatusContainer}>
+                {/* 🔧 MODIFIED: 최종 결정된 조건으로 '읽음' 표시 여부를 판단합니다. */}
+                {shouldShowReadReceipt && showTime && (
+                  <Text style={styles.readReceiptText}>읽음</Text>
+                )}
+                {showTime && <Text style={styles.timeText}>{timeText}</Text>}
+              </View>
               <Bubble
                 {...props}
-                renderTime={() => null} // 기본 시간 렌더링은 비활성화
+                renderTime={() => null}
                 wrapperStyle={BUBBLE_STYLES.wrapperStyle}
                 textStyle={BUBBLE_STYLES.textStyle}
                 containerStyle={BUBBLE_STYLES.containerStyle}
@@ -179,28 +209,27 @@ const GiftedChatView = ({
             // 상대방이 보낸 메시지 UI
             <>
               {showAvatar ? (
-                // 아바타를 표시해야 할 경우
                 <View style={styles.avatar}>
                   <Ionicons name="person" size={16} color="#fff" />
                 </View>
               ) : (
-                // 연속 메시지라 아바타를 숨길 경우, 레이아웃 유지를 위한 빈 공간
                 <View style={styles.avatarPlaceholder} />
               )}
               <Bubble
                 {...props}
-                renderTime={() => null} // 기본 시간 렌더링은 비활성화
+                renderTime={() => null}
                 wrapperStyle={BUBBLE_STYLES.wrapperStyle}
                 textStyle={BUBBLE_STYLES.textStyle}
                 containerStyle={BUBBLE_STYLES.containerStyle}
               />
-              {showTime && <Text style={styles.timeTextLeft}>{timeText}</Text>}
+              {showTime && <Text style={styles.timeText}>{timeText}</Text>}
             </>
           )}
         </View>
       );
     },
-    [currentUser._id, formatTimeLabel] // 의존성 배열: 이 값들이 변경될 때만 함수가 재생성됩니다.
+    // 🔧 MODIFIED: 의존성 배열에 messageIdToShowReceipt를 추가합니다.
+    [currentUser._id, formatTimeLabel, messageIdToShowReceipt]
   );
 
   /**
@@ -416,19 +445,23 @@ const styles = StyleSheet.create({
     width: 32,
     marginRight: 6,
   },
-  // 내 메시지 옆 시간 텍스트
-  timeTextRight: {
+  // 좌/우 시간 텍스트 스타일을 하나로 통합합니다.
+  timeText: {
     color: "#B0A6A0",
     fontSize: 10,
+  },
+  // '읽음' 텍스트와 시간을 감싸는 컨테이너 스타일 (내가 보낸 메시지용)
+  rightStatusContainer: {
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     marginRight: 5,
     marginBottom: 2,
   },
-  // 상대방 메시지 옆 시간 텍스트
-  timeTextLeft: {
-    color: "#B0A6A0",
+  // '읽음' 텍스트 스타일
+  readReceiptText: {
+    color: "#FF6B3E", // 서비스 메인 컬러와 통일
     fontSize: 10,
-    marginLeft: 5,
-    marginBottom: 2,
+    fontWeight: "bold",
   },
   // 시스템 메시지 컨테이너
   systemMessageContainer: {

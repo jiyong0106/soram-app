@@ -72,7 +72,11 @@ const ChatIdPage = () => {
     data?.pages.flatMap((item) => item.data) ?? [];
 
   // 2) 실시간 수신
-  const { messages: realtimeItems, sendMessage } = useChat(token, roomId);
+  const {
+    messages: realtimeItems,
+    sendMessage,
+    readUpTo,
+  } = useChat(token, roomId, myUserId ?? undefined);
 
   // 서버 ChatMessageType -> GiftedChat IMessage 매핑
   const mapToIMessage = useCallback(
@@ -84,6 +88,8 @@ const ChatIdPage = () => {
         _id: m.senderId,
         name: m.sender?.nickname,
       },
+      // ✨ ADDED: isRead 상태를 IMessage 객체에 포함시켜 전달합니다.
+      isRead: m.isRead,
     }),
     []
   );
@@ -124,6 +130,29 @@ const ChatIdPage = () => {
     }
   }, [fetchNextPage]);
 
+  // ✨ ADDED: 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
+  const handleViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: Array<{ item: IMessage }> }) => {
+      if (!viewableItems || viewableItems.length === 0 || !myUserId) return;
+
+      // 화면에 보이는 '상대방' 메시지들만 필터링
+      const opponentMessages = viewableItems
+        .map((viewable) => viewable.item)
+        .filter((msg) => msg.user._id !== myUserId);
+
+      if (opponentMessages.length === 0) return;
+
+      // 상대방 메시지 중 ID가 가장 큰 (가장 최신) 메시지를 찾음
+      const lastVisibleOpponentMessage = opponentMessages.reduce(
+        (latest, msg) => (Number(msg._id) > Number(latest._id) ? msg : latest)
+      );
+
+      // 이 메시지까지 읽었다고 서버에 알림 (IMessage의 _id는 string이므로 숫자로 변환)
+      readUpTo(Number(lastVisibleOpponentMessage._id));
+    },
+    [myUserId, readUpTo]
+  );
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -157,10 +186,18 @@ const ChatIdPage = () => {
           isLeaveUser={isLeaveUser}
           isBlockedUser={isBlockedUser}
           leaveUserName={peerUserName}
-          // 배너에 가려지는 첫 메시지를 위해 상단에 패딩 추가
+          // 🔧 MODIFIED: listViewProps에 '읽음' 처리 로직을 위한 콜백과 설정을 추가합니다.
           listViewProps={{
+            // 배너에 가려지는 첫 메시지를 위해 상단에 패딩 추가
             contentContainerStyle: {
               paddingBottom: 30, // 배너 높이만큼 여백 확보
+            },
+            // ✨ ADDED: 화면에 보이는 아이템이 변경될 때마다 콜백 함수를 호출합니다.
+            onViewableItemsChanged: handleViewableItemsChanged,
+            // ✨ ADDED: 콜백이 언제 호출될지에 대한 설정
+            viewabilityConfig: {
+              // 아이템이 50% 이상 보여야 '보이는 것'으로 간주
+              itemVisiblePercentThreshold: 50,
             },
           }}
         />
