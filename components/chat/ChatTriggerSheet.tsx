@@ -27,8 +27,8 @@ interface ChatTriggerSheetProps {
 
 const COLORS = {
   bg: "#FFFFFF",
-  text: "#111827",
-  sub: "#6B7280",
+  text: "#5C4B44",
+  sub: "#B0A6A0",
   border: "#E5E7EB",
   fill: "#F9FAFB",
   icon: "#1F2937",
@@ -59,7 +59,7 @@ const ChatTriggerSheet = (
 
   const dismiss = () => bottomRef.current?.dismiss?.();
 
-  const activeLabel = active === "mine" ? "내 답변" : "상대 답변";
+  const activeLabel = active === "mine" ? "내 이야기" : "상대 답변";
 
   return (
     <AppBottomSheetModal ref={bottomRef} snapPoints={snapPoints}>
@@ -74,8 +74,9 @@ const ChatTriggerSheet = (
                 color={COLORS.sub}
               />
               <AppText style={s.topicPillText} numberOfLines={1}>
-                연결 주제
+                우리를 연결해준 이야기
               </AppText>
+              <AppText style={s.badgeText}>{activeLabel}</AppText>
             </View>
 
             <AppText style={s.title} numberOfLines={2}>
@@ -93,15 +94,7 @@ const ChatTriggerSheet = (
                   size={14}
                   color={COLORS.badgeText}
                 />
-                <AppText style={s.badgeText}>{activeLabel}</AppText>
               </View>
-            </View>
-          </View>
-
-          {/* 우측 아이콘 영역(디자인용, 기능 X) */}
-          <View style={s.headerRight}>
-            <View style={s.iconBadge}>
-              <Ionicons name="sparkles-outline" size={18} color={COLORS.icon} />
             </View>
           </View>
         </View>
