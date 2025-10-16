@@ -74,8 +74,8 @@ const Row = ({
     if (processedBreakdown.daily) {
       opacity.value = withRepeat(
         withSequence(
-          withTiming(0.25, { duration: 500 }),
-          withTiming(1, { duration: 500 })
+          withTiming(0.25, { duration: 750 }),
+          withTiming(1, { duration: 750 })
         ),
         -1,
         true
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   rowTitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#5C4B44",
   },
   totalQuantityText: {
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   dailyText: {
-    fontWeight: "bold",
+    // fontWeight: "bold",
     color: "#5C4B44",
   },
   expiresText: {
