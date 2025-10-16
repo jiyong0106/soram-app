@@ -81,7 +81,7 @@ const UserAnswerList = ({
           setLoading(true);
           await postRequestConnection(body);
           showAlert(
-            `대화 요청 완료!\n\n${user.nickname}님이 수락하면 알림을 보내드릴게요.`,
+            `대화 요청 완료!\n\n${user.nickname}님이 수락하면\n\n알림을 보내드릴게요.`,
             () => {
               router.push("/(tabs)/topic/list");
             }

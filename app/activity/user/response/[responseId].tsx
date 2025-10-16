@@ -109,7 +109,7 @@ const UnlockedResponseDetailScreen = () => {
       const successMessage =
         data.status === "ACCEPTED"
           ? "이미 대화방이 있어요!"
-          : `대화 요청 완료!\n\n${authorNickname}님이 수락하면 알림을 보내드릴게요.`;
+          : `대화 요청 완료!\n\n${authorNickname}님이 수락하면\n\n알림을 보내드릴게요.`;
       showAlert(successMessage, () => {
         router.back();
       });
