@@ -6,6 +6,7 @@ import { View, Pressable, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // 👈 [추가] 그라데이션 라이브러리 import
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import Badge from "@/components/common/Badge";
+import { usePushTokenRegistration } from "@/utils/hooks/usePushTokenRegistration";
 
 // 배지는 공용 컴포넌트 사용
 
@@ -183,6 +184,9 @@ const CustomTabBar = ({
 
 const TabLayout = () => {
   const token = useAuthStore((s) => s.token);
+
+  // 로그인 상태에서만 푸시 토큰 등록
+  usePushTokenRegistration(token);
 
   if (!token) return <Redirect href="/" />;
 
