@@ -2,7 +2,6 @@ export default ({ config }: any) => {
   return {
     ...config, // 기본 Expo 설정을 상속
 
-    // Expo 앱의 메타 정보
     expo: {
       name: "소람", // 앱 이름 (기기에서 표시됨)
       slug: "soram", // Expo에서 사용하는 고유 ID (프로젝트 슬러그)
@@ -13,7 +12,7 @@ export default ({ config }: any) => {
       userInterfaceStyle: "automatic", // 다크모드/라이트모드 자동 감지
       newArchEnabled: true, // React Native New Architecture 사용 여부
       splash: {
-        image: "./assets/images/spalsh1.png",
+        image: "./assets/images/splash.png",
         resizeMode: "cover",
         backgroundColor: "#ffb591",
       },
@@ -28,7 +27,7 @@ export default ({ config }: any) => {
           UIBackgroundModes: ["fetch", "remote-notification"],
         },
         splash: {
-          image: "./assets/images/spalsh1.png",
+          image: "./assets/images/splash.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
@@ -43,7 +42,7 @@ export default ({ config }: any) => {
         },
         splash: {
           //스플래시 이미지
-          image: "./assets/images/spalsh1.png",
+          image: "./assets/images/splash.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
