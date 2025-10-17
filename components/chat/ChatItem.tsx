@@ -9,7 +9,6 @@ import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
-import { getInitials } from "@/utils/util/uiHelpers";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { Ionicons } from "@expo/vector-icons";
 
