@@ -10,17 +10,21 @@ import AppText from "@/components/common/AppText";
 import { useFocusEffect } from "expo-router";
 import { getAuthToken } from "@/utils/util/auth";
 import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const qc = useQueryClient();
+  const setActiveConnection = useChatUnreadStore((s) => s.setActiveConnection);
 
   // 화면 포커스 시 최신화 보장
   useFocusEffect(
     useCallback(() => {
+      // 목록 화면에선 활성 채팅방 없음으로 표시(뱃지 증가 허용)
+      setActiveConnection(null);
       qc.invalidateQueries({ queryKey: ["getChatKey"] });
-    }, [qc])
+    }, [qc, setActiveConnection])
   );
 
   //채팅방 목록 조회
