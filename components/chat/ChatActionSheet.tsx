@@ -23,7 +23,7 @@ const COLORS = {
   border: "#E5E7EB", // gray-200
   fill: "#F9FAFB", // gray-50
   danger: "#EF4444", // red-500
-  icon: "#111827",
+  icon: "#5C4B44",
 };
 
 const ChatActionSheet = (
@@ -46,22 +46,26 @@ const ChatActionSheet = (
 
   const onBlock = () => {
     dismiss();
-    showActionAlert(`${peerUserName}님을 차단하시나요?`, "차단", async () => {
-      if (!blockedId) return;
-      try {
-        await postUserBlock(blockedId);
-        showAlert(`이제 ${peerUserName}님과 \n 대화를 할 수 없어요`, () => {
-          qc.invalidateQueries({ queryKey: ["getChatKey"] });
-          router.dismissTo("/chat");
-        });
-      } catch (e: any) {
-        if (e) {
-          showAlert(e.response?.data?.message || "다시 시도해 주세요");
-          return;
+    showActionAlert(
+      `${peerUserName}님을 차단하시겠습니까?`,
+      "차단",
+      async () => {
+        if (!blockedId) return;
+        try {
+          await postUserBlock(blockedId);
+          showAlert(`${peerUserName}님을 차단했습니다.`, () => {
+            qc.invalidateQueries({ queryKey: ["getChatKey"] });
+            router.dismissTo("/chat");
+          });
+        } catch (e: any) {
+          if (e) {
+            showAlert(e.response?.data?.message || "다시 시도해 주세요");
+            return;
+          }
+          showAlert("차단 실패 에러");
         }
-        showAlert("차단 실패 에러");
       }
-    });
+    );
   };
 
   const onLeave = () => {
@@ -89,6 +93,20 @@ const ChatActionSheet = (
   return (
     <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
       <View style={s.container}>
+        {/* Group: 유틸 */}
+        <View style={s.group}>
+          <SheetRow
+            icon={
+              <Ionicons
+                name="notifications-off-outline"
+                size={18}
+                color={COLORS.icon}
+              />
+            }
+            label="알림 끄기"
+            onPress={onMute}
+          />
+        </View>
         {/* Group: 일반 */}
         <View style={s.group}>
           <SheetRow
@@ -126,22 +144,6 @@ const ChatActionSheet = (
             onPress={onLeave}
           />
         </View>
-
-        {/* Group: 유틸 */}
-        <View style={s.group}>
-          <SheetRow
-            icon={
-              <Ionicons
-                name="notifications-off-outline"
-                size={18}
-                color={COLORS.icon}
-              />
-            }
-            label="알림 끄기"
-            onPress={onMute}
-          />
-        </View>
-
         <View style={{ height: 8 }} />
       </View>
     </AppBottomSheetModal>

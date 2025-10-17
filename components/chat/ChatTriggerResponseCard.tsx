@@ -33,13 +33,13 @@ export default ChatTriggerResponseCard;
 const s = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#E5E7EB",
-    borderRadius: 10,
+    // borderWidth: StyleSheet.hairlineWidth,
+    // borderColor: "#E5E7EB",
+    // borderRadius: 12,
     padding: 12,
   },
   topic: { color: "#9CA3AF", fontSize: 12, marginBottom: 8 },
-  text: { color: "#111827", lineHeight: 20 },
+  text: { color: "#5C4B44", lineHeight: 20 },
   voiceRow: { flexDirection: "row", justifyContent: "space-between" },
   dimText: { color: "#9CA3AF" },
 });

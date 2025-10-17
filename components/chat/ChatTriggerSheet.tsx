@@ -59,7 +59,7 @@ const ChatTriggerSheet = (
 
   const dismiss = () => bottomRef.current?.dismiss?.();
 
-  const activeLabel = active === "mine" ? "내 이야기" : "상대 답변";
+  const activeLabel = active === "mine" ? "내 이야기" : "상대방 이야기";
 
   return (
     <AppBottomSheetModal ref={bottomRef} snapPoints={snapPoints}>
@@ -67,35 +67,23 @@ const ChatTriggerSheet = (
         {/* 헤더 */}
         <View style={s.header}>
           <View style={s.headerLeft}>
-            <View style={s.topicPill}>
-              <Ionicons
-                name="chatbubbles-outline"
-                size={14}
-                color={COLORS.sub}
-              />
-              <AppText style={s.topicPillText} numberOfLines={1}>
-                우리를 연결해준 이야기
-              </AppText>
-              <AppText style={s.badgeText}>{activeLabel}</AppText>
-            </View>
-
-            <AppText style={s.title} numberOfLines={2}>
-              {topic.title}
-            </AppText>
-
-            <View style={s.metaRow}>
-              <View style={s.badge}>
+            <View style={s.topicPillContainer}>
+              <View style={s.activeLabelPill}>
                 <Ionicons
                   name={
                     active === "mine"
-                      ? "person-circle-outline"
-                      : "person-outline"
+                      ? "person-outline"
+                      : "person-circle-outline"
                   }
                   size={14}
                   color={COLORS.badgeText}
                 />
+                <AppText style={s.badgeText}>{activeLabel}</AppText>
               </View>
             </View>
+            <AppText style={s.title} numberOfLines={2}>
+              {topic.title}
+            </AppText>
           </View>
         </View>
 
@@ -139,22 +127,22 @@ const s = StyleSheet.create({
     gap: 12,
   },
   headerLeft: { flex: 1 },
-  headerRight: { paddingLeft: 8 },
 
-  topicPill: {
-    alignSelf: "flex-start",
+  topicPillContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+
+  activeLabelPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: COLORS.topicPillBg,
+    backgroundColor: COLORS.topicPillBg, // 회색 배경 적용
     borderRadius: 999,
-    marginBottom: 8,
-  },
-  topicPillText: {
-    color: COLORS.topicPillText,
-    fontSize: 12,
   },
 
   title: {
@@ -164,59 +152,21 @@ const s = StyleSheet.create({
     lineHeight: 24,
   },
 
-  metaRow: {
-    marginTop: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-
-  badge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: COLORS.badgeBg,
-    borderRadius: 8,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: COLORS.border,
-  },
   badgeText: {
     color: COLORS.badgeText,
     fontSize: 12,
     fontWeight: "600",
   },
-
-  iconBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.fill,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.shadow,
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-
   divider: {
     height: 1,
     backgroundColor: COLORS.divider,
     marginTop: 14,
     marginBottom: 12,
   },
-
   cardWrap: {
-    // 카드가 떠보이도록 마진 조절
     marginBottom: 16,
     maxHeight: 450,
   },
-
   footer: {
     marginTop: 6,
   },
