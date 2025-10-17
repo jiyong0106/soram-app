@@ -23,6 +23,7 @@ const chatPage = () => {
     }, [qc])
   );
 
+  //채팅방 목록 조회
   const {
     data,
     refetch,
