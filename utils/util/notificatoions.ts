@@ -1,4 +1,5 @@
 // src/utils/util/notificatoions.ts
+import { postRegisterDeviceToken } from "@/utils/api/deviceApi";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
@@ -61,6 +62,16 @@ export async function registerForPushNotificationsAsync() {
     ).data;
 
     console.log("[STEP R13] Expo Push Token 발급 성공:", token);
+
+    // 백엔드에 토큰 전송
+    try {
+      await postRegisterDeviceToken({ pushToken: token });
+      console.log("[API] Expo Push Token 서버 전송 성공");
+    } catch (error) {
+      console.error("[API] Expo Push Token 서버 전송 실패:", error);
+      // 여기서 에러를 어떻게 처리할지 정책에 따라 추가 구현 가능
+      // (예: 재시도 로직, 에러 리포팅 등)
+    }
   } catch (e) {
     token = `${e}`;
   }

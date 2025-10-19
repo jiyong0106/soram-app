@@ -6,6 +6,15 @@ export type metaType = {
   hasNextPage: boolean;
 };
 
+// 오프셋 기반 페이지네이션 meta타입
+export type OffsetMetaType = {
+  page: number;
+  limit: number;
+  total: number;
+  lastPage: number;
+  hasNextPage: boolean;
+};
+
 //유저 타입
 export interface UserType {
   id: number;

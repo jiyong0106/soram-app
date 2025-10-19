@@ -131,12 +131,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF6B3E",
   },
   pulseDot: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: "#ff6b6b",
+    backgroundColor: "#FF6B3E",
   },
 });

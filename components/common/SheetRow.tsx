@@ -21,7 +21,7 @@ const SheetRow = ({
       }}
     >
       {icon}
-      <AppText style={{ fontSize: 16 }}>{label}</AppText>
+      <AppText style={{ fontSize: 16, color: "#5C4B44" }}>{label}</AppText>
     </View>
   </ScalePressable>
 );

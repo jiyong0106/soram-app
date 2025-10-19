@@ -315,3 +315,29 @@ export const QUESTIONS = [
   { id: "q-fun-14", title: "웃음 터졌던 순간은?", categoryId: "fun" },
   { id: "q-fun-15", title: "내가 가장 좋아하는 명대사는?", categoryId: "fun" },
 ];
+
+export type Region = {
+  code: string; // 영문 코드 (키로 쓰기 좋음)
+  name: string; // 표기명 (한국어)
+};
+
+export const KOREA_REGIONS: Region[] = [
+  { code: "seoul", name: "서울특별시" },
+  { code: "gyeonggi-south", name: "경기도(남부)" },
+  { code: "gyeonggi-north", name: "경기도(북부)" },
+  { code: "busan", name: "부산광역시" },
+  { code: "daegu", name: "대구광역시" },
+  { code: "incheon", name: "인천광역시" },
+  { code: "gwangju", name: "광주광역시" },
+  { code: "daejeon", name: "대전광역시" },
+  { code: "ulsan", name: "울산광역시" },
+  { code: "sejong", name: "세종특별자치시" },
+  { code: "gangwon", name: "강원특별자치도" },
+  { code: "chungbuk", name: "충청북도" },
+  { code: "chungnam", name: "충청남도" },
+  { code: "jeonbuk", name: "전라북도" },
+  { code: "jeonnam", name: "전라남도" },
+  { code: "gyeongbuk", name: "경상북도" },
+  { code: "gyeongnam", name: "경상남도" },
+  { code: "jeju", name: "제주특별자치도" },
+];

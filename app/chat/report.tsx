@@ -66,7 +66,7 @@ const ReportPage = () => {
         action={
           <Button
             label="신고하기"
-            color="#ff6b6b"
+            color="#FF6B3E"
             textColor="#fff"
             disabled={!isValid}
             style={styles.button}

@@ -4,14 +4,19 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Redirect, Tabs } from "expo-router";
 import { View, Pressable, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // 👈 [추가] 그라데이션 라이브러리 import
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import Badge from "@/components/common/Badge";
 
-// 헬퍼 함수: 개별 탭 아이템 렌더링
+// 배지는 공용 컴포넌트 사용
+
+// 헬퍼 함수: 개별 탭 아이템 렌더링 (chat 탭에만 배지 표시)
 const renderTabItem = ({
   route,
   isFocused,
   options,
   onPress,
   onLongPress,
+  badgeCount = 0,
 }: any) => (
   <Pressable
     key={route.key}
@@ -22,12 +27,21 @@ const renderTabItem = ({
     onLongPress={onLongPress}
     style={styles.tabItem}
   >
-    {options.tabBarIcon &&
-      options.tabBarIcon({
-        focused: isFocused,
-        color: isFocused ? "#FF7D4A" : "#B0A6A0",
-        size: 28,
-      })}
+    <View style={styles.iconWrapper}>
+      {options.tabBarIcon &&
+        options.tabBarIcon({
+          focused: isFocused,
+          color: isFocused ? "#FF7D4A" : "#B0A6A0",
+          size: 28,
+        })}
+      {route.name === "chat" ? (
+        <Badge
+          count={badgeCount}
+          style={styles.badge}
+          textStyle={styles.badgeText}
+        />
+      ) : null}
+    </View>
     <Text
       style={{
         color: isFocused ? "#FF7D4A" : "#B0A6A0",
@@ -46,6 +60,13 @@ const CustomTabBar = ({
   descriptors,
   navigation,
 }: BottomTabBarProps) => {
+  // 전체 안읽은 수 합계 (스토어에서 파생값만 구독)
+  const totalUnread = useChatUnreadStore((s) =>
+    Object.values(s.unreadCountByConnectionId ?? {}).reduce(
+      (acc: number, v: number) => acc + (v || 0),
+      0
+    )
+  );
   const centerIndex = Math.floor(state.routes.length / 2);
 
   const leftRoutes = state.routes.slice(0, centerIndex);
@@ -122,6 +143,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
+              badgeCount: route.name === "chat" ? totalUnread : 0,
             });
           })}
         </View>
@@ -150,6 +172,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
+              badgeCount: route.name === "chat" ? totalUnread : 0,
             });
           })}
         </View>
@@ -251,8 +274,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  iconWrapper: {
+    position: "relative",
+  },
   centerSpacer: {
     width: 90,
+  },
+  badge: {
+    position: "absolute",
+    top: -6,
+    right: -10,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 5,
+    borderRadius: 9,
+    backgroundColor: "#FF3B30",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "800",
   },
   centerButtonWrapper: {
     position: "absolute",

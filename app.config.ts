@@ -2,7 +2,6 @@ export default ({ config }: any) => {
   return {
     ...config, // 기본 Expo 설정을 상속
 
-    // Expo 앱의 메타 정보
     expo: {
       name: "소람", // 앱 이름 (기기에서 표시됨)
       slug: "soram", // Expo에서 사용하는 고유 ID (프로젝트 슬러그)
@@ -12,7 +11,11 @@ export default ({ config }: any) => {
       scheme: "soram", // 딥링크를 위한 URL 스킴 (ex: soram://)
       userInterfaceStyle: "automatic", // 다크모드/라이트모드 자동 감지
       newArchEnabled: true, // React Native New Architecture 사용 여부
-
+      splash: {
+        image: "./assets/images/splash.png",
+        resizeMode: "cover",
+        backgroundColor: "#ffb591",
+      },
       // iOS 관련 설정
       ios: {
         bundleIdentifier: "team.soram.soram",
@@ -24,9 +27,9 @@ export default ({ config }: any) => {
           UIBackgroundModes: ["fetch", "remote-notification"],
         },
         splash: {
-          image: "./assets/icons/logos/012.png",
+          image: "./assets/images/splash.png",
           resizeMode: "cover",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#ffb591",
         },
         // entitlements: { "aps-environment": "development" },
       },
@@ -39,9 +42,9 @@ export default ({ config }: any) => {
         },
         splash: {
           //스플래시 이미지
-          image: "./assets/icons/logos/012.png",
+          image: "./assets/images/splash.png",
           resizeMode: "cover",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#ffb591",
         },
         package: "team.soram.soram",
         edgeToEdgeEnabled: true, // 상태바와 네비게이션바를 투명하게 처리 (엣지 투 엣지 모드)

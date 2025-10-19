@@ -46,6 +46,7 @@ const Row = ({
       if (sourceType === "PAID") return "구매한 이용권";
       return "보관중인 이용권";
     };
+
     return {
       daily: dailyTicket
         ? {
@@ -73,8 +74,8 @@ const Row = ({
     if (processedBreakdown.daily) {
       opacity.value = withRepeat(
         withSequence(
-          withTiming(0.25, { duration: 500 }),
-          withTiming(1, { duration: 500 })
+          withTiming(0.25, { duration: 750 }),
+          withTiming(1, { duration: 750 })
         ),
         -1,
         true
@@ -124,6 +125,14 @@ const Row = ({
   );
 };
 
+//현재 문제점
+//만약 다른 사람의 이야기를 본 경우,
+//totalQuantity는 최신화가 잘 됨
+//오늘 무료로 받은 이용권은 최신화가 잘 됨
+
+//하지만 breakdown은 최신화가 안 됨
+//processedBreakdown.stored는 최신화가 안 됨
+
 // --- 변경점: 누락된 props와 ref를 다시 받도록 함수 시그니처 수정 ---
 const TicketsSheet = (
   { snapPoints }: { snapPoints?: ReadonlyArray<string | number> },
@@ -132,7 +141,6 @@ const TicketsSheet = (
   // 변경점 1: TicketsView와 동일하게, initialized 상태를 함께 가져옵니다.
   const data = useTicketsStore((s) => s.data);
   const initialized = useTicketsStore((s) => s.initialized);
-
   // 변경점 2: 데이터가 준비되지 않았다면 렌더링하지 않도록 안전장치를 추가합니다.
   if (!initialized) {
     return null;
@@ -208,7 +216,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   rowTitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#5C4B44",
   },
   totalQuantityText: {
@@ -254,7 +262,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   dailyText: {
-    fontWeight: "bold",
+    // fontWeight: "bold",
     color: "#5C4B44",
   },
   expiresText: {

@@ -15,7 +15,7 @@ import { TopicListType } from "@/utils/types/topic";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import PulsatingSpinner from "../common/PulsatingSpinner";
-import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import ScalePressable from "../common/ScalePressable";
 import useAlert from "@/utils/hooks/useAlert";
 
@@ -71,10 +71,7 @@ const TopicCard = ({ item, loading }: Props) => {
     };
   });
 
-  const ensureNewResponse = useTicketGuard("VIEW_RESPONSE", {
-    onInsufficient: () => showAlert("일일 티켓을 모두 소모했어요!"),
-    optimistic: false,
-  });
+  const ticketsHas = useTicketsStore((s) => s.has);
 
   const handlePress = () => {
     if (loading) return;
@@ -83,7 +80,7 @@ const TopicCard = ({ item, loading }: Props) => {
     if (userCount === 0) {
       // 이야기가 없는 경우: 이야기 작성을 유도합니다.
       showActionAlert(
-        "첫 이야기를 남겨주세요.\n내 이야기에 공감한 누군가가\n대화를 요청할지도 몰라요!",
+        "첫 이야기를 남겨주세요.\n\n내 이야기에 공감한 누군가가\n\n대화를 요청할지도 몰라요!",
         "작성하기", // 버튼 텍스트를 더 명확하게 변경
         () => {
           // 이야기 '작성' 페이지로 이동시킵니다.
@@ -96,14 +93,18 @@ const TopicCard = ({ item, loading }: Props) => {
     } else {
       // 이야기가 있는 경우: 기존 로직을 그대로 실행합니다.
       showActionAlert(
-        "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.",
+        "이 주제에 담긴 이야기들을 만나볼까요?\n\n이야기 보기권 1장을 사용합니다.\n\n한 번 확인한 이야기는 언제든\n\n'활동'에서 다시 볼 수 있어요.",
         "확인",
         () => {
-          ensureNewResponse.ensure(() => {
-            router.push({
-              pathname: "/topic/[topicId]",
-              params: { topicId: id, title },
-            });
+          // 한글 주석: 낙관적 차감 금지. 보유 여부만 게이트하고, 실제 차감은 대상 페이지 성공 시 처리됨
+          const has = ticketsHas("VIEW_RESPONSE");
+          if (!has) {
+            showAlert("일일 티켓을 모두 소모했어요!");
+            return;
+          }
+          router.push({
+            pathname: "/topic/[topicId]",
+            params: { topicId: id, title },
           });
         }
       );

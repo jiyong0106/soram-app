@@ -21,7 +21,7 @@ const REASONS: ReportReasonType[] = [
 const ReportReasonSelector = ({
   value,
   onChange,
-  themeColor = "#ff6b6b",
+  themeColor = "#FF6B3E",
 }: ReportReasonSelectorProps) => {
   return (
     <View style={styles.wrap}>

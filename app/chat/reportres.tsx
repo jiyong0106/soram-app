@@ -18,7 +18,7 @@ const Reportres = () => {
         action={
           <Button
             label="돌아가기"
-            color="#ff6b6b"
+            color="#FF6B3E"
             textColor="#fff"
             style={styles.button}
             onPress={handlePress}

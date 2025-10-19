@@ -30,7 +30,8 @@ const TopicListIdPage = () => {
   const rawError = Array.isArray(error) ? error[0] : error;
   const hasError = typeof rawError !== "undefined";
   const { bottom } = useSafeArea();
-  const { showAlert } = useAlert();
+  // [수정] showActionAlert를 useAlert 훅에서 가져옵니다.
+  const { showAlert, showActionAlert } = useAlert();
   const router = useRouter();
 
   const {
@@ -56,22 +57,28 @@ const TopicListIdPage = () => {
       showAlert("최소 20자 이상 입력해 주세요.");
       return;
     }
-    try {
-      await postText({ topicId, textContent: text });
-      showAlert("답변이 등록되었어요.", () => {
-        reset({ content: "" });
-        if (hasError && router.canGoBack()) {
-          router.back();
+
+    showActionAlert("작성을 완료하시겠습니까?", "완료", async () => {
+      try {
+        await postText({ topicId, textContent: text });
+        showAlert(
+          `이야기 작성 완료!\n\n'활동'탭에서 언제든 수정할 수 있어요.`,
+          () => {
+            reset({ content: "" });
+            if (hasError && router.canGoBack()) {
+              router.back();
+              return;
+            }
+            router.dismissTo("/(tabs)/topic/list");
+          }
+        );
+      } catch (e: any) {
+        if (e) {
+          showAlert(e.response.data.message);
           return;
         }
-        router.dismissTo("/(tabs)/topic/list");
-      });
-    } catch (e: any) {
-      if (e) {
-        showAlert(e.response.data.message);
-        return;
       }
-    }
+    });
   };
 
   return (
@@ -113,6 +120,10 @@ const TopicListIdPage = () => {
             name="content"
             rules={{
               required: "내용을 입력해 주세요.",
+              minLength: {
+                value: 20,
+                message: "최소 20자 이상 입력해 주세요.",
+              },
               maxLength: {
                 value: MAX,
                 message: `${MAX}자 이내로 입력해 주세요.`,
@@ -122,7 +133,7 @@ const TopicListIdPage = () => {
               <TextInput
                 style={styles.input}
                 multiline
-                placeholder="부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
+                placeholder="부적절하거나 불쾌감을 줄 수 있는 콘텐츠는 제재될 수 있습니다"
                 placeholderTextColor="#B0A6A0"
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -150,7 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    minHeight: 200,
+    minHeight: 450,
     fontSize: 16,
     textAlignVertical: "top",
     padding: 10,

@@ -2,18 +2,21 @@ import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import LocationActionModal, {
-  LocationActionModalRef,
-} from "@/components/signup/LocationActionModal";
+import LocationSheet from "@/components/signup/LocationSheet";
+import AppText from "@/components/common/AppText";
+import SignupHeader from "@/components/signup/SignupHeader";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import ScalePressable from "@/components/common/ScalePressable";
 
 const LocationPage = () => {
   const router = useRouter();
-  // const location = useSignupDraftStore((s) => s.draft.location);
-  // const patch = useSignupDraftStore((s) => s.patch);
-  // const actionModalRef = useRef<LocationActionModalRef>(null); // ✅ 타입 지정
+  const location = useSignupDraftStore((s) => s.draft.location);
+  const nickname = useSignupDraftStore((s) => s.draft.nickname);
+  const patch = useSignupDraftStore((s) => s.patch);
+  const sheetRef = useRef<BottomSheetModal>(null);
 
   return (
     <ScreenWithStickyAction
@@ -22,29 +25,43 @@ const LocationPage = () => {
           label="계속하기"
           color="#FF7D4A"
           textColor="#fff"
-          // disabled={!isValid}
+          disabled={!location}
           style={styles.button}
-          onPress={() => router.push("/(signup)/interests")}
+          onPress={() => router.push("/(signup)/question")}
         />
       }
     >
       <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/test.png")}
-          style={styles.heroImage}
-          resizeMode="contain"
+        <SignupHeader
+          title={`${nickname}님,\n어느 동네에 살고 계신가요?`}
+          subtitle={`정확한 위치는 공개되지 않아요!\n\n가까이 있는 인연을 찾는 데 도움을 드릴게요.`}
         />
-        <Text style={styles.title}>거주지를 알려주세요</Text>
-        <TouchableOpacity
-          style={styles.locationBox}
-          activeOpacity={0.5}
-          // onPress={() => actionModalRef.current?.present?.()}
+        <ScalePressable
+          style={[styles.locationBox, location && styles.locationBoxFocused]}
+          onPress={() => sheetRef.current?.present?.()}
         >
-          <Ionicons name="map-outline" size={24} color="black" />
-          <Text style={styles.locationText}>지역</Text>
-        </TouchableOpacity>
+          <Ionicons
+            name="map-outline"
+            size={24}
+            color={location ? "#FF7D4A" : "#B0A6A0"}
+          />
+          <AppText
+            style={[
+              styles.locationText,
+              location && styles.locationTextFocused,
+            ]}
+          >
+            {location || "지역 선택하기"}
+          </AppText>
+        </ScalePressable>
       </View>
-      {/* <LocationActionModal ref={actionModalRef} /> */}
+      <LocationSheet
+        ref={sheetRef}
+        snapPoints={["90%"]}
+        onSelect={(code, name) => {
+          patch({ location: name });
+        }}
+      />
     </ScreenWithStickyAction>
   );
 };
@@ -58,50 +75,24 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 32,
   },
-  heroRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  heroImage: {
-    width: 150,
-    height: 150,
-  },
-  speechBubble: {
-    marginLeft: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-  },
-  speechText: {
-    fontSize: 12,
-    color: "#555",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 12,
-    color: "#222",
-  },
-
   locationBox: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#FF7D4A",
+    borderColor: "#B0A6A0",
     borderRadius: 10,
     backgroundColor: "#fff",
     height: 55,
     paddingHorizontal: 10,
     gap: 8,
   },
-  locationIcon: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: "#FF7D4A",
+  locationText: {
+    color: "#B0A6A0",
   },
-  locationText: {},
+  locationBoxFocused: {
+    borderColor: "#FF7D4A",
+  },
+  locationTextFocused: {
+    color: "#5C4B44",
+  },
 });

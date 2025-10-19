@@ -32,10 +32,7 @@ interface ReceivedRequestItem {
 
 interface ReceivedRequestsCardProps {
   item: ReceivedRequestItem;
-  onAccept: () => void;
-  onReject: () => void;
   onPressPreview: () => void;
-  disabled?: boolean;
 }
 
 const THEME = "#FF7D4A";
@@ -43,10 +40,7 @@ const THEME = "#FF7D4A";
 // --- Component ---
 const ReceivedRequestsCard = ({
   item,
-  onAccept,
-  onReject,
   onPressPreview,
-  disabled,
 }: ReceivedRequestsCardProps) => {
   const { requester, createdAt, topicTitle, requesterResponsePreview } = item;
 
@@ -62,24 +56,15 @@ const ReceivedRequestsCard = ({
       {/* 헤더: 아바타 + 닉네임 + 시간 */}
       <View style={styles.row}>
         <View style={styles.avatar}>
-          <AppText style={styles.avatarText}>
-            {getInitials(requester?.nickname)}
-          </AppText>
+          <Ionicons name="person" size={18} color="#fff" />
         </View>
         <View style={{ flex: 1 }}>
           <AppText style={styles.name}>{requester?.nickname}</AppText>
           <AppText style={styles.sub}>{formatRelative(createdAt)}</AppText>
         </View>
       </View>
-      <AppText style={styles.captionText}>
-        {requester?.nickname}님이 남긴 이야기를 보시고 결정해 보세요!
-      </AppText>
       {/* 👇 [변경됨] 인용문(Quote Block) 구조 수정 */}
-      <TouchableOpacity
-        style={styles.quoteBlock}
-        onPress={onPressPreview}
-        disabled={disabled}
-      >
+      <TouchableOpacity style={styles.quoteBlock} onPress={onPressPreview}>
         {/* 텍스트 컨텐츠를 담을 View */}
         <View style={styles.quoteContentWrapper}>
           <AppText style={styles.questionText}>
@@ -109,32 +94,11 @@ const ReceivedRequestsCard = ({
           )}
         </View>
         {/* 오른쪽 셰브론 아이콘 추가 */}
-        <Ionicons name="chevron-forward" size={20} color="#FF7D4A" />
+        <Ionicons name="chevron-forward" size={20} color="#5C4B44" />
       </TouchableOpacity>
-
-      {/* 액션 버튼 */}
-      <View style={styles.btnRow}>
-        <View style={styles.btnWrap}>
-          <Button
-            label="거절"
-            color="#fff"
-            textColor={THEME}
-            style={[styles.btn, styles.ghost]}
-            onPress={onReject}
-            disabled={disabled}
-          />
-        </View>
-        <View style={styles.btnWrap}>
-          <Button
-            label="수락"
-            color={THEME}
-            textColor="#fff"
-            style={styles.btn}
-            onPress={onAccept}
-            disabled={disabled}
-          />
-        </View>
-      </View>
+      <AppText style={styles.captionText}>
+        {requester?.nickname}님이 남긴 이야기를 보시고 결정해 보세요!
+      </AppText>
     </View>
   );
 };
@@ -166,7 +130,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFF3EC",
+    backgroundColor: "#FFD6C9",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -231,26 +195,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#6B7280",
   },
-  btnRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  btn: {
-    minHeight: 44,
-    borderRadius: 12,
-  },
-  ghost: {
-    borderWidth: 1,
-    borderColor: THEME,
-  },
-  btnWrap: {
-    flex: 1,
-  },
   captionText: {
     fontSize: 12,
     color: "#5C4B44",
     textAlign: "center",
     paddingHorizontal: 10,
-    marginBottom: -8,
   },
 });

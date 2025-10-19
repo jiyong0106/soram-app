@@ -7,25 +7,33 @@ type Props = {
   onChange: (t: "mine" | "opponent") => void;
 };
 
-const ChatTriggerTabs = ({ onChange }: Props) => {
+// [수정] active prop은 받지만, 스타일링에는 사용하지 않습니다.
+const ChatTriggerTabs = ({ active, onChange }: Props) => {
   return (
     <View style={s.tabs}>
       <View style={s.tab}>
         <Button
-          label="나의 답변"
+          label="내 이야기"
           onPress={() => onChange("mine")}
-          color={"#ff6b6b"}
-          textColor="#fff"
+          // [핵심 수정] 고정 스타일 적용
+          color={"#FFFFFF"} // 흰 배경
+          textColor={"#FF7D4A"} // 검은 글씨
+          borderColor={"#FF7D4A"} // 메인 컬러 테두리
           style={s.btn}
+          // textStyle prop을 사용하여 글자 크기 오버라이드
+          textStyle={{ fontSize: 14 }}
         />
       </View>
       <View style={s.tab}>
         <Button
-          label="상대방의 답변"
+          label="상대방의 이야기"
           onPress={() => onChange("opponent")}
-          color={"#ff6b6b"}
-          textColor="#fff"
+          // [핵심 수정] 고정 스타일 적용
+          color={"#FF6B3E"} // 메인 컬러 배경
+          textColor={"#FFFFFF"} // 흰 글씨
           style={s.btn}
+          // textStyle prop을 사용하여 글자 크기 오버라이드
+          textStyle={{ fontSize: 14 }}
         />
       </View>
     </View>
@@ -44,5 +52,6 @@ const s = StyleSheet.create({
   },
   btn: {
     height: 40,
+    borderRadius: 10,
   },
 });

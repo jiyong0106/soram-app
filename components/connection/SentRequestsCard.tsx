@@ -10,6 +10,7 @@ import {
   hexWithAlpha,
   connectionStatusLabel as statusLabel,
 } from "@/utils/util/uiHelpers";
+import { Ionicons } from "@expo/vector-icons";
 
 // 부모가 비동기 취소 핸들러 등을 주입할 수 있도록 설계
 interface SentRequestsCardProps {
@@ -17,7 +18,7 @@ interface SentRequestsCardProps {
   disabled?: boolean;
   onCancel: () => void;
 }
-const THEME = "#ff6b6b";
+const THEME = "#FF6B3E";
 
 const SentRequestsCard = ({
   item,
@@ -38,15 +39,11 @@ const SentRequestsCard = ({
       {/* 헤더: 아바타 + 닉네임 + 상태 배지 */}
       <View style={styles.row}>
         <View style={styles.avatar}>
-          <AppText style={styles.avatarText}>
-            {getInitials(addressee?.nickname)}
-          </AppText>
+          <Ionicons name="person" size={18} color="#fff" />
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, gap: 4 }}>
           <AppText style={styles.name}>{addressee?.nickname}</AppText>
-          <AppText style={styles.sub}>
-            {formatRelative(createdAt)} • ID {requesterId}
-          </AppText>
+          <AppText style={styles.sub}>{formatRelative(createdAt)}</AppText>
         </View>
         <View
           style={[
@@ -63,17 +60,11 @@ const SentRequestsCard = ({
         </View>
       </View>
 
-      {/* 메타 블록: 내부 식별자 안내 */}
-      <View style={styles.metaBlock}>
-        <AppText style={styles.meta}>요청 ID: {id}</AppText>
-        <AppText style={styles.meta}>내 ID: {addresseeId}</AppText>
-      </View>
-
       {/* 액션: 대기 상태에서만 취소 가능 */}
       <View style={styles.btnRow}>
         <View style={styles.rejWrap}>
           <Button
-            label="취소"
+            label="요청 취소"
             color="#fff"
             textColor={THEME}
             style={[styles.btn, styles.ghost]}
@@ -115,7 +106,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFE2E2",
+    backgroundColor: "#FFD6C9",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -143,16 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
-  metaBlock: {
-    backgroundColor: "#FAFAFB",
-    borderRadius: 12,
-    padding: 10,
-    gap: 4,
-  },
-  meta: {
-    fontSize: 12,
-    color: "#6B7280",
-  },
+
   btnRow: {
     flexDirection: "row",
     gap: 10,

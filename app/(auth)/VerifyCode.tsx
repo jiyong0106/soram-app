@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
+} from "react-native";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
@@ -9,6 +15,8 @@ import { useSignupTokenStore } from "@/utils/store/useSignupTokenStore";
 import useAlert from "@/utils/hooks/useAlert";
 import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import SignupHeader from "@/components/signup/SignupHeader";
+import { usePushTokenStore } from "@/utils/store/usePushTokenStore";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
@@ -17,6 +25,7 @@ const VerifyCodeInputPage = () => {
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const clearPhoneNumber = usePhoneNumberStore((s) => s.clear);
   const setSignupToken = useSignupTokenStore((s) => s.setSignupToken);
+  const pushToken = usePushTokenStore((s) => s.pushToken);
   const { showAlert } = useAlert();
   const isValid = otp.length === 4;
   const router = useRouter();
@@ -26,7 +35,11 @@ const VerifyCodeInputPage = () => {
     if (!isValid || loading) return;
     try {
       setLoading(true);
-      const res = await postVerifyOtp({ phoneNumber, otp });
+      const res = await postVerifyOtp({
+        phoneNumber,
+        otp,
+        pushToken: pushToken || undefined,
+      });
 
       // 1. 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {
@@ -41,6 +54,7 @@ const VerifyCodeInputPage = () => {
         useAuthStore.getState().setToken(res.accessToken);
         clearPhoneNumber();
         router.replace("/(tabs)/topic");
+        router.dismissAll();
         return;
       }
 
@@ -59,19 +73,36 @@ const VerifyCodeInputPage = () => {
   //인증번호 재요청
   const handleRequestOtp = async () => {
     if (loading) return;
-    try {
-      setLoading(true);
-      await postRequestOtp({ phoneNumber });
-      showAlert("인증번호가 전송되었습니다.");
-    } catch (e: any) {
-      if (e) {
-        showAlert(e.response.data.message);
-        return;
-      }
-      console.error("");
-    } finally {
-      setLoading(false);
-    }
+
+    Alert.alert(
+      "인증번호 재요청",
+      "인증번호를 다시 요청하시겠습니까?",
+      [
+        {
+          text: "취소",
+          style: "cancel",
+        },
+        {
+          text: "확인",
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await postRequestOtp({ phoneNumber });
+              showAlert("인증번호가 전송되었습니다.");
+            } catch (e: any) {
+              if (e) {
+                showAlert(e.response.data.message);
+                return;
+              }
+              console.error("");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -88,10 +119,10 @@ const VerifyCodeInputPage = () => {
       }
     >
       <View style={styles.container}>
-        <AppText style={styles.title}>인증번호를 입력해 주세요</AppText>
-        <AppText style={styles.desc}>
-          {"\n인증번호가 전송됐어요.\n\n받은 번호를 입력하면 인증이 완료돼요."}
-        </AppText>
+        <SignupHeader
+          title="인증번호를 입력해 주세요"
+          subtitle={"받은 번호를 입력하면 인증이 완료돼요."}
+        />
         <TextInput
           style={[styles.input, focused && styles.inputFocused]}
           placeholder="4자리 숫자"
@@ -104,7 +135,7 @@ const VerifyCodeInputPage = () => {
           onBlur={() => setFocused(false)}
         />
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기"}</AppText>
+          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기 >"}</AppText>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
@@ -117,15 +148,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#5C4B44",
-  },
   desc: {
     color: "#5C4B44",
     marginBottom: 32,
+    marginRight: 10,
+    fontSize: 12,
+    textAlign: "right",
   },
   input: {
     borderBottomWidth: 2,

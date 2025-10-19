@@ -10,19 +10,24 @@ import AppText from "@/components/common/AppText";
 import { useFocusEffect } from "expo-router";
 import { getAuthToken } from "@/utils/util/auth";
 import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const qc = useQueryClient();
+  const setActiveConnection = useChatUnreadStore((s) => s.setActiveConnection);
 
   // 화면 포커스 시 최신화 보장
   useFocusEffect(
     useCallback(() => {
+      // 목록 화면에선 활성 채팅방 없음으로 표시(뱃지 증가 허용)
+      setActiveConnection(null);
       qc.invalidateQueries({ queryKey: ["getChatKey"] });
-    }, [qc])
+    }, [qc, setActiveConnection])
   );
 
+  //채팅방 목록 조회
   const {
     data,
     refetch,
@@ -50,7 +55,7 @@ const chatPage = () => {
 
   // 실시간 목록 갱신: 소켓으로 newMessage 수신 시 캐시 업데이트
   const jwt = getAuthToken() ?? "";
-  useChatListRealtime(jwt, connectionIds);
+  useChatListRealtime(jwt);
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;
@@ -80,8 +85,8 @@ const chatPage = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff6b6b"]}
-            tintColor="#ff6b6b"
+            colors={["#FF6B3E"]}
+            tintColor="#FF6B3E"
           />
         }
         onEndReached={() => {

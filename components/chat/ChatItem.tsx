@@ -9,8 +9,8 @@ import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
-import { getInitials } from "@/utils/util/uiHelpers";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import { Ionicons } from "@expo/vector-icons";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -85,9 +85,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
         <View style={styles.avatar}>
-          <AppText style={styles.avatarText}>
-            {getInitials(opponent?.nickname)}
-          </AppText>
+          <Ionicons name="person" size={18} color="#fff" />
         </View>
         <View style={styles.rowTextWrap}>
           <AppText style={styles.rowTitle} numberOfLines={1}>
@@ -125,14 +123,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFF3EC",
+    backgroundColor: "#FFD6C9",
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: {
-    color: "#FF7D4A",
-    fontWeight: "800",
-  },
+
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
   rowSubtitle: { color: "#B0A6A0", fontSize: 12 },

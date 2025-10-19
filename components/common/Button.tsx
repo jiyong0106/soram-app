@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, ViewStyle, StyleProp, Pressable } from "react-native";
+import {
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  Pressable,
+  TextStyle,
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,6 +21,7 @@ interface ButtonProps {
   borderColor?: string;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   disabled?: boolean;
   loading?: boolean;
   /** 스케일 효과 on/off */
@@ -31,6 +38,7 @@ const Button = ({
   textColor = "#222",
   borderColor,
   style,
+  textStyle,
   disabled,
   onPress,
   loading,
@@ -80,12 +88,13 @@ const Button = ({
         ]}
       >
         {loading ? (
-          <LoadingSpinner color="#ff6b6b" />
+          <LoadingSpinner color="#FF6B3E" />
         ) : (
           <AppText
             style={[
               styles.label,
               { color: isDisabled ? disabledText : textColor },
+              textStyle,
             ]}
           >
             {label}

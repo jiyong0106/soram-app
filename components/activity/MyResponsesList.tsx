@@ -11,7 +11,11 @@ import {
 import MyResponseCard from "@/components/activity/MyResponseCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
+// [수정] useRouter와 useFocusEffect를 expo-router에서 가져옵니다.
+import { useRouter, useFocusEffect } from "expo-router";
+
 const MyResponsesList = () => {
+  const router = useRouter();
   const {
     data,
     fetchNextPage,
@@ -27,6 +31,14 @@ const MyResponsesList = () => {
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
   });
+
+  // [수정] 화면이 포커스될 때마다 데이터를 다시 불러오는 로직을 추가합니다.
+  useFocusEffect(
+    React.useCallback(() => {
+      // 컴포넌트가 화면에 나타날 때 refetch 함수를 호출합니다.
+      refetch();
+    }, [refetch])
+  );
 
   const mappedData = React.useMemo(() => {
     if (!data) return [];
@@ -56,7 +68,17 @@ const MyResponsesList = () => {
   return (
     <FlatList
       data={mappedData}
-      renderItem={({ item }) => <MyResponseCard item={item} />}
+      renderItem={({ item }) => (
+        <MyResponseCard
+          item={item}
+          onPress={() =>
+            router.push({
+              pathname: `/activity/[id]`,
+              params: { id: item.id },
+            })
+          }
+        />
+      )}
       keyExtractor={(item) => String(item.id)}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContentContainer}
@@ -81,6 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     gap: 12,
     paddingVertical: 10,
+    paddingBottom: 100,
   },
   emptyContainer: {
     flex: 1,

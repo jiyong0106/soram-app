@@ -1,15 +1,23 @@
-import React, { ForwardedRef, forwardRef, useMemo, useState } from "react";
+import React, { ForwardedRef, forwardRef, useState } from "react";
 import { View, StyleSheet, InteractionManager, FlatList } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
-import QuestionCategoryTabs from "@/components/signup/QuestionCategoryTabs";
-import { CATEGORY_DEF, QUESTIONS } from "@/utils/dummy/test";
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
+import { getProfileQuestionsResponse } from "@/utils/types/signup";
+// 더미 데이터 제거: 카테고리/질문은 상위에서 API 응답을 내려받아 props로 전달
+
+interface QuestionItemProp {
+  id: number;
+  content: string;
+  subQuestions?: string[];
+}
 
 interface Props {
   snapPoints?: ReadonlyArray<string | number>;
+  questions?: QuestionItemProp[]; // 상위에서 내려주는 선택 질문 목록(필수 1,2 제외)
 }
 
 const COLORS = {
@@ -25,22 +33,22 @@ const COLORS = {
 // 한글 주석: 카테고리/질문 더미 데이터(추후 API 연동 시 교체)
 
 const QuestionPageSheet = (
-  { snapPoints }: Props,
+  { snapPoints, questions = [] }: Props,
   ref: ForwardedRef<BottomSheetModal>
 ) => {
   const [navigateNext, setNavigateNext] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    CATEGORY_DEF[0]?.id ?? ""
-  );
-  const visibleQuestions = useMemo(
-    () => QUESTIONS.filter((q) => q.categoryId === selectedCategoryId),
-    [selectedCategoryId]
-  );
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const router = useRouter();
   const dismiss = () => (ref as any)?.current?.dismiss?.();
+  const setOptionalTitle = useSignupDraftStore((s) => s.setOptionalTitle);
 
-  const onPress = () => {
+  const onPress = (title: string, id: number) => {
+    // 한글 주석: 선택된 질문의 타이틀을 저장한 뒤 시트 닫기
+    setOptionalTitle?.(title);
+    setSelectedTitle(title);
+    setSelectedId(id);
     setNavigateNext(true);
     dismiss();
   };
@@ -53,24 +61,28 @@ const QuestionPageSheet = (
         if (navigateNext) {
           setNavigateNext(false);
           InteractionManager.runAfterInteractions(() => {
-            router.push("/(signup)/question/qanswer");
+            const selectedQuestion = questions.find((q) => q.id === selectedId);
+            const subQuestions = selectedQuestion?.subQuestions ?? [];
+
+            router.push({
+              pathname: "/(signup)/question/qanswer",
+              params: {
+                variant: "optional",
+                label: selectedTitle,
+                questionId: selectedId ?? 0,
+                subQuestions: JSON.stringify(subQuestions),
+              },
+            });
           });
         }
       }}
     >
       <View style={s.container}>
-        {/* 한글 주석: 카테고리 탭 */}
-        <QuestionCategoryTabs
-          categories={CATEGORY_DEF}
-          selectedId={selectedCategoryId}
-          onChange={setSelectedCategoryId}
-        />
-
         {/* 한글 주석: 질문 리스트 */}
         <View style={s.group}>
           <FlatList
-            data={visibleQuestions}
-            keyExtractor={(item) => item.id}
+            data={questions}
+            keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <SheetRow
                 icon={
@@ -80,8 +92,8 @@ const QuestionPageSheet = (
                     color={COLORS.icon}
                   />
                 }
-                label={item.title}
-                onPress={onPress}
+                label={item.content}
+                onPress={() => onPress(item.content, item.id)}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}
@@ -99,7 +111,7 @@ const s = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 40,
     backgroundColor: COLORS.bg,
   },
   titleRow: {
@@ -138,7 +150,7 @@ const s = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: COLORS.border,
     marginTop: 12,
-    maxHeight: "80%",
+    maxHeight: 650,
   },
   divider: {
     height: StyleSheet.hairlineWidth,

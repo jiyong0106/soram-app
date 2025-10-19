@@ -137,8 +137,8 @@ const SentRequests = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff6b6b"]}
-            tintColor="#ff6b6b"
+            colors={["#FF6B3E"]}
+            tintColor="#FF6B3E"
           />
         }
       />

@@ -1,62 +1,69 @@
-import ScreenWithStickyAction from "@/components/common/ScreenWithStickyAction";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore"; // (오탈자면 store로 수정)
+import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
 import { useMemo, useRef } from "react";
-import AppText from "@/components/common/AppText";
-import RequiredInfoForm from "@/components/signup/RequiredInfoForm";
 import QuestionPageSheet from "@/components/signup/QuestionPageSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import RequiredQuestionItem from "@/components/signup/RequiredQuestionItem";
+import OptionalQuestionItem from "@/components/signup/OptionalQuestionItem";
+import SignupHeader from "@/components/signup/SignupHeader";
+import { getProfileQuestions } from "@/utils/api/signupPageApi";
+import { useQuery } from "@tanstack/react-query";
 
 const QuestionPage = () => {
   const router = useRouter();
   const nickname = useSignupDraftStore((s) => s.draft.nickname);
-  const answers = useSignupDraftStore((s) => s.draft.answers);
-  const patch = useSignupDraftStore((s) => s.patch);
-
   const sheetRef = useRef<BottomSheetModal>(null);
 
-  const primary = useMemo(
-    () => answers?.find((a) => a.isPrimary) ?? { content: "" },
-    [answers]
-  );
-
-  const disabled = !(primary?.content ?? "").trim();
+  const { data = [] } = useQuery({
+    queryKey: ["requiredQuestionsKey"],
+    queryFn: getProfileQuestions,
+  });
 
   const openSheet = () => {
     sheetRef.current?.present?.();
   };
 
+  // 한글 주석: 앞 2개만 필수로 간주하고 모두 답변했는지 확인
+  const requiredIds = useMemo(() => data.slice(0, 2).map((q) => q.id), [data]);
+  const disabled = useSignupDraftStore((s) =>
+    requiredIds.length < 2
+      ? true
+      : !requiredIds.every(
+          (rid) =>
+            !!s.draft.answers.find((a) => a.questionId === rid)?.content?.trim()
+        )
+  );
+
   return (
-    <ScreenWithStickyAction
-      action={
-        <Button
-          label="계속하기"
-          color="#FF7D4A"
-          textColor="#fff"
-          disabled={disabled}
-          style={styles.button}
-          onPress={() => router.push("/(signup)/finish")}
+    <View style={styles.container}>
+      <View>
+        <SignupHeader
+          title={`${nickname}님은\n어떤 사람인가요?`}
+          subtitle={`이야기가 풍성할수록 매력이 더 잘 드러날 거에요.\n\n2개 이상 작성하면 프로필이 완성돼요.`}
         />
-      }
-    >
-      <View style={styles.container}>
-        <View style={styles.headerTitle}>
-          <AppText style={styles.title}>{nickname}님의 필수 정보 입력</AppText>
-          <AppText style={styles.subtitle}>
-            나를 소개하는 글을 작성해주세요
-          </AppText>
-        </View>
 
         <View style={styles.inputWrap}>
-          <RequiredInfoForm onPress={openSheet} />
-          <RequiredInfoForm onPress={openSheet} />
-          <RequiredInfoForm optional onPress={openSheet} />
+          {data.slice(0, 2).map((item) => (
+            <RequiredQuestionItem key={item.id} item={item} />
+          ))}
+          <OptionalQuestionItem
+            label="질문을 선택해 주세요"
+            onOpenPicker={openSheet}
+          />
         </View>
       </View>
-      <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} />
-    </ScreenWithStickyAction>
+      <Button
+        label="계속하기"
+        color="#FF7D4A"
+        textColor="#fff"
+        disabled={disabled}
+        style={styles.button}
+        onPress={() => router.push("/(signup)/interests")}
+      />
+      <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} questions={data} />
+    </View>
   );
 };
 
@@ -65,23 +72,11 @@ export default QuestionPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+    justifyContent: "space-between",
   },
   button: {
-    marginTop: 32,
-  },
-  headerTitle: {
-    marginBottom: 30,
-    gap: 10,
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#222",
-  },
-  subtitle: {
-    fontSize: 15,
-    color: "#666666",
+    marginBottom: 20,
   },
   inputWrap: {
     gap: 10,
