@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
@@ -11,6 +11,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuthStore } from "@/utils/store/useAuthStore";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -21,10 +23,42 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { id, opponent, isLeave, isBlocked, lastMessage } = item;
+  const { id, opponent, isLeave, isBlocked, lastMessage, status, requesterId } =
+    item;
   const unread = useChatUnreadStore(
     (s) => s.unreadCountByConnectionId[id] ?? 0
   );
+
+  const token = useAuthStore((s) => s.token);
+  const myId = getUserIdFromJWT(token);
+
+  const subtitleInfo = useMemo(() => {
+    // 1. PENDING 상태를 최우선으로 처리
+    if (status === "PENDING") {
+      if (myId === requesterId) {
+        return {
+          text: "응답을 기다리는 중입니다.",
+          isHighlight: false,
+        };
+      } else {
+        return {
+          text: "새로운 대화 요청이 도착했어요.",
+          isHighlight: true,
+        };
+      }
+    }
+
+    // 2. 그 외 상태(ACCEPTED 등)일 경우
+    if (isLeave || isBlocked) {
+      return {
+        text: `${opponent.nickname}님이 방을 나갔어요`,
+        isHighlight: false,
+      };
+    }
+
+    // 3. 정상적인 대화 상태
+    return { text: lastMessage?.content, isHighlight: false };
+  }, [status, myId, requesterId, isLeave, isBlocked, lastMessage, opponent]);
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
@@ -91,13 +125,17 @@ const ChatItem = ({ item }: ChatItemProps) => {
           <AppText style={styles.rowTitle} numberOfLines={1}>
             {opponent.nickname}
           </AppText>
-          <AppText style={styles.rowSubtitle} numberOfLines={1}>
-            {isLeave || isBlocked
-              ? `${opponent.nickname}님이 방을 나갔어요`
-              : lastMessage?.content}
+          <AppText
+            style={[
+              styles.rowSubtitle,
+              subtitleInfo.isHighlight && styles.highlight,
+            ]}
+            numberOfLines={1}
+          >
+            {subtitleInfo.text}
           </AppText>
         </View>
-        {unread > 0 && (
+        {unread > 0 && status !== "PENDING" && (
           <View style={styles.badge}>
             <AppText style={styles.badgeText}>
               {unread > 99 ? "99+" : unread}
@@ -131,6 +169,10 @@ const styles = StyleSheet.create({
   rowTextWrap: { flex: 1 },
   rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
   rowSubtitle: { color: "#B0A6A0", fontSize: 12 },
+  highlight: {
+    color: "#FF6B3E",
+    fontWeight: "bold",
+  },
   badge: {
     minWidth: 20,
     height: 20,
