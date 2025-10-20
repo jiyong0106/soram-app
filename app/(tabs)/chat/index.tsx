@@ -89,6 +89,7 @@ const chatPage = () => {
             tintColor="#FF6B3E"
           />
         }
+        contentContainerStyle={{ paddingBottom: 100 }}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
