@@ -64,10 +64,10 @@ export default ({ config }: any) => {
         [
           "expo-splash-screen",
           {
-            image: "./assets/icons/logos/012.png", // 스플래시 이미지
+            image: "./assets/images/splash.png", // 스플래시 이미지
             imageWidth: 200, // 이미지 너비
-            resizeMode: "contain", // 이미지 리사이징 모드
-            backgroundColor: "#ffffff", // 스플래시 배경색
+            resizeMode: "cover", // 이미지 리사이징 모드
+            backgroundColor: "#ffb591", // 스플래시 배경색
           },
         ],
         ["expo-secure-store", { configureAndroidBackup: true }],

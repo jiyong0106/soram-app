@@ -87,7 +87,7 @@ const ReceivedRequests = () => {
         )}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
+        contentContainerStyle={{ gap: 10, padding: 10, paddingBottom: 100 }}
         ListEmptyComponent={
           <AppText style={styles.empty}>받은 대화 요청이 없어요</AppText>
         }
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    // paddingBottom: 100,
   },
   empty: {
     textAlign: "center",

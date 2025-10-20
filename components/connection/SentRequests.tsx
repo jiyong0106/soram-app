@@ -118,7 +118,7 @@ const SentRequests = () => {
         )}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
+        contentContainerStyle={{ gap: 10, padding: 10, paddingBottom: 100 }}
         ListEmptyComponent={
           <AppText style={styles.empty}>보낸 대화 요청이 없어요</AppText>
         }
