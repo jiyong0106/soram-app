@@ -37,12 +37,12 @@ const ChatItem = ({ item }: ChatItemProps) => {
     if (status === "PENDING") {
       if (myId === requesterId) {
         return {
-          text: "응답을 기다리는 중입니다.",
+          text: `👋 ${opponent.nickname}님의 응답을 기다리고 있어요.`,
           isHighlight: false,
         };
       } else {
         return {
-          text: "새로운 대화 요청이 도착했어요.",
+          text: `💌 대화 요청이 도착했어요!`,
           isHighlight: true,
         };
       }
@@ -167,10 +167,15 @@ const styles = StyleSheet.create({
   },
 
   rowTextWrap: { flex: 1 },
-  rowTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
+  rowTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
+    color: "#5C4B44",
+  },
   rowSubtitle: { color: "#B0A6A0", fontSize: 12 },
   highlight: {
-    color: "#FF6B3E",
+    color: "#FF7D4A",
     fontWeight: "bold",
   },
   badge: {

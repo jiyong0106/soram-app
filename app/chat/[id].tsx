@@ -37,7 +37,7 @@ import useAlert from "@/utils/hooks/useAlert";
 
 const ChatIdPage = () => {
   const router = useRouter();
-  const { showAlert } = useAlert();
+  const { showAlert, showActionAlert } = useAlert();
   const {
     id,
     peerUserId,
@@ -68,14 +68,21 @@ const ChatIdPage = () => {
   const token = useAuthStore((s) => s.token) ?? "";
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState(false);
-
+  const [localConnectionInfo, setLocalConnectionInfo] =
+    useState<ChatItemType | null>(null);
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
   // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfo = useMemo(() => {
-    // 1. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
+    // ▼▼▼ [수정 2] 로컬 state를 최우선으로 사용합니다. ▼▼▼
+    // 1. 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+    if (localConnectionInfo) {
+      return localConnectionInfo;
+    }
+
+    // 2. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
     if (connectionInfoParam) {
       try {
         return JSON.parse(connectionInfoParam);
@@ -95,8 +102,7 @@ const ChatIdPage = () => {
       if (found) return found;
     }
     return null;
-  }, [queryClient, roomId, connectionInfoParam]);
-
+  }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]);
   const isPending = connectionInfo?.status === "PENDING";
   const isRequester = connectionInfo?.requesterId === myUserId;
 
@@ -213,36 +219,65 @@ const ChatIdPage = () => {
     [myUserId, readUpTo]
   );
 
-  const handleAccept = async () => {
-    setActionLoading(true);
-    try {
-      await postConnectionsAccept({ connectionId: roomId });
-      showAlert("대화 요청을 수락했어요. 이제 자유롭게 대화해 보세요!");
-      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
-      // 수락 후에는 메시지 목록을 다시 불러와야 함
-      await queryClient.invalidateQueries({
-        queryKey: ["getMessagesKey", roomId],
-      });
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleAccept = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "요청을 수락하시겠어요?", // 확인 메시지
+      "수락", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsAccept({ connectionId: roomId });
+          showAlert(
+            "요청을 수락했어요!\n\n두 분을 이어준 이야기로 첫마디를 건네면\n\n더욱 자연스러운 대화가 시작될 거예요.☺️"
+          );
+          if (connectionInfo) {
+            setLocalConnectionInfo({
+              ...connectionInfo,
+              status: "ACCEPTED",
+            });
+          }
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+          await queryClient.invalidateQueries({
+            queryKey: ["getMessagesKey", roomId],
+          });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
   };
 
-  const handleReject = async () => {
-    setActionLoading(true);
-    try {
-      await postConnectionsReject({ connectionId: roomId });
-      showAlert("대화 요청을 거절했어요.", () => {
-        router.back();
-      });
-      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleReject = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "거절한 이야기는 다시 확인할 수 없어요.\n\n거절하시겠습니까?", // 확인 메시지 (요청하신 문구)
+      "거절", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsReject({ connectionId: roomId });
+          showAlert("대화 요청을 거절했어요.", () => {
+            router.back();
+          });
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
   };
 
   if (!connectionInfo) {
