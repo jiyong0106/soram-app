@@ -34,10 +34,12 @@ import {
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
 import useAlert from "@/utils/hooks/useAlert";
+//  새로 만든 모달 컴포넌트를 import
+import ConnectionRequestGuideModal from "@/components/chat/ConnectionRequestGuideModal";
 
 const ChatIdPage = () => {
   const router = useRouter();
-  const { showAlert } = useAlert();
+  const { showAlert, showActionAlert } = useAlert();
   const {
     id,
     peerUserId,
@@ -45,6 +47,9 @@ const ChatIdPage = () => {
     isLeave,
     isBlocked,
     connectionInfo: connectionInfoParam, // 라우팅으로 전달받은 connection 정보
+    // 라우팅 파라미터를 추가로 받습니다.
+    isNewRequest,
+    topicTitle,
   } = useLocalSearchParams<{
     id: string;
     peerUserId: string;
@@ -52,8 +57,10 @@ const ChatIdPage = () => {
     isLeave: string;
     isBlocked: string;
     connectionInfo?: string;
+    isNewRequest?: string; // "true" or undefined
+    topicTitle?: string;
   }>();
-  //  라우트 파라미터 불리언 안전 변환 유틸
+  //  라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
@@ -68,14 +75,32 @@ const ChatIdPage = () => {
   const token = useAuthStore((s) => s.token) ?? "";
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState(false);
+  const [localConnectionInfo, setLocalConnectionInfo] =
+    useState<ChatItemType | null>(null);
+
+  // 모달의 표시 여부를 관리할 state를 추가합니다.
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
 
   const actionSheetRef = useRef<any>(null);
+
+  //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가합니다.
+  useEffect(() => {
+    if (isNewRequest === "true") {
+      setGuideModalVisible(true);
+    }
+  }, [isNewRequest]);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
   // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfo = useMemo(() => {
-    // 1. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
+    //  로컬 state를 최우선으로 사용합니다.
+    // 1. 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+    if (localConnectionInfo) {
+      return localConnectionInfo;
+    }
+
+    // 2. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
     if (connectionInfoParam) {
       try {
         return JSON.parse(connectionInfoParam);
@@ -95,8 +120,7 @@ const ChatIdPage = () => {
       if (found) return found;
     }
     return null;
-  }, [queryClient, roomId, connectionInfoParam]);
-
+  }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]);
   const isPending = connectionInfo?.status === "PENDING";
   const isRequester = connectionInfo?.requesterId === myUserId;
 
@@ -213,36 +237,65 @@ const ChatIdPage = () => {
     [myUserId, readUpTo]
   );
 
-  const handleAccept = async () => {
-    setActionLoading(true);
-    try {
-      await postConnectionsAccept({ connectionId: roomId });
-      showAlert("대화 요청을 수락했어요. 이제 자유롭게 대화해 보세요!");
-      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
-      // 수락 후에는 메시지 목록을 다시 불러와야 함
-      await queryClient.invalidateQueries({
-        queryKey: ["getMessagesKey", roomId],
-      });
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleAccept = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "요청을 수락하시겠어요?", // 확인 메시지
+      "수락", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsAccept({ connectionId: roomId });
+          showAlert(
+            "요청을 수락했어요!\n\n두 분을 이어준 이야기로 첫마디를 건네면\n\n더욱 자연스러운 대화가 시작될 거예요.☺️"
+          );
+          if (connectionInfo) {
+            setLocalConnectionInfo({
+              ...connectionInfo,
+              status: "ACCEPTED",
+            });
+          }
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+          await queryClient.invalidateQueries({
+            queryKey: ["getMessagesKey", roomId],
+          });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
   };
 
-  const handleReject = async () => {
-    setActionLoading(true);
-    try {
-      await postConnectionsReject({ connectionId: roomId });
-      showAlert("대화 요청을 거절했어요.", () => {
-        router.back();
-      });
-      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleReject = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "거절한 이야기는 다시 확인할 수 없어요.\n\n거절하시겠습니까?", // 확인 메시지 (요청하신 문구)
+      "거절", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsReject({ connectionId: roomId });
+          showAlert("대화 요청을 거절했어요.", () => {
+            router.back();
+          });
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
   };
 
   if (!connectionInfo) {
@@ -313,6 +366,16 @@ const ChatIdPage = () => {
         blockedId={blockedId}
         roomId={roomId}
         peerUserName={peerUserName}
+      />
+
+      {/* 페이지의 최상단에 모달 컴포넌트를 렌더링합니다. */}
+      <ConnectionRequestGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={peerUserName}
+        topicTitle={
+          Array.isArray(topicTitle) ? topicTitle[0] : topicTitle ?? ""
+        }
       />
     </PageContainer>
   );

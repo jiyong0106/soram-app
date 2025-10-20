@@ -127,6 +127,8 @@ const UnlockedResponseDetailScreen = () => {
               nickname: String(authorNickname),
             },
           }),
+          isNewRequest: "true",
+          topicTitle: topicTitle,
         },
       });
     },
