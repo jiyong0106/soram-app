@@ -1,30 +1,58 @@
-import React, { useCallback, useMemo, useRef, useEffect } from "react";
-import { TouchableOpacity, View, StyleSheet } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
+import {
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
-import { ChatMessageType } from "@/utils/types/chat";
+import { ChatItemType, ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
 import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import ChatTriggerBanner from "@/components/chat/ChatTriggerBanner";
+import { GetChatResponse } from "@/utils/types/chat";
+import { InfiniteData } from "@tanstack/react-query";
+import PendingRequestActions from "@/components/chat/PendingRequestActions";
+import {
+  postConnectionsAccept,
+  postConnectionsReject,
+} from "@/utils/api/connectionPageApi";
+import useAlert from "@/utils/hooks/useAlert";
 
 const ChatIdPage = () => {
-  const { id, peerUserId, peerUserName, isLeave, isBlocked } =
-    useLocalSearchParams<{
-      id: string;
-      peerUserId: string;
-      peerUserName: string;
-      isLeave: string;
-      isBlocked: string;
-    }>();
+  const router = useRouter();
+  const { showAlert } = useAlert();
+  const {
+    id,
+    peerUserId,
+    peerUserName,
+    isLeave,
+    isBlocked,
+    connectionInfo: connectionInfoParam, // 라우팅으로 전달받은 connection 정보
+  } = useLocalSearchParams<{
+    id: string;
+    peerUserId: string;
+    peerUserName: string;
+    isLeave: string;
+    isBlocked: string;
+    connectionInfo?: string;
+  }>();
   //  라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
@@ -38,10 +66,39 @@ const ChatIdPage = () => {
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
   const token = useAuthStore((s) => s.token) ?? "";
+  const queryClient = useQueryClient();
+  const [actionLoading, setActionLoading] = useState(false);
 
   const actionSheetRef = useRef<any>(null);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
+
+  // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
+  const connectionInfo = useMemo(() => {
+    // 1. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
+    if (connectionInfoParam) {
+      try {
+        return JSON.parse(connectionInfoParam);
+      } catch (e) {
+        console.error("Failed to parse connectionInfo param:", e);
+      }
+    }
+
+    // 2. 전달받은 정보가 없으면 캐시에서 탐색
+    const chatListData = queryClient.getQueryData<
+      InfiniteData<GetChatResponse>
+    >(["getChatKey"]);
+    if (!chatListData) return null;
+
+    for (const page of chatListData.pages) {
+      const found = page.data.find((item: ChatItemType) => item.id === roomId);
+      if (found) return found;
+    }
+    return null;
+  }, [queryClient, roomId, connectionInfoParam]);
+
+  const isPending = connectionInfo?.status === "PENDING";
+  const isRequester = connectionInfo?.requesterId === myUserId;
 
   // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
   const { setActiveConnection, resetUnread } = useChatUnreadStore();
@@ -67,6 +124,7 @@ const ChatIdPage = () => {
       staleTime: 0,
       refetchOnMount: "always",
       refetchOnReconnect: true,
+      enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
     });
   const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];
@@ -77,7 +135,6 @@ const ChatIdPage = () => {
     sendMessage,
     readUpTo,
   } = useChat(token, roomId, myUserId ?? undefined);
-
   // 서버 ChatMessageType -> GiftedChat IMessage 매핑
   const mapToIMessage = useCallback(
     (m: ChatMessageType): IMessage => ({
@@ -88,10 +145,13 @@ const ChatIdPage = () => {
         _id: m.senderId,
         name: m.sender?.nickname,
       },
-      // ✨ ADDED: isRead 상태를 IMessage 객체에 포함시켜 전달합니다.
-      isRead: m.isRead,
+      // isPending 상태가 true이면, 서버에서 온 isRead 값이 무엇이든 무조건 false로 덮어씁니다.
+      // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용합니다.
+      isRead: isPending ? false : m.isRead,
     }),
-    []
+    // isPending 값이 변경될 때마다 이 함수가 최신 값을 참조할 수 있도록
+    // useCallback의 의존성 배열에 isPending을 추가합니다.
+    [isPending]
   );
 
   // 이전 이력 + 실시간 합치기(중복 제거, 오름차순 정렬)
@@ -130,7 +190,7 @@ const ChatIdPage = () => {
     }
   }, [fetchNextPage]);
 
-  // ✨ ADDED: 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
+  // 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
   const handleViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: Array<{ item: IMessage }> }) => {
       if (!viewableItems || viewableItems.length === 0 || !myUserId) return;
@@ -153,6 +213,46 @@ const ChatIdPage = () => {
     [myUserId, readUpTo]
   );
 
+  const handleAccept = async () => {
+    setActionLoading(true);
+    try {
+      await postConnectionsAccept({ connectionId: roomId });
+      showAlert("대화 요청을 수락했어요. 이제 자유롭게 대화해 보세요!");
+      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+      // 수락 후에는 메시지 목록을 다시 불러와야 함
+      await queryClient.invalidateQueries({
+        queryKey: ["getMessagesKey", roomId],
+      });
+    } catch (e: any) {
+      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setActionLoading(true);
+    try {
+      await postConnectionsReject({ connectionId: roomId });
+      showAlert("대화 요청을 거절했어요.", () => {
+        router.back();
+      });
+      await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+    } catch (e: any) {
+      showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  if (!connectionInfo) {
+    return (
+      <PageContainer>
+        <ActivityIndicator style={{ marginTop: 20 }} />
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -174,7 +274,6 @@ const ChatIdPage = () => {
         }}
       />
 
-      {/* ChatTriggerBanner와 GiftedChatView를 새로운 View로 감싸 레이아웃을 제어 */}
       <View style={styles.chatContainer}>
         <GiftedChatView
           messages={giftedMessages}
@@ -186,23 +285,24 @@ const ChatIdPage = () => {
           isLeaveUser={isLeaveUser}
           isBlockedUser={isBlockedUser}
           leaveUserName={peerUserName}
-          // 🔧 MODIFIED: listViewProps에 '읽음' 처리 로직을 위한 콜백과 설정을 추가합니다.
           listViewProps={{
-            // 배너에 가려지는 첫 메시지를 위해 상단에 패딩 추가
-            contentContainerStyle: {
-              paddingBottom: 30, // 배너 높이만큼 여백 확보
-            },
-            // ✨ ADDED: 화면에 보이는 아이템이 변경될 때마다 콜백 함수를 호출합니다.
+            contentContainerStyle: { paddingBottom: 30 },
             onViewableItemsChanged: handleViewableItemsChanged,
-            // ✨ ADDED: 콜백이 언제 호출될지에 대한 설정
-            viewabilityConfig: {
-              // 아이템이 50% 이상 보여야 '보이는 것'으로 간주
-              itemVisiblePercentThreshold: 50,
-            },
+            viewabilityConfig: { itemVisiblePercentThreshold: 50 },
           }}
+          renderInputToolbar={
+            isPending && !isRequester
+              ? () => (
+                  <PendingRequestActions
+                    onAccept={handleAccept}
+                    onReject={handleReject}
+                    loading={actionLoading}
+                  />
+                )
+              : undefined
+          }
         />
 
-        {/* 배너를 절대 위치를 가진 View로 감싸 화면 위에 띄웁니다. */}
         <View style={styles.bannerWrapper}>
           <ChatTriggerBanner roomId={roomId} />
         </View>
@@ -218,18 +318,26 @@ const ChatIdPage = () => {
   );
 };
 
-// 레이아웃을 위한 스타일 객체 추가
 const styles = StyleSheet.create({
   chatContainer: {
-    flex: 1, // 헤더를 제외한 모든 영역을 차지하도록 설정
-    backgroundColor: "#fff", // 채팅방 배경색 예시 (필요에 따라 수정)
+    flex: 1,
+    backgroundColor: "#fff",
   },
   bannerWrapper: {
-    position: "absolute", // 부모(chatContainer)를 기준으로 절대 위치 설정
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 1, // 다른 요소들보다 위에 보이도록 설정
+    zIndex: 1,
+  },
+  centeredInfo: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoText: {
+    fontSize: 16,
+    color: "#5C4B44",
   },
 });
 

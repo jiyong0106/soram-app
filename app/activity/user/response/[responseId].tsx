@@ -19,6 +19,10 @@ import { BackButton } from "@/components/common/backbutton";
 import useAlert from "@/utils/hooks/useAlert";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import { ConnectionStatus } from "@/utils/types/common";
+import {
+  RequestConnectionBody,
+  RequestConnectionResponse,
+} from "@/utils/types/topic";
 
 const UnlockedResponseDetailScreen = () => {
   const router = useRouter();
@@ -94,11 +98,14 @@ const UnlockedResponseDetailScreen = () => {
     };
   }, [connectionStatus]);
 
-  const { mutate: requestConnection, isPending } = useMutation({
+  const { mutate: requestConnection, isPending } = useMutation<
+    RequestConnectionResponse, // onSuccess의 data 타입
+    AxiosError<any>, // onError의 error 타입
+    RequestConnectionBody // requestConnection에 전달될 body 타입
+  >({
     mutationFn: postRequestConnection,
-    onSuccess: (data) => {
-      // 대화 요청 후에는 이전 화면의 연결 상태가 바뀌었을 것이므로,
-      // 관련 쿼리를 무효화하여 돌아갔을 때 최신 상태를 볼 수 있도록 합니다.
+    // ✨ 3. [수정] onSuccess의 data 타입을 API의 실제 반환 타입인 RequestConnectionResponse로 변경합니다.
+    onSuccess: (data: RequestConnectionResponse) => {
       queryClient.invalidateQueries({
         queryKey: ["getUnlockedResponsesByUser", Number(authorId)],
       });
@@ -106,12 +113,21 @@ const UnlockedResponseDetailScreen = () => {
         queryKey: ["getSentConnectionsKey"],
       });
 
-      const successMessage =
-        data.status === "ACCEPTED"
-          ? "이미 대화방이 있어요!"
-          : `대화 요청 완료!\n\n${authorNickname}님이 수락하면\n\n알림을 보내드릴게요.`;
-      showAlert(successMessage, () => {
-        router.back();
+      // UserAnswerList.tsx와 동일하게 router.push를 사용하여 채팅방으로 이동합니다.
+      router.push({
+        pathname: "/chat/[id]",
+        params: {
+          id: String(data.id),
+          peerUserId: String(authorId),
+          peerUserName: String(authorNickname),
+          connectionInfo: JSON.stringify({
+            ...data,
+            opponent: {
+              id: Number(authorId),
+              nickname: String(authorNickname),
+            },
+          }),
+        },
       });
     },
     onError: (error: AxiosError | any) => {
