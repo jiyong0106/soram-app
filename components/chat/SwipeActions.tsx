@@ -16,7 +16,7 @@ type SwipeActionsProps = {
   connectionId: number;
 };
 
-const ACTION_WIDTH = 72; // 버튼 하나의 최대 폭
+const ACTION_WIDTH = 72;
 const MAX_REVEAL = ACTION_WIDTH * 2; // 두 버튼 합
 
 const SwipeActions = ({ drag, connectionId }: SwipeActionsProps) => {
