@@ -79,13 +79,17 @@ const UserAnswerList = ({
       async () => {
         try {
           setLoading(true);
-          await postRequestConnection(body);
-          showAlert(
-            `대화 요청 완료!\n\n${user.nickname}님이 수락하면\n\n알림을 보내드릴게요.`,
-            () => {
-              router.push("/(tabs)/topic/list");
-            }
-          );
+          const response = await postRequestConnection(body);
+          // API 성공 시, 응답 객체와 함께 상대방 정보도 파라미터로 전달
+          router.push({
+            pathname: "/chat/[id]",
+            params: {
+              id: response.id,
+              peerUserId: String(user.id),
+              peerUserName: user.nickname,
+              connectionInfo: JSON.stringify(response),
+            },
+          });
           queryClient.invalidateQueries({
             queryKey: ["getSentConnectionsKey"],
           });

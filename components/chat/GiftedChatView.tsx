@@ -14,6 +14,7 @@ import {
   IMessage,
   InputToolbar,
   MessageProps,
+  InputToolbarProps,
 } from "react-native-gifted-chat";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
@@ -82,6 +83,7 @@ export type GiftedChatViewProps = {
   leaveUserName?: string;
   // 스크롤 위치 유지 등 FlatList 관련 추가 props
   listViewProps?: any;
+  renderInputToolbar?: (props: InputToolbarProps<IMessage>) => React.ReactNode;
 };
 
 /**
@@ -99,11 +101,12 @@ const GiftedChatView = ({
   isBlockedUser,
   leaveUserName,
   listViewProps,
+  renderInputToolbar,
 }: GiftedChatViewProps) => {
   // GiftedChat의 내부 FlatList에 접근하기 위한 ref
   const chatRef = useRef<any>(null);
 
-  // ✨ ADDED: '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
+  // '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
   const messageIdToShowReceipt = useMemo(() => {
     // 내가 보낸 마지막 읽힌 메시지를 찾습니다.
     const lastMyReadMessage = messages.find(
@@ -174,24 +177,15 @@ const GiftedChatView = ({
 
       const showAvatar = !isMe && !isContinuous;
 
-      // ✨ ADDED: 현재 메시지가 '읽음'을 표시해야 할 바로 그 메시지인지 확인합니다.
+      // 현재 메시지가 '읽음'을 표시해야 할 바로 그 메시지인지 확인합니다.
       const shouldShowReadReceipt = current._id === messageIdToShowReceipt;
 
       return (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-end",
-            justifyContent: isMe ? "flex-end" : "flex-start",
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-          }}
-        >
+        <View style={styles.messageRowContainer}>
           {isMe ? (
-            // 내가 보낸 메시지 UI
-            <>
+            // 내가 보낸 메시지 UI (우측 정렬)
+            <View style={styles.myMessageWrapper}>
               <View style={styles.rightStatusContainer}>
-                {/* 🔧 MODIFIED: 최종 결정된 조건으로 '읽음' 표시 여부를 판단합니다. */}
                 {shouldShowReadReceipt && showTime && (
                   <Text style={styles.readReceiptText}>읽음</Text>
                 )}
@@ -204,10 +198,10 @@ const GiftedChatView = ({
                 textStyle={BUBBLE_STYLES.textStyle}
                 containerStyle={BUBBLE_STYLES.containerStyle}
               />
-            </>
+            </View>
           ) : (
-            // 상대방이 보낸 메시지 UI
-            <>
+            // 상대방이 보낸 메시지 UI (좌측 정렬)
+            <View style={styles.peerMessageWrapper}>
               {showAvatar ? (
                 <View style={styles.avatar}>
                   <Ionicons name="person" size={16} color="#fff" />
@@ -223,15 +217,13 @@ const GiftedChatView = ({
                 containerStyle={BUBBLE_STYLES.containerStyle}
               />
               {showTime && <Text style={styles.timeText}>{timeText}</Text>}
-            </>
+            </View>
           )}
         </View>
       );
     },
-    // 🔧 MODIFIED: 의존성 배열에 messageIdToShowReceipt를 추가합니다.
     [currentUser._id, formatTimeLabel, messageIdToShowReceipt]
   );
-
   /**
    * 시스템 메시지(예: 'OO님이 나갔습니다')를 렌더링하는 함수입니다.
    */
@@ -251,9 +243,7 @@ const GiftedChatView = ({
   const decoratedMessages = useMemo(() => {
     // 상대방이 나갔거나, 내가 상대방을 차단한 경우
     const isPeerGone = !!isLeaveUser || !!isBlockedUser;
-    if (!isPeerGone) return messages; // 해당 없으면 원본 메시지 배열 반환
-
-    // 시스템 메시지가 이미 추가되었는지 확인하여 중복 추가를 방지합니다.
+    if (!isPeerGone) return messages;
     const alreadyHasSystemMessage = messages.some(
       (m) => m.system && m._id === "system-leave"
     );
@@ -307,15 +297,20 @@ const GiftedChatView = ({
 
   /**
    * 메시지 입력창과 전송 버튼을 감싸는 툴바의 UI를 커스터마이징하는 함수입니다.
+   * 이 함수는 외부에서 renderInputToolbar prop이 제공되지 않았을 때의 기본값으로 사용
    */
-  const renderInputToolbar = useCallback((props: any) => {
-    return (
-      <InputToolbar
-        {...props}
-        containerStyle={styles.inputToolbarContainer} // 상단 경계선 제거 등 스타일 적용
-      />
-    );
-  }, []);
+  const internalRenderInputToolbar = useCallback(
+    // 3. [수정] 함수 이름을 변경하여 외부 prop과 충돌하지 않도록 합니다.
+    (props: InputToolbarProps<IMessage>) => {
+      return (
+        <InputToolbar
+          {...props}
+          containerStyle={styles.inputToolbarContainer} // 상단 경계선 제거 등 스타일 적용
+        />
+      );
+    },
+    []
+  );
 
   /**
    * 텍스트를 입력하는 Composer(TextInput) UI를 커스터마이징하는 함수입니다.
@@ -372,8 +367,8 @@ const GiftedChatView = ({
   return (
     <GiftedChatAny
       ref={chatRef}
-      messages={decoratedMessages} // 시스템 메시지가 포함된 가공된 메시지 배열
-      onSend={handleSendWithScroll} // 전송 후 스크롤 기능이 포함된 핸들러
+      messages={decoratedMessages}
+      onSend={handleSendWithScroll}
       user={currentUser}
       placeholder={placeholder}
       alwaysShowSend // 입력 내용이 없어도 전송 버튼 영역을 항상 표시
@@ -388,7 +383,9 @@ const GiftedChatView = ({
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
-      renderInputToolbar={renderInputToolbar}
+      // 4. [수정] 외부에서 받은 renderInputToolbar가 있으면 그것을 사용하고,
+      // 없으면 내부 기본 툴바를 사용하도록 조건부 로직을 적용합니다.
+      renderInputToolbar={renderInputToolbar || internalRenderInputToolbar}
       renderComposer={renderComposer}
       listViewProps={listViewProps}
       // 전송 버튼 UI 커스터마이징
@@ -494,6 +491,21 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     justifyContent: "center",
     alignItems: "center",
+  },
+  // ✨ [추가] 새로운 스타일들을 추가합니다.
+  messageRowContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  myMessageWrapper: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  peerMessageWrapper: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
   },
 });
 
