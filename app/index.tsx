@@ -8,7 +8,6 @@ import PageContainer from "@/components/common/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Index = () => {
-  // 상태가 바뀔 때마다 확인하고 싶으면 아래 로그 유지
 
   return (
     <PageContainer edges={["top", "bottom"]}>
