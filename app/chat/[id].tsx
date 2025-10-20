@@ -34,6 +34,8 @@ import {
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
 import useAlert from "@/utils/hooks/useAlert";
+//  새로 만든 모달 컴포넌트를 import
+import ConnectionRequestGuideModal from "@/components/chat/ConnectionRequestGuideModal";
 
 const ChatIdPage = () => {
   const router = useRouter();
@@ -45,6 +47,9 @@ const ChatIdPage = () => {
     isLeave,
     isBlocked,
     connectionInfo: connectionInfoParam, // 라우팅으로 전달받은 connection 정보
+    // 라우팅 파라미터를 추가로 받습니다.
+    isNewRequest,
+    topicTitle,
   } = useLocalSearchParams<{
     id: string;
     peerUserId: string;
@@ -52,8 +57,10 @@ const ChatIdPage = () => {
     isLeave: string;
     isBlocked: string;
     connectionInfo?: string;
+    isNewRequest?: string; // "true" or undefined
+    topicTitle?: string;
   }>();
-  //  라우트 파라미터 불리언 안전 변환 유틸
+  //  라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
@@ -70,13 +77,24 @@ const ChatIdPage = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [localConnectionInfo, setLocalConnectionInfo] =
     useState<ChatItemType | null>(null);
+
+  // 모달의 표시 여부를 관리할 state를 추가합니다.
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
+
   const actionSheetRef = useRef<any>(null);
+
+  //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가합니다.
+  useEffect(() => {
+    if (isNewRequest === "true") {
+      setGuideModalVisible(true);
+    }
+  }, [isNewRequest]);
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
   // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfo = useMemo(() => {
-    // ▼▼▼ [수정 2] 로컬 state를 최우선으로 사용합니다. ▼▼▼
+    //  로컬 state를 최우선으로 사용합니다.
     // 1. 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
     if (localConnectionInfo) {
       return localConnectionInfo;
@@ -348,6 +366,16 @@ const ChatIdPage = () => {
         blockedId={blockedId}
         roomId={roomId}
         peerUserName={peerUserName}
+      />
+
+      {/* 페이지의 최상단에 모달 컴포넌트를 렌더링합니다. */}
+      <ConnectionRequestGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={peerUserName}
+        topicTitle={
+          Array.isArray(topicTitle) ? topicTitle[0] : topicTitle ?? ""
+        }
       />
     </PageContainer>
   );

@@ -88,6 +88,8 @@ const UserAnswerList = ({
               peerUserId: String(user.id),
               peerUserName: user.nickname,
               connectionInfo: JSON.stringify(response),
+              isNewRequest: "true", // 커스텀 모달 호출을 위한 플래그 추가
+              topicTitle: title,
             },
           });
           queryClient.invalidateQueries({
