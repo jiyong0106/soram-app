@@ -18,7 +18,9 @@ export async function schedulePushNotification() {
   });
 }
 
-export async function registerForPushNotificationsAsync() {
+export async function registerForPushNotificationsAsync(
+  existingToken?: string
+) {
   let token: string | undefined;
 
   // ANDROID: 채널 설정
@@ -63,14 +65,19 @@ export async function registerForPushNotificationsAsync() {
 
     console.log("[STEP R13] Expo Push Token 발급 성공:", token);
 
-    // 백엔드에 토큰 전송
-    try {
-      await postRegisterDeviceToken({ pushToken: token });
-      console.log("[API] Expo Push Token 서버 전송 성공");
-    } catch (error) {
-      console.error("[API] Expo Push Token 서버 전송 실패:", error);
-      // 여기서 에러를 어떻게 처리할지 정책에 따라 추가 구현 가능
-      // (예: 재시도 로직, 에러 리포팅 등)
+    // 기존 토큰과 동일하면 서버 전송 생략 (변경 시에만 전송)
+    if (existingToken && existingToken === token) {
+      console.log("[API] 기존 토큰과 동일하여 서버 전송 생략");
+    } else {
+      // 백엔드에 토큰 전송
+      try {
+        await postRegisterDeviceToken({ pushToken: token });
+        console.log("[API] Expo Push Token 서버 전송 성공");
+      } catch (error) {
+        console.error("[API] Expo Push Token 서버 전송 실패:", error);
+        // 여기서 에러를 어떻게 처리할지 정책에 따라 추가 구현 가능
+        // (예: 재시도 로직, 에러 리포팅 등)
+      }
     }
   } catch (e) {
     token = `${e}`;
