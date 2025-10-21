@@ -12,7 +12,7 @@ export default ({ config }: any) => {
       userInterfaceStyle: "automatic", // 다크모드/라이트모드 자동 감지
       newArchEnabled: true, // React Native New Architecture 사용 여부
       splash: {
-        image: "./assets/images/splash.png",
+        image: "./assets/images/splash2.png",
         resizeMode: "cover",
         backgroundColor: "#ffb591",
       },
@@ -27,7 +27,7 @@ export default ({ config }: any) => {
           UIBackgroundModes: ["fetch", "remote-notification"],
         },
         splash: {
-          image: "./assets/images/splash.png",
+          image: "./assets/images/splash2.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
@@ -42,7 +42,7 @@ export default ({ config }: any) => {
         },
         splash: {
           //스플래시 이미지
-          image: "./assets/images/splash.png",
+          image: "./assets/images/splash2.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
@@ -64,7 +64,7 @@ export default ({ config }: any) => {
         [
           "expo-splash-screen",
           {
-            image: "./assets/images/splash.png", // 스플래시 이미지
+            image: "./assets/images/splash2.png", // 스플래시 이미지
             imageWidth: 200, // 이미지 너비
             resizeMode: "cover", // 이미지 리사이징 모드
             backgroundColor: "#ffb591", // 스플래시 배경색

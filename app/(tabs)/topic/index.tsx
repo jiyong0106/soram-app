@@ -1,5 +1,3 @@
-// app/(tabs)/topic/index.tsx
-
 import AppHeader from "@/components/common/AppHeader";
 import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
