@@ -6,6 +6,9 @@ import {
   RequestOtpResponse,
   VerifyOtpBody,
   VerifyOtpResponse,
+  NotificationListItem,
+  NotificationType,
+  PageDto,
 } from "@/utils/types/auth";
 import { Interest } from "../types/signup";
 
@@ -39,5 +42,45 @@ export const getTickets = async () => {
 // 전체 관심사 목록 조회 API
 export const getInterests = async () => {
   const { data } = await instance.get<Interest[]>("/auth/interests");
+  return data;
+};
+
+// ---------------- 알림(Notifications) API ----------------
+
+export interface GetNotificationsParams {
+  take: number;
+  cursor?: number;
+  type?: NotificationType;
+  isRead?: boolean;
+}
+
+export const getNotifications = async ({
+  take,
+  cursor,
+  type,
+  isRead,
+}: GetNotificationsParams) => {
+  const params: Record<string, any> = { take };
+  if (cursor !== undefined) params.cursor = cursor;
+  if (type) params.type = type;
+  if (typeof isRead === "boolean") params.isRead = isRead;
+  const { data } = await instance.get<PageDto<NotificationListItem>>(
+    "/notifications",
+    { params }
+  );
+  return data;
+};
+
+export const patchNotificationRead = async (id: number) => {
+  const { data } = await instance.patch<{ message: string }>(
+    `/notifications/${id}/read`
+  );
+  return data;
+};
+
+export const patchNotificationsReadAll = async () => {
+  const { data } = await instance.patch<{ message: string }>(
+    "/notifications/read-all"
+  );
   return data;
 };
