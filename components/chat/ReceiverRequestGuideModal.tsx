@@ -1,88 +1,209 @@
-import React, { useState } from "react"; // 1. useState 임포트
-import { Modal, View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Modal,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Animated,
+} from "react-native";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import { SearchBar } from "react-native-screens";
 
+interface BannerLayout {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 interface ReceiverRequestGuideModalProps {
   isVisible: boolean;
   onClose: () => void;
   peerUserName: string;
+  bannerLayout?: BannerLayout;
 }
-
-// --- 2. 가이드 페이지 내용 정의 ---
 type GuidePage = {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
   highlight?: string;
 };
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const ReceiverRequestGuideModal = ({
   isVisible,
   onClose,
   peerUserName,
+  bannerLayout,
 }: ReceiverRequestGuideModalProps) => {
-  // 3. 현재 페이지 state 추가
-  const [currentPage, setCurrentPage] = useState(0); // 4. 수신자용 3단계 가이드 정의
+  const [currentPage, setCurrentPage] = useState(0);
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const guidePages: GuidePage[] = [
     {
       icon: "chatbubble-ellipses-outline",
-      title: `${peerUserName}님이\n대화를 요청했어요`,
+      title: `${peerUserName}님이`,
+      subtitle: "대화를 요청했어요!",
     },
     {
-      icon: "arrow-up-circle-outline", // 코치 마크 대신 '위쪽'을 가리키는 아이콘
-      title: `상단 배너를 눌러\n${peerUserName}님의\n이야기를 확인해 보세요!`,
+      // 2페이지 아이콘
+      icon: "arrow-up-outline",
+      title: `상단 배너에서`,
+      subtitle: "서로의 이야기를 확인할 수 있어요.",
     },
     {
-      icon: "sparkles-outline",
-      title: "좋은 인연으로 이어지길 바랄게요 ☺️",
-      highlight: "같은 생각으로 연결된 우리, 소람",
+      icon: "flame",
+      title: "좋은 인연으로",
+      subtitle: "이어지길 응원할게요!",
     },
-  ]; // 5. 다음 페이지로 이동 (마지막이면 닫기)
-
+  ];
   const handleNext = () => {
     if (currentPage < guidePages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      setCurrentPage(0); // 닫힌 후 다시 열릴 때를 대비해 0으로 리셋
+      setCurrentPage(0);
       onClose();
     }
-  }; // 6. 현재 페이지 데이터 및 마지막 페이지 여부
-
+  };
   const currentPageData = guidePages[currentPage];
   const isLastPage = currentPage === guidePages.length - 1;
+  const isSpotlightPage = currentPage === 1 && bannerLayout;
+
+  useEffect(() => {
+    if (isSpotlightPage) {
+      const animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(animatedValue, {
+            toValue: -8,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      animation.start();
+      return () => {
+        animation.stop();
+        animatedValue.setValue(0);
+      };
+    }
+  }, [isSpotlightPage, animatedValue]);
 
   return (
     <Modal
       visible={isVisible}
       transparent={true}
       animationType="fade"
-      onRequestClose={handleNext} // 뒤로가기 버튼으로도 닫히도록
+      onRequestClose={handleNext}
     >
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalContainer}>
-          <Ionicons
-            name={currentPageData.icon} // 7. 현재 페이지 아이콘
-            size={48}
-            color="#FF6B3E"
-            style={styles.icon}
+      {/* [스포트라이트 배경] */}
+      {isSpotlightPage && (
+        <>
+          <View
+            style={[
+              styles.overlay,
+              { height: bannerLayout.y, width: screenWidth },
+            ]}
           />
+          <View
+            style={[
+              styles.overlay,
+              {
+                top: bannerLayout.y + bannerLayout.height,
+                height: screenHeight - (bannerLayout.y + bannerLayout.height),
+                width: screenWidth,
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.overlay,
+              {
+                top: bannerLayout.y,
+                height: bannerLayout.height,
+                width: bannerLayout.x,
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.overlay,
+              {
+                top: bannerLayout.y,
+                height: bannerLayout.height,
+                left: bannerLayout.x + bannerLayout.width,
+                width: screenWidth - (bannerLayout.x + bannerLayout.width),
+              },
+            ]}
+          />
+        </>
+      )}
+
+      {/* [모달 백드롭] */}
+      <View
+        style={[
+          styles.modalBackdrop,
+          isSpotlightPage && styles.transparentBackdrop,
+        ]}
+      >
+        {/* [애니메이션 화살표]*/}
+        {isSpotlightPage && bannerLayout && (
+          <Animated.View
+            style={[
+              styles.arrowContainer,
+              {
+                top: bannerLayout.y + bannerLayout.height + 10,
+                transform: [{ translateY: animatedValue }],
+              },
+            ]}
+          >
+            <Ionicons
+              name={currentPageData.icon}
+              size={48}
+              color="#FF7D4A" // 주황색 (활성)
+            />
+          </Animated.View>
+        )}
+
+        {/* 4. [모달 컨테이너] (흰색 박스) */}
+        <View style={styles.modalContainer}>
+          {/*
+           * 5. 모달 아이콘
+           * *회색(비활성)*, *정적(애니메이션 없음)*으로 표시
+           * - 1, 3페이지: 기존 주황색 아이콘 렌더링
+           */}
+          {isSpotlightPage ? (
+            <Ionicons // 2페이지 (회색, 정적)
+              name={"search"}
+              size={48}
+              color="#FF6B3E" // 비활성화된 회색 (인디케이터 색상)
+              style={styles.iconOnlyMargin} // (marginBottom: 20)
+            />
+          ) : (
+            <Ionicons // 1, 3페이지 (주황색, 정적)
+              name={currentPageData.icon}
+              size={48}
+              color="#FF6B3E"
+              style={styles.iconOnlyMargin} // (marginBottom: 20)
+            />
+          )}
 
           <AppText style={styles.titleText}>{currentPageData.title}</AppText>
-          {/* 부가 텍스트 (있을 경우) */}
           {currentPageData.subtitle && (
             <AppText style={styles.subtitleText}>
               {currentPageData.subtitle}
             </AppText>
           )}
-          {/* 하이라이트 텍스트 (있을 경우) */}
           {currentPageData.highlight && (
             <AppText style={styles.highlightText}>
               {currentPageData.highlight}
             </AppText>
           )}
-          {/* 8. 페이지 인디케이터 (점) */}
           <View style={styles.indicatorContainer}>
             {guidePages.map((_, index) => (
               <View
@@ -94,7 +215,6 @@ const ReceiverRequestGuideModal = ({
               />
             ))}
           </View>
-          {/* 9. 하단 버튼 */}
           <TouchableOpacity style={styles.button} onPress={handleNext}>
             <AppText style={styles.buttonText}>
               {isLastPage ? "확인" : "다음"}
@@ -114,6 +234,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+  transparentBackdrop: {
+    backgroundColor: "transparent",
+  },
+  overlay: {
+    position: "absolute",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    top: 0,
+    left: 0,
+  },
+  arrowContainer: {
+    position: "absolute",
+    alignSelf: "center",
+  },
   modalContainer: {
     width: "100%",
     backgroundColor: "#fff",
@@ -121,7 +254,9 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
   },
-  icon: {
+
+  // 'iconSpacer'를 삭제하고 'iconOnlyMargin'을 재사용
+  iconOnlyMargin: {
     marginBottom: 20,
   },
   titleText: {
@@ -129,8 +264,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: "#5C4B44",
-    lineHeight: 28, // 텍스트가 여러 줄이 될 수 있으므로 최소 높이 보장
-    minHeight: 56, // 28 * 2
+    lineHeight: 28,
+    // minHeight: 56,
   },
   subtitleText: {
     fontSize: 16,
@@ -146,7 +281,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 16,
     lineHeight: 24,
-  }, // --- 10. 인디케이터 스타일 추가 ---
+  },
   indicatorContainer: {
     flexDirection: "row",
     marginTop: 24,
@@ -167,7 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6B3E",
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center", // marginTop: 24, // 인디케이터가 있으므로 삭제
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",

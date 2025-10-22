@@ -37,11 +37,6 @@ const ConnectionRequestGuideModal = ({
       subtitle: "대화 요청을 보냈어요!",
     },
     {
-      icon: "chatbubble-ellipses-outline",
-      title: `어떤 말로 시작할지 고민되시나요?`,
-      subtitle: "두 분은 이미 공감대가 있답니다.😊",
-    },
-    {
       entypoIcon: "link",
       title: "두 분을 이어준 주제인",
       highlight: `"${topicTitle}"`,
