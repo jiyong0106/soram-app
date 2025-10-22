@@ -19,6 +19,7 @@ import {
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { useRouter } from "expo-router";
 
 // GiftedChat의 타입 한계로 인해 ref를 직접 전달하기 위해 any로 캐스팅한 래퍼 컴포넌트를 사용합니다.
 const GiftedChatAny: any = GiftedChat as any;
@@ -84,6 +85,8 @@ export type GiftedChatViewProps = {
   // 스크롤 위치 유지 등 FlatList 관련 추가 props
   listViewProps?: any;
   renderInputToolbar?: (props: InputToolbarProps<IMessage>) => React.ReactNode;
+  // 한글 주석: 상대 유저 정보(아이디/닉네임)를 상위에서 주입
+  opponent?: { id: number | string; nickname?: string };
 };
 
 /**
@@ -93,7 +96,7 @@ const GiftedChatView = ({
   messages,
   onSend,
   currentUser,
-  placeholder = "메시지 입력",
+  placeholder,
   onLoadEarlier,
   canLoadEarlier,
   isLoadingEarlier,
@@ -102,10 +105,11 @@ const GiftedChatView = ({
   leaveUserName,
   listViewProps,
   renderInputToolbar,
+  opponent,
 }: GiftedChatViewProps) => {
   // GiftedChat의 내부 FlatList에 접근하기 위한 ref
   const chatRef = useRef<any>(null);
-
+  const router = useRouter();
   // '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
   const messageIdToShowReceipt = useMemo(() => {
     // 내가 보낸 마지막 읽힌 메시지를 찾습니다.
@@ -147,6 +151,13 @@ const GiftedChatView = ({
       minute: "2-digit",
     });
   }, []);
+
+  const handleAvatarPress = useCallback(() => {
+    router.push({
+      pathname: "/profile/[userId]",
+      params: { userId: String(opponent?.id), nickname: opponent?.nickname },
+    });
+  }, [opponent?.id, opponent?.nickname]);
 
   /**
    * 각 메시지 말풍선을 어떻게 렌더링할지 정의하는 함수입니다.
@@ -203,9 +214,13 @@ const GiftedChatView = ({
             // 상대방이 보낸 메시지 UI (좌측 정렬)
             <View style={styles.peerMessageWrapper}>
               {showAvatar ? (
-                <View style={styles.avatar}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={styles.avatar}
+                  onPress={handleAvatarPress}
+                >
                   <Ionicons name="person" size={16} color="#fff" />
-                </View>
+                </TouchableOpacity>
               ) : (
                 <View style={styles.avatarPlaceholder} />
               )}
@@ -364,13 +379,19 @@ const GiftedChatView = ({
   }, [canLoadEarlier, isLoadingEarlier]);
 
   // 최종적으로 커스터마이징된 props들을 적용하여 GiftedChat 컴포넌트를 렌더링합니다.
+  const finalPlaceholder = useMemo(
+    () =>
+      placeholder ??
+      (opponent?.nickname ? `${opponent.nickname}에게 메시지` : "메시지 입력"),
+    [placeholder, opponent?.nickname]
+  );
   return (
     <GiftedChatAny
       ref={chatRef}
       messages={decoratedMessages}
       onSend={handleSendWithScroll}
       user={currentUser}
-      placeholder={placeholder}
+      placeholder={finalPlaceholder}
       alwaysShowSend // 입력 내용이 없어도 전송 버튼 영역을 항상 표시
       inverted={true} // 채팅 목록을 아래부터 위로 쌓음 (기본값)
       loadEarlier={!!canLoadEarlier}

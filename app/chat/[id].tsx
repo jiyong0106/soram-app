@@ -341,7 +341,7 @@ const ChatIdPage = () => {
       if (connectionInfo && isPending && !isRequester) {
         const storageKey = `@viewed_receiver_guide_${roomId}`;
         try {
-          const hasViewed = await AsyncStorage.getItem(storageKey); // 아직 본 적이 없다면
+          const hasViewed = await AsyncStorage.getItem(storageKey);
           if (!hasViewed) {
             // ref.current.measure()를 사용해 절대 좌표를 측정
             //    측정이 완료될 때까지 잠시 대기 (setTimeout)
@@ -423,6 +423,7 @@ const ChatIdPage = () => {
           messages={giftedMessages}
           onSend={handleSendGifted}
           currentUser={{ _id: myUserId ?? "me" }}
+          opponent={{ id: peerUserId, nickname: peerUserName }}
           onLoadEarlier={handleLoadEarlier}
           canLoadEarlier={!!hasNextPage}
           isLoadingEarlier={!!isFetchingNextPage}

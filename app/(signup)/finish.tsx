@@ -10,7 +10,7 @@ import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import AppText from "@/components/common/AppText";
-import { getAgeFromBirthdate } from "@/utils/util/birthdate";
+import { formatBirthAndAge, getAgeFromBirthdate } from "@/utils/util/birthdate";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const FinishPage = () => {
@@ -200,11 +200,29 @@ const styles = StyleSheet.create({
     // Android를 위한 그림자
     elevation: 5,
   },
-  brand: { color: "#FF7D4A", fontWeight: "bold", fontSize: 18 },
-  caption: { color: "#9CA3AF", fontSize: 12, marginBottom: 20 },
-  name: { fontSize: 22, fontWeight: "bold", color: "#5C4B44", marginTop: 8 },
-  meta: { fontSize: 16, color: "#5C4B44" },
-  section: { paddingTop: 20 }, // 중복되는 paddingHorizontal 제거
+  brand: {
+    color: "#FF7D4A",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  caption: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#5C4B44",
+    marginTop: 8,
+  },
+  meta: {
+    fontSize: 16,
+    color: "#5C4B44",
+  },
+  section: {
+    paddingTop: 20,
+  }, // 중복되는 paddingHorizontal 제거
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -214,19 +232,16 @@ const styles = StyleSheet.create({
   answerCard: {
     marginBottom: 10,
   },
-  answer: { color: "#5C4B44", lineHeight: 30, fontSize: 14 },
-  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingTop: 6 },
+  answer: {
+    color: "#5C4B44",
+    lineHeight: 30,
+    fontSize: 14,
+  },
+  tagsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 6,
+  },
   tag: { color: "#5C4B44" },
 });
-
-// 한글 주석: 생년 + 만 나이 포맷팅
-function formatBirthAndAge(birthdate?: string | null) {
-  if (!birthdate) return "-";
-  const age = getAgeFromBirthdate(birthdate);
-  try {
-    const [y] = birthdate.split("-");
-    return age !== undefined ? `${y}년생, 만 ${age}세` : `${y}년생`;
-  } catch {
-    return birthdate as string;
-  }
-}

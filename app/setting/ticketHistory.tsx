@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
 import TopTabBar from "@/components/common/TopTabBar";
-import TicketHistroySection from "@/components/profile/TicketHistroySection";
+import TicketHistroySection from "@/components/settings/TicketHistroySection";
 import { HistoryTabKey } from "@/utils/api/transactionsApi";
 
 const TicketHistory = () => {

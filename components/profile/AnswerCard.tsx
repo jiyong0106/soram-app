@@ -1,46 +1,37 @@
-import { Answer } from "@/utils/types/profile";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 type Props = {
-  answer: Answer;
-  index?: number; // 카드 넘버링 감성용
+  answer: {
+    questionId: number;
+    content: string;
+    isPrimary: boolean;
+    questionContent: string;
+  };
+  index?: number;
 };
 
-const AnswerCard: React.FC<Props> = ({ answer, index }) => {
+const AnswerCard = ({ answer, index }: Props) => {
+  const { questionId, content, isPrimary, questionContent } = answer;
   return (
-    <View style={[styles.card, answer.isPrimary && styles.primary]}>
-      <Text style={styles.qLabel}>
-        {answer.isPrimary ? "메인 이야기" : `이야기 ${index ?? ""}`}
-      </Text>
-      <Text style={styles.content}>{answer.content}</Text>
+    <View style={styles.card}>
+      <Text style={styles.qLabel}> {`- ${questionContent}`}</Text>
+      <Text style={styles.content}>{content}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  primary: {
-    borderColor: "#ffd5cc",
-    backgroundColor: "#fff8f6",
+    gap: 5,
   },
   qLabel: {
-    fontSize: 12,
-    color: "#999",
-    marginBottom: 8,
+    fontSize: 18,
+    marginBottom: 10,
   },
   content: {
+    color: "#5C4B44",
     fontSize: 15,
-    lineHeight: 22,
-    color: "#222",
   },
 });
 
