@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { MyProfileResponse } from "@/utils/types/profile";
+import { formatBirthAndAge } from "@/utils/util/birthdate";
 
 type Props = {
   profile: MyProfileResponse;
@@ -15,7 +16,9 @@ const ProfileHeader = ({ profile }: Props) => {
   return (
     <View style={{ gap: 10 }}>
       <AppText style={styles.name}>{profile.nickname || "-"}</AppText>
-      <AppText style={styles.meta}>{`${profile.age ?? "-"}세`}</AppText>
+      <AppText style={styles.meta}>
+        {formatBirthAndAge(profile.birthdate)}
+      </AppText>
       <AppText style={styles.meta}>
         {`${genderLabel(profile.gender)} · ${profile.location ?? "미설정"}`}
       </AppText>

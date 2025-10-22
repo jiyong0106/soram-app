@@ -90,7 +90,7 @@ export interface MyProfileResponse {
   id: number;
   nickname: string;
   gender: Gender;
-  age: number;
+  birthdate: string;
   location?: string | null;
   interests: ProfileInterest[];
   answers: ProfileAnswerView[];

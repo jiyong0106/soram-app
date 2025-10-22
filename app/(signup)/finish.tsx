@@ -10,7 +10,7 @@ import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import AppText from "@/components/common/AppText";
-import { getAgeFromBirthdate } from "@/utils/util/birthdate";
+import { formatBirthAndAge, getAgeFromBirthdate } from "@/utils/util/birthdate";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const FinishPage = () => {
@@ -245,15 +245,3 @@ const styles = StyleSheet.create({
   },
   tag: { color: "#5C4B44" },
 });
-
-// 한글 주석: 생년 + 만 나이 포맷팅
-function formatBirthAndAge(birthdate?: string | null) {
-  if (!birthdate) return "-";
-  const age = getAgeFromBirthdate(birthdate);
-  try {
-    const [y] = birthdate.split("-");
-    return age !== undefined ? `${y}년생, 만 ${age}세` : `${y}년생`;
-  } catch {
-    return birthdate as string;
-  }
-}
