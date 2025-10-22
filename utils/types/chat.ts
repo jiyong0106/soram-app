@@ -29,6 +29,7 @@ export interface ChatItemType {
   opponent: UserType;
   isBlocked: boolean;
   isLeave: boolean;
+  isMuted: boolean;
   lastMessage: LastMessageType | null;
 }
 export interface GetChatResponse {
