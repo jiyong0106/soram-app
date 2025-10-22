@@ -14,13 +14,7 @@ const ProfilePage = () => {
   //프로필 조회
   const profile = useMemo(() => data, [data]);
 
-  return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <View style={styles.placeholder}>
-        <AppText>내 프로필을 불러오고 있어요…</AppText>
-      </View>
-    </ScrollView>
-  );
+  return <ScrollView contentContainerStyle={styles.scroll}></ScrollView>;
 };
 
 export default ProfilePage;
