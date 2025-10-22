@@ -207,24 +207,6 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="connection"
-        options={{
-          title: "요청",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="send" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="topic"
-        options={{
-          title: "홈",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="flame" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="activity/index"
         options={{
           title: "활동",
@@ -239,7 +221,25 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="topic"
+        options={{
+          title: "홈",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="flame" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "프로필",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="setting/index"
         options={{
           title: "더보기",
           tabBarIcon: ({ color, size }) => (

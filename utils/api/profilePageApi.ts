@@ -7,6 +7,8 @@ import {
   LogoutResponse,
   GetMyVoiceResponsesResponse,
   UpdateTextResponsePayload,
+  MyProfileResponse,
+  UserProfilePublicResponse,
 } from "../types/profile";
 import instance from "./axios";
 import { TextResponse } from "../types/topic"; // 기존 응답 타입 재사용
@@ -87,5 +89,19 @@ export const updateTextResponse = async ({
     textContent,
   });
 
+  return data;
+};
+
+//내 프로필 조회
+export const getMyProfile = async () => {
+  const { data } = await instance.get<MyProfileResponse>("/users/me/profile");
+  return data;
+};
+
+//상대 프로필 조회
+export const getUserProfile = async (userId: number) => {
+  const { data } = await instance.get<UserProfilePublicResponse>(
+    `/users/${userId}/profile`
+  );
   return data;
 };
