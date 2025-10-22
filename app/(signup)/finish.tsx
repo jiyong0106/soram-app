@@ -200,11 +200,29 @@ const styles = StyleSheet.create({
     // Android를 위한 그림자
     elevation: 5,
   },
-  brand: { color: "#FF7D4A", fontWeight: "bold", fontSize: 18 },
-  caption: { color: "#9CA3AF", fontSize: 12, marginBottom: 20 },
-  name: { fontSize: 22, fontWeight: "bold", color: "#5C4B44", marginTop: 8 },
-  meta: { fontSize: 16, color: "#5C4B44" },
-  section: { paddingTop: 20 }, // 중복되는 paddingHorizontal 제거
+  brand: {
+    color: "#FF7D4A",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  caption: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#5C4B44",
+    marginTop: 8,
+  },
+  meta: {
+    fontSize: 16,
+    color: "#5C4B44",
+  },
+  section: {
+    paddingTop: 20,
+  }, // 중복되는 paddingHorizontal 제거
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -214,8 +232,17 @@ const styles = StyleSheet.create({
   answerCard: {
     marginBottom: 10,
   },
-  answer: { color: "#5C4B44", lineHeight: 30, fontSize: 14 },
-  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingTop: 6 },
+  answer: {
+    color: "#5C4B44",
+    lineHeight: 30,
+    fontSize: 14,
+  },
+  tagsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 6,
+  },
   tag: { color: "#5C4B44" },
 });
 
