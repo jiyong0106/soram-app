@@ -10,6 +10,7 @@ import {
   View,
   StyleSheet,
   ActivityIndicator,
+  Alert, // 임시 알너트 임포트
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,8 +37,25 @@ import {
 import useAlert from "@/utils/hooks/useAlert";
 //  새로 만든 모달 컴포넌트를 import
 import ConnectionRequestGuideModal from "@/components/chat/ConnectionRequestGuideModal";
+import ReceiverRequestGuideModal from "@/components/chat/ReceiverRequestGuideModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChatIdPage = () => {
+  //임시
+  const handleTempResetGuide = async () => {
+    const storageKey = `@viewed_receiver_guide_${roomId}`;
+    try {
+      await AsyncStorage.removeItem(storageKey);
+      Alert.alert(
+        "초기화 완료",
+        `이 채팅방(${roomId})의 가이드 기록이 삭제되었습니다. 채팅방에 다시 입장하면 모달이 나타납니다.`
+      );
+    } catch (e) {
+      Alert.alert("오류", "AsyncStorage 삭제에 실패했습니다.");
+    }
+  };
+  // 임시
+
   const router = useRouter();
   const { showAlert, showActionAlert } = useAlert();
   const {
@@ -60,7 +78,7 @@ const ChatIdPage = () => {
     isNewRequest?: string; // "true" or undefined
     topicTitle?: string;
   }>();
-  //  라우트 파라미터 불리언 안전 변환 유틸
+  // 라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
@@ -80,7 +98,7 @@ const ChatIdPage = () => {
 
   // 모달의 표시 여부를 관리할 state를 추가합니다.
   const [isGuideModalVisible, setGuideModalVisible] = useState(false);
-
+  const [isReceiverGuideVisible, setReceiverGuideVisible] = useState(false);
   const actionSheetRef = useRef<any>(null);
 
   //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가합니다.
@@ -305,6 +323,27 @@ const ChatIdPage = () => {
       </PageContainer>
     );
   }
+  useEffect(() => {
+    const checkReceiverGuide = async () => {
+      // 1. 유효한 connection 정보가 있고,
+      // 2. PENDING 상태이며,
+      // 3. 내가 요청자가 아닐 때 (즉, 수신자일 때)
+      if (connectionInfo && isPending && !isRequester) {
+        const storageKey = `@viewed_receiver_guide_${roomId}`;
+        try {
+          const hasViewed = await AsyncStorage.getItem(storageKey); // 4. 아직 본 적이 없다면 모달을 띄움
+          if (!hasViewed) {
+            setReceiverGuideVisible(true); // 5. '봤음'으로 저장
+            await AsyncStorage.setItem(storageKey, "true");
+          }
+        } catch (e) {
+          console.error("Failed to access AsyncStorage for guide", e);
+        }
+      }
+    };
+
+    checkReceiverGuide(); // connectionInfo가 확정된 이후에 이 로직이 실행되어야 함
+  }, [connectionInfo, isPending, isRequester, roomId]);
 
   return (
     <PageContainer edges={["bottom"]} padded={false}>
@@ -315,6 +354,14 @@ const ChatIdPage = () => {
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
+              {/* ▼▼▼ 3. 임시 리셋 버튼을 헤더에 추가합니다. ▼▼▼ */}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={handleTempResetGuide}
+              >
+                <Ionicons name="refresh-circle" size={24} color="#FF6B3E" />
+              </TouchableOpacity>
+              {/* ▲▲▲ 임시 코드 끝 ▲▲▲ */}
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => actionSheetRef.current?.present?.()}
@@ -326,7 +373,6 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-
       <View style={styles.chatContainer}>
         <GiftedChatView
           messages={giftedMessages}
@@ -360,14 +406,12 @@ const ChatIdPage = () => {
           <ChatTriggerBanner roomId={roomId} />
         </View>
       </View>
-
       <ChatActionSheet
         ref={actionSheetRef}
         blockedId={blockedId}
         roomId={roomId}
         peerUserName={peerUserName}
       />
-
       {/* 페이지의 최상단에 모달 컴포넌트를 렌더링합니다. */}
       <ConnectionRequestGuideModal
         isVisible={isGuideModalVisible}
@@ -376,6 +420,12 @@ const ChatIdPage = () => {
         topicTitle={
           Array.isArray(topicTitle) ? topicTitle[0] : topicTitle ?? ""
         }
+      />
+      {/* [추가] 수신자용 가이드 모달 */}
+      <ReceiverRequestGuideModal
+        isVisible={isReceiverGuideVisible}
+        onClose={() => setReceiverGuideVisible(false)}
+        peerUserName={peerUserName}
       />
     </PageContainer>
   );

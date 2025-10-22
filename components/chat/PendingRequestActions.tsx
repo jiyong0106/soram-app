@@ -17,7 +17,10 @@ const PendingRequestActions = ({
   return (
     <View style={styles.container}>
       <AppText style={styles.guideText}>
-        대화 요청을 수락하고 이야기를 나눠보세요.
+        지금은 메시지 읽음 여부를 상대가 알 수 없으니,
+      </AppText>
+      <AppText style={styles.guideText}>
+        편안한 마음으로 결정해 보세요 😉
       </AppText>
       <View style={styles.buttonContainer}>
         {/* 1. 각 버튼을 flex: 1 속성을 가진 View로 감싸줍니다. */}
