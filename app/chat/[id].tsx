@@ -7,9 +7,11 @@ import React, {
 } from "react";
 import {
   TouchableOpacity,
-  View,
+  View, //
   StyleSheet,
   ActivityIndicator,
+  Alert, // 임시 알너트 임포트
+  LayoutRectangle,
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,10 +36,26 @@ import {
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
 import useAlert from "@/utils/hooks/useAlert";
-//  새로 만든 모달 컴포넌트를 import
 import ConnectionRequestGuideModal from "@/components/chat/ConnectionRequestGuideModal";
+import ReceiverRequestGuideModal from "@/components/chat/ReceiverRequestGuideModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChatIdPage = () => {
+  //임시
+  const handleTempResetGuide = async () => {
+    const storageKey = `@viewed_receiver_guide_${roomId}`;
+    try {
+      await AsyncStorage.removeItem(storageKey);
+      Alert.alert(
+        "초기화 완료",
+        `이 채팅방(${roomId})의 가이드 기록이 삭제되었습니채팅방에 다시 입장하면 모달이 나타납니다.`
+      );
+    } catch (e) {
+      Alert.alert("오류", "AsyncStorage 삭제에 실패했습니다.");
+    }
+  };
+  // 임시
+
   const router = useRouter();
   const { showAlert, showActionAlert } = useAlert();
   const {
@@ -60,7 +78,7 @@ const ChatIdPage = () => {
     isNewRequest?: string; // "true" or undefined
     topicTitle?: string;
   }>();
-  //  라우트 파라미터 불리언 안전 변환 유틸
+  // 라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
@@ -78,12 +96,20 @@ const ChatIdPage = () => {
   const [localConnectionInfo, setLocalConnectionInfo] =
     useState<ChatItemType | null>(null);
 
-  // 모달의 표시 여부를 관리할 state를 추가합니다.
+  // 모달의 표시 여부를 관리할 state를 추가
   const [isGuideModalVisible, setGuideModalVisible] = useState(false);
+  const [isReceiverGuideVisible, setReceiverGuideVisible] = useState(false);
+
+  // 스포트라이트 효과를 위한 배너 레이아웃 state
+  const [bannerLayout, setBannerLayout] = useState<LayoutRectangle | undefined>(
+    undefined
+  );
+  //  bannerWrapper의 ref를 생성
+  const bannerRef = useRef<View>(null);
 
   const actionSheetRef = useRef<any>(null);
 
-  //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가합니다.
+  //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가
   useEffect(() => {
     if (isNewRequest === "true") {
       setGuideModalVisible(true);
@@ -94,13 +120,13 @@ const ChatIdPage = () => {
 
   // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfo = useMemo(() => {
-    //  로컬 state를 최우선으로 사용합니다.
-    // 1. 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+    //  로컬 state를 최우선으로 사용
+    // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
     if (localConnectionInfo) {
       return localConnectionInfo;
     }
 
-    // 2. 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
+    // 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
     if (connectionInfoParam) {
       try {
         return JSON.parse(connectionInfoParam);
@@ -109,7 +135,7 @@ const ChatIdPage = () => {
       }
     }
 
-    // 2. 전달받은 정보가 없으면 캐시에서 탐색
+    // 전달받은 정보가 없으면 캐시에서 탐색
     const chatListData = queryClient.getQueryData<
       InfiniteData<GetChatResponse>
     >(["getChatKey"]);
@@ -170,11 +196,11 @@ const ChatIdPage = () => {
         name: m.sender?.nickname,
       },
       // isPending 상태가 true이면, 서버에서 온 isRead 값이 무엇이든 무조건 false로 덮어씁니다.
-      // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용합니다.
+      // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용
       isRead: isPending ? false : m.isRead,
     }),
     // isPending 값이 변경될 때마다 이 함수가 최신 값을 참조할 수 있도록
-    // useCallback의 의존성 배열에 isPending을 추가합니다.
+    // useCallback의 의존성 배열에 isPending을 추가
     [isPending]
   );
 
@@ -306,6 +332,64 @@ const ChatIdPage = () => {
     );
   }
 
+  // useEffect 로직 변경: measure() 사용
+  useEffect(() => {
+    const checkReceiverGuide = async () => {
+      // 유효한 connection 정보가 있고,
+      // PENDING 상태이며,
+      // 내가 요청자가 아닐 때 (즉, 수신자일 때)
+      if (connectionInfo && isPending && !isRequester) {
+        const storageKey = `@viewed_receiver_guide_${roomId}`;
+        try {
+          const hasViewed = await AsyncStorage.getItem(storageKey); // 아직 본 적이 없다면
+          if (!hasViewed) {
+            // ref.current.measure()를 사용해 절대 좌표를 측정
+            //    측정이 완료될 때까지 잠시 대기 (setTimeout)
+            setTimeout(() => {
+              if (bannerRef.current) {
+                bannerRef.current.measure(
+                  (x, y, width, height, pageX, pageY) => {
+                    // pageX, pageY가 우리가 필요한 절대 스크린 좌표
+                    console.log(
+                      `[DEBUGGING] Banner measured: pageX=${pageX}, pageY=${pageY}, width=${width}, height=${height}`
+                    );
+
+                    // state에 절대 좌표로 저장
+                    setBannerLayout({
+                      x: pageX,
+                      y: pageY,
+                      width: width,
+                      height: height,
+                    });
+                    // 측정이 완료된 후 모달을 띄움
+                    setReceiverGuideVisible(true);
+                  }
+                );
+                // '봤음'으로 저장 (measure 호출 직후)
+                AsyncStorage.setItem(storageKey, "true").catch((e) =>
+                  console.error("Failed to set AsyncStorage item", e)
+                );
+              } else {
+                // 혹시 ref가 준비되지 않았을 경우 (폴백)
+                console.warn(
+                  "[DEBUGGING] bannerRef.current is nul스포트라이트 없이 모달을 띄웁니다."
+                );
+                setReceiverGuideVisible(true); // 스포트라이트 없이 그냥 모달 띄우기
+                AsyncStorage.setItem(storageKey, "true").catch((e) =>
+                  console.error("Failed to set AsyncStorage item", e)
+                );
+              }
+            }, 100); // 100ms 대기 후 실행
+          }
+        } catch (e) {
+          console.error("Failed to access AsyncStorage for guide", e);
+        }
+      }
+    };
+
+    checkReceiverGuide(); // connectionInfo가 확정된 이후에 이 로직이 실행되어야 함
+  }, [connectionInfo, isPending, isRequester, roomId]);
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -315,6 +399,14 @@ const ChatIdPage = () => {
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
+              {/* ▼▼▼ 임시 리셋 버튼을 헤더에 추가 ▼▼▼ */}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={handleTempResetGuide}
+              >
+                <Ionicons name="refresh-circle" size={24} color="#FF6B3E" />
+              </TouchableOpacity>
+              {/* ▲▲▲ 임시 코드 끝 ▲▲▲ */}
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => actionSheetRef.current?.present?.()}
@@ -326,7 +418,6 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-
       <View style={styles.chatContainer}>
         <GiftedChatView
           messages={giftedMessages}
@@ -356,19 +447,18 @@ const ChatIdPage = () => {
           }
         />
 
-        <View style={styles.bannerWrapper}>
+        {/* ref를 할당하고 onLayout을 제거 */}
+        <View style={styles.bannerWrapper} ref={bannerRef}>
           <ChatTriggerBanner roomId={roomId} />
         </View>
       </View>
-
       <ChatActionSheet
         ref={actionSheetRef}
         blockedId={blockedId}
         roomId={roomId}
         peerUserName={peerUserName}
       />
-
-      {/* 페이지의 최상단에 모달 컴포넌트를 렌더링합니다. */}
+      {/* 페이지의 최상단에 모달 컴포넌트를 렌더링 */}
       <ConnectionRequestGuideModal
         isVisible={isGuideModalVisible}
         onClose={() => setGuideModalVisible(false)}
@@ -376,6 +466,14 @@ const ChatIdPage = () => {
         topicTitle={
           Array.isArray(topicTitle) ? topicTitle[0] : topicTitle ?? ""
         }
+      />
+      {/* [추가] 수신자용 가이드 모달 */}
+      <ReceiverRequestGuideModal
+        isVisible={isReceiverGuideVisible}
+        onClose={() => setReceiverGuideVisible(false)}
+        peerUserName={peerUserName}
+        // 측정된 배너 레이아웃을 prop으로 전달
+        bannerLayout={bannerLayout}
       />
     </PageContainer>
   );
