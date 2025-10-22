@@ -36,11 +36,11 @@ const AccountSection = () => {
   };
 
   const handleDeleteAccount = () => {
-    router.push("/profile/setting/deleteAccount");
+    router.push("/setting/deleteAccount");
   };
 
   const handleBolcked = () => {
-    router.push("/profile/setting/blocked");
+    router.push("/setting/blocked");
   };
 
   return (

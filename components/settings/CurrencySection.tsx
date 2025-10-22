@@ -12,7 +12,7 @@ const CurrencySection = () => {
   const ticketsSheetRef = useRef<BottomSheetModal>(null);
   const handleHistory = () => {
     // 재화 사용내역 페이지로 이동
-    router.push("/profile/setting/ticketHistory");
+    router.push("/setting/ticketHistory");
   };
   const handleOwnedTickets = () => {
     // 바텀시트를 띄우는 코드로 변경.

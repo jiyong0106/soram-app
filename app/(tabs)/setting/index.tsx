@@ -1,28 +1,27 @@
-import { ScrollView, StyleSheet } from "react-native";
 import React from "react";
-import { Stack } from "expo-router";
+import { StyleSheet, ScrollView } from "react-native";
 import PageContainer from "@/components/common/PageContainer";
-import { BackButton } from "@/components/common/backbutton";
+import { Stack } from "expo-router";
 import AccountSection from "@/components/settings/AccountSection";
 import SupportSection from "@/components/settings/SupportSection";
 import PolicySection from "@/components/settings/PolicySection";
+import CurrencySection from "@/components/settings/CurrencySection";
 
 const SettingPage = () => {
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
-          title: "설정",
+          title: "더보기",
           headerShown: true,
           headerBackVisible: false,
-          headerLeft: () => <BackButton />,
         }}
       />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <AccountSection />
+        <CurrencySection />
         <SupportSection />
         <PolicySection />
-        <PolicySection />
+        <AccountSection />
       </ScrollView>
     </PageContainer>
   );
@@ -36,6 +35,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA",
   },
   scroll: {
-    paddingVertical: 16,
+    paddingBottom: 60,
   },
 });

@@ -2,9 +2,7 @@ import React from "react";
 import { StyleSheet, ScrollView } from "react-native";
 import PageContainer from "@/components/common/PageContainer";
 import { Stack } from "expo-router";
-import AccountSection from "@/components/settings/AccountSection";
-import SupportSection from "@/components/settings/SupportSection";
-import PolicySection from "@/components/settings/PolicySection";
+
 import CurrencySection from "@/components/settings/CurrencySection";
 
 const ProfilePage = () => {
@@ -12,17 +10,12 @@ const ProfilePage = () => {
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
-          title: "더보기",
+          title: "프로필",
           headerShown: true,
           headerBackVisible: false,
         }}
       />
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <CurrencySection />
-        <SupportSection />
-        <PolicySection />
-        <AccountSection />
-      </ScrollView>
+      <ScrollView contentContainerStyle={styles.scroll}></ScrollView>
     </PageContainer>
   );
 };
