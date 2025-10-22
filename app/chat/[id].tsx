@@ -423,6 +423,7 @@ const ChatIdPage = () => {
           messages={giftedMessages}
           onSend={handleSendGifted}
           currentUser={{ _id: myUserId ?? "me" }}
+          opponent={{ id: peerUserId, nickname: peerUserName }}
           onLoadEarlier={handleLoadEarlier}
           canLoadEarlier={!!hasNextPage}
           isLoadingEarlier={!!isFetchingNextPage}

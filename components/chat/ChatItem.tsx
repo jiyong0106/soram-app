@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useMemo, useRef } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Swipeable } from "react-native-gesture-handler";
 import SwipeActions from "./SwipeActions";
@@ -117,6 +117,13 @@ const ChatItem = ({ item }: ChatItemProps) => {
     }, 250);
   };
 
+  const handleAvatarPress = useCallback(() => {
+    router.push({
+      pathname: "/profile/[userId]",
+      params: { userId: String(opponent.id), nickname: opponent.nickname },
+    });
+  }, [opponent.id, opponent.nickname]);
+
   return (
     <ReanimatedSwipeable
       ref={swipeableRef}
@@ -148,9 +155,13 @@ const ChatItem = ({ item }: ChatItemProps) => {
       )}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={18} color="#fff" />
-        </View>
+        <TouchableOpacity
+          style={styles.avatar}
+          onPress={handleAvatarPress}
+          activeOpacity={0.2}
+        >
+          <Ionicons name="person" size={18} color="#fff" activeOpacity={0.7} />
+        </TouchableOpacity>
         <View style={styles.rowTextWrap}>
           {/* 닉네임과 아이콘을 묶는 View 추가 */}
           <View style={styles.titleContainer}>
