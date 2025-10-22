@@ -78,3 +78,13 @@ export const postConnectionsCancel = async ({
   );
   return data;
 };
+
+// 6. 채팅방 알림 끄기 api
+export const postConnectionMute = async (connectionId: number) => {
+  return instance.post(`/connections/${connectionId}/mute`);
+};
+
+// 7. 채팅방 알림 켜기 api
+export const deleteConnectionMute = async (connectionId: number) => {
+  return instance.delete(`/connections/${connectionId}/mute`);
+};

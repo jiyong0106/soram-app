@@ -1,18 +1,20 @@
 import React, { useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Swipeable } from "react-native-gesture-handler";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons"; // 이미 임포트되어 있습니다.
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
+import { GetChatResponse } from "@/utils/types/chat";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -21,10 +23,22 @@ type ChatItemProps = {
 const ChatItem = ({ item }: ChatItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
+  const swipeableRef = useRef<Swipeable>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { id, opponent, isLeave, isBlocked, lastMessage, status, requesterId } =
-    item;
+
+  // isMuted를 구조분해합니다.
+  const {
+    id,
+    opponent,
+    isLeave,
+    isBlocked,
+    lastMessage,
+    status,
+    requesterId,
+    isMuted, // 알림 끄기 상태
+  } = item;
+
   const unread = useChatUnreadStore(
     (s) => s.unreadCountByConnectionId[id] ?? 0
   );
@@ -33,7 +47,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
   const myId = getUserIdFromJWT(token);
 
   const subtitleInfo = useMemo(() => {
-    // 1. PENDING 상태를 최우선으로 처리
+    // PENDING 상태를 최우선으로 처리
     if (status === "PENDING") {
       if (myId === requesterId) {
         return {
@@ -48,7 +62,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
       }
     }
 
-    // 2. 그 외 상태(ACCEPTED 등)일 경우
+    // 그 외 상태(ACCEPTED 등)일 경우
     if (isLeave || isBlocked) {
       return {
         text: `${opponent.nickname}님이 방을 나갔어요`,
@@ -56,7 +70,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
       };
     }
 
-    // 3. 정상적인 대화 상태
+    // 정상적인 대화 상태
     return { text: lastMessage?.content, isHighlight: false };
   }, [status, myId, requesterId, isLeave, isBlocked, lastMessage, opponent]);
 
@@ -96,8 +110,16 @@ const ChatItem = ({ item }: ChatItemProps) => {
       },
     });
   };
+
+  const handleActionComplete = () => {
+    setTimeout(() => {
+      swipeableRef.current?.close();
+    }, 250);
+  };
+
   return (
     <ReanimatedSwipeable
+      ref={swipeableRef}
       friction={2}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
@@ -115,16 +137,36 @@ const ChatItem = ({ item }: ChatItemProps) => {
       renderRightActions={(
         prog: SharedValue<number>,
         drag: SharedValue<number>
-      ) => <SwipeActions prog={prog} drag={drag} connectionId={id} />}
+      ) => (
+        <SwipeActions
+          prog={prog}
+          drag={drag}
+          connectionId={id}
+          isMuted={item.isMuted}
+          onActionComplete={handleActionComplete}
+        />
+      )}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
         <View style={styles.avatar}>
           <Ionicons name="person" size={18} color="#fff" />
         </View>
         <View style={styles.rowTextWrap}>
-          <AppText style={styles.rowTitle} numberOfLines={1}>
-            {opponent.nickname}
-          </AppText>
+          {/* 닉네임과 아이콘을 묶는 View 추가 */}
+          <View style={styles.titleContainer}>
+            <AppText style={styles.rowTitle} numberOfLines={1}>
+              {opponent.nickname}
+            </AppText>
+            {/* isMuted가 true일 때 아이콘 렌더링 */}
+            {isMuted && (
+              <Ionicons
+                name="notifications-off"
+                size={14}
+                color="#B0A6A0" // rowSubtitle과 동일한 회색
+                style={styles.muteIcon}
+              />
+            )}
+          </View>
           <AppText
             style={[
               styles.rowSubtitle,
@@ -165,13 +207,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-  rowTextWrap: { flex: 1 },
+  rowTextWrap: { flex: 1, overflow: "hidden" }, // overflow: "hidden" 추가 (안정성)
+  //  닉네임 + 아이콘 래퍼
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4, // 기존 rowTitle의 여백
+  },
   rowTitle: {
     fontSize: 16,
     fontWeight: "700",
-    marginBottom: 4,
     color: "#5C4B44",
+    // 긴 닉네임이 아이콘을 밀어내지 않도록 flexShrink
+    flexShrink: 1,
+    // marginBottom: 4, // -> titleContainer로 이동
+  },
+  //  알림 끄기 아이콘 스타일
+  muteIcon: {
+    marginLeft: 4,
+    flexShrink: 0, // 아이콘은 줄어들지 않도록
   },
   rowSubtitle: { color: "#B0A6A0", fontSize: 12 },
   highlight: {
