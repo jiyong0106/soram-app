@@ -1,5 +1,3 @@
-// app/app/activity/topic/[topicId].tsx (전체 코드)
-
 import React, { useMemo, useState } from "react";
 import {
   View,
@@ -11,7 +9,6 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
-
 import { BackButton } from "@/components/common/backbutton";
 import PageContainer from "@/components/common/PageContainer";
 import AppText from "@/components/common/AppText";

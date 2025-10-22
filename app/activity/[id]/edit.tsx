@@ -1,5 +1,3 @@
-// 기존 [listId].tsx 코드를 기반으로 아래와 같이 수정합니다.
-
 import {
   StyleSheet,
   View,
