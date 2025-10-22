@@ -14,6 +14,7 @@ const ProfilePage = () => {
     staleTime: 1000 * 30,
   });
 
+  //프로필 조회
   const profile = useMemo(() => data, [data]);
 
   return (
