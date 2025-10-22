@@ -1,18 +1,20 @@
 import React, { useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Swipeable } from "react-native-gesture-handler";
 import SwipeActions from "./SwipeActions";
 import { SharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
+import { GetChatResponse } from "@/utils/types/chat";
 
 type ChatItemProps = {
   item: ChatItemType;
@@ -21,6 +23,7 @@ type ChatItemProps = {
 const ChatItem = ({ item }: ChatItemProps) => {
   const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
   const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
+  const swipeableRef = useRef<Swipeable>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { id, opponent, isLeave, isBlocked, lastMessage, status, requesterId } =
@@ -96,8 +99,16 @@ const ChatItem = ({ item }: ChatItemProps) => {
       },
     });
   };
+
+  const handleActionComplete = () => {
+    setTimeout(() => {
+      swipeableRef.current?.close();
+    }, 250);
+  };
+
   return (
     <ReanimatedSwipeable
+      ref={swipeableRef}
       friction={2}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
@@ -115,7 +126,15 @@ const ChatItem = ({ item }: ChatItemProps) => {
       renderRightActions={(
         prog: SharedValue<number>,
         drag: SharedValue<number>
-      ) => <SwipeActions prog={prog} drag={drag} connectionId={id} />}
+      ) => (
+        <SwipeActions
+          prog={prog}
+          drag={drag}
+          connectionId={id}
+          isMuted={item.isMuted}
+          onActionComplete={handleActionComplete}
+        />
+      )}
     >
       <ScalePressable style={styles.row} onPress={handleRowPress}>
         <View style={styles.avatar}>
