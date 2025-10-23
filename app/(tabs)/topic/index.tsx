@@ -27,6 +27,7 @@ const TopicPage = () => {
     queryKey: ["getTopicRandomKey"],
     queryFn: () => getTopicRandom(),
     placeholderData: keepPreviousData,
+    enabled: false,
   });
 
   useFocusEffect(

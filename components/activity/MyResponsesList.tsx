@@ -11,8 +11,8 @@ import {
 import MyResponseCard from "@/components/activity/MyResponseCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-// [수정] useRouter와 useFocusEffect를 expo-router에서 가져옵니다.
-import { useRouter, useFocusEffect } from "expo-router";
+// [수정] 포커스 리페치는 제거하고 useRouter만 사용합니다.
+import { useRouter } from "expo-router";
 
 const MyResponsesList = () => {
   const router = useRouter();
@@ -30,15 +30,11 @@ const MyResponsesList = () => {
     initialPageParam: undefined,
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
+    // 한글 주석: 캐시 기반으로 불필요한 재호출을 줄입니다.
+    staleTime: 30 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
-
-  // [수정] 화면이 포커스될 때마다 데이터를 다시 불러오는 로직을 추가합니다.
-  useFocusEffect(
-    React.useCallback(() => {
-      // 컴포넌트가 화면에 나타날 때 refetch 함수를 호출합니다.
-      refetch();
-    }, [refetch])
-  );
 
   const mappedData = React.useMemo(() => {
     if (!data) return [];
