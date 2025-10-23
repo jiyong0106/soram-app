@@ -18,9 +18,9 @@ const QueryProvider = ({ children }: { children: React.ReactNode }) => {
           queries: {
             refetchOnReconnect: true,
             // 한글 주석: 기본적으로 포커스/마운트 자동 리페치를 끄고 캐시를 우선 사용합니다.
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
-            staleTime: 30 * 1000,
+            // refetchOnWindowFocus: false,
+            // refetchOnMount: false,
+            // staleTime: 30 * 1000,
             retryDelay: 3000,
           },
         },
