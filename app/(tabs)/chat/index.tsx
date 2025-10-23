@@ -8,8 +8,6 @@ import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
 import { useFocusEffect } from "expo-router";
-import { getAuthToken } from "@/utils/util/auth";
-import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
 const chatPage = () => {
@@ -53,9 +51,7 @@ const chatPage = () => {
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
   const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
 
-  // 실시간 목록 갱신: 소켓으로 newMessage 수신 시 캐시 업데이트
-  const jwt = getAuthToken() ?? "";
-  useChatListRealtime(jwt);
+  // 한글 주석: 실시간 목록 구독은 루트에서 전역으로 수행하므로 이 화면에서는 불필요합니다.
   const onRefresh = async () => {
     const now = Date.now();
     if (refreshing) return;

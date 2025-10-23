@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React from "react";
 import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import AppText from "@/components/common/AppText";
 import { getMyVoiceResponseDetail } from "@/utils/api/activityPageApi";
 import { GetMyVoiceResponseDetailResponse } from "@/utils/types/activity";
@@ -13,40 +14,23 @@ const MyResponseDetail = () => {
   const router = useRouter();
   const { showActionAlert } = useAlert();
 
-  const [response, setResponse] =
-    useState<GetMyVoiceResponseDetailResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // 2. 기존 useEffect를 useFocusEffect로 교체합니다.
-  useFocusEffect(
-    useCallback(() => {
-      const responseId = Number(id);
-      if (!responseId) {
-        setError("유효하지 않은 접근입니다.");
-        setLoading(false);
-        return;
-      }
-
-      const fetchResponseDetail = async () => {
-        try {
-          setLoading(true);
-          const result = await getMyVoiceResponseDetail(responseId);
-          setResponse(result);
-        } catch (err) {
-          setError("답변을 불러오는 데 실패했습니다.");
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchResponseDetail();
-
-      // useFocusEffect는 cleanup 함수를 반환할 수 있습니다. (필요 없을 경우 비워둠)
-      return () => {};
-    }, [id]) // 의존성 배열은 그대로 유지합니다.
-  );
+  // 한글 주석: React Query 기반으로 상세 데이터를 조회하고, 캐시를 재사용합니다.
+  const responseId = Number(Array.isArray(id) ? id[0] : id);
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useQuery<GetMyVoiceResponseDetailResponse | undefined>({
+    queryKey: ["myVoiceResponseDetail", responseId],
+    queryFn: async () => {
+      if (!Number.isFinite(responseId)) return undefined;
+      return await getMyVoiceResponseDetail(responseId);
+    },
+    enabled: Number.isFinite(responseId),
+    staleTime: 30 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   const handleEdit = () => {
     if (!response) return;
@@ -63,7 +47,7 @@ const MyResponseDetail = () => {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
@@ -71,10 +55,10 @@ const MyResponseDetail = () => {
     );
   }
 
-  if (error || !response) {
+  if (isError || !response) {
     return (
       <View style={styles.centered}>
-        <AppText>{error || "데이터를 찾을 수 없습니다."}</AppText>
+        <AppText>{"데이터를 찾을 수 없습니다."}</AppText>
       </View>
     );
   }

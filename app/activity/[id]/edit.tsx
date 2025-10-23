@@ -24,6 +24,7 @@ import { updateTextResponse } from "@/utils/api/profilePageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { NavigationProp } from "@react-navigation/native";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MAX = 2000;
 
@@ -42,6 +43,7 @@ const EditMyResponsePage = () => {
   const { showAlert, showActionAlert } = useAlert();
   const router = useRouter();
   const navigation = useNavigation<NavigationProp<any>>();
+  const queryClient = useQueryClient();
 
   const {
     control,
@@ -68,6 +70,11 @@ const EditMyResponsePage = () => {
     try {
       await updateTextResponse({ responseId, textContent: text });
       reset({ content: text });
+      // 한글 주석: 저장 성공 시 리스트/상세를 정확히 갱신합니다.
+      queryClient.invalidateQueries({ queryKey: ["getMyVoiceResponses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["myVoiceResponseDetail", responseId],
+      });
       showAlert("수정이 완료되었습니다.", () => {
         if (router.canGoBack()) {
           router.back();

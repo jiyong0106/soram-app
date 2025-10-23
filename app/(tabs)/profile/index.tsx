@@ -12,7 +12,7 @@ const ProfilePage = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["getMyProfileKey"],
     queryFn: () => getMyProfile(),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 30, 
   });
 
   //프로필 조회

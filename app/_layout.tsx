@@ -10,6 +10,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import TicketsBootstrap from "@/components/auth/TicketsBootstrap";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +25,12 @@ export default function RootLayout() {
   const hydrated = useAuthStore((s) => s.hydrated);
   const token = useAuthStore((s) => s.token);
   const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
+
+  // 한글 주석: Provider 내부에서 실행되도록 부트스트랩 컴포넌트를 사용합니다.
+  const RealtimeBootstrap = ({ token }: { token: string | null }) => {
+    useChatListRealtime(token ?? "");
+    return null;
+  };
 
   // 폰트 로드 후 스플래시 종료
   const onLayoutRootView = useCallback(async () => {
@@ -49,7 +56,6 @@ export default function RootLayout() {
     }),
   });
 
-  // 알림 채널/리스너를 루트에서 관리
   useEffect(() => {
     // Android 채널
     if (Platform.OS === "android") {
@@ -84,6 +90,8 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView onLayout={onLayoutRootView}>
       <QueryProvider>
+        {/* 한글 주석: React Query 컨텍스트 안에서 소켓 구독을 시작 */}
+        <RealtimeBootstrap token={token} />
         <BottomSheetModalProvider>
           <KeyboardProvider>
             <TicketsBootstrap />
