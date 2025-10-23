@@ -24,7 +24,7 @@ const CurrencySection = () => {
     <View>
       <SettingSection title="보유 재화">
         <SettingRow
-          title="현재 보유중인 사용권"
+          title="현재 보유중인 이용권"
           onPress={handleOwnedTickets}
           variant="link"
         />

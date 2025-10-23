@@ -34,7 +34,7 @@ const TicketHistroySection = ({ type }: { type: HistoryTabKey }) => {
       return [] as { title: string; data: typeof flatData }[];
 
     const grouped = flatData.reduce((acc, tx) => {
-      const dateStr = dayjs(tx.createdAt).format("YYYY년 M월 D일 dddd");
+      const dateStr = dayjs(tx.createdAt).format("YYYY년 M월 D일");
       if (!acc[dateStr]) acc[dateStr] = [] as typeof flatData;
       acc[dateStr].push(tx);
       return acc;

@@ -28,7 +28,7 @@ const TicketHistory = () => {
     <PageContainer padded={false} edges={["bottom"]}>
       <Stack.Screen
         options={{
-          title: "재화 사용내역",
+          title: "사용내역",
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,

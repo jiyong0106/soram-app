@@ -11,7 +11,7 @@ const ProfileInterests = ({ interests }: Props) => {
 
   return (
     <View style={[styles.section, { paddingBottom: 8 }]}>
-      <SectionTitle>관심있는 주제</SectionTitle>
+      <SectionTitle>관심있는 분야</SectionTitle>
       <View style={styles.tagsRow}>
         {interests.map((it) => (
           <AppText key={it.id} style={styles.tag}>{`#${it.name}`}</AppText>

@@ -4,13 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import AppText from "../common/AppText";
 
-// ✅ 1. 아이콘 정보 타입을 정의 (이름 + 색상)
+// 아이콘 정보 타입을 정의 (이름 + 색상)
 type IconInfo = {
   name: keyof typeof Ionicons.glyphMap;
   color: string;
 };
 
-// ✅ 2. iconMap이 IconInfo 객체를 갖도록 수정
+// iconMap이 IconInfo 객체를 갖도록 수정
 const iconMap: { [key: string]: IconInfo } = {
   CHAT_START: { name: "chatbubble-ellipses", color: "#FF7D4A" }, // 주황색 계열
   VIEW_STORY: { name: "book", color: "#6A839A" }, // 파란색 계열
@@ -34,14 +34,14 @@ type TransactionRowProps = {
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => {
   const isEarn = transaction.transactionType === "EARN";
-  // ✅ 3. iconMap에서 이름과 색상을 한 번에 구조 분해 할당으로 가져옵니다.
+  // iconMap에서 이름과 색상을 한 번에 구조 분해 할당으로 가져옵니다.
   const { name: iconName, color: iconColor } =
     iconMap[transaction.iconType] || iconMap.DEFAULT;
   const time = dayjs(transaction.createdAt).format("A h:mm"); // '오후 4:43' 형식
 
   return (
     <View style={styles.container}>
-      {/* ✅ 4. color prop에 하드코딩된 값 대신 iconColor 변수를 사용합니다. */}
+      {/* color prop에 하드코딩된 값 대신 iconColor 변수를 사용합니다. */}
       <Ionicons
         name={iconName}
         size={22}

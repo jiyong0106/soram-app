@@ -8,8 +8,8 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileAnswers from "@/components/profile/ProfileAnswers";
 import ProfileInterests from "@/components/profile/ProfileInterests";
 import { Stack, useLocalSearchParams } from "expo-router";
-import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const UserProfilePage = () => {
   const { userId, nickname } = useLocalSearchParams<{
@@ -18,16 +18,15 @@ const UserProfilePage = () => {
   }>();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getUserProfileKey"],
+    queryKey: ["getUserProfileKey", userId],
     queryFn: () => getUserProfile(Number(userId)),
     staleTime: 1000 * 30,
   });
 
-  //프로필 조회
   const profile = useMemo(() => data, [data]);
 
   return (
-    <PageContainer padded={false} edges={["bottom"]}>
+    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <Stack.Screen
         options={{
           title: `${nickname}님의 프로필`,
@@ -50,18 +49,22 @@ const UserProfilePage = () => {
           </View>
         )}
       </ScrollView>
-    </PageContainer>
+    </SafeAreaView>
   );
 };
 
 export default UserProfilePage;
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  container: {
+    flexGrow: 1,
   },
   profileCard: { marginBottom: 24, padding: 20 },
-  placeholder: { padding: 24 },
+  placeholder: { padding: 24, flex: 1 },
   section: { paddingHorizontal: 16, paddingTop: 12 },
   sectionTitle: { fontSize: 18, fontWeight: "700", marginBottom: 8 },
 });

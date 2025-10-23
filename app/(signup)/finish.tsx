@@ -158,7 +158,7 @@ const FinishPage = () => {
 
           {/* 관심사 태그 */}
           <View style={[styles.section, { paddingBottom: 8 }]}>
-            <AppText style={styles.sectionTitle}>관심있는 주제</AppText>
+            <AppText style={styles.sectionTitle}>관심있는 분야</AppText>
             <View style={styles.tagsRow}>
               {(draft.interestNames || []).map((name: any) => (
                 <AppText

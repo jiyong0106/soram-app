@@ -11,9 +11,9 @@ const SectionTitle = ({ children }: Props) => {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#FF7D4A",
+    color: "#5C4B44",
     marginVertical: 10,
   },
 });
