@@ -56,7 +56,6 @@ export default function RootLayout() {
     }),
   });
 
-  // 알림 채널/리스너를 루트에서 관리
   useEffect(() => {
     // Android 채널
     if (Platform.OS === "android") {
