@@ -22,7 +22,7 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
     queryFn: () => getConnectionTrigger(roomId),
     staleTime: 5 * 60 * 1000,
   });
-  const title = "어떤 이야기가 우릴 연결해줬는지 확인해보세요";
+  const title = " 어떤 주제와 이야기가 우리를 연결해 줬을까요?";
 
   if (!data) return null;
 
@@ -40,7 +40,11 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
           <ChatTriggerHeader title={title} expanded={expanded} />
           {expanded && (
             <View style={s.body}>
-              <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
+              <ChatTriggerTabs
+                active={activeTab}
+                onChange={handleTabChange}
+                topicTitle={data.topic.title}
+              />
             </View>
           )}
         </View>
@@ -81,5 +85,6 @@ const s = StyleSheet.create({
   body: {
     padding: 12,
     backgroundColor: "#fff",
+    marginTop: -4,
   },
 });

@@ -234,7 +234,7 @@ const TabLayout = () => {
         options={{
           title: "프로필",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
