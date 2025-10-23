@@ -82,6 +82,7 @@ const ChatTriggerSheet = (
               </View>
             </View>
             <AppText style={s.title} numberOfLines={2}>
+              <AppText style={s.questionHighlight}>Q. </AppText>
               {topic.title}
             </AppText>
           </View>
@@ -143,6 +144,7 @@ const s = StyleSheet.create({
     paddingVertical: 5,
     backgroundColor: COLORS.topicPillBg, // 회색 배경 적용
     borderRadius: 999,
+    marginBottom: 8,
   },
 
   title: {
@@ -169,5 +171,10 @@ const s = StyleSheet.create({
   },
   footer: {
     marginTop: 6,
+  },
+  questionHighlight: {
+    color: "#FF6B3E",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

@@ -42,7 +42,7 @@ const ReceiverRequestGuideModal = ({
 
   const guidePages: GuidePage[] = [
     {
-      icon: "chatbubble-ellipses-outline",
+      icon: "chatbubble-ellipses",
       title: `${peerUserName}님이`,
       subtitle: "대화를 요청했어요!",
     },
@@ -76,7 +76,7 @@ const ReceiverRequestGuideModal = ({
         Animated.sequence([
           Animated.timing(animatedValue, {
             toValue: -8,
-            duration: 600,
+            duration: 250,
             useNativeDriver: true,
           }),
           Animated.timing(animatedValue, {
