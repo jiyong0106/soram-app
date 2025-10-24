@@ -96,17 +96,22 @@ const UserAnswerList = ({
             queryKey: ["getSentConnectionsKey"],
           });
         } catch (e: any) {
+          const errorCode = e.response?.data?.errorCode;
           const msg =
             e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-          showAlert(msg, () => {
-            if (e.response.data.statusCode === 403) {
+
+          if (errorCode === "RESPONSE_REQUIRED") {
+            showActionAlert(msg, `이야기 남기기`, () => {
               router.push({
                 pathname: "/topic/list/[listId]",
                 params: { listId: String(topicBoxId), error: "forbidden" },
               });
-              return;
-            }
-          });
+            });
+          } else if (errorCode === "INSUFFICIENT_TICKETS") {
+            showAlert(msg);
+          } else {
+            showAlert(msg);
+          }
         } finally {
           setLoading(false);
         }
