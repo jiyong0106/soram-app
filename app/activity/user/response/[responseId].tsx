@@ -36,7 +36,7 @@ const UnlockedResponseDetailScreen = () => {
     topicTitle,
     textContent,
     createdAt,
-    connectionStatus, // [1단계] 이전 화면에서 전달받은 connectionStatus
+    connectionStatus, // 이전 화면에서 전달받은 connectionStatus
     topicBoxId,
   } = useLocalSearchParams();
 
@@ -76,7 +76,7 @@ const UnlockedResponseDetailScreen = () => {
     return () => clearTimeout(animationTimer);
   }, []);
 
-  // [2단계] connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
+  // connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
   const buttonState = React.useMemo(() => {
     const status = connectionStatus as ConnectionStatus | "null" | null;
 
@@ -92,6 +92,12 @@ const UnlockedResponseDetailScreen = () => {
         disabled: true,
       };
     }
+    if (status === "REJECTED") {
+      return {
+        text: "거절된 요청입니다", // '거절된 요청입니다' 텍스트 표시
+        disabled: true, // 버튼 비활성화
+      };
+    }
     return {
       text: "대화 요청하기",
       disabled: false,
@@ -104,7 +110,7 @@ const UnlockedResponseDetailScreen = () => {
     RequestConnectionBody // requestConnection에 전달될 body 타입
   >({
     mutationFn: postRequestConnection,
-    // ✨ 3. [수정] onSuccess의 data 타입을 API의 실제 반환 타입인 RequestConnectionResponse로 변경합니다.
+    //  onSuccess의 data 타입을 API의 실제 반환 타입인 RequestConnectionResponse로 변경합니다.
     onSuccess: (data: RequestConnectionResponse) => {
       queryClient.invalidateQueries({
         queryKey: ["getUnlockedResponsesByUser", Number(authorId)],
