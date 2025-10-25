@@ -11,6 +11,9 @@ import * as SplashScreen from "expo-splash-screen";
 import TicketsBootstrap from "@/components/auth/TicketsBootstrap";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import { useChatListRealtime } from "@/utils/hooks/useChatListRealtime";
+import { useEffect as useReactEffect } from "react";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,6 +34,12 @@ export default function RootLayout() {
     useChatListRealtime(token ?? "");
     return null;
   };
+
+  // 한글 주석: 토큰 변경 시 현재 사용자 ID를 안읽음 스토어에 설정하여 사용자별 버킷을 사용
+  useReactEffect(() => {
+    const uid = getUserIdFromJWT(token);
+    useChatUnreadStore.getState().setCurrentUser(uid);
+  }, [token]);
 
   // 폰트 로드 후 스플래시 종료
   const onLayoutRootView = useCallback(async () => {

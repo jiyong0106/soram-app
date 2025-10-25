@@ -154,7 +154,7 @@ const ChatIdPage = () => {
   const { setActiveConnection, resetUnread } = useChatUnreadStore();
   useEffect(() => {
     setActiveConnection(roomId);
-    // 진입 시 해당 방의 배지 제거
+    // 진입 시 해당 방의 배지 제거 (현재 사용자 버킷 기준)
     resetUnread(roomId);
     return () => setActiveConnection(null);
   }, [roomId, setActiveConnection, resetUnread]);
