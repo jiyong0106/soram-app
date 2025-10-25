@@ -18,13 +18,13 @@ export function connectSocket(jwt: string) {
   });
 
   // 디버깅/로그
-  socket.on("connect", () => console.log("[socket] connected:", socket?.id));
-  socket.on("disconnect", (reason) =>
-    console.log("[socket] disconnected:", reason)
-  );
-  socket.on("connect_error", (err) =>
-    console.log("[socket] connect_error:", err.message)
-  );
+  // socket.on("connect", () => console.log("[socket] connected:", socket?.id));
+  // socket.on("disconnect", (reason) =>
+  //   console.log("[socket] disconnected:", reason)
+  // );
+  // socket.on("connect_error", (err) =>
+  //   console.log("[socket] connect_error:", err.message)
+  // );
 
   // 서버가 인증완료 시 내려줌
   socket.on("authenticated", () => console.log("[socket] authenticated"));

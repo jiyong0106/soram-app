@@ -349,11 +349,6 @@ const ChatIdPage = () => {
               if (bannerRef.current) {
                 bannerRef.current.measure(
                   (x, y, width, height, pageX, pageY) => {
-                    // pageX, pageY가 우리가 필요한 절대 스크린 좌표
-                    console.log(
-                      `[DEBUGGING] Banner measured: pageX=${pageX}, pageY=${pageY}, width=${width}, height=${height}`
-                    );
-
                     // state에 절대 좌표로 저장
                     setBannerLayout({
                       x: pageX,

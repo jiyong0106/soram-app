@@ -43,8 +43,8 @@ instance.interceptors.request.use((config) => {
   const authHeader =
     (config.headers as any).get?.("Authorization") ??
     (config.headers as any)["Authorization"];
-  console.log("[req]", config.method?.toUpperCase(), url);
-  console.log("[req] Authorization present? ->", !!authHeader);
+  // console.log("[req]", config.method?.toUpperCase(), url);
+  // console.log("[req] Authorization present? ->", !!authHeader);
 
   return config;
 });
@@ -54,7 +54,7 @@ let refreshing: Promise<string | null> | null = null;
 
 const refreshToken = async (): Promise<string | null> => {
   try {
-    console.log("[refresh] try refresh…");
+    // console.log("[refresh] try refresh…");
     const rt = getRefreshToken();
     if (!rt) {
       await setAuthToken(null);
@@ -72,7 +72,7 @@ const refreshToken = async (): Promise<string | null> => {
     );
     const newAccessToken: string | undefined = res.data?.accessToken;
     const newRefreshToken: string | undefined = res.data?.refreshToken;
-    console.log("[refresh] success? ->", !!newAccessToken && !!newRefreshToken);
+    // console.log("[refresh] success? ->", !!newAccessToken && !!newRefreshToken);
 
     await setAuthToken(newAccessToken ?? null);
     await setRefreshToken(newRefreshToken ?? null);
@@ -90,12 +90,12 @@ instance.interceptors.response.use(
   (res) => res,
   async (error) => {
     const { response, config } = error || {};
-    console.log(
-      "[res] error status ->",
-      response?.status,
-      "url ->",
-      config?.url
-    );
+    // console.log(
+    //   "[res] error status ->",
+    //   response?.status,
+    //   "url ->",
+    //   config?.url
+    // );
 
     // 401이면 1회만 리프레시 시도 후 재요청
     if (response?.status === 401 && config && !(config as any)._retry) {
@@ -105,14 +105,14 @@ instance.interceptors.response.use(
       const newToken = await refreshing;
 
       if (!newToken) {
-        console.log("[res] no new token, reject.");
+        // console.log("[res] no new token, reject.");
         return Promise.reject(error);
       }
 
       if (!config.headers) config.headers = new AxiosHeaders();
       setHeader(config.headers, "Authorization", `Bearer ${newToken}`);
 
-      console.log("[res] retrying:", config.method?.toUpperCase(), config.url);
+      // console.log("[res] retrying:", config.method?.toUpperCase(), config.url);
       return instance(config);
     }
 
