@@ -336,7 +336,6 @@ const ChatIdPage = () => {
   useEffect(() => {
     const checkReceiverGuide = async () => {
       // 유효한 connection 정보가 있고,
-      // PENDING 상태이며,
       // 내가 요청자가 아닐 때 (즉, 수신자일 때)
       if (connectionInfo && isPending && !isRequester) {
         const storageKey = `@viewed_receiver_guide_${roomId}`;
