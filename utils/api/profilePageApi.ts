@@ -84,7 +84,6 @@ export const updateTextResponse = async ({
   textContent,
 }: UpdateTextResponsePayload) => {
   // 백엔드 API 명세에 따라 PATCH 메서드를 사용하고,
-  // URL에는 responseId를, body에는 textContent를 전달합니다.
   const { data } = await instance.patch<TextResponse>(`/voices/${responseId}`, {
     textContent,
   });
