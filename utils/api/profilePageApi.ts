@@ -11,7 +11,7 @@ import {
   UserProfilePublicResponse,
 } from "../types/profile";
 import instance from "./axios";
-import { TextResponse } from "../types/topic"; // 기존 응답 타입 재사용
+import { TextResponse } from "../types/topic";
 
 export const postLogout = async () => {
   const { data } = await instance.post<LogoutResponse>("/auth/logout");
