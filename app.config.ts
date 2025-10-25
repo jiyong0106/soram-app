@@ -7,12 +7,12 @@ export default ({ config }: any) => {
       slug: "soram", // Expo에서 사용하는 고유 ID (프로젝트 슬러그)
       version: "1.0.0", // 앱 버전
       orientation: "portrait", // 화면 방향 고정 (세로)
-      icon: "./assets/icons/logos/012.png", // 앱 아이콘 경로
+      icon: "./assets/icons/logos/logo.png", // 앱 아이콘 경로
       scheme: "soram", // 딥링크를 위한 URL 스킴 (ex: soram://)
       userInterfaceStyle: "automatic", // 다크모드/라이트모드 자동 감지
       newArchEnabled: true, // React Native New Architecture 사용 여부
       splash: {
-        image: "./assets/images/splash2.png",
+        image: "./assets/images/splash1.png",
         resizeMode: "cover",
         backgroundColor: "#ffb591",
       },
@@ -20,14 +20,14 @@ export default ({ config }: any) => {
       ios: {
         bundleIdentifier: "team.soram.soram",
         supportsTablet: false, // 태블릿 지원 여부 (false면 iPad 레이아웃 제한)
-        icon: "./assets/icons/logos/012.png",
+        icon: "./assets/icons/logos/logo.png",
         infoPlist: {
           CFBundleDevelopmentRegion: "ko", //앱 기본 언어를 한국어로 지정.
           ITSAppUsesNonExemptEncryption: false, // 암호화 사용 x
           UIBackgroundModes: ["fetch", "remote-notification"],
         },
         splash: {
-          image: "./assets/images/splash2.png",
+          image: "./assets/images/splash1.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
@@ -37,12 +37,12 @@ export default ({ config }: any) => {
       // Android 관련 설정
       android: {
         adaptiveIcon: {
-          foregroundImage: "./assets/icons/logos/012.png", // 안드로이드 적응형 아이콘 이미지
+          foregroundImage: "./assets/icons/logos/logo.png", // 안드로이드 적응형 아이콘 이미지
           backgroundColor: "#ffffff", // 아이콘 배경 색
         },
         splash: {
           //스플래시 이미지
-          image: "./assets/images/splash2.png",
+          image: "./assets/images/splash1.png",
           resizeMode: "cover",
           backgroundColor: "#ffb591",
         },
@@ -54,7 +54,7 @@ export default ({ config }: any) => {
       web: {
         bundler: "metro", // Expo 웹 번들러 (기본: metro)
         output: "static", // 정적 파일로 출력 (Next.js처럼 활용 가능)
-        favicon: "./assets/icons/logos/012.png", // 웹 파비콘
+        favicon: "./assets/icons/logos/logo.png", // 웹 파비콘
       },
 
       // Expo 플러그인 목록
@@ -64,7 +64,7 @@ export default ({ config }: any) => {
         [
           "expo-splash-screen",
           {
-            image: "./assets/images/splash2.png", // 스플래시 이미지
+            image: "./assets/images/splash1.png", // 스플래시 이미지
             imageWidth: 200, // 이미지 너비
             resizeMode: "cover", // 이미지 리사이징 모드
             backgroundColor: "#ffb591", // 스플래시 배경색
