@@ -39,9 +39,11 @@ const ChatItem = ({ item }: ChatItemProps) => {
     isMuted, // 알림 끄기 상태
   } = item;
 
-  const unread = useChatUnreadStore(
-    (s) => s.unreadCountByConnectionId[id] ?? 0
-  );
+  const unread = useChatUnreadStore((s) => {
+    const uid = s.currentUserId;
+    const perUser = uid != null ? s.unreadCountByUserId[uid] ?? {} : {};
+    return perUser[id] ?? 0;
+  });
 
   const token = useAuthStore((s) => s.token);
   const myId = getUserIdFromJWT(token);

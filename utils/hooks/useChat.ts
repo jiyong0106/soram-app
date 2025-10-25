@@ -25,7 +25,7 @@ export function useChat(
 
     const onJoined = (payload: any) => {
       joinedRef.current = true;
-      console.log("[socket] joinedRoom:", payload);
+      // console.log("[socket] joinedRoom:", payload);
     };
 
     const onNewMessage = (msg: ChatMessageType) => {
@@ -81,7 +81,7 @@ export function useChat(
       s.off("newMessage", onNewMessage);
       s.off("chat:messages_read", onMessagesRead);
       s.emit("leaveRoom", { connectionId });
-      console.log("[socket] leaveRoom:", { connectionId });
+      // console.log("[socket] leaveRoom:", { connectionId });
     };
   }, [jwt, connectionId, myUserId]); // 🔧 MODIFIED: 의존성 배열에 myUserId 추가
 

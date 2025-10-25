@@ -154,7 +154,7 @@ const ChatIdPage = () => {
   const { setActiveConnection, resetUnread } = useChatUnreadStore();
   useEffect(() => {
     setActiveConnection(roomId);
-    // 진입 시 해당 방의 배지 제거
+    // 진입 시 해당 방의 배지 제거 (현재 사용자 버킷 기준)
     resetUnread(roomId);
     return () => setActiveConnection(null);
   }, [roomId, setActiveConnection, resetUnread]);
@@ -349,11 +349,6 @@ const ChatIdPage = () => {
               if (bannerRef.current) {
                 bannerRef.current.measure(
                   (x, y, width, height, pageX, pageY) => {
-                    // pageX, pageY가 우리가 필요한 절대 스크린 좌표
-                    console.log(
-                      `[DEBUGGING] Banner measured: pageX=${pageX}, pageY=${pageY}, width=${width}, height=${height}`
-                    );
-
                     // state에 절대 좌표로 저장
                     setBannerLayout({
                       x: pageX,

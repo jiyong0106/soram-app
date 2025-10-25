@@ -62,12 +62,14 @@ const CustomTabBar = ({
   navigation,
 }: BottomTabBarProps) => {
   // 전체 안읽은 수 합계 (스토어에서 파생값만 구독)
-  const totalUnread = useChatUnreadStore((s) =>
-    Object.values(s.unreadCountByConnectionId ?? {}).reduce(
+  const totalUnread = useChatUnreadStore((s) => {
+    const uid = s.currentUserId;
+    const perUser = uid != null ? s.unreadCountByUserId[uid] ?? {} : {};
+    return Object.values(perUser).reduce(
       (acc: number, v: number) => acc + (v || 0),
       0
-    )
-  );
+    );
+  });
   const centerIndex = Math.floor(state.routes.length / 2);
 
   const leftRoutes = state.routes.slice(0, centerIndex);
