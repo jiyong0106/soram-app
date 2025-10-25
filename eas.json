@@ -26,5 +26,13 @@
         "autoIncrement": true
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "parkjiy96@naver.com",
+        "ascAppId": "6749823628"
+      }
+    }
   }
 }
