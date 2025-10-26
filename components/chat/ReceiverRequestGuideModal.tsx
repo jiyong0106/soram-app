@@ -164,7 +164,7 @@ const ReceiverRequestGuideModal = ({
           >
             <Ionicons
               name={currentPageData.icon}
-              size={48}
+              size={100}
               color="#FF7D4A" // 주황색 (활성)
             />
           </Animated.View>

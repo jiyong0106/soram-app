@@ -36,7 +36,7 @@ const UnlockedResponseDetailScreen = () => {
     topicTitle,
     textContent,
     createdAt,
-    connectionStatus, // 이전 화면에서 전달받은 connectionStatus
+    connectionStatus, // 이전 화면에서 전달받은 connectionStatus (string | null)
     topicBoxId,
   } = useLocalSearchParams();
 
@@ -78,7 +78,11 @@ const UnlockedResponseDetailScreen = () => {
 
   // connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
   const buttonState = React.useMemo(() => {
-    const status = connectionStatus as ConnectionStatus | "null" | null;
+    //  connectionStatus가 'string' 또는 'null' 타입임을 명시하고 'null' 문자열이 올 수 있으므로 'null'도 체크합니다.
+    const status =
+      connectionStatus === "null"
+        ? null
+        : (connectionStatus as ConnectionStatus | string | null); // string 타입을 허용
 
     if (status === "PENDING") {
       return {
@@ -94,10 +98,16 @@ const UnlockedResponseDetailScreen = () => {
     }
     if (status === "REJECTED") {
       return {
-        text: "거절된 요청입니다", // '거절된 요청입니다' 텍스트 표시
-        disabled: true, // 버튼 비활성화
+        text: "거절된 요청입니다",
+        disabled: true,
       };
-    }
+    } // 'LEFT' 상태를 추가합니다.
+    if (status === "LEFT") {
+      return {
+        text: "대화가 종료된 사용자입니다", // 원하는 텍스트로 변경 가능
+        disabled: true,
+      };
+    } // 기본값 (status === null)
     return {
       text: "대화 요청하기",
       disabled: false,
