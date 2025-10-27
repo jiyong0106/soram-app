@@ -23,12 +23,21 @@ const MAX = 2000;
 type Form = { content: string };
 
 const TopicListIdPage = () => {
-  const { listId, error } = useLocalSearchParams();
+  // ▼▼▼ 'error' 대신 'postSubmitAction'을 받도록 수정 ▼▼▼
+  const { listId, postSubmitAction } = useLocalSearchParams();
+  // ▲▲▲ 수정 완료 ▲▲▲
+
   // 파라미터 안전 파싱
   const rawListId = Array.isArray(listId) ? listId[0] : listId;
   const topicId = Number(rawListId);
-  const rawError = Array.isArray(error) ? error[0] : error;
-  const hasError = typeof rawError !== "undefined";
+
+  // ▼▼▼ 'hasError' 로직을 'isConnectingPostSubmit' 플래그로 대체 ▼▼▼
+  // const rawError = Array.isArray(error) ? error[0] : error;
+  // const hasError = typeof rawError !== "undefined";
+  // '대화 요청'을 위해 진입했는지 확인하는 플래그
+  const isConnectingPostSubmit = postSubmitAction === "REQUEST_CONNECTION";
+  // ▲▲▲ 수정 완료 ▲▲▲
+
   const { bottom } = useSafeArea();
   // [수정] showActionAlert를 useAlert 훅에서 가져옵니다.
   const { showAlert, showActionAlert } = useAlert();
@@ -61,17 +70,34 @@ const TopicListIdPage = () => {
     showActionAlert("작성을 완료하시겠습니까?", "완료", async () => {
       try {
         await postText({ topicId, textContent: text });
-        showAlert(
-          `이야기 작성 완료!\n\n'활동'탭에서 언제든 수정할 수 있어요.`,
-          () => {
+
+        if (isConnectingPostSubmit) {
+          // --- CASE 2: 대화 요청을 위한 작성 ---
+          showAlert(`이제 대화 요청을 할 수 있습니다.`, () => {
             reset({ content: "" });
-            if (hasError && router.canGoBack()) {
+            // 'UserAnswerList'가 있던 이전 페이지로 돌아감
+            if (router.canGoBack()) {
               router.back();
-              return;
+            } else {
+              // (Fallback)
+              router.dismissTo("/(tabs)/topic/list");
             }
-            router.dismissTo("/(tabs)/topic/list");
-          }
-        );
+          });
+        } else {
+          // --- CASE 1: 일반 이야기 작성 ---
+          showAlert(
+            `이야기 작성 완료!\n\n'활동'탭에서 언제든 수정할 수 있어요.`,
+            () => {
+              reset({ content: "" });
+              // 'hasError'가 없으므로 canGoBack()만 체크
+              if (router.canGoBack()) {
+                router.back();
+                return;
+              }
+              router.dismissTo("/(tabs)/topic/list");
+            }
+          );
+        }
       } catch (e: any) {
         if (e) {
           showAlert(e.response.data.message);
