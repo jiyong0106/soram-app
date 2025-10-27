@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   },
   // [4단계] 비활성화된 버튼을 위한 스타일 추가
   disabledButton: {
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "#E0E0E0",
   },
   disabledButtonText: {
     color: "#B0A6A0",

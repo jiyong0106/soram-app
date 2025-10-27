@@ -1,5 +1,3 @@
-// app/components/chat/GiftedChatView.tsx
-
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   View,
@@ -256,28 +254,26 @@ const GiftedChatView = ({
    * useMemo를 사용하여 불필요한 재연산을 방지합니다.
    */
   const decoratedMessages = useMemo(() => {
-    // 상대방이 나갔거나, 내가 상대방을 차단한 경우
-    const isPeerGone = !!isLeaveUser || !!isBlockedUser;
-    if (!isPeerGone) return messages;
-    const alreadyHasSystemMessage = messages.some(
-      (m) => m.system && m._id === "system-leave"
-    );
-    if (alreadyHasSystemMessage) return messages;
-
-    // 시스템 메시지에 표시될 상대방 닉네임 설정
-    const name = leaveUserName ?? "상대방";
-    // 시스템 메시지 객체 생성
-    const sysMsg: IMessage = {
-      _id: "system-leave", // 고유 ID로 중복 확인에 사용
-      text: `${name}님이 채팅방을 나갔습니다`,
-      createdAt: new Date(),
-      system: true, // 시스템 메시지임을 명시
-      user: { _id: "system" }, // 시스템 메시지용 가상 유저
-    };
-
-    // 가장 마지막에 보이도록 원본 메시지 배열 뒤에 시스템 메시지를 추가하여 반환합니다.
-    return [...messages, sysMsg];
-  }, [messages, isLeaveUser, isBlockedUser, leaveUserName]);
+    // // 상대방이 나갔거나, 내가 상대방을 차단한 경우
+    // const isPeerGone = !!isLeaveUser || !!isBlockedUser;
+    // if (!isPeerGone) return messages;
+    // const alreadyHasSystemMessage = messages.some(
+    //   (m) => m.system && m._id === "system-leave"
+    // );
+    // if (alreadyHasSystemMessage) return messages;
+    // // 시스템 메시지에 표시될 상대방 닉네임 설정
+    // const name = leaveUserName ?? "상대방";
+    // // 시스템 메시지 객체 생성
+    // const sysMsg: IMessage = {
+    //   _id: "system-leave", // 고유 ID로 중복 확인에 사용
+    //   text: `${name}님이 채팅방을 나갔습니다`,
+    //   createdAt: new Date(),
+    //   system: true, // 시스템 메시지임을 명시
+    //   user: { _id: "system" }, // 시스템 메시지용 가상 유저
+    // };
+    // // 가장 마지막에 보이도록 원본 메시지 배열 뒤에 시스템 메시지를 추가하여 반환합니다.
+    return messages;
+  }, [messages]);
 
   /**
    * 날짜가 바뀔 때 표시되는 날짜 구분선(Day) UI를 커스터마이징하는 함수입니다.
@@ -315,7 +311,7 @@ const GiftedChatView = ({
    * 이 함수는 외부에서 renderInputToolbar prop이 제공되지 않았을 때의 기본값으로 사용
    */
   const internalRenderInputToolbar = useCallback(
-    // 3. [수정] 함수 이름을 변경하여 외부 prop과 충돌하지 않도록 합니다.
+    //  함수 이름을 변경하여 외부 prop과 충돌하지 않도록 합니다.
     (props: InputToolbarProps<IMessage>) => {
       return (
         <InputToolbar
@@ -385,6 +381,51 @@ const GiftedChatView = ({
       (opponent?.nickname ? `${opponent.nickname}에게 메시지` : "메시지 입력"),
     [placeholder, opponent?.nickname]
   );
+
+  // 상대방이 나갔을 때 표시할 '안내 바' 컴포넌트 UI
+  // useMemo를 사용해 관련 props가 변경될 때만 재생성하도록 최적화합니다.
+  const LeaveNotificationBar = useMemo(() => {
+    // leaveUserName이 없으면 "상대방"으로 기본값 처리
+    const name = leaveUserName ?? "상대방";
+    // 차단 여부에 따라 다른 메시지 표시
+    const message = isBlockedUser
+      ? `${name}님이 채팅방을 나갔습니다`
+      : `${name}님을 차단했습니다`;
+
+    return (
+      <View style={styles.leaveBarContainer}>
+        <AppText style={styles.leaveBarText}>{message}</AppText>
+      </View>
+    );
+  }, [isLeaveUser, isBlockedUser, leaveUserName]); // 💡 3가지 상태값에 의존
+
+  //  조건부로 입력창을 교체하는 핵심 로직
+  const customRenderInputToolbar = useCallback(
+    (props: InputToolbarProps<IMessage>) => {
+      // [조건] 상대방이 나갔거나, 내가 차단한 경우
+      if (isLeaveUser || isBlockedUser) {
+        // 1번에서 만든 '나감 안내 바' UI를 반환
+        return LeaveNotificationBar;
+      }
+
+      // [외부 Prop] 상위 컴포넌트(스크린)에서 renderInputToolbar prop을 주입한 경우
+      // (예: PENDING 상태일 때 다른 툴바를 보여주기 위함)
+      if (renderInputToolbar) {
+        return renderInputToolbar(props);
+      }
+
+      // [기본] 그 외 모든 정상적인 경우, 내부 기본 입력 툴바를 사용
+      return internalRenderInputToolbar(props);
+    },
+    [
+      isLeaveUser,
+      isBlockedUser,
+      LeaveNotificationBar, // 1번에서 만든 UI
+      renderInputToolbar, // 상위에서 받은 prop
+      internalRenderInputToolbar, // 기본 툴바
+    ]
+  );
+
   return (
     <GiftedChatAny
       ref={chatRef}
@@ -404,9 +445,9 @@ const GiftedChatView = ({
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
-      // 4. [수정] 외부에서 받은 renderInputToolbar가 있으면 그것을 사용하고,
+      //  외부에서 받은 renderInputToolbar가 있으면 그것을 사용하고,
       // 없으면 내부 기본 툴바를 사용하도록 조건부 로직을 적용합니다.
-      renderInputToolbar={renderInputToolbar || internalRenderInputToolbar}
+      renderInputToolbar={customRenderInputToolbar}
       renderComposer={renderComposer}
       listViewProps={listViewProps}
       // 전송 버튼 UI 커스터마이징
@@ -513,7 +554,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  // ✨ [추가] 새로운 스타일들을 추가합니다.
+  // ✨ 새로운 스타일들을 추가합니다.
   messageRowContainer: {
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -527,6 +568,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "flex-end",
+  },
+  leaveBarContainer: {
+    minHeight: 50,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    marginTop: 12,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    // 상단 경계선
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  leaveBarText: {
+    // 시스템 메시지와 유사한 색상
+    color: "#B0A6A0",
+    fontSize: 14,
   },
 });
 
