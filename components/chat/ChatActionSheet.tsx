@@ -47,7 +47,7 @@ const ChatActionSheet = (
   const onBlock = () => {
     dismiss();
     showActionAlert(
-      `차단하시겠습니까?\n\n앞으로 모든 콘텐츠에서\n\n${peerUserName}님과 상호작용할 수 없습니다.\n\n언제든 차단을 해제할 수 있어요.`,
+      `차단하시겠습니까?\n\n앞으로 모든 콘텐츠에서\n\n${peerUserName}님과 상호작용할 수 없습니다.\n\n[더보기] - [계정]에서\n언제든 차단을 해제할 수 있어요.`,
       "차단",
       async () => {
         if (!blockedId) return;
