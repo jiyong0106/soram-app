@@ -67,7 +67,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
     // 그 외 상태(ACCEPTED 등)일 경우
     if (isLeave || isBlocked) {
       return {
-        text: `${opponent.nickname}님이 방을 나갔어요`,
+        text: `⛓️‍💥종료된 대화입니다`,
         isHighlight: false,
       };
     }

@@ -30,7 +30,7 @@ const ResponseItemCard = ({ item }: { item: MyVoiceResponseItem }) => {
         topicTitle: item.topic.title,
         textContent: item.textContent,
         createdAt: item.createdAt,
-        // 👇 [수정] connectionStatus를 함께 전달합니다.
+        //  connectionStatus를 함께 전달합니다.
         connectionStatus: item.connectionStatus,
       },
     });
@@ -44,15 +44,39 @@ const ResponseItemCard = ({ item }: { item: MyVoiceResponseItem }) => {
             <Ionicons name="person" size={16} color="#FF7D4A" />
           </View>
           <AppText style={styles.cardAuthor}>{item.user?.nickname}</AppText>
-          {/* 👇 [추가] 연결 상태에 따라 뱃지를 표시합니다. */}
+          {/*  연결 상태에 따라 뱃지를 표시합니다. */}
+          {/* 1. 대화중 */}
           {item.connectionStatus === "ACCEPTED" && (
             <View style={styles.badge}>
               <AppText style={styles.badgeText}>대화중</AppText>
             </View>
           )}
+          {/* 2. 요청 보냄 */}
           {item.connectionStatus === "PENDING" && (
             <View style={[styles.badge, styles.pendingBadge]}>
               <AppText style={styles.badgeText}>요청 보냄</AppText>
+            </View>
+          )}
+          {/* 3. 거절됨 */}
+          {item.connectionStatus === "REJECTED" && (
+            <View style={[styles.badge, styles.rejectedBadge]}>
+              <AppText style={[styles.badgeText, styles.rejectedBadgeText]}>
+                거절됨
+              </AppText>
+            </View>
+          )}
+          {/* 4. 대화 종료 (LEFT) */}
+          {(item.connectionStatus as string) === "LEFT" && (
+            <View style={[styles.badge, styles.leftBadge]}>
+              <AppText style={[styles.badgeText, styles.leftBadgeText]}>
+                대화 종료
+              </AppText>
+            </View>
+          )}
+          {/* 4. 대화 요청 가능 */}
+          {(item.connectionStatus as string) === null && (
+            <View style={[styles.badge]}>
+              <AppText style={[styles.badgeText]}>요청 가능</AppText>
             </View>
           )}
         </View>
@@ -220,7 +244,7 @@ const styles = StyleSheet.create({
     color: "#8E807A",
     lineHeight: 18,
   },
-  // 👇 [추가] 뱃지 관련 스타일
+  //  뱃지 관련 스타일
   badge: {
     paddingHorizontal: 6,
     paddingVertical: 3,
@@ -228,12 +252,24 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   pendingBadge: {
-    backgroundColor: "#B0A6A0",
+    backgroundColor: "#AAA",
   },
   badgeText: {
     color: "#fff",
     fontSize: 10,
     fontWeight: "bold",
+  },
+  rejectedBadge: {
+    backgroundColor: "#E0E0E0", // 회색 계열
+  },
+  rejectedBadgeText: {
+    color: "#B0A6A0", // 비활성 텍스트 색상
+  },
+  leftBadge: {
+    backgroundColor: "#E0E0E0", // 회색 계열
+  },
+  leftBadgeText: {
+    color: "#B0A6A0", // 비활성 텍스트 색상
   },
 });
 
