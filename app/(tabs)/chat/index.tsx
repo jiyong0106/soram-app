@@ -1,8 +1,12 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getChat } from "@/utils/api/chatPageApi";
 import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -16,13 +20,11 @@ const chatPage = () => {
   const qc = useQueryClient();
   const setActiveConnection = useChatUnreadStore((s) => s.setActiveConnection);
 
-  // 화면 포커스 시 최신화 보장
+  // 화면 포커스 시: 활성 채팅방 해제만 수행(미읽음 카운트 정상화)
   useFocusEffect(
     useCallback(() => {
-      // 목록 화면에선 활성 채팅방 없음으로 표시(뱃지 증가 허용)
       setActiveConnection(null);
-      qc.invalidateQueries({ queryKey: ["getChatKey"] });
-    }, [qc, setActiveConnection])
+    }, [setActiveConnection])
   );
 
   //채팅방 목록 조회
@@ -44,12 +46,16 @@ const chatPage = () => {
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
-    staleTime: 0,
-    refetchOnMount: "always",
+    // 한글 주석: 프리패치 후 캐시를 즉시 표시하기 위해 staleTime을 부여하고 mount 재요청은 비활성화
+    staleTime: 60 * 1000,
+    refetchOnMount: false,
     refetchOnReconnect: true,
+    placeholderData: keepPreviousData,
   });
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
   const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
+  // 한글 주석: 초기 마운트 직후 onEndReached 자동 호출을 방지하기 위한 가드
+  const didScrollRef = useRef(false);
 
   // 한글 주석: 실시간 목록 구독은 루트에서 전역으로 수행하므로 이 화면에서는 불필요합니다.
   const onRefresh = async () => {
@@ -76,7 +82,13 @@ const chatPage = () => {
         renderItem={({ item }) => <ChatItem item={item} />}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<AppText style={styles.empty}>메세지 없음</AppText>}
+        ListEmptyComponent={
+          // 한글 주석: 로딩/리패칭 중엔 빈 상태를 숨기고, 실제 빈 결과일 때만 노출
+          items.length === 0 ? <LoadingSpinner /> : null
+        }
+        onMomentumScrollBegin={() => {
+          didScrollRef.current = true;
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -87,6 +99,7 @@ const chatPage = () => {
         }
         contentContainerStyle={{ paddingBottom: 100 }}
         onEndReached={() => {
+          if (!didScrollRef.current) return; // 한글 주석: 사용자 스크롤 발생 전에는 불러오지 않음
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
           }

@@ -7,6 +7,8 @@ import { LinearGradient } from "expo-linear-gradient"; // 👈 [추가] 그라�
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import Badge from "@/components/common/Badge";
 import { usePushTokenRegistration } from "@/utils/hooks/usePushTokenRegistration";
+import { useQueryClient } from "@tanstack/react-query";
+import { getChat } from "@/utils/api/chatPageApi";
 
 // 배지는 공용 컴포넌트 사용
 
@@ -61,6 +63,24 @@ const CustomTabBar = ({
   descriptors,
   navigation,
 }: BottomTabBarProps) => {
+  const qc = useQueryClient();
+  // 한글 주석: Chat 탭 데이터 프리패치 (최대 300ms 대기)
+  const prefetchChatWithTimeout = async () => {
+    try {
+      const timeout = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+      const prefetchPromise = qc.prefetchInfiniteQuery({
+        queryKey: ["getChatKey"],
+        queryFn: ({ pageParam }) =>
+          getChat({
+            take: 10,
+            cursor: pageParam,
+          }),
+        initialPageParam: undefined as number | undefined,
+      });
+      await Promise.race([prefetchPromise, timeout(300)]);
+    } catch {}
+  };
   // 전체 안읽은 수 합계 (스토어에서 파생값만 구독)
   const totalUnread = useChatUnreadStore((s) => {
     const uid = s.currentUserId;
@@ -128,13 +148,17 @@ const CustomTabBar = ({
           {leftRoutes.map((route) => {
             const options = descriptors[route.key].options;
             const isFocused = state.index === state.routes.indexOf(route);
-            const onPress = () => {
+            const onPress = async () => {
               const event = navigation.emit({
                 type: "tabPress",
                 target: route.key,
                 canPreventDefault: true,
               });
-              if (!isFocused && !event.defaultPrevented) {
+              if (event.defaultPrevented) return;
+              if (route.name === "chat") {
+                await prefetchChatWithTimeout();
+              }
+              if (!isFocused) {
                 navigation.navigate(route.name);
               }
             };
@@ -157,13 +181,17 @@ const CustomTabBar = ({
           {rightRoutes.map((route) => {
             const options = descriptors[route.key].options;
             const isFocused = state.index === state.routes.indexOf(route);
-            const onPress = () => {
+            const onPress = async () => {
               const event = navigation.emit({
                 type: "tabPress",
                 target: route.key,
                 canPreventDefault: true,
               });
-              if (!isFocused && !event.defaultPrevented) {
+              if (event.defaultPrevented) return;
+              if (route.name === "chat") {
+                await prefetchChatWithTimeout();
+              }
+              if (!isFocused) {
                 navigation.navigate(route.name);
               }
             };
