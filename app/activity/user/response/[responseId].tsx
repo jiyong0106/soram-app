@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useLocalSearchParams,
+  useRouter,
+  useFocusEffect,
+} from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Animated, {
@@ -23,6 +28,11 @@ import {
   RequestConnectionBody,
   RequestConnectionResponse,
 } from "@/utils/types/topic";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ConnectionReminderGuideModal from "@/components/topic/ConnectionReminderGuideModal";
+
+// 스토리지 키 정의 (UserAnswerList와 동일)
+const STORAGE_KEY = "@show_connection_reminder_guide";
 
 const UnlockedResponseDetailScreen = () => {
   const router = useRouter();
@@ -39,7 +49,7 @@ const UnlockedResponseDetailScreen = () => {
     connectionStatus, // 이전 화면에서 전달받은 connectionStatus (string | null)
     topicBoxId,
   } = useLocalSearchParams();
-
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
@@ -75,6 +85,29 @@ const UnlockedResponseDetailScreen = () => {
     // 컴포넌트가 언마운트될 때 타이머를 정리하여 메모리 누수 방지
     return () => clearTimeout(animationTimer);
   }, []);
+
+  // 화면 포커스 시 깃발(flag) 검사 (UserAnswerList와 동일)
+  useFocusEffect(
+    useCallback(() => {
+      const checkGuideFlag = async () => {
+        try {
+          // 1. 스토리지에서 깃발을 확인
+          const flag = await AsyncStorage.getItem(STORAGE_KEY);
+
+          if (flag === "true") {
+            // 2. 깃발이 있으면, 모달을 띄움
+            setGuideModalVisible(true);
+            // 3. 깃발을 즉시 제거 (재방문 시 띄우지 않음)
+            await AsyncStorage.removeItem(STORAGE_KEY);
+          }
+        } catch (e) {
+          console.error("Failed to check connection guide flag", e);
+        }
+      };
+
+      checkGuideFlag();
+    }, []) // 의존성 배열은 비워둠
+  );
 
   // connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
   const buttonState = React.useMemo(() => {
@@ -155,15 +188,46 @@ const UnlockedResponseDetailScreen = () => {
 
       // 1. errorCode에 따라 분기합니다.
       if (errorCode === "RESPONSE_REQUIRED") {
-        // 1-1. '답변 부재' 에러: 기존 로직과 동일하게 답변 작성 페이지로 유도
+        // 1-1. '답변 부재' 에러: 깃발 저장 로직으로 수정
+        //  깃발 저장 로직 적용 (UserAnswerList와 동일)
         showActionAlert(
           message, // 서버에서 온 메시지를 그대로 사용
           `이야기 남기기`,
-          () => {
-            router.push({
-              pathname: "/topic/list/[listId]",
-              params: { listId: String(topicBoxId), error: "forbidden" },
-            });
+          async () => {
+            try {
+              // 1. 페이지 이동 전, 깃발(flag)을 스토리지에 저장
+              await AsyncStorage.setItem(STORAGE_KEY, "true");
+
+              // 2. 깃발 저장 후, 이야기 작성 페이지로 이동
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: {
+                  listId: String(topicBoxId),
+                  postSubmitAction: "REQUEST_CONNECTION",
+                  addresseeId: String(authorId),
+                  voiceResponseId: String(responseId),
+                  peerUserName: String(authorNickname),
+                  title: String(topicTitle),
+                },
+              });
+            } catch (storageError) {
+              console.error(
+                "Failed to set connection guide flag",
+                storageError
+              );
+              // 깃발 저장이 실패해도, 일단 페이지는 이동시킴
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: {
+                  listId: String(topicBoxId),
+                  postSubmitAction: "REQUEST_CONNECTION",
+                  addresseeId: String(authorId),
+                  voiceResponseId: String(responseId),
+                  peerUserName: String(authorNickname),
+                  title: String(topicTitle),
+                },
+              });
+            }
           }
         );
       } else if (errorCode === "INSUFFICIENT_TICKETS") {
@@ -272,6 +336,14 @@ const UnlockedResponseDetailScreen = () => {
           </ScalePressable>
         </View>
       </View>
+
+      {/*   새로 만든 가이드 모달 렌더링  */}
+      <ConnectionReminderGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={String(authorNickname)}
+      />
+      {/*  추가 완료  */}
     </PageContainer>
   );
 };
