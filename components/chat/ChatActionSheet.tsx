@@ -47,7 +47,7 @@ const ChatActionSheet = (
   const onBlock = () => {
     dismiss();
     showActionAlert(
-      `${peerUserName}님을 차단하시겠습니까?`,
+      `차단하시겠습니까?\n\n앞으로 모든 콘텐츠에서\n\n${peerUserName}님과 상호작용할 수 없습니다.\n\n언제든 차단을 해제할 수 있어요.`,
       "차단",
       async () => {
         if (!blockedId) return;
@@ -71,7 +71,7 @@ const ChatActionSheet = (
   const onLeave = () => {
     dismiss();
     showActionAlert(
-      `${peerUserName}님과의 \n 채팅방을 나가시겠어요?`,
+      `채팅방을 나가시겠어요?\n\n해당 주제로는\n\n더 이상 대화하실 수 없어요`,
       "나가기",
       async () => {
         try {
