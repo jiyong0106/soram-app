@@ -8,7 +8,6 @@ import PageContainer from "@/components/common/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Index = () => {
-
   return (
     <PageContainer edges={["top", "bottom"]}>
       <LinearGradient
