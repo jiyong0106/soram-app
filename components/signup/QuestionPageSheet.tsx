@@ -22,7 +22,7 @@ interface Props {
 
 const COLORS = {
   bg: "#FFFFFF",
-  text: "#111827", // gray-900
+  text: "#111827",
   sub: "#6B7280", // gray-500
   border: "#E5E7EB", // gray-200
   fill: "#F9FAFB", // gray-50
