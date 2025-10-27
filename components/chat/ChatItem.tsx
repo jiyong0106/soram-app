@@ -53,7 +53,7 @@ const ChatItem = ({ item }: ChatItemProps) => {
     if (status === "PENDING") {
       if (myId === requesterId) {
         return {
-          text: `👋 ${opponent.nickname}님의 응답을 기다리고 있어요.`,
+          text: `📨 응답을 기다리고 있어요`,
           isHighlight: false,
         };
       } else {

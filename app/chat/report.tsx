@@ -36,7 +36,7 @@ const ReportPage = () => {
       reason: reason!,
       details: details,
     };
-    showActionAlert("해당 유저를 신고하시나요?", "신고", async () => {
+    showActionAlert("신고하시겠습니까?", "신고", async () => {
       try {
         const res = await posetUserReport(body);
         router.dismissAll();

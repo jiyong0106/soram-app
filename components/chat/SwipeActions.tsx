@@ -93,7 +93,7 @@ const SwipeActions = ({
 
   //채팅방 나가기
   const handleChatLeave = () => {
-    showActionAlert("채팅방을 나가시나요?", "확인", async () => {
+    showActionAlert("대화방을 나가시겠습니까?", "확인", async () => {
       try {
         await postChatLeave(connectionId);
         queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
