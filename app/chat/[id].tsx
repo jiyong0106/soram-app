@@ -174,7 +174,7 @@ const ChatIdPage = () => {
       staleTime: 0,
       refetchOnMount: "always",
       refetchOnReconnect: true,
-      enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
+      // enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
     });
   const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];

@@ -389,8 +389,8 @@ const GiftedChatView = ({
     const name = leaveUserName ?? "상대방";
     // 차단 여부에 따라 다른 메시지 표시
     const message = isBlockedUser
-      ? `${name}님이 채팅방을 나갔습니다`
-      : `${name}님을 차단했습니다`;
+      ? `${name}님이 대화방을 나갔습니다`
+      : `${name}님이 대화방을 나갔습니다`;
 
     return (
       <View style={styles.leaveBarContainer}>
