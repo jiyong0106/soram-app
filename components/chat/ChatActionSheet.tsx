@@ -47,7 +47,7 @@ const ChatActionSheet = (
   const onBlock = () => {
     dismiss();
     showActionAlert(
-      `차단하시겠습니까?\n\n앞으로 모든 콘텐츠에서\n\n${peerUserName}님과 상호작용할 수 없습니다.\n\n언제든 차단을 해제할 수 있어요.`,
+      `차단하시겠습니까?\n\n앞으로 모든 콘텐츠에서\n\n${peerUserName}님과 상호작용할 수 없습니다.\n\n[더보기] - [계정]에서\n언제든 차단을 해제할 수 있어요.`,
       "차단",
       async () => {
         if (!blockedId) return;
@@ -71,7 +71,7 @@ const ChatActionSheet = (
   const onLeave = () => {
     dismiss();
     showActionAlert(
-      `채팅방을 나가시겠어요?\n\n해당 주제로는\n\n더 이상 대화하실 수 없어요`,
+      `대화방을 나가시겠어요?\n\n해당 주제로는\n\n더 이상 대화하실 수 없어요`,
       "나가기",
       async () => {
         try {
@@ -134,14 +134,17 @@ const ChatActionSheet = (
             }
             label="차단하기"
             onPress={onBlock}
+            labelStyle={{ color: COLORS.danger }}
           />
-          <View style={s.divider} />
+        </View>
+        <View style={s.group}>
           <SheetRow
             icon={
               <Ionicons name="exit-outline" size={18} color={COLORS.danger} />
             }
-            label="채팅방 나가기"
+            label="대화방 나가기"
             onPress={onLeave}
+            labelStyle={{ color: COLORS.danger }}
           />
         </View>
         <View style={{ height: 8 }} />
