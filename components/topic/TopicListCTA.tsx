@@ -19,7 +19,7 @@ const TopicListCTA = () => {
       activeOpacity={0.7}
     >
       <View style={styles.textContainer}>
-        <AppText style={styles.title}>더 많은 주제를</AppText>
+        <AppText style={styles.title}>더 다양한 주제를</AppText>
         <AppText style={styles.title}>둘러볼까요?</AppText>
       </View>
       <View style={styles.iconContainer}>
@@ -38,9 +38,10 @@ const styles = StyleSheet.create({
     padding: scale(24),
     justifyContent: "center",
     alignItems: "center",
-    aspectRatio: 3 / 4,
-    marginHorizontal: 10,
-    borderWidth: 1,
+    minHeight: 400,
+    marginVertical: 10,
+    marginHorizontal: 12,
+    borderWidth: 0.25,
     borderColor: "#FFB591",
   },
   textContainer: {

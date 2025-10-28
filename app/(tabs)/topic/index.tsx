@@ -21,6 +21,11 @@ import TopicListCTA from "@/components/topic/TopicListCTA";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+// 캐러셀 UI를 위한 상수 정의
+const ITEM_WIDTH = SCREEN_WIDTH - 80; // 아이템 너비. 80은 좌우로 40px씩 보이게 함.
+const ITEM_SPACING = 16; // 아이템 간의 간격
+const HORIZONTAL_PADDING = (SCREEN_WIDTH - ITEM_WIDTH) / 2; // 첫 아이템과 마지막 아이템을 중앙에 오게 할 패딩 (40px)
+
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
@@ -66,28 +71,62 @@ const TopicPage = () => {
   }, [topics]);
 
   return (
+    // [1. container에서는 padding: 10 제거 (디버그용 blue 유지)
     <View style={styles.container}>
-      <AppHeader />
-      {showInitSkeleton ? (
-        <TopicSkeleton />
-      ) : (
-        topics && (
+      {/*
+        FlatList를 제외한 상단 컨텐츠(헤더, 티켓, 타이틀)를
+        paddingHorizontal: 10을 가진 View로 감쌉니다.
+      */}
+      <View style={{ paddingHorizontal: 10 }}>
+        <AppHeader />
+        {!showInitSkeleton && topics && (
           <>
             <TicketsView />
             <TopicTitle onShuffle={onShuffle} disabled={isFetching} />
+          </>
+        )}
+      </View>
+
+      {/* 3. 메인 컨텐츠 (스켈레톤 또는 FlatList) */}
+      {showInitSkeleton ? (
+        //  스켈레톤에도 동일하게 내부 패딩 10px 적용
+        <View style={{ paddingHorizontal: 10, flex: 1 }}>
+          <TopicSkeleton />
+        </View>
+      ) : (
+        topics && (
+          <>
+            {/* 
+              FlatList 컨테이너(red)는 화면 전체 너비를 사용합니다. (패딩 없음)
+              그래야 내부의 contentContainerStyle이 정확히 동작합니다.
+            */}
             <View style={styles.flatListContainer}>
               <FlatList
                 data={listData}
                 renderItem={({ item, index }) => {
+                  const isLastItem = index === listData.length - 1;
+
                   if (item.isCTA) {
                     return (
-                      <View style={{ width: SCREEN_WIDTH - 20 }}>
+                      //  CTA 카드에도 동일한 스타일링 적용
+                      <View
+                        style={{
+                          width: ITEM_WIDTH,
+                          marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                        }}
+                      >
                         <TopicListCTA />
                       </View>
                     );
                   }
                   return (
-                    <View style={{ width: SCREEN_WIDTH - 20 }}>
+                    //  너비와 간격 스타일 적용
+                    <View
+                      style={{
+                        width: ITEM_WIDTH,
+                        marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                      }}
+                    >
                       <TopicCard
                         item={item}
                         loading={isFetching}
@@ -98,17 +137,29 @@ const TopicPage = () => {
                 }}
                 keyExtractor={(item: any) => item.id.toString()}
                 horizontal
-                pagingEnabled
+                pagingEnabled={false}
                 showsHorizontalScrollIndicator={false}
                 bounces={false}
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={viewabilityConfig}
+                snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+                snapToAlignment="start"
+                decelerationRate="fast"
+                contentContainerStyle={{
+                  paddingHorizontal: HORIZONTAL_PADDING, // 40px
+                }}
               />
             </View>
+
+            {/*
+              하단 '더보기' 버튼에도 동일하게
+              paddingHorizontal: 10을 적용합니다.
+            */}
             <TouchableOpacity
               onPress={() => router.push("/topic/list")}
               activeOpacity={0.5}
-              style={styles.moreTopic}
+              //  styles.moreTopic과 함께 내부 패딩 10px 적용
+              style={[styles.moreTopic, { paddingHorizontal: 10 }]}
             >
               <AppText style={styles.moreTopicText}>
                 더 다양한 주제 보러가기
@@ -131,7 +182,6 @@ export default TopicPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
   },
   flatListContainer: {
     flex: 1,

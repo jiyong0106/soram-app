@@ -171,7 +171,7 @@ export default memo(TopicCard);
 // Styles는 이전과 동일하므로 생략합니다.
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
     shadowColor: "#D2B4AA",
     shadowOffset: { width: 2, height: 6 },
     shadowOpacity: 0.5,
@@ -181,10 +181,13 @@ const styles = StyleSheet.create({
   },
   gradientCard: {
     borderRadius: 24,
+    borderWidth: 0.25,
+    borderColor: "#FFB591",
     paddingVertical: 50,
     paddingHorizontal: 20,
     alignItems: "center",
-    minHeight: 300,
+    height: 400,
+    marginVertical: 10,
     justifyContent: "center",
   },
   spinnerContainer: {
