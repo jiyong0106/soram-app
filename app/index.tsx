@@ -6,7 +6,6 @@ import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
 import PageContainer from "@/components/common/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
-import GuideModal from "@/components/common/GuideModal";
 
 const Index = () => {
   return (
@@ -34,7 +33,6 @@ const Index = () => {
           </View>
         </View>
       </View>
-      <GuideModal isVisible={true} onClose={() => {}} />
     </PageContainer>
   );
 };

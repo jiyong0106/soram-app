@@ -21,7 +21,7 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
   const listRef = useRef<FlatList<(typeof guideOptions)[number]>>(null);
   const [itemWidth, setItemWidth] = useState<number>(
     Dimensions.get("window").width * 0.9
-  ); // fallback
+  );
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
@@ -48,6 +48,7 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
         showsHorizontalScrollIndicator={false}
         onScroll={onScroll}
         scrollEventThrottle={16}
+        disableIntervalMomentum={true}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width: itemWidth }]}>
             <View style={styles.imageArea}>

@@ -5,24 +5,23 @@
 
 export const guideOptions = [
   {
-    title: "소람소개",
-    description:
-      "소람은 다양한 주제를 통해 사용자의 내면과 이야기에 집중하여 진정성 있는 연결을 만드는 소셜 앱이에요.",
+    title: "랜덤 주제",
+    description: "소람이 제공하는 다양한 랜덤 주제를 확인해보세요.",
     image: require("@/assets/images/eximage.png"),
   },
   {
     title: "원하는 주제 찾기",
-    description: "원하는 주제를 찾으면 대화를 시작할 수 있습니다.",
+    description:
+      "마음에 드는 주제와 다른 사용자가 남긴 이야기를 함께 살펴보세요.",
     image: require("@/assets/images/eximage.png"),
   },
   {
-    title: "대화연결",
-    description: "대화를 통해 진정한 만남을 시작해보세요.",
+    title: "대화로 연결되기",
+    description:
+      "공감되는 이야기가 있다면, 대화를 통해 진정한 연결을 시작해보세요.",
     image: require("@/assets/images/eximage.png"),
   },
 ] as const;
-
-
 
 // 소람이 제공하는 랜덤 주제를 확인해보세요
 // 마음에 드는 주제와 다른 사용자가 작성한 이야기를 확인할 수 있어요
