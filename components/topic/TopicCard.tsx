@@ -26,7 +26,7 @@ type Props = {
 
 const TopicCard = ({ item, loading }: Props) => {
   const router = useRouter();
-  // ✨ 2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
+  //  2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
   const [displayItem, setDisplayItem] = useState(item);
   const { title, subQuestions, id, userCount } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
 
@@ -41,7 +41,7 @@ const TopicCard = ({ item, loading }: Props) => {
       cancelAnimation(scaleAnimation);
       scaleAnimation.value = withTiming(0);
     } else {
-      // ✨ 3. 로딩이 끝나면, 그 때 새로운 데이터로 '표시용 데이터'를 업데이트합니다.
+      //  3. 로딩이 끝나면, 그 때 새로운 데이터로 '표시용 데이터'를 업데이트합니다.
       setDisplayItem(item);
       opacity.value = withTiming(1, { duration: 200 }); // 나타나는 애니메이션
       scaleAnimation.value = withRepeat(

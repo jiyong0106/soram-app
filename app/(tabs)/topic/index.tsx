@@ -13,14 +13,14 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
-// ✨ 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
+// 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
 const MIN_SHUFFLE_DURATION = 800;
 
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
   const { token } = useAuthStore();
-  // ✨ 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
+  // 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
   const [isShuffling, setIsShuffling] = useState(false);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
@@ -38,7 +38,7 @@ const TopicPage = () => {
 
   const showInitSkeleton = !data && isLoading;
 
-  // ✨ 3. onShuffle 함수를 Promise.all을 사용하는 방식으로 완전히 교체합니다.
+  // 3. onShuffle 함수를 Promise.all을 사용하는 방식으로 완전히 교체합니다.
   const onShuffle = useCallback(async () => {
     if (isShuffling) return; // 이미 셔플 중이면 중복 실행 방지
 
@@ -70,7 +70,7 @@ const TopicPage = () => {
         data && (
           <>
             <TicketsView />
-            {/* ✨ 4. loading과 disabled prop에 isShuffling을 전달합니다. */}
+            {/* 4. loading과 disabled prop에 isShuffling을 전달합니다. */}
             <TopicTitle
               onShuffle={onShuffle}
               disabled={isShuffling}
