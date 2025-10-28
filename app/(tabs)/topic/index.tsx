@@ -9,7 +9,7 @@ import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState, useMemo, useRef } from "react";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -18,6 +18,10 @@ import {
   Dimensions,
 } from "react-native";
 import TopicListCTA from "@/components/topic/TopicListCTA";
+import GuideModal from "@/components/common/GuideModal";
+import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
+import { useAuthStore } from "@/utils/store/useAuthStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -30,6 +34,9 @@ const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const token = useAuthStore((s) => s.token);
+  const userId = getUserIdFromJWT(token);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
@@ -69,6 +76,23 @@ const TopicPage = () => {
     if (!topics) return [];
     return [...topics, { id: "cta", isCTA: true }];
   }, [topics]);
+
+  // 모달 표시 핸들러, 처음 접속 시 모달 표시
+  useEffect(() => {
+    if (!userId) return; // 로그인 전이면 스킵
+    const key = `guide_shown_v1:${userId}`;
+    (async () => {
+      const seen = await AsyncStorage.getItem(key);
+      if (!seen) setIsVisible(true); // 처음이면 모달 표시
+    })();
+  }, [userId]);
+
+  // 모달 닫기 핸들러
+  const handleCloseGuide = async () => {
+    setIsVisible(false);
+    const key = `guide_shown_v1:${userId}`;
+    await AsyncStorage.setItem(key, "1");
+  };
 
   return (
     // [1. container에서는 padding: 10 제거 (디버그용 blue 유지)
@@ -173,6 +197,7 @@ const TopicPage = () => {
           </>
         )
       )}
+      <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
     </View>
   );
 };
