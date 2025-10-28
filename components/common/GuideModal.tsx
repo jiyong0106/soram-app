@@ -28,6 +28,15 @@ const GuideModal: React.FC<Props> = ({ isVisible, onClose }) => {
       onRequestClose={onClose}
     >
       <View style={styles.modalBackdrop}>
+        <ScalePressable style={styles.closeButton} onPress={onClose}>
+          <Ionicons name="close" size={24} color="black" />
+        </ScalePressable>
+        <View style={styles.modalContainer}>
+          <GuideContents
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
+          />
+        </View>
         <View style={styles.guideLengthContainer}>
           {guideOptions.map((item, index) => (
             <View
@@ -39,16 +48,6 @@ const GuideModal: React.FC<Props> = ({ isVisible, onClose }) => {
             />
           ))}
         </View>
-        <View style={styles.modalContainer}>
-          <GuideContents
-            activeIndex={activeIndex}
-            setActiveIndex={setActiveIndex}
-          />
-        </View>
-
-        <ScalePressable style={styles.closeButton} onPress={onClose}>
-          <Ionicons name="close" size={24} color="black" />
-        </ScalePressable>
       </View>
     </Modal>
   );
