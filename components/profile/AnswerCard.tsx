@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   content: {
     color: "#5C4B44",
     fontSize: 14,
-    lineHeight: 40,
+    lineHeight: 35,
   },
 });
 
