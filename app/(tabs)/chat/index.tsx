@@ -11,6 +11,7 @@ import { getChat } from "@/utils/api/chatPageApi";
 import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
+import EmptyState from "@/components/common/EmptyState";
 import { useFocusEffect } from "expo-router";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 
@@ -34,6 +35,8 @@ const chatPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoading,
+    isFetching,
     dataUpdatedAt,
   } = useInfiniteQuery<GetChatResponse>({
     queryKey: ["getChatKey"],
@@ -83,8 +86,11 @@ const chatPage = () => {
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          // 한글 주석: 로딩/리패칭 중엔 빈 상태를 숨기고, 실제 빈 결과일 때만 노출
-          items.length === 0 ? <LoadingSpinner /> : null
+          isLoading || isFetching ? (
+            <LoadingSpinner />
+          ) : (
+            <EmptyState title={"아직 진행중인 대화가 없어요"} />
+          )
         }
         onMomentumScrollBegin={() => {
           didScrollRef.current = true;

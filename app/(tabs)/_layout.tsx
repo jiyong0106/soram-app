@@ -99,11 +99,26 @@ const CustomTabBar = ({
 
   const isCenterFocused = state.index === centerIndex;
 
+  const handleCenterPress = () => {
+    const event = navigation.emit({
+      type: "tabPress",
+      target: centerRoute.key,
+      canPreventDefault: true,
+    });
+
+    if (event.defaultPrevented) {
+      return;
+    }
+    // isFocused 여부와 관계없이 navigate를 호출하여
+    // React Navigation의 기본 동작(활성 탭 클릭 시 popToTop)을 트리거합니다.
+    navigation.navigate(centerRoute.name);
+  };
+
   return (
     <View style={styles.tabBarOuterContainer}>
       <Pressable
         key={centerRoute.key}
-        onPress={() => navigation.navigate(centerRoute.name)}
+        onPress={handleCenterPress}
         style={styles.centerButtonWrapper}
       >
         {isCenterFocused ? (
