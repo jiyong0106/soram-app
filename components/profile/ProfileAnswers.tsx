@@ -12,7 +12,6 @@ const ProfileAnswers = ({ answers }: Props) => {
 
   return (
     <View style={styles.section}>
-      <SectionTitle>이야기</SectionTitle>
       <View style={styles.list}>
         {primary.map((a) => (
           <AnswerCard

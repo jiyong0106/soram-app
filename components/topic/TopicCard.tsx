@@ -22,11 +22,12 @@ import useAlert from "@/utils/hooks/useAlert";
 type Props = {
   item: TopicListType;
   loading?: boolean;
+  isActive?: boolean;
 };
 
-const TopicCard = ({ item, loading }: Props) => {
+const TopicCard = ({ item, loading, isActive = true }: Props) => {
   const router = useRouter();
-  // ✨ 2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
+  //  2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
   const [displayItem, setDisplayItem] = useState(item);
   const { title, subQuestions, id, userCount } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
 
@@ -36,14 +37,20 @@ const TopicCard = ({ item, loading }: Props) => {
   const scaleAnimation = useSharedValue(0);
 
   useEffect(() => {
+    // 로딩 중일 때는 항상 사라지는 애니메이션과 함께 애니메이션 초기화
     if (loading) {
-      opacity.value = withTiming(0, { duration: 100 }); // 사라지는 애니메이션
+      opacity.value = withTiming(0, { duration: 100 });
       cancelAnimation(scaleAnimation);
       scaleAnimation.value = withTiming(0);
-    } else {
-      // ✨ 3. 로딩이 끝나면, 그 때 새로운 데이터로 '표시용 데이터'를 업데이트합니다.
-      setDisplayItem(item);
-      opacity.value = withTiming(1, { duration: 200 }); // 나타나는 애니메이션
+      return;
+    }
+
+    // 로딩이 끝났을 때, 새로운 데이터로 '표시용 데이터'를 업데이트
+    setDisplayItem(item);
+    opacity.value = withTiming(1, { duration: 200 });
+
+    // 활성화 상태일 때만 반복 애니메이션 실행
+    if (isActive) {
       scaleAnimation.value = withRepeat(
         withSequence(
           withTiming(1, { duration: 200 }),
@@ -52,8 +59,17 @@ const TopicCard = ({ item, loading }: Props) => {
         ),
         -1
       );
+    } else {
+      // 비활성화 상태이면 애니메이션을 멈추고 초기 상태로
+      cancelAnimation(scaleAnimation);
+      scaleAnimation.value = withTiming(0);
     }
-  }, [loading, item]); // item도 dependency 배열에 추가해줘야 합니다.
+
+    // 컴포넌트가 언마운트될 때 애니메이션 정리
+    return () => {
+      cancelAnimation(scaleAnimation);
+    };
+  }, [loading, item, isActive]); // isActive를 의존성 배열에 추가
 
   const animatedBodyStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -155,7 +171,7 @@ export default memo(TopicCard);
 // Styles는 이전과 동일하므로 생략합니다.
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
     shadowColor: "#D2B4AA",
     shadowOffset: { width: 2, height: 6 },
     shadowOpacity: 0.5,
@@ -165,10 +181,13 @@ const styles = StyleSheet.create({
   },
   gradientCard: {
     borderRadius: 24,
+    borderWidth: 0.25,
+    borderColor: "#FFB591",
     paddingVertical: 50,
     paddingHorizontal: 20,
     alignItems: "center",
-    minHeight: 300,
+    height: 400,
+    marginVertical: 10,
     justifyContent: "center",
   },
   spinnerContainer: {

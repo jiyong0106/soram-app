@@ -4,28 +4,51 @@ import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
 import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
-import { getTopicRandom } from "@/utils/api/topicPageApi";
+import { getRandomTopicSet } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
-import { useAuthStore } from "@/utils/store/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useCallback, useState, useMemo, useRef } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  FlatList,
+  Dimensions,
+} from "react-native";
+import TopicListCTA from "@/components/topic/TopicListCTA";
 
-// ✨ 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
-const MIN_SHUFFLE_DURATION = 800;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+// 캐러셀 UI를 위한 상수 정의
+const ITEM_WIDTH = SCREEN_WIDTH - 80; // 아이템 너비. 80은 좌우로 40px씩 보이게 함.
+const ITEM_SPACING = 16; // 아이템 간의 간격
+const HORIZONTAL_PADDING = (SCREEN_WIDTH - ITEM_WIDTH) / 2; // 첫 아이템과 마지막 아이템을 중앙에 오게 할 패딩 (40px)
 
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
-  const { token } = useAuthStore();
-  // ✨ 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
-  const [isShuffling, setIsShuffling] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["getTopicRandomKey"],
-    queryFn: () => getTopicRandom(),
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index ?? 0);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  const {
+    data: topics,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ["getTopicSetKey"],
+    queryFn: () => getRandomTopicSet(),
     placeholderData: keepPreviousData,
     enabled: false,
   });
@@ -36,51 +59,107 @@ const TopicPage = () => {
     }, [refetch])
   );
 
-  const showInitSkeleton = !data && isLoading;
+  const showInitSkeleton = !topics && isLoading;
 
-  // ✨ 3. onShuffle 함수를 Promise.all을 사용하는 방식으로 완전히 교체합니다.
   const onShuffle = useCallback(async () => {
-    if (isShuffling) return; // 이미 셔플 중이면 중복 실행 방지
+    refetch();
+  }, [refetch]);
 
-    setIsShuffling(true);
-
-    try {
-      // 두 개의 비동기 작업을 준비합니다.
-      const refetchPromise = refetch({ throwOnError: true });
-      const delayPromise = new Promise((resolve) =>
-        setTimeout(resolve, MIN_SHUFFLE_DURATION)
-      );
-
-      // '데이터 리프레시'와 '최소 시간 지연'이 모두 끝날 때까지 기다립니다.
-      await Promise.all([refetchPromise, delayPromise]);
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message ?? "주제를 불러오지 못했어요.");
-    } finally {
-      // 모든 작업이 끝나면 로딩 상태를 해제합니다.
-      setIsShuffling(false);
-    }
-  }, [isShuffling, refetch, showAlert]);
+  const listData = useMemo(() => {
+    if (!topics) return [];
+    return [...topics, { id: "cta", isCTA: true }];
+  }, [topics]);
 
   return (
+    // [1. container에서는 padding: 10 제거 (디버그용 blue 유지)
     <View style={styles.container}>
-      <AppHeader />
-      {showInitSkeleton ? (
-        <TopicSkeleton />
-      ) : (
-        data && (
+      {/*
+        FlatList를 제외한 상단 컨텐츠(헤더, 티켓, 타이틀)를
+        paddingHorizontal: 10을 가진 View로 감쌉니다.
+      */}
+      <View style={{ paddingHorizontal: 10 }}>
+        <AppHeader />
+        {!showInitSkeleton && topics && (
           <>
             <TicketsView />
-            {/* ✨ 4. loading과 disabled prop에 isShuffling을 전달합니다. */}
-            <TopicTitle
-              onShuffle={onShuffle}
-              disabled={isShuffling}
-              loading={isShuffling}
-            />
-            <TopicCard item={data} loading={isShuffling} />
+            <TopicTitle onShuffle={onShuffle} disabled={isFetching} />
+          </>
+        )}
+      </View>
+
+      {/* 3. 메인 컨텐츠 (스켈레톤 또는 FlatList) */}
+      {showInitSkeleton ? (
+        //  스켈레톤에도 동일하게 내부 패딩 10px 적용
+        <View style={{ paddingHorizontal: 10, flex: 1 }}>
+          <TopicSkeleton />
+        </View>
+      ) : (
+        topics && (
+          <>
+            {/* 
+              FlatList 컨테이너(red)는 화면 전체 너비를 사용합니다. (패딩 없음)
+              그래야 내부의 contentContainerStyle이 정확히 동작합니다.
+            */}
+            <View style={styles.flatListContainer}>
+              <FlatList
+                data={listData}
+                renderItem={({ item, index }) => {
+                  const isLastItem = index === listData.length - 1;
+
+                  if (item.isCTA) {
+                    return (
+                      //  CTA 카드에도 동일한 스타일링 적용
+                      <View
+                        style={{
+                          width: ITEM_WIDTH,
+                          marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                        }}
+                      >
+                        <TopicListCTA />
+                      </View>
+                    );
+                  }
+                  return (
+                    //  너비와 간격 스타일 적용
+                    <View
+                      style={{
+                        width: ITEM_WIDTH,
+                        marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                      }}
+                    >
+                      <TopicCard
+                        item={item}
+                        loading={isFetching}
+                        isActive={index === currentIndex}
+                      />
+                    </View>
+                  );
+                }}
+                keyExtractor={(item: any) => item.id.toString()}
+                horizontal
+                pagingEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                bounces={false}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={viewabilityConfig}
+                snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+                snapToAlignment="start"
+                decelerationRate="fast"
+                contentContainerStyle={{
+                  paddingHorizontal: HORIZONTAL_PADDING, // 40px
+                }}
+              />
+            </View>
+
+            {/*
+              하단 '더보기' 버튼에도 동일하게
+              paddingHorizontal: 10을 적용합니다.
+            */}
             <TouchableOpacity
               onPress={() => router.push("/topic/list")}
               activeOpacity={0.5}
-              style={styles.moreTopic}
+              //  styles.moreTopic과 함께 내부 패딩 10px 적용
+              style={[styles.moreTopic, { paddingHorizontal: 10 }]}
             >
               <AppText style={styles.moreTopicText}>
                 더 다양한 주제 보러가기
@@ -103,7 +182,11 @@ export default TopicPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+  },
+  flatListContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   wrap: {
     flex: 1,

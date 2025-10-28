@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   meta: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#5C4B44",
   },
 });

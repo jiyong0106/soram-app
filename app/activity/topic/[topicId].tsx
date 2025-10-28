@@ -32,6 +32,7 @@ const ResponseItemCard = ({ item }: { item: MyVoiceResponseItem }) => {
         createdAt: item.createdAt,
         //  connectionStatus를 함께 전달합니다.
         connectionStatus: item.connectionStatus,
+        topicBoxId: item.topic.id,
       },
     });
   };

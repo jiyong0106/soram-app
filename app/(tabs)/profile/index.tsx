@@ -19,7 +19,7 @@ const ProfilePage = () => {
   const profile = useMemo(() => data, [data]);
 
   return (
-    <ScrollView contentContainerStyle={[styles.scroll, styles.container]}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
       {isLoading || !profile ? (
         <View style={styles.placeholder}>
           <AppText>내 프로필을 불러오고 있어요…</AppText>
