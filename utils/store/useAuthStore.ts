@@ -50,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-store", // 새로운 persist 키(JSON 구조)
+      name: "auth-store",
       storage: secureJSONStorage, // SecureStore 기반 저장
       partialize: (s) => ({
         token: s.token,
