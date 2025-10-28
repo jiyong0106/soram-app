@@ -70,6 +70,7 @@ const FinishPage = () => {
       setLoading(false);
     }
   };
+  const gender = draft.gender === "MALE" ? "남성" : "여성";
 
   return (
     <ScreenWithStickyAction
@@ -103,6 +104,7 @@ const FinishPage = () => {
             <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
             <AppText style={styles.meta}>
               {formatBirthAndAge(draft.birthdate)}
+              <AppText style={styles.meta}>, {gender}</AppText>
             </AppText>
             <AppText style={styles.meta}>{draft.location || "미설정"}</AppText>
           </View>
@@ -228,6 +230,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#5C4B44",
     marginVertical: 10,
+    lineHeight: 24,
   },
   answerCard: {
     marginBottom: 10,

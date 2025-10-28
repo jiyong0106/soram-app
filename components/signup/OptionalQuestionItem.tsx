@@ -16,7 +16,7 @@ const OptionalQuestionItem = ({
   );
 
   const hasAnswer = !!optionalAnswer?.content?.trim();
-  const displayLabel = hasAnswer ? `3. ${optionalTitle || label}` : label;
+  const displayLabel = hasAnswer ? `${optionalTitle || label}` : label;
   const tone = hasAnswer ? "emphasis" : "default";
 
   return (

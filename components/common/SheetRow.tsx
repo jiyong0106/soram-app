@@ -23,7 +23,7 @@ const SheetRow = ({
       }}
     >
       {icon}
-      <AppText style={[{ fontSize: 16, color: "#5C4B44" }, labelStyle]}>
+      <AppText style={[{ fontSize: 14, color: "#5C4B44" }, labelStyle]}>
         {label}
       </AppText>
     </View>

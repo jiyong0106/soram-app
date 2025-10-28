@@ -27,7 +27,7 @@ const COLORS = {
   border: "#E5E7EB", // gray-200
   fill: "#F9FAFB", // gray-50
   danger: "#EF4444", // red-500
-  icon: "#111827",
+  icon: "#5C4B44",
 };
 
 // 한글 주석: 카테고리/질문 더미 데이터(추후 API 연동 시 교체)
@@ -86,11 +86,7 @@ const QuestionPageSheet = (
             renderItem={({ item }) => (
               <SheetRow
                 icon={
-                  <Ionicons
-                    name="help-circle-outline"
-                    size={18}
-                    color={COLORS.icon}
-                  />
+                  <Ionicons name="add-outline" size={16} color={COLORS.icon} />
                 }
                 label={item.content}
                 onPress={() => onPress(item.content, item.id)}
