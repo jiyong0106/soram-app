@@ -145,8 +145,8 @@ const UserAnswerPage = () => {
             }
             ListEmptyComponent={
               <EmptyState
-                title="조회 가능한 답변이 없어요"
-                subtitle="주제를 바꿔보거나 새 답변을 남겨보세요."
+                title="조회 가능한 이야기가 없어요"
+                subtitle="주제를 바꿔보거나 새 이야기를 남겨보세요."
                 onPressAction={onShuffle}
                 loading={isFetching}
               />
@@ -156,7 +156,7 @@ const UserAnswerPage = () => {
 
       <FindingAnswersOverlay
         visible={!initialReady || shuffleOverlay}
-        text="답변을 찾는 중이에요"
+        text="이야기를 찾는 중이에요"
       />
     </View>
   );
