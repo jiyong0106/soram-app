@@ -21,3 +21,9 @@ export const guideOptions = [
     image: require("@/assets/images/eximage.png"),
   },
 ] as const;
+
+
+
+// 소람이 제공하는 랜덤 주제를 확인해보세요
+// 마음에 드는 주제와 다른 사용자가 작성한 이야기를 확인할 수 있어요
+// 공감이 가는 이야기가 있다면 대화를 통해 만나보세요!
