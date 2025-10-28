@@ -4,28 +4,46 @@ import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
 import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
-import { getTopicRandom } from "@/utils/api/topicPageApi";
+import { getRandomTopicSet } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
-import { useAuthStore } from "@/utils/store/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useCallback, useState, useMemo, useRef } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  FlatList,
+  Dimensions,
+} from "react-native";
+import TopicListCTA from "@/components/topic/TopicListCTA";
 
-// 1. 최소 로딩 시간을 상수로 정의합니다 (800ms = 0.8초).
-const MIN_SHUFFLE_DURATION = 800;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const TopicPage = () => {
   const { showAlert } = useAlert();
   const router = useRouter();
-  const { token } = useAuthStore();
-  // 2. 기존 cooldown, lockRef, timerRef 대신 'isShuffling' 상태 하나로 관리합니다.
-  const [isShuffling, setIsShuffling] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["getTopicRandomKey"],
-    queryFn: () => getTopicRandom(),
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index ?? 0);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  const {
+    data: topics,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ["getTopicSetKey"],
+    queryFn: () => getRandomTopicSet(),
     placeholderData: keepPreviousData,
     enabled: false,
   });
@@ -36,30 +54,16 @@ const TopicPage = () => {
     }, [refetch])
   );
 
-  const showInitSkeleton = !data && isLoading;
+  const showInitSkeleton = !topics && isLoading;
 
-  // 3. onShuffle 함수를 Promise.all을 사용하는 방식으로 완전히 교체합니다.
   const onShuffle = useCallback(async () => {
-    if (isShuffling) return; // 이미 셔플 중이면 중복 실행 방지
+    refetch();
+  }, [refetch]);
 
-    setIsShuffling(true);
-
-    try {
-      // 두 개의 비동기 작업을 준비합니다.
-      const refetchPromise = refetch({ throwOnError: true });
-      const delayPromise = new Promise((resolve) =>
-        setTimeout(resolve, MIN_SHUFFLE_DURATION)
-      );
-
-      // '데이터 리프레시'와 '최소 시간 지연'이 모두 끝날 때까지 기다립니다.
-      await Promise.all([refetchPromise, delayPromise]);
-    } catch (e: any) {
-      showAlert(e?.response?.data?.message ?? "주제를 불러오지 못했어요.");
-    } finally {
-      // 모든 작업이 끝나면 로딩 상태를 해제합니다.
-      setIsShuffling(false);
-    }
-  }, [isShuffling, refetch, showAlert]);
+  const listData = useMemo(() => {
+    if (!topics) return [];
+    return [...topics, { id: "cta", isCTA: true }];
+  }, [topics]);
 
   return (
     <View style={styles.container}>
@@ -67,16 +71,40 @@ const TopicPage = () => {
       {showInitSkeleton ? (
         <TopicSkeleton />
       ) : (
-        data && (
+        topics && (
           <>
             <TicketsView />
-            {/* 4. loading과 disabled prop에 isShuffling을 전달합니다. */}
-            <TopicTitle
-              onShuffle={onShuffle}
-              disabled={isShuffling}
-              loading={isShuffling}
-            />
-            <TopicCard item={data} loading={isShuffling} />
+            <TopicTitle onShuffle={onShuffle} disabled={isFetching} />
+            <View style={styles.flatListContainer}>
+              <FlatList
+                data={listData}
+                renderItem={({ item, index }) => {
+                  if (item.isCTA) {
+                    return (
+                      <View style={{ width: SCREEN_WIDTH - 20 }}>
+                        <TopicListCTA />
+                      </View>
+                    );
+                  }
+                  return (
+                    <View style={{ width: SCREEN_WIDTH - 20 }}>
+                      <TopicCard
+                        item={item}
+                        loading={isFetching}
+                        isActive={index === currentIndex}
+                      />
+                    </View>
+                  );
+                }}
+                keyExtractor={(item: any) => item.id.toString()}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                bounces={false}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={viewabilityConfig}
+              />
+            </View>
             <TouchableOpacity
               onPress={() => router.push("/topic/list")}
               activeOpacity={0.5}
@@ -104,6 +132,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  flatListContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   wrap: {
     flex: 1,

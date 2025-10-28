@@ -45,6 +45,12 @@ export const getTopicRandom = async (excludeTopicId?: number) => {
   return data;
 };
 
+// 2-1. 여러개의 랜덤 주제 보여주기 api
+export const getRandomTopicSet = async () => {
+  const { data } = await instance.get("/topics/random-set");
+  return data;
+};
+
 // 3. 랜덤 주제에대한 답변 보여주기 api
 export const getUserAnswer = async ({ topicId }: { topicId: string }) => {
   const { data } = await instance.get<UserAnswerResponse[]>(
