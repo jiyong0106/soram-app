@@ -4,7 +4,6 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { isAxiosError } from "axios";
-
 import AppText from "@/components/common/AppText";
 import UserAnswerList from "@/components/topic/UserAnswerList";
 import ScalePressable from "@/components/common/ScalePressable";
@@ -43,8 +42,11 @@ const UserAnswerPage = () => {
     AxiosError
   >({
     queryKey: ["getUserAnswerKey", topicId],
-    queryFn: () => getUserAnswer({ topicId: topicId as string }),
+    queryFn: () => getUserAnswer({ topicId: String(topicId) }),
     enabled: !!topicId,
+    // 한글 주석: 화면 재진입 시 항상 최신 데이터 확보
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     // staleTime: 60 * 1000,
     retry: (failureCount, err) => {
       const s = err?.response?.status;
@@ -64,9 +66,16 @@ const UserAnswerPage = () => {
   }, [deducted, isSuccess, ensure]);
 
   const initialReady = minElapsed && (isSuccess || isError);
-  const dataForRender = forceEmpty ? [] : data ?? [];
-  const topicResponseId = dataForRender?.[0]?.id;
-  console.log("현재 보고있는 답변 id", topicResponseId);
+  const dataForRender: UserAnswerResponse[] =
+    isError || forceEmpty ? [] : data ?? [];
+  const topicResponseId = dataForRender[0]?.id;
+
+  useEffect(() => {
+    if (isError) {
+      //  에러 시 이전 성공 데이터 노출 방지
+      setForceEmpty(true);
+    }
+  }, [isError]);
 
   const onShuffle = useCallback(async () => {
     if (isFetching) return;
@@ -192,7 +201,7 @@ const UserAnswerPage = () => {
       <TopicActionSheet
         ref={sheetRef}
         snapPoints={["50%"]}
-        entityId={String(topicResponseId)}
+        entityId={String(topicResponseId ?? "")}
       />
     </PageContainer>
   );
