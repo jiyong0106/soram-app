@@ -7,6 +7,8 @@ import {
   TextBody,
   TextResponse,
   TextHeaderType,
+  HiddenContentBody,
+  HiddenContentResponse,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -78,6 +80,15 @@ export const postText = async (body: TextBody) => {
 export const getTextHeader = async (topicBoxId: number) => {
   const { data } = await instance.get<TextHeaderType>(
     `/topics/${topicBoxId}/questions`
+  );
+  return data;
+};
+
+//7. 컨텐츠 숨기기 api
+export const postHideContent = async (body: HiddenContentBody) => {
+  const { data } = await instance.post<HiddenContentResponse>(
+    "/hidden-contents",
+    body
   );
   return data;
 };

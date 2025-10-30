@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { isAxiosError } from "axios";
@@ -16,6 +16,9 @@ import { Ionicons } from "@expo/vector-icons";
 import useMinDelay from "@/utils/hooks/useMinDelay";
 import FindingAnswersOverlay from "@/components/topic/FindingAnswersOverlay";
 import useTicketGuard from "@/utils/hooks/useTicketGuard";
+import PageContainer from "@/components/common/PageContainer";
+import { BackButton } from "@/components/common/backbutton";
+import TopicActionSheet from "@/components/topic/TopicActionSheet";
 
 const OVERLAY_FADE_MS = 220;
 const MIN_SHUFFLE_MS = 3000;
@@ -29,19 +32,20 @@ const UserAnswerPage = () => {
   const [forceEmpty, setForceEmpty] = useState(false);
   const [suppressList, setSuppressList] = useState(false); // 플리커 방지용
   const router = useRouter();
+  const sheetRef = useRef<any>(null);
 
   // 초기 3초
   const minElapsed = useMinDelay(MIN_SHUFFLE_MS);
 
   // 데이터
-  const { data, refetch, isFetching, isSuccess, isError, error } = useQuery<
+  const { data, refetch, isFetching, isSuccess, isError } = useQuery<
     UserAnswerResponse[],
     AxiosError
   >({
     queryKey: ["getUserAnswerKey", topicId],
     queryFn: () => getUserAnswer({ topicId: topicId as string }),
     enabled: !!topicId,
-    staleTime: 60 * 1000,
+    // staleTime: 60 * 1000,
     retry: (failureCount, err) => {
       const s = err?.response?.status;
       if (s && s >= 400 && s < 500) return false;
@@ -61,6 +65,8 @@ const UserAnswerPage = () => {
 
   const initialReady = minElapsed && (isSuccess || isError);
   const dataForRender = forceEmpty ? [] : data ?? [];
+  const topicResponseId = dataForRender?.[0]?.id;
+  console.log("현재 보고있는 답변 id", topicResponseId);
 
   const onShuffle = useCallback(async () => {
     if (isFetching) return;
@@ -108,57 +114,87 @@ const UserAnswerPage = () => {
   }, [isFetching, refetch, showAlert]);
 
   return (
-    <View style={styles.container}>
-      {initialReady &&
-        !suppressList && ( // ✅ 숨김 중에는 리스트 렌더 안 함
-          <FlatList
-            data={dataForRender}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={({ item }) => (
-              <UserAnswerList item={item} title={title} />
-            )}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
-            ListFooterComponent={
-              isError ? (
-                <ScalePressable
-                  style={styles.moreTopicWrapper}
-                  onPress={() => router.push("/topic/list")}
-                >
-                  <AppText style={styles.moreTopic}>
-                    이 주제의 이야기를 모두 봤어요. 다른 주제를 볼까요?
-                  </AppText>
-                  <Ionicons name="chevron-forward" size={15} color="#B0A6A0" />
-                </ScalePressable>
-              ) : (
-                <ScalePressable
-                  style={styles.moreTopicWrapper}
-                  onPress={onShuffle}
-                >
-                  <AppText style={styles.moreTopic}>
-                    다른 사람의 이야기 보기
-                  </AppText>
-                  <Ionicons name="reload" size={15} color="#B0A6A0" />
-                </ScalePressable>
-              )
-            }
-            ListEmptyComponent={
-              <EmptyState
-                title="조회 가능한 이야기가 없어요"
-                subtitle="주제를 바꿔보거나 새 이야기를 남겨보세요."
-                onPressAction={onShuffle}
-                loading={isFetching}
-              />
-            }
-          />
-        )}
-
-      <FindingAnswersOverlay
-        visible={!initialReady || shuffleOverlay}
-        text="이야기를 찾는 중이에요"
+    <PageContainer padded={false} edges={["bottom"]}>
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: true,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton />,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", gap: 16 }}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => sheetRef.current?.present?.()}
+              >
+                <Ionicons name="ellipsis-vertical" size={22} />
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
       />
-    </View>
+
+      <View style={styles.container}>
+        {initialReady &&
+          !suppressList && ( // ✅ 숨김 중에는 리스트 렌더 안 함
+            <FlatList
+              data={dataForRender}
+              keyExtractor={(item) => String(item.id)}
+              renderItem={({ item }) => (
+                <UserAnswerList item={item} title={title} />
+              )}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listContent}
+              ListHeaderComponentStyle={{ paddingHorizontal: 10 }}
+              ListFooterComponent={
+                isError ? (
+                  <ScalePressable
+                    style={styles.moreTopicWrapper}
+                    onPress={() => router.push("/topic/list")}
+                  >
+                    <AppText style={styles.moreTopic}>
+                      이 주제의 이야기를 모두 봤어요. 다른 주제를 볼까요?
+                    </AppText>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={15}
+                      color="#B0A6A0"
+                    />
+                  </ScalePressable>
+                ) : (
+                  <ScalePressable
+                    style={styles.moreTopicWrapper}
+                    onPress={onShuffle}
+                  >
+                    <AppText style={styles.moreTopic}>
+                      다른 사람의 이야기 보기
+                    </AppText>
+                    <Ionicons name="reload" size={15} color="#B0A6A0" />
+                  </ScalePressable>
+                )
+              }
+              ListEmptyComponent={
+                <EmptyState
+                  title="조회 가능한 이야기가 없어요"
+                  subtitle="주제를 바꿔보거나 새 이야기를 남겨보세요."
+                  onPressAction={onShuffle}
+                  loading={isFetching}
+                />
+              }
+            />
+          )}
+
+        <FindingAnswersOverlay
+          visible={!initialReady || shuffleOverlay}
+          text="이야기를 찾는 중이에요"
+        />
+      </View>
+      <TopicActionSheet
+        ref={sheetRef}
+        snapPoints={["50%"]}
+        entityId={String(topicResponseId)}
+      />
+    </PageContainer>
   );
 };
 
