@@ -57,14 +57,14 @@ const TopicPage = () => {
     queryKey: ["getTopicSetKey"],
     queryFn: () => getRandomTopicSet(),
     placeholderData: keepPreviousData,
-    enabled: false,
+    // enabled: false,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     refetch();
+  //   }, [refetch])
+  // );
 
   const showInitSkeleton = !topics && isLoading;
 
