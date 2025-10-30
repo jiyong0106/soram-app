@@ -20,7 +20,7 @@ const AccountSection = () => {
       setLoading(true);
       try {
         await queryClient.cancelQueries();
-        await postLogout(); // 서버 refresh 쿠키 무효화
+        await postLogout();
       } catch (e: any) {
         if (e) showAlert(e.response.data.message);
         setLoading(false);
