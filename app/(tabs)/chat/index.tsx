@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
@@ -59,6 +65,34 @@ const chatPage = () => {
   const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
   // 한글 주석: 초기 마운트 직후 onEndReached 자동 호출을 방지하기 위한 가드
   const didScrollRef = useRef(false);
+
+  // 한글 주석: 서버 목록 기준으로 배지 스토어 동기화(고아 카운트 정리)
+  useEffect(() => {
+    const uid = useChatUnreadStore.getState().currentUserId;
+    if (uid == null) return;
+    if (!data) return; // 캐시 미존재 시 skip
+
+    if (items.length === 0) {
+      // 목록이 비면 해당 사용자 배지를 전부 0으로 초기화
+      useChatUnreadStore.getState().resetAllForUser(uid);
+      return;
+    }
+
+    const keep = new Set(items.map((it) => it.id));
+    useChatUnreadStore.setState((s) => {
+      const perUser = s.unreadCountByUserId[uid] ?? {};
+      const pruned = Object.fromEntries(
+        Object.entries(perUser).filter(([k]) => keep.has(Number(k)))
+      ) as Record<number, number>;
+      // 변경 사항이 없으면 그대로 반환
+      const changed =
+        Object.keys(perUser).length !== Object.keys(pruned).length;
+      if (!changed) return s;
+      return {
+        unreadCountByUserId: { ...s.unreadCountByUserId, [uid]: pruned },
+      } as any;
+    });
+  }, [data, items]);
 
   // 한글 주석: 실시간 목록 구독은 루트에서 전역으로 수행하므로 이 화면에서는 불필요합니다.
   const onRefresh = async () => {

@@ -41,7 +41,6 @@ export const useChatUnreadStore = create<UnreadState>()(
           const nextUnread = { ...state.unreadCountByUserId };
           if (legacy && userId != null && nextUnread[userId] == null) {
             nextUnread[userId] = { ...legacy };
-            // @ts-expect-error legacy 필드는 더 이상 사용하지 않음
             (state as any).unreadCountByConnectionId = undefined;
           }
           return { currentUserId: userId, unreadCountByUserId: nextUnread };
