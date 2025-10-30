@@ -33,12 +33,6 @@ const TopicSection = ({ category }: { category: Category }) => {
       staleTime: 60 * 1000,
     });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
   // 받은 페이지들을 합치고, 클라이언트에서 카테고리만 필터
   const items: TopicListType[] = data?.pages.flatMap((p) => p.data) ?? [];
 
