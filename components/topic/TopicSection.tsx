@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -9,7 +9,6 @@ import {
 } from "@/utils/types/topic";
 import { getTopicList } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { useFocusEffect } from "expo-router";
 
 const TopicSection = ({ category }: { category: Category }) => {
   const [refreshing, setRefreshing] = useState(false);
