@@ -32,22 +32,26 @@ const TopickActionSheet = (
   const dismiss = () => (ref as any)?.current?.dismiss?.();
   const onHide = () => {
     dismiss();
-    showActionAlert("해당 이야기를 숨기시겠어요?", "숨기기", async () => {
-      try {
-        await postHideContent({
-          entityId: entityId,
-          entityType: "VOICE_RESPONSE",
-        });
-        router.back();
-      } catch (e: any) {
-        if (e) {
-          showAlert(e.response.data.message);
-          return;
+    showActionAlert(
+      "해당 이야기를 숨기시겠어요? \n\n숨긴 이야기는 다시 볼 수 없어요.",
+      "숨기기",
+      async () => {
+        try {
+          await postHideContent({
+            entityId: entityId,
+            entityType: "VOICE_RESPONSE",
+          });
+          router.back();
+        } catch (e: any) {
+          if (e) {
+            showAlert(e.response.data.message);
+            return;
+          }
+        } finally {
+          dismiss();
         }
-      } finally {
-        dismiss();
       }
-    });
+    );
   };
 
   return (

@@ -130,16 +130,17 @@ const UserAnswerPage = () => {
           headerShown: true,
           headerBackVisible: false,
           headerLeft: () => <BackButton />,
-          headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 16 }}>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() => sheetRef.current?.present?.()}
-              >
-                <Ionicons name="ellipsis-vertical" size={22} />
-              </TouchableOpacity>
-            </View>
-          ),
+          headerRight: () =>
+            isError ? null : (
+              <View style={{ flexDirection: "row", gap: 16 }}>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => sheetRef.current?.present?.()}
+                >
+                  <Ionicons name="ellipsis-vertical" size={22} />
+                </TouchableOpacity>
+              </View>
+            ),
         }}
       />
 
