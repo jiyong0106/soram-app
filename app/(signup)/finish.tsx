@@ -100,7 +100,9 @@ const FinishPage = () => {
           {/* 헤더/베이직 정보 */}
           <View style={{ gap: 8 }}>
             <AppText style={styles.brand}>SORAM</AppText>
-            <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
+            <AppText style={styles.caption}>
+              이야기와 목소리로 이어진 우리
+            </AppText>
             <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
             <AppText style={styles.meta}>
               {formatBirthAndAge(draft.birthdate)}

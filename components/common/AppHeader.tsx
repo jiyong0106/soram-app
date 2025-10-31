@@ -13,7 +13,7 @@ const AppHeader = ({ hasNotification }: Props) => {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <AppText style={styles.logo}>SORAM</AppText>
-        <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
+        <AppText style={styles.slogan}>이야기와 목소리로 이어진 우리</AppText>
       </View>
       <Pressable
         onPress={() => router.push("/alerts")}
