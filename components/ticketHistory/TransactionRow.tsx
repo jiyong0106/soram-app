@@ -14,7 +14,7 @@ type IconInfo = {
 const iconMap: { [key: string]: IconInfo } = {
   CHAT_START: { name: "chatbubble-ellipses", color: "#FF7D4A" }, // 주황색 계열
   VIEW_STORY: { name: "book", color: "#6A839A" }, // 파란색 계열
-  WELCOME_GIFT: { name: "gift-outline", color: "#A89CF7" }, // 보라색 계열
+  WELCOME_GIFT: { name: "gift-sharp", color: "#A89CF7" }, // 보라색 계열
   DAILY_REWARD: { name: "calendar-outline", color: "#72D6EE" }, // 하늘색 계열
   DEFAULT: { name: "help-circle-outline", color: "#B0A6A0" }, // 기본 회색
 };
