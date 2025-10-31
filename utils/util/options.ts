@@ -7,7 +7,7 @@ export const guideOptions = [
   {
     title: "랜덤 주제",
     description: "소람이 제공하는 다양한 랜덤 주제를 확인해보세요.",
-    image: require("@/assets/images/eximage.png"),
+    image: require("@/assets/images/guide1.png"),
   },
   {
     title: "원하는 주제 찾기",
