@@ -11,6 +11,7 @@ import {
 import AppText from "./AppText";
 import { Image } from "expo-image";
 import { guideOptions } from "@/utils/util/options";
+// lottie 컴포넌트는 options에서 주입받아 동적 렌더링
 
 interface Porps {
   activeIndex: number;
@@ -57,6 +58,7 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
                 style={styles.image}
                 contentFit="contain"
               />
+              {"lottie" in item && item.lottie ? item.lottie : null}
             </View>
             <AppText style={styles.title}>{item.title}</AppText>
             <AppText style={styles.desc}>{item.description}</AppText>
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
   },
   slide: {
     alignItems: "center",
-    paddingHorizontal: 12,
+    // paddingHorizontal: 12,
     gap: 20,
     backgroundColor: "transparent",
     height: "auto",

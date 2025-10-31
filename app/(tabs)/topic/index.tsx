@@ -136,7 +136,6 @@ const TopicPage = () => {
                     );
                   }
                   return (
-                    //  너비와 간격 스타일 적용
                     <View
                       style={{
                         width: ITEM_WIDTH,

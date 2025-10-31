@@ -108,10 +108,12 @@ const TopicListIdPage = () => {
   };
 
   return (
-    <PageContainer edges={[]} padded={false}>
+    <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
           title: "이야기 남기기",
+          headerShown: true,
+          headerBackVisible: false,
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <TouchableOpacity
