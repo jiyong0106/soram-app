@@ -1,11 +1,6 @@
 import React from "react";
 import { ArrowDown, Handtap } from "@/components/lottie/Lotti-icon";
 
-// 가이드 모달에 들어가야 할 내용
-// 1. 소람소개
-// 2. 원하는 주제 찾기
-// 3. 대화연결
-
 export type GuideOption = {
   title: string;
   description: string;
@@ -54,17 +49,6 @@ export const guideOptions = [
     description:
       "공감되는 이야기가 있다면, 대화를 통해 진정한 연결을 시작해보세요.",
     image: require("@/assets/images/guide3.png"),
-    // lottie: (
-    //   <Handtap
-    //     style={{
-    //       width: 70,
-    //       height: 70,
-    //       position: "absolute",
-    //       bottom: -20,
-    //       right: 10,
-    //     }}
-    //   />
-    // ),
   },
 ] satisfies readonly GuideOption[];
 
