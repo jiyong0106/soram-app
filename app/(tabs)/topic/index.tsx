@@ -56,7 +56,6 @@ const TopicPage = () => {
     queryKey: ["getTopicSetKey"],
     queryFn: () => getRandomTopicSet(),
     placeholderData: keepPreviousData,
-    // enabled: false,
   });
 
   const showInitSkeleton = !topics && isLoading;
