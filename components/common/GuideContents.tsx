@@ -11,6 +11,8 @@ import {
 import AppText from "./AppText";
 import { Image } from "expo-image";
 import { guideOptions } from "@/utils/util/options";
+import HandTap from "@/components/lottie/Hand-tap";
+import LottieView from "lottie-react-native";
 
 interface Porps {
   activeIndex: number;
@@ -22,6 +24,7 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
   const [itemWidth, setItemWidth] = useState<number>(
     Dimensions.get("window").width * 0.9
   );
+  const animation = useRef<LottieView>(null);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
@@ -52,10 +55,22 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
         renderItem={({ item }) => (
           <View style={[styles.slide, { width: itemWidth }]}>
             <View style={styles.imageArea}>
-              <Image
+              {/* <Image
                 source={item.image}
                 style={styles.image}
                 contentFit="contain"
+              /> */}
+              {/* <HandTap /> */}
+              <LottieView
+                autoPlay
+                ref={animation}
+                style={{
+                  width: 200,
+                  height: 200,
+                  backgroundColor: "#eee",
+                }}
+                // Find more Lottie files at https://lottiefiles.com/featured
+                source={require("@/assets/animations/Hand-tap.json")}
               />
             </View>
             <AppText style={styles.title}>{item.title}</AppText>
