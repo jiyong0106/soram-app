@@ -112,7 +112,7 @@ const chatPage = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <AppText style={styles.title}>대화</AppText>
-        <SearchBar value={query} onChangeText={setQuery} />
+        {/* <SearchBar value={query} onChangeText={setQuery} /> */}
       </View>
       <FlatList
         data={items}

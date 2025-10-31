@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,7 +7,12 @@ import SheetRow from "@/components/common/SheetRow";
 import useAlert from "@/utils/hooks/useAlert";
 import { postChatLeave, postUserBlock } from "@/utils/api/chatPageApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { GetChatResponse } from "@/utils/types/chat";
+import {
+  deleteConnectionMute,
+  postConnectionMute,
+} from "@/utils/api/connectionPageApi";
 
 interface ChatActionSheetProps {
   snapPoints?: ReadonlyArray<string | number>;
@@ -34,8 +39,25 @@ const ChatActionSheet = (
   const { showAlert, showActionAlert } = useAlert();
   const router = useRouter();
   const qc = useQueryClient();
+  // 로컬 상태로 즉시 라벨/아이콘 반영
+  const [isMutedLocal, setIsMutedLocal] = useState<boolean | undefined>(
+    undefined
+  );
 
   const dismiss = () => (ref as any)?.current?.dismiss?.();
+
+  // 마운트/roomId 변경 시 캐시에서 초기 isMuted 파생
+  useEffect(() => {
+    const list = qc.getQueryData<InfiniteData<GetChatResponse>>(["getChatKey"]);
+    if (!list) return;
+    for (const page of list.pages) {
+      const found = page.data.find((it) => it.id === roomId);
+      if (found) {
+        setIsMutedLocal(Boolean(found.isMuted));
+        break;
+      }
+    }
+  }, [qc, roomId]);
 
   const onReport = () => {
     dismiss();
@@ -88,24 +110,97 @@ const ChatActionSheet = (
     );
   };
 
-  const onMute = () => {}; // 기능은 유지, UI만 변경
+  const onMute = () => {
+    // 시트 닫기
+    dismiss();
+
+    // 캐시에서 현재 방의 isMuted 파생
+    const list = qc.getQueryData<InfiniteData<GetChatResponse>>(["getChatKey"]);
+    let currentIsMuted: boolean | undefined = undefined;
+    if (list) {
+      outer: for (const page of list.pages) {
+        for (const it of page.data) {
+          if (it.id === roomId) {
+            currentIsMuted = it.isMuted;
+            break outer;
+          }
+        }
+      }
+    }
+
+    // 파생값이 없으면 기본 false로 간주하고, 목표 상태는 토글 결과
+    const targetMute = !(currentIsMuted ?? false);
+
+    // 낙관적 업데이트로 즉시 UI 반영
+    qc.setQueryData(
+      ["getChatKey"],
+      (oldData: InfiniteData<GetChatResponse> | undefined) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              item.id === roomId ? { ...item, isMuted: targetMute } : item
+            ),
+          })),
+        };
+      }
+    );
+    // 로컬 상태도 함께 갱신하여 즉시 리렌더
+    setIsMutedLocal(targetMute);
+
+    // 실제 API 호출 (백그라운드)
+    (async () => {
+      try {
+        if (targetMute) {
+          await postConnectionMute(roomId);
+        } else {
+          await deleteConnectionMute(roomId);
+        }
+        await qc.invalidateQueries({ queryKey: ["getChatKey"] });
+      } catch (e: any) {
+        showAlert(e?.response?.data?.message || "다시 시도해 주세요");
+        await qc.invalidateQueries({ queryKey: ["getChatKey"] });
+      }
+    })();
+  };
 
   return (
     <AppBottomSheetModal ref={ref} snapPoints={snapPoints}>
       <View style={s.container}>
         {/* Group: 유틸 */}
         <View style={s.group}>
-          <SheetRow
-            icon={
-              <Ionicons
-                name="notifications-off-outline"
-                size={18}
-                color={COLORS.icon}
-              />
+          {(() => {
+            // 현재 상태 파생(렌더 타이밍에서 한 번 더 계산)
+            const list = qc.getQueryData<InfiniteData<GetChatResponse>>([
+              "getChatKey",
+            ]);
+            let isMutedDerived = isMutedLocal;
+            if (list && isMutedDerived == null) {
+              outer: for (const page of list.pages) {
+                for (const it of page.data) {
+                  if (it.id === roomId) {
+                    isMutedDerived = Boolean(it.isMuted);
+                    break outer;
+                  }
+                }
+              }
             }
-            label="알림 끄기"
-            onPress={onMute}
-          />
+            const label = isMutedDerived ? "알림 켜기" : "알림 끄기";
+            const iconName = isMutedDerived
+              ? "notifications"
+              : "notifications-off-outline";
+            return (
+              <SheetRow
+                icon={
+                  <Ionicons name={iconName} size={18} color={COLORS.icon} />
+                }
+                label={label}
+                onPress={onMute}
+              />
+            );
+          })()}
         </View>
         {/* Group: 일반 */}
         <View style={s.group}>
