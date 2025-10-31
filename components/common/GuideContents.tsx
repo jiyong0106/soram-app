@@ -55,7 +55,7 @@ const GuideContents = ({ activeIndex, setActiveIndex }: Porps) => {
               <Image
                 source={item.image}
                 style={styles.image}
-                contentFit="cover"
+                contentFit="contain"
               />
             </View>
             <AppText style={styles.title}>{item.title}</AppText>
@@ -76,14 +76,13 @@ const styles = StyleSheet.create({
   slide: {
     alignItems: "center",
     paddingHorizontal: 12,
-    gap: 30,
+    gap: 20,
     backgroundColor: "transparent",
-    height: 420,
+    height: "auto",
   },
   imageArea: {
     width: "100%",
-    height: 250,
-    backgroundColor: "#d9d9d9",
+    height: 300,
     borderRadius: 12,
     overflow: "hidden",
   },
