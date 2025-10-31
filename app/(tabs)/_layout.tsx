@@ -37,11 +37,11 @@ const renderTabItem = ({
           color: isFocused ? "#FF7D4A" : "#B0A6A0",
           size: 28,
         })}
-      {route.name === "chat" ? (
+      {route.name === "chat" && badgeCount > 0 ? (
         <Badge
-          count={badgeCount}
-          style={styles.badge}
-          textStyle={styles.badgeText}
+          dot
+          style={styles.badgePosition}
+          accessibilityLabel="안읽은 메시지 있음"
         />
       ) : null}
     </View>
@@ -81,14 +81,11 @@ const CustomTabBar = ({
       await Promise.race([prefetchPromise, timeout(300)]);
     } catch {}
   };
-  // 전체 안읽은 수 합계 (스토어에서 파생값만 구독)
-  const totalUnread = useChatUnreadStore((s) => {
+  // 안읽은 메시지 존재 여부 (불리언 파생값만 구독하여 리렌더 최소화)
+  const hasUnread = useChatUnreadStore((s) => {
     const uid = s.currentUserId;
     const perUser = uid != null ? s.unreadCountByUserId[uid] ?? {} : {};
-    return Object.values(perUser).reduce(
-      (acc: number, v: number) => acc + (v || 0),
-      0
-    );
+    return Object.values(perUser).some((v) => (v || 0) > 0);
   });
   const centerIndex = Math.floor(state.routes.length / 2);
 
@@ -185,7 +182,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
-              badgeCount: route.name === "chat" ? totalUnread : 0,
+              badgeCount: route.name === "chat" ? (hasUnread ? 1 : 0) : 0,
             });
           })}
         </View>
@@ -218,7 +215,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
-              badgeCount: route.name === "chat" ? totalUnread : 0,
+              badgeCount: route.name === "chat" ? (hasUnread ? 1 : 0) : 0,
             });
           })}
         </View>
@@ -345,6 +342,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 10,
     fontWeight: "800",
+  },
+  badgePosition: {
+    position: "absolute",
+    top: 0,
+    right: -5,
   },
   centerButtonWrapper: {
     position: "absolute",
