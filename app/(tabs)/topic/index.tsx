@@ -60,12 +60,6 @@ const TopicPage = () => {
     // enabled: false,
   });
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     refetch();
-  //   }, [refetch])
-  // );
-
   const showInitSkeleton = !topics && isLoading;
 
   const onShuffle = useCallback(async () => {
