@@ -239,7 +239,7 @@ const UserAnswerList = ({
               onPress={handlePress}
             />
             <Button
-              label={`${user.nickname}님의 \n 다른 이야기 보기`}
+              label={`${user.nickname}님의\n다른 이야기 보기`}
               color="#FFFFFF"
               textColor="#B0A6A0"
               style={styles.btnOutline}
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
 
   content: {
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 30,
     color: "#5C4B44",
   },
 
