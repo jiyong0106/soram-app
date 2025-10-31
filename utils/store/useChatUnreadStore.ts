@@ -22,6 +22,7 @@ type UnreadState = {
   ) => void;
   resetUnread: (connectionId: number, userId?: number) => void;
   resetAllForUser: (userId?: number) => void;
+  syncUnreadCounts: (counts: Record<number, number>) => void;
 };
 
 export const useChatUnreadStore = create<UnreadState>()(
@@ -108,6 +109,18 @@ export const useChatUnreadStore = create<UnreadState>()(
             },
           };
         }),
+
+      // 서버 데이터로 상태를 동기화하는 액션
+      syncUnreadCounts: (counts) => {
+        const userId = get().currentUserId;
+        if (userId == null) return;
+        set((state) => ({
+          unreadCountByUserId: {
+            ...state.unreadCountByUserId,
+            [userId]: counts,
+          },
+        }));
+      },
     }),
     {
       name: "chat-unread-store",

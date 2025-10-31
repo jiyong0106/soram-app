@@ -69,3 +69,13 @@ export const getConnectionTrigger = async (id: number) => {
   );
   return data;
 };
+
+/**
+ * 모든 채팅방의 안 읽은 메시지 개수 요약 조회
+ */
+export const getUnreadCounts = async () => {
+  const { data } = await instance.get<Record<number, number>>(
+    "/users/me/unread-counts"
+  );
+  return data;
+};

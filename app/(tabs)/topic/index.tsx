@@ -24,6 +24,8 @@ import { useAuthStore } from "@/utils/store/useAuthStore";
 import { getNotifications } from "@/utils/api/notificationApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNotificationStore } from "@/utils/store/useNotificationStore";
+import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import { getUnreadCounts } from "@/utils/api/chatPageApi";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -40,6 +42,7 @@ const TopicPage = () => {
   const userId = getUserIdFromJWT(token);
   const hasUnread = useNotificationStore((s) => s.hasUnread);
   const setHasUnread = useNotificationStore((s) => s.setHasUnread);
+  const syncChatUnread = useChatUnreadStore((s) => s.syncUnreadCounts);
 
   // 안 읽은 알림 확인 로직
   useEffect(() => {
@@ -57,6 +60,20 @@ const TopicPage = () => {
 
     checkUnreadNotifications();
   }, []);
+
+  // 앱 시작 시 안 읽은 채팅 개수 동기화
+  useEffect(() => {
+    const syncChatState = async () => {
+      if (!userId) return; // 로그인 상태일 때만 실행
+      try {
+        const unreadCounts = await getUnreadCounts();
+        syncChatUnread(unreadCounts);
+      } catch (error) {
+        console.error("Failed to sync unread chat counts:", error);
+      }
+    };
+    syncChatState();
+  }, [userId, syncChatUnread]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
