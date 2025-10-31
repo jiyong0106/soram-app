@@ -21,7 +21,9 @@ import TopicListCTA from "@/components/topic/TopicListCTA";
 import GuideModal from "@/components/common/GuideModal";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import { getNotifications } from "@/utils/api/notificationApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNotificationStore } from "@/utils/store/useNotificationStore";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -36,6 +38,25 @@ const TopicPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const token = useAuthStore((s) => s.token);
   const userId = getUserIdFromJWT(token);
+  const hasUnread = useNotificationStore((s) => s.hasUnread);
+  const setHasUnread = useNotificationStore((s) => s.setHasUnread);
+
+  // 안 읽은 알림 확인 로직
+  useEffect(() => {
+    const checkUnreadNotifications = async () => {
+      try {
+        const response = await getNotifications({ take: 1 });
+        const hasUnreadNotification = response.data.some(
+          (notification) => !notification.isRead
+        );
+        setHasUnread(hasUnreadNotification);
+      } catch (error) {
+        console.error("읽지 않은 알림을 확인하지 못했습니다:", error);
+      }
+    };
+
+    checkUnreadNotifications();
+  }, []);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
@@ -94,7 +115,7 @@ const TopicPage = () => {
         paddingHorizontal: 10을 가진 View로 감쌉니다.
       */}
       <View style={{ paddingHorizontal: 10 }}>
-        <AppHeader />
+        <AppHeader hasNotification={hasUnread} />
         {!showInitSkeleton && topics && (
           <>
             <TicketsView />

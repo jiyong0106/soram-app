@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import PageContainer from "@/components/common/PageContainer";
-import { Stack } from "expo-router";
+import { Stack, useFocusEffect } from "expo-router";
 import { BackButton } from "@/components/common/backbutton";
 import { useCallback, useMemo, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,14 +15,40 @@ import {
   getNotifications,
   patchNotificationRead,
   patchNotificationsReadAll,
-} from "@/utils/api/authPageApi";
+} from "@/utils/api/notificationApi";
 import type { NotificationListItem } from "@/utils/types/auth";
 import AlertItem from "@/components/alerts/AlertItem";
+import { useNotificationStore } from "@/utils/store/useNotificationStore";
 
 const AlertsPage = () => {
   // 무한스크롤 데이터 로딩
   const qc = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const setHasUnread = useNotificationStore((s) => s.setHasUnread);
+
+  // 화면 포커스/블러 시 안읽음 상태 갱신
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // 화면을 벗어날 때 안읽음 상태를 다시 체크
+        const checkUnread = async () => {
+          try {
+            const response = await getNotifications({ take: 1 });
+            const hasUnreadNotification = response.data.some(
+              (notification) => !notification.isRead
+            );
+            setHasUnread(hasUnreadNotification);
+          } catch (error) {
+            console.error(
+              "Failed to re-check for unread notifications:",
+              error
+            );
+          }
+        };
+        checkUnread();
+      };
+    }, [setHasUnread])
+  );
 
   const {
     data,
@@ -94,7 +120,7 @@ const AlertsPage = () => {
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <TouchableOpacity onPress={handleReadAll} disabled={isLoading}>
-              <Text style={styles.readAll}>모두 읽음</Text>
+              <Text style={styles.readAll}>모두 읽기</Text>
             </TouchableOpacity>
           ),
         }}

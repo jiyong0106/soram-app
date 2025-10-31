@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 30,
     color: "#5C4B44",
   },
   meta: {
