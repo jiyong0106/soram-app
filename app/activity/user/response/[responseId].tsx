@@ -135,6 +135,12 @@ const UnlockedResponseDetailScreen = () => {
         disabled: true,
       };
     } // 'LEFT' 상태를 추가합니다.
+    if (status === "EXPIRED") {
+      return {
+        text: "응답이 없었던 요청입니다", // 새로운 상태 메시지
+        disabled: true,
+      };
+    }
     if (status === "LEFT") {
       return {
         text: "대화가 종료된 사용자입니다", // 원하는 텍스트로 변경 가능
