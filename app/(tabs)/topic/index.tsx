@@ -8,7 +8,7 @@ import { getRandomTopicSet } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import {
   StyleSheet,
@@ -31,7 +31,6 @@ const ITEM_SPACING = 16; // 아이템 간의 간격
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - ITEM_WIDTH) / 2; // 첫 아이템과 마지막 아이템을 중앙에 오게 할 패딩 (40px)
 
 const TopicPage = () => {
-  const { showAlert } = useAlert();
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
