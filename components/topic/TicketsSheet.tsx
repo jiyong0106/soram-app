@@ -42,7 +42,7 @@ const Row = ({
       return `${diff + 1}일 뒤에 사라져요`;
     };
     const getSourceTypeText = (sourceType: TicketSourceType) => {
-      if (sourceType === "EVENT") return "기간 한정 이용권";
+      if (sourceType === "EVENT") return "이벤트 이용권";
       if (sourceType === "PAID") return "구매한 이용권";
       return "보관중인 이용권";
     };
@@ -108,14 +108,14 @@ const Row = ({
             <AnimatedAppText
               style={[styles.breakdownText, styles.dailyText, animatedStyle]}
             >
-              {`• 오늘 무료로 받은 이용권 ${processedBreakdown.daily.quantity}개`}
+              {`‣ 오늘 무료로 받은 이용권 ${processedBreakdown.daily.quantity}개`}
             </AnimatedAppText>
           </View>
         )}
         {processedBreakdown.stored.map((item, index) => (
           <View key={index} style={styles.breakdownItem}>
             <AppText style={styles.breakdownText}>
-              {`• ${item.text} ${item.quantity}개`}
+              {`‣ ${item.text} ${item.quantity}개`}
             </AppText>
             <AppText style={styles.expiresText}>{item.expiresText}</AppText>
           </View>

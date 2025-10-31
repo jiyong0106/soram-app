@@ -7,7 +7,7 @@ const ProfileBranding = () => {
   return (
     <View style={styles.container}>
       <AppText style={styles.brand}>SORAM</AppText>
-      <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
+      <AppText style={styles.caption}>이야기와 목소리로 이어진 우리</AppText>
     </View>
   );
 };
