@@ -454,7 +454,8 @@ const GiftedChatView = ({
       // 없으면 내부 기본 툴바를 사용하도록 조건부 로직을 적용합니다.
       renderInputToolbar={customRenderInputToolbar}
       renderComposer={renderComposer}
-      listViewProps={listViewProps}
+      // listViewProps={listViewProps}
+      listViewProps={{ initialNumToRender: 30 }}
       // 전송 버튼 UI 커스터마이징
       renderSend={(props: any) => {
         const canSend = !!props.text?.trim(); // 입력된 텍스트가 있을 때만 활성화
