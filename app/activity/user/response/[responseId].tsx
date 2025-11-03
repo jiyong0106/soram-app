@@ -137,7 +137,7 @@ const UnlockedResponseDetailScreen = () => {
     } // 'LEFT' 상태를 추가합니다.
     if (status === "EXPIRED") {
       return {
-        text: "응답이 없었던 요청입니다", // 새로운 상태 메시지
+        text: "상대방의 응답이 없어, 취소된 요청입니다", // 새로운 상태 메시지
         disabled: true,
       };
     }
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 30,
     color: "#5C4B44",
   },
   nick: {
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   disabledButtonText: {
     color: "#B0A6A0",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   speechBubbleContainer: {
     alignItems: "center",

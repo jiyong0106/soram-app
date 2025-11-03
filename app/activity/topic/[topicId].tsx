@@ -74,7 +74,15 @@ const ResponseItemCard = ({ item }: { item: MyVoiceResponseItem }) => {
               </AppText>
             </View>
           )}
-          {/* 4. 대화 요청 가능 */}
+          {/* 5. 응답 없음 */}
+          {(item.connectionStatus as string) === "EXPIRED" && (
+            <View style={[styles.badge, styles.leftBadge]}>
+              <AppText style={[styles.badgeText, styles.leftBadgeText]}>
+                응답 없음
+              </AppText>
+            </View>
+          )}
+          {/* 6. 대화 요청 가능 */}
           {(item.connectionStatus as string) === null && (
             <View style={[styles.badge]}>
               <AppText style={[styles.badgeText]}>요청 가능</AppText>
