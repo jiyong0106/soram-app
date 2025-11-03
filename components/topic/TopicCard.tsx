@@ -28,7 +28,7 @@ type Props = {
 // [제거] 하드코딩되었던 이미지 변수를 제거합니다.
 // const TopicImage = require("@/assets/topicImages/travel.png");
 
-// [추가] Image 컴포넌트를 Animated 컴포넌트로 만듭니다.
+// Image 컴포넌트를 Animated 컴포넌트로 만듭니다.
 // 이렇게 하면 텍스트와 이미지가 동일한 opacity 애니메이션을 공유할 수 있습니다.
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
@@ -126,7 +126,7 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
         }
       );
     }
-  }; // [추가] category 값을 기반으로 유틸리티 함수를 호출하여 동적 이미지 소스를 가져옵니다.
+  }; // category 값을 기반으로 유틸리티 함수를 호출하여 동적 이미지 소스를 가져옵니다.
 
   const topicImageSource = getTopicImageByCategory(category);
 
@@ -186,6 +186,16 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     position: "absolute",
+    // 4방향을 모두 0으로 설정하여 부모(topicCard)를 꽉 채웁니다.
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // flex를 이용해 자식(PulsatingSpinner)을 중앙 정렬합니다.
+    justifyContent: "center",
+    alignItems: "center",
+    // zIndex를 1로 주어 이미지나 텍스트 위에 확실히 올라오도록 보장합니다.
+    zIndex: 1,
   },
   bodyContainer: {
     alignItems: "flex-start",

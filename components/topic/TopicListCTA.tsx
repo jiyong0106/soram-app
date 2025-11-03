@@ -33,16 +33,18 @@ export default TopicListCTA;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF3EC",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#595F69",
+    shadowOffset: { width: 2, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
     borderRadius: 20,
     padding: scale(24),
     justifyContent: "center",
     alignItems: "center",
-    minHeight: 400,
+    minHeight: 450,
     marginVertical: 10,
     marginHorizontal: 12,
-    borderWidth: 0.25,
-    borderColor: "#FFB591",
   },
   textContainer: {
     alignItems: "center",
