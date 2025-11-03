@@ -7,7 +7,11 @@ import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
 import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import {
@@ -43,6 +47,9 @@ const TopicPage = () => {
   const hasUnread = useNotificationStore((s) => s.hasUnread);
   const setHasUnread = useNotificationStore((s) => s.setHasUnread);
   const syncChatUnread = useChatUnreadStore((s) => s.syncUnreadCounts);
+  const queryClient = useQueryClient();
+  const topicSetQueryKey = ["getTopicSetKey"]; // 수동 셔플 로딩 상태를 제어하기 위한 state
+  const [isShuffling, setIsShuffling] = useState(false);
 
   // 안 읽은 알림 확인 로직
   useEffect(() => {
@@ -88,19 +95,39 @@ const TopicPage = () => {
   const {
     data: topics,
     isLoading,
-    refetch,
-    isFetching,
+    isFetching, // refetch는 더 이상 사용하지 않습니다.
   } = useQuery({
-    queryKey: ["getTopicSetKey"],
+    queryKey: topicSetQueryKey,
     queryFn: () => getRandomTopicSet(),
     placeholderData: keepPreviousData,
   });
 
-  const showInitSkeleton = !topics && isLoading;
-
+  const showInitSkeleton = !topics && isLoading; // onShuffle 로직에서 0.5초 딜레이 제거
   const onShuffle = useCallback(async () => {
-    refetch();
-  }, [refetch]);
+    // 1. 수동 셔플 로딩 상태를 true로 설정
+    setIsShuffling(true);
+    const fetchPromise = (async () => {
+      try {
+        const currentTopicIds = topics
+          ? topics.map((topic: any) => topic.id)
+          : [];
+        const newData = await getRandomTopicSet(currentTopicIds);
+        return newData;
+      } catch (error) {
+        console.error("Failed to fetch new topics:", error);
+        return null; // 실패 시 null 반환
+      }
+    })(); // 4. Promise.all 대신 fetchPromise만 await 합니다.
+
+    const newData = await fetchPromise; // 5. 모든 것이 끝난 후, 캐시를 수동으로 업데이트
+
+    if (newData) {
+      // 네트워크 요청이 성공했을 때만
+      queryClient.setQueryData(topicSetQueryKey, newData);
+    } // 6. 셔플 로딩 상태를 false로 설정
+
+    setIsShuffling(false);
+  }, [topics, queryClient, topicSetQueryKey]);
 
   const listData = useMemo(() => {
     if (!topics) return [];
@@ -124,36 +151,31 @@ const TopicPage = () => {
     await AsyncStorage.setItem(key, "1");
   };
 
+  const isTotalLoading = isFetching || isShuffling;
   return (
-    // [1. container에서는 padding: 10 제거 (디버그용 blue 유지)
     <View style={styles.container}>
-      {/*
-        FlatList를 제외한 상단 컨텐츠(헤더, 티켓, 타이틀)를
-        paddingHorizontal: 10을 가진 View로 감쌉니다.
-      */}
       <View style={{ paddingHorizontal: 10 }}>
         <AppHeader hasNotification={hasUnread} />
         {!showInitSkeleton && topics && (
           <>
             <TicketsView />
-            <TopicTitle onShuffle={onShuffle} disabled={isFetching} />
+
+            <TopicTitle
+              onShuffle={onShuffle}
+              loading={isTotalLoading}
+              disabled={isTotalLoading}
+            />
           </>
         )}
       </View>
 
-      {/* 3. 메인 컨텐츠 (스켈레톤 또는 FlatList) */}
       {showInitSkeleton ? (
-        //  스켈레톤에도 동일하게 내부 패딩 10px 적용
         <View style={{ paddingHorizontal: 10, flex: 1 }}>
           <TopicSkeleton />
         </View>
       ) : (
         topics && (
           <>
-            {/* 
-              FlatList 컨테이너(red)는 화면 전체 너비를 사용합니다. (패딩 없음)
-              그래야 내부의 contentContainerStyle이 정확히 동작합니다.
-            */}
             <View style={styles.flatListContainer}>
               <FlatList
                 data={listData}
@@ -162,7 +184,6 @@ const TopicPage = () => {
 
                   if (item.isCTA) {
                     return (
-                      //  CTA 카드에도 동일한 스타일링 적용
                       <View
                         style={{
                           width: ITEM_WIDTH,
@@ -182,7 +203,8 @@ const TopicPage = () => {
                     >
                       <TopicCard
                         item={item}
-                        loading={isFetching}
+                        // isFetching 대신 isTotalLoading 전달
+                        loading={isTotalLoading}
                         isActive={index === currentIndex}
                       />
                     </View>

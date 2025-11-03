@@ -48,8 +48,17 @@ export const getTopicRandom = async (excludeTopicId?: number) => {
 };
 
 // 2-1. 여러개의 랜덤 주제 보여주기 api
-export const getRandomTopicSet = async () => {
-  const { data } = await instance.get("/topics/random-set");
+export const getRandomTopicSet = async (excludeTopicIds?: number[]) => {
+  const { data } = await instance.get("/topics/random-set", {
+    params: {
+      // excludeTopicIds가 존재할 때만 파라미터에 포함
+      ...(excludeTopicIds &&
+        excludeTopicIds.length > 0 && {
+          // 백엔드 DTO의 @Transform 로직에 맞게 배열을 쉼표로 구분된 '문자열'로 변환
+          excludeTopicIds: excludeTopicIds.join(","),
+        }),
+    },
+  });
   return data;
 };
 
