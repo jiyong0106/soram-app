@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, StyleSheet, Image } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -24,10 +23,11 @@ type Props = {
   loading?: boolean;
   isActive?: boolean;
 };
+const TopicImage = require("@/assets/topicImages/travel.png");
 
 const TopicCard = ({ item, loading, isActive = true }: Props) => {
   const router = useRouter();
-  //  2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
+  //  2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
   const [displayItem, setDisplayItem] = useState(item);
   const { title, subQuestions, id, userCount } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
 
@@ -132,99 +132,98 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
       onPress={handlePress}
       style={[styles.container, animatedScaleStyle]}
     >
-      <LinearGradient
-        colors={["#FFF3EC", "#FFFFFF"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradientCard}
-      >
+      {/* 내부에 styles.topicCard(배경, 둥근 모서리, overflow)를 가진 View를 추가합니다. */}
+      <View style={styles.topicCard}>
         <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
           <PulsatingSpinner />
         </Animated.View>
 
+        {/* 이미지 컴포넌트를 bodyContainer 위에 추가합니다. */}
+        <Image source={TopicImage} style={styles.cardImage} />
+
         <Animated.View style={[styles.bodyContainer, animatedBodyStyle]}>
           <AppText style={styles.cardTitle}>{title}</AppText>
-          <View>
-            {subQuestions.map((content, index) => (
-              <AppText key={`${id}-${index}`} style={styles.cardSub}>
-                {content}
-              </AppText>
-            ))}
-          </View>
           <View style={styles.touch}>
+            <MaterialIcons name="touch-app" size={16} color="#5C4B44" />
             <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
-            <MaterialIcons name="touch-app" size={20} color="#5C4B44" />
           </View>
           <AppText style={styles.participants}>
             {userCount === 0
               ? "👋 이 주제의 첫 이야기가 되어주세요!"
-              : `💬 ${userCount}명이 이야기하고 있어요`}
+              : `💬  ${userCount}명이 이야기하고 있어요`}
           </AppText>
         </Animated.View>
-      </LinearGradient>
+      </View>
     </ScalePressable>
   );
 };
 
 export default memo(TopicCard);
 
-// Styles는 이전과 동일하므로 생략합니다.
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 2,
-    shadowColor: "#D2B4AA",
+    shadowColor: "#595F69",
     shadowOffset: { width: 2, height: 6 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 5,
-    marginBottom: 10,
-  },
-  gradientCard: {
-    borderRadius: 24,
-    borderWidth: 0.25,
-    borderColor: "#FFB591",
-    paddingVertical: 50,
-    paddingHorizontal: 20,
-    alignItems: "center",
-    height: 400,
     marginVertical: 10,
-    justifyContent: "center",
+  },
+  topicCard: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    // borderWidth: 0.25,
+    // borderColor: "#B0A6A0",
+    paddingTop: 0,
+    paddingBottom: 20, // paddingHorizontal: 20,
+    alignItems: "center",
+    height: 450,
+    justifyContent: "space-between",
+    // 이미지를 카드 모서리에 맞게 자르기 위해 overflow: "hidden" 추가
+    overflow: "hidden", // 그림자를 잘라내던 주범이지만, 여기서는(안쪽 View) 이미지 클리핑을 위해 필요합니다.
   },
   spinnerContainer: {
     position: "absolute",
   },
   bodyContainer: {
-    alignItems: "center",
-    gap: 24,
+    alignItems: "flex-start",
+    gap: 4,
     width: "100%",
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: 18,
     lineHeight: 36,
-    color: "#5C4B44",
+    color: "#000000",
     fontWeight: "bold",
-    textAlign: "center",
-  },
-  cardSub: {
-    marginTop: 8,
-    fontSize: 14,
-    color: "#5C4B44",
-    lineHeight: 26,
-    textAlign: "left",
+    paddingLeft: 12,
   },
   participants: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#B0A6A0",
     fontWeight: "bold",
+    paddingLeft: 12,
   },
   touch: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 4,
+    paddingBottom: 8,
+    paddingLeft: 12,
   },
   ctaText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#5C4B44",
     fontWeight: "600",
+    alignItems: "center",
+  },
+  cardImage: {
+    width: "100%", // 카드 너비에 맞춤
+    height: 330, // 적절한 높이 설정 (조절 가능)
+    borderTopLeftRadius: 24, // card borderRadius와 일치
+    borderTopRightRadius: 24, // card borderRadius와 일치
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    resizeMode: "cover", // 이미지가 잘리지 않고 채워지도록 설정 // marginBottom: 10, // 이미지와 하단 텍스트 사이 간격 // 이미지를 카드 상단에 배치하기 위해 position을 absolute로 변경할 수 있으나, // 지금은 flex-end와 함께 이미지도 위쪽으로 밀려 올라가므로, // 이미지 예시처럼 카드의 상단에 가깝게 배치하고 싶다면 // topicCard의 justifyContent를 "space-between" 등으로 변경하거나, // 이미지를 absolute로 띄우고 bodyContainer에 적절한 top margin을 줘야 합니다. // 일단은 현재 flex-end 정렬을 유지하면서 이미지와 텍스트를 함께 올립니다.
   },
 });
