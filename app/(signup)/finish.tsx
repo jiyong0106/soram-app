@@ -101,7 +101,7 @@ const FinishPage = () => {
           <View style={{ gap: 8 }}>
             <AppText style={styles.brand}>SORAM</AppText>
             <AppText style={styles.caption}>
-              이야기와 목소리로 이어진 우리
+              이야기와 목소리로 연결된 우리
             </AppText>
             <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
             <AppText style={styles.meta}>
