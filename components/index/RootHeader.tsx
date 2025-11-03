@@ -5,7 +5,7 @@ const RootHeader = () => {
   return (
     <View style={styles.container}>
       <AppText style={styles.logo}>SORAM</AppText>
-      <AppText style={styles.slogan}>이야기와 목소리로 이어진 우리</AppText>
+      <AppText style={styles.slogan}>이야기와 목소리로 연결된 우리</AppText>
     </View>
   );
 };
