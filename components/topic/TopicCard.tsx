@@ -17,19 +17,25 @@ import PulsatingSpinner from "../common/PulsatingSpinner";
 import { useTicketsStore } from "@/utils/store/useTicketsStore";
 import ScalePressable from "../common/ScalePressable";
 import useAlert from "@/utils/hooks/useAlert";
+// [수정] 새로 추가한 이미지 매퍼 유틸리티를 임포트합니다.
+import { getTopicImageByCategory } from "@/utils/util/topicImageMapper";
 
 type Props = {
   item: TopicListType;
   loading?: boolean;
   isActive?: boolean;
 };
-const TopicImage = require("@/assets/topicImages/travel.png");
+// [제거] 하드코딩되었던 이미지 변수를 제거합니다.
+// const TopicImage = require("@/assets/topicImages/travel.png");
+
+// [추가] Image 컴포넌트를 Animated 컴포넌트로 만듭니다.
+// 이렇게 하면 텍스트와 이미지가 동일한 opacity 애니메이션을 공유할 수 있습니다.
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 const TopicCard = ({ item, loading, isActive = true }: Props) => {
-  const router = useRouter();
-  //  2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
-  const [displayItem, setDisplayItem] = useState(item);
-  const { title, subQuestions, id, userCount } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
+  const router = useRouter(); // 2. '화면에 표시될 데이터'를 위한 내부 상태를 만듭니다. 초기값은 props로 받은 item입니다.
+  const [displayItem, setDisplayItem] = useState(item); // [수정] displayItem에서 category를 구조 분해 할당합니다.
+  const { title, subQuestions, id, userCount, category } = displayItem; // 이제 모든 렌더링은 displayItem을 기준으로 합니다.
 
   const { showAlert, showActionAlert } = useAlert();
 
@@ -43,13 +49,11 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
       cancelAnimation(scaleAnimation);
       scaleAnimation.value = withTiming(0);
       return;
-    }
+    } // 로딩이 끝났을 때, 새로운 데이터로 '표시용 데이터'를 업데이트
 
-    // 로딩이 끝났을 때, 새로운 데이터로 '표시용 데이터'를 업데이트
     setDisplayItem(item);
-    opacity.value = withTiming(1, { duration: 200 });
+    opacity.value = withTiming(1, { duration: 200 }); // 활성화 상태일 때만 반복 애니메이션 실행
 
-    // 활성화 상태일 때만 반복 애니메이션 실행
     if (isActive) {
       scaleAnimation.value = withRepeat(
         withSequence(
@@ -63,9 +67,8 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
       // 비활성화 상태이면 애니메이션을 멈추고 초기 상태로
       cancelAnimation(scaleAnimation);
       scaleAnimation.value = withTiming(0);
-    }
+    } // 컴포넌트가 언마운트될 때 애니메이션 정리
 
-    // 컴포넌트가 언마운트될 때 애니메이션 정리
     return () => {
       cancelAnimation(scaleAnimation);
     };
@@ -90,9 +93,7 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
   const ticketsHas = useTicketsStore((s) => s.has);
 
   const handlePress = () => {
-    if (loading) return;
-
-    // userCount가 0인지 아닌지에 따라 로직을 분기합니다.
+    if (loading) return; // userCount가 0인지 아닌지에 따라 로직을 분기합니다.
     if (userCount === 0) {
       // 이야기가 없는 경우: 이야기 작성을 유도합니다.
       showActionAlert(
@@ -125,21 +126,23 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
         }
       );
     }
-  };
+  }; // [추가] category 값을 기반으로 유틸리티 함수를 호출하여 동적 이미지 소스를 가져옵니다.
+
+  const topicImageSource = getTopicImageByCategory(category);
 
   return (
     <ScalePressable
       onPress={handlePress}
       style={[styles.container, animatedScaleStyle]}
     >
-      {/* 내부에 styles.topicCard(배경, 둥근 모서리, overflow)를 가진 View를 추가합니다. */}
       <View style={styles.topicCard}>
         <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
           <PulsatingSpinner />
         </Animated.View>
-
-        {/* 이미지 컴포넌트를 bodyContainer 위에 추가합니다. */}
-        <Image source={TopicImage} style={styles.cardImage} />
+        <AnimatedImage
+          source={topicImageSource} // 동적 소스 적용
+          style={[styles.cardImage, animatedBodyStyle]} // opacity 애니메이션 적용
+        />
 
         <Animated.View style={[styles.bodyContainer, animatedBodyStyle]}>
           <AppText style={styles.cardTitle}>{title}</AppText>
@@ -147,10 +150,11 @@ const TopicCard = ({ item, loading, isActive = true }: Props) => {
             <MaterialIcons name="touch-app" size={16} color="#5C4B44" />
             <AppText style={styles.ctaText}>눌러서 이야기 보기</AppText>
           </View>
+
           <AppText style={styles.participants}>
             {userCount === 0
               ? "👋 이 주제의 첫 이야기가 되어주세요!"
-              : `💬  ${userCount}명이 이야기하고 있어요`}
+              : `💬 ${userCount}명이 이야기하고 있어요`}
           </AppText>
         </Animated.View>
       </View>
@@ -172,15 +176,12 @@ const styles = StyleSheet.create({
   },
   topicCard: {
     backgroundColor: "#fff",
-    borderRadius: 24,
-    // borderWidth: 0.25,
-    // borderColor: "#B0A6A0",
+    borderRadius: 24, // borderWidth: 0.25, // borderColor: "#B0A6A0",
     paddingTop: 0,
     paddingBottom: 20, // paddingHorizontal: 20,
     alignItems: "center",
     height: 450,
-    justifyContent: "space-between",
-    // 이미지를 카드 모서리에 맞게 자르기 위해 overflow: "hidden" 추가
+    justifyContent: "space-between", // 이미지를 카드 모서리에 맞게 자르기 위해 overflow: "hidden" 추가
     overflow: "hidden", // 그림자를 잘라내던 주범이지만, 여기서는(안쪽 View) 이미지 클리핑을 위해 필요합니다.
   },
   spinnerContainer: {
