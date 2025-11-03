@@ -204,10 +204,6 @@ const TopicPage = () => {
               />
             </View>
 
-            {/*
-              하단 '더보기' 버튼에도 동일하게
-              paddingHorizontal: 10을 적용합니다.
-            */}
             <TouchableOpacity
               onPress={() => router.push("/topic/list")}
               activeOpacity={0.5}
