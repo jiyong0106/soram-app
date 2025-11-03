@@ -363,16 +363,20 @@ const GiftedChatView = ({
   /**
    * '이전 메시지 불러오기' UI를 커스터마이징하는 함수입니다.
    */
-  const renderLoadEarlier = useCallback(() => {
-    // 더 불러올 메시지가 없으면 아무것도 렌더링하지 않습니다.
-    if (!canLoadEarlier) return null;
-    return (
-      <View style={{ paddingVertical: 12, alignItems: "center" }}>
-        {/* 로딩 중일 때만 스피너를 표시합니다. */}
-        {isLoadingEarlier ? <LoadingSpinner color="#FF7D4A" /> : null}
-      </View>
-    );
-  }, [canLoadEarlier, isLoadingEarlier]);
+  const renderLoadEarlier = useCallback(
+    (_props: any) => {
+      // 로딩 중일 때만 스피너 표시, 평소엔 아무것도 렌더링하지 않음(버튼 제거)
+      if (isLoadingEarlier) {
+        return (
+          <View style={{ paddingVertical: 12, alignItems: "center" }}>
+            <LoadingSpinner color="#FF7D4A" />
+          </View>
+        );
+      }
+      return null;
+    },
+    [isLoadingEarlier]
+  );
 
   // 최종적으로 커스터마이징된 props들을 적용하여 GiftedChat 컴포넌트를 렌더링합니다.
   const finalPlaceholder = useMemo(
@@ -435,6 +439,7 @@ const GiftedChatView = ({
       placeholder={finalPlaceholder}
       alwaysShowSend // 입력 내용이 없어도 전송 버튼 영역을 항상 표시
       inverted={true} // 채팅 목록을 아래부터 위로 쌓음 (기본값)
+      infiniteScroll // 상단 도달 시 자동으로 onLoadEarlier 호출
       loadEarlier={!!canLoadEarlier}
       isLoadingEarlier={!!isLoadingEarlier}
       onLoadEarlier={onLoadEarlier}

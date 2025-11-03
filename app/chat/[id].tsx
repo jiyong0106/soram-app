@@ -178,7 +178,6 @@ const ChatIdPage = () => {
     });
   const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];
-
   // 2) 실시간 수신
   const {
     messages: realtimeItems,
