@@ -1,29 +1,29 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import { Swipeable } from "react-native-gesture-handler";
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 import SwipeActions from "./SwipeActions";
-import { SharedValue } from "react-native-reanimated";
+import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { ChatItemType } from "@/utils/types/chat";
 import AppText from "../common/AppText";
 import ScalePressable from "../common/ScalePressable";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
-import { Ionicons } from "@expo/vector-icons"; // 이미 임포트되어 있습니다.
+import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import { GetChatResponse } from "@/utils/types/chat";
 
 type ChatItemProps = {
   item: ChatItemType;
 };
 
 const ChatItem = ({ item }: ChatItemProps) => {
-  const isSwipingRef = useRef(false); // 스와이프 제스처 중/직후 true
-  const isOpenRef = useRef(false); // 액션이 열려 있는지 여부(선택)
-  const swipeableRef = useRef<Swipeable>(null);
+  const isSwiping = useSharedValue(false); // 스와이프 제스처 중/직후 true
+  const isOpen = useSharedValue(false); // 액션이 열려 있는지 여부(선택)
+  const swipeableRef = useRef<SwipeableMethods>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -78,14 +78,15 @@ const ChatItem = ({ item }: ChatItemProps) => {
 
   // 스와이프 직후 잠깐(예: 150ms) 탭 무시
   const blockTapBriefly = () => {
-    isSwipingRef.current = true;
+    // 워크릿/JS 어디서 호출돼도 안전한 SharedValue 사용
+    isSwiping.value = true;
     setTimeout(() => {
-      isSwipingRef.current = false;
+      isSwiping.value = false;
     }, 150);
   };
 
   const handleRowPress = async () => {
-    if (isSwipingRef.current || isOpenRef.current) return; // 스와이프 중/열려있으면 무시
+    if (isSwiping.value || isOpen.value) return; // 스와이프 중/열려있으면 무시
 
     // 1) 채팅방 입장 전 메시지 1페이지 프리페치(최대 250ms만 대기)
     try {
@@ -138,10 +139,10 @@ const ChatItem = ({ item }: ChatItemProps) => {
       onSwipeableWillClose={blockTapBriefly}
       // // 열림 상태 추적(원하면 탭 막기용)
       onSwipeableOpen={() => {
-        isOpenRef.current = true;
+        isOpen.value = true;
       }}
       onSwipeableClose={() => {
-        isOpenRef.current = false;
+        isOpen.value = false;
       }}
       renderRightActions={(
         prog: SharedValue<number>,
