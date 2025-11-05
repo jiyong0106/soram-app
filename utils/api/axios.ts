@@ -1,4 +1,3 @@
-// app/utils/api/api.ts (refactor)
 import axios, { AxiosHeaders } from "axios";
 import {
   getAuthToken,
