@@ -1,14 +1,19 @@
 // utils/socket.ts
 import { io, Socket } from "socket.io-client";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL!; // e.g. https://api.example.com
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL!; // "https://soram.team"
 let socket: Socket | null = null;
 
 export function connectSocket(jwt: string) {
   if (socket?.connected) return socket;
 
-  socket = io(`${BASE_URL}/chat`, {
-    transports: ["websocket"], // RN에선 websocket 권장
+  // 네임스페이스 URL에 '/api/v1' 접두사 포함
+  const namespaceUrl = `${BASE_URL}/api/v1/chat`;
+
+  socket = io(namespaceUrl, {
+    // socket.io 핸드셰이크 경로에도 '/api/v1' 접두사 알려주기
+    path: "/api/v1/socket.io/",
+
     // ✅ 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
     extraHeaders: { Authorization: `Bearer ${jwt}` },
     autoConnect: true,
