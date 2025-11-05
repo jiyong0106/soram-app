@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     color: "#FF6B3E",
   },
   logoContainer: {
-    flexDirection: "row", // 자식 요소들을 가로로 배열
+    flexDirection: "row",
     alignItems: "baseline",
     gap: 8, // 로고와 슬로건 사이의 간격
   },
