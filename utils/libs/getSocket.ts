@@ -1,4 +1,3 @@
-// utils/socket.ts
 import { io, Socket } from "socket.io-client";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL!; // "https://soram.team"
@@ -7,14 +6,11 @@ let socket: Socket | null = null;
 export function connectSocket(jwt: string) {
   if (socket?.connected) return socket;
 
-  // 네임스페이스 URL에 '/api/v1' 접두사 포함
-  const namespaceUrl = `${BASE_URL}/api/v1/chat`;
+  const namespaceUrl = `${BASE_URL}/chat`;
 
   socket = io(namespaceUrl, {
-    // socket.io 핸드셰이크 경로에도 '/api/v1' 접두사 알려주기
     path: "/api/v1/socket.io/",
-
-    // ✅ 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
+    transports: ["websocket"], // RN에선 websocket 권장
     extraHeaders: { Authorization: `Bearer ${jwt}` },
     autoConnect: true,
     reconnection: true,
@@ -22,17 +18,17 @@ export function connectSocket(jwt: string) {
     reconnectionDelay: 500, // 필요시 조절
   });
 
-  // 디버깅/로그
-  // socket.on("connect", () => console.log("[socket] connected:", socket?.id));
-  // socket.on("disconnect", (reason) =>
-  //   console.log("[socket] disconnected:", reason)
-  // );
-  // socket.on("connect_error", (err) =>
-  //   console.log("[socket] connect_error:", err.message)
-  // );
+  socket.on("disconnect", (reason) => {
+    console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
+    // 연결이 끊겼으므로 전역 소켓 변수를 null로 설정
+    if (socket?.id === (socket as any).id) {
+      socket = null;
+    }
+  });
 
-  // 서버가 인증완료 시 내려줌
-  socket.on("authenticated", () => console.log("[socket] authenticated"));
+  socket.on("connect_error", (err) => {
+    console.error(`[getSocket] [connect_error] 소켓 연결 실패.`, err);
+  });
 
   return socket;
 }
