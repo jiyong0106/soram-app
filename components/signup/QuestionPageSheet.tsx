@@ -6,8 +6,6 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import { getProfileQuestionsResponse } from "@/utils/types/signup";
-// 더미 데이터 제거: 카테고리/질문은 상위에서 API 응답을 내려받아 props로 전달
 
 interface QuestionItemProp {
   id: number;
@@ -45,7 +43,6 @@ const QuestionPageSheet = (
   const setOptionalTitle = useSignupDraftStore((s) => s.setOptionalTitle);
 
   const onPress = (title: string, id: number) => {
-    // 한글 주석: 선택된 질문의 타이틀을 저장한 뒤 시트 닫기
     setOptionalTitle?.(title);
     setSelectedTitle(title);
     setSelectedId(id);
@@ -90,10 +87,15 @@ const QuestionPageSheet = (
                 }
                 label={item.content}
                 onPress={() => onPress(item.content, item.id)}
+                labelStyle={{ lineHeight: 20 }}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingVertical: 5,
+            }}
           />
         </View>
       </View>
@@ -141,8 +143,6 @@ const s = StyleSheet.create({
   group: {
     backgroundColor: COLORS.fill,
     borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: COLORS.border,
     marginTop: 12,
