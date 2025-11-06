@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Keyboard } from "react-native";
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getConnectionTrigger } from "@/utils/api/chatPageApi";
@@ -28,7 +28,27 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
 
   const handleTabChange = (t: "mine" | "opponent") => {
     setActiveTab(t);
-    actionSheetRef.current?.present?.(t);
+    // 키패드가 올라와 있으면 먼저 내리고, 내려간 뒤 바텀시트를 띄운다
+    Keyboard.dismiss();
+
+    const present = () => actionSheetRef.current?.present?.(t);
+
+    let handled = false;
+    const onHide = () => {
+      if (handled) return;
+      handled = true;
+      hideSub?.remove?.();
+      willHideSub?.remove?.();
+      clearTimeout(timerId);
+      present();
+    };
+
+    // iOS: keyboardWillHide, Android: keyboardDidHide 를 모두 감지
+    const hideSub = Keyboard.addListener?.("keyboardDidHide", onHide);
+    const willHideSub = Keyboard.addListener?.("keyboardWillHide", onHide);
+
+    // 키보드가 이미 없거나 이벤트가 오지 않는 환경을 대비한 짧은 타임아웃
+    const timerId = setTimeout(onHide, 200);
   };
 
   return (
