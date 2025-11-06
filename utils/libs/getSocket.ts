@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 // 환경 변수에서 API 접두사와 소켓 경로 읽어오기
-const API_PREFIX = process.env.EXPO_PUBLIC_API_PREFIX || ""; // 기본값은 빈 문자열
+const API_PREFIX = process.env.EXPO_PUBLIC_API_PREFIX || "";
 const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH || "/socket.io/"; // 기본값 /socket.io/
 
 let socket: Socket | null = null;
