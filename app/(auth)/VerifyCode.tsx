@@ -127,23 +127,23 @@ const VerifyCodeInputPage = () => {
           title="인증번호를 입력해 주세요"
           subtitle={"받은 번호를 입력하면 인증이 완료돼요."}
         />
-        <TextInput
-          style={[styles.input, focused && styles.inputFocused]}
-          placeholder="4자리 숫자"
-          placeholderTextColor={"#B0A6A0"}
-          keyboardType="number-pad"
-          value={otp}
-          onChangeText={setotp}
-          maxLength={4}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-        />
-        <View style={styles.timerContainer}>
-          <Timer key={timerKey} />
-          <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-            <AppText style={styles.desc}>{"인증번호 다시 요청하기 >"}</AppText>
-          </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, focused && styles.inputFocused]}
+            placeholder="4자리 숫자"
+            placeholderTextColor={"#B0A6A0"}
+            keyboardType="number-pad"
+            value={otp}
+            onChangeText={setotp}
+            maxLength={4}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+          />
+          <Timer key={timerKey} style={styles.timer} />
         </View>
+        <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
+          <AppText style={styles.desc}>{"인증번호 다시 요청하기 >"}</AppText>
+        </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
   );
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
   desc: {
     color: "#5C4B44",
     fontSize: 12,
+    textAlign: "right",
   },
   input: {
     borderBottomWidth: 2,
@@ -172,10 +173,12 @@ const styles = StyleSheet.create({
   inputFocused: {
     borderColor: "#FF7D4A",
   },
-  timerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
+  inputContainer: {
+    position: "relative",
+  },
+  timer: {
+    position: "absolute",
+    right: 10,
+    bottom: 25,
   },
 });

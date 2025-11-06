@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import AppText from "./AppText";
 
-interface Props {}
-
-const Timer = () => {
+interface Props {
+  style?: StyleProp<ViewStyle>;
+}
+const Timer = ({ style }: Props) => {
   // 남은 시간을 초 단위로 관리
   const TOTAL_SECONDS = 180;
   const [remainingSeconds, setRemainingSeconds] = useState(TOTAL_SECONDS);
@@ -48,9 +49,9 @@ const Timer = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <AppText style={styles.timeText}>
-        남은 시간 {formatToMMSS(remainingSeconds)}
+        {formatToMMSS(remainingSeconds)}
       </AppText>
     </View>
   );
