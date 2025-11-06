@@ -17,11 +17,13 @@ import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import SignupHeader from "@/components/signup/SignupHeader";
 import { usePushTokenStore } from "@/utils/store/usePushTokenStore";
+import Timer from "@/components/common/Timer";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [timerKey, setTimerKey] = useState(0);
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const clearPhoneNumber = usePhoneNumberStore((s) => s.clear);
   const setSignupToken = useSignupTokenStore((s) => s.setSignupToken);
@@ -88,6 +90,8 @@ const VerifyCodeInputPage = () => {
             try {
               setLoading(true);
               await postRequestOtp({ phoneNumber });
+              // 타이머 리스타트: key 변경으로 Timer 리마운트
+              setTimerKey((prev) => prev + 1);
               showAlert("인증번호가 전송되었습니다.");
             } catch (e: any) {
               if (e) {
@@ -134,9 +138,12 @@ const VerifyCodeInputPage = () => {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
-        <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기 >"}</AppText>
-        </TouchableOpacity>
+        <View style={styles.timerContainer}>
+          <Timer key={timerKey} />
+          <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
+            <AppText style={styles.desc}>{"인증번호 다시 요청하기 >"}</AppText>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScreenWithStickyAction>
   );
@@ -150,10 +157,7 @@ const styles = StyleSheet.create({
   },
   desc: {
     color: "#5C4B44",
-    marginBottom: 32,
-    marginRight: 10,
     fontSize: 12,
-    textAlign: "right",
   },
   input: {
     borderBottomWidth: 2,
@@ -167,5 +171,11 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: "#FF7D4A",
+  },
+  timerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 16,
   },
 });
