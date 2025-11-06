@@ -2,7 +2,6 @@ import { io, Socket } from "socket.io-client";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 // 환경 변수에서 API 접두사와 소켓 경로 읽어오기
-const API_PREFIX = process.env.EXPO_PUBLIC_API_PREFIX || "";
 const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH || "/socket.io/"; // 기본값 /socket.io/
 
 let socket: Socket | null = null;
@@ -10,13 +9,12 @@ let socket: Socket | null = null;
 export function connectSocket(jwt: string) {
   if (socket?.connected) return socket; // API_PREFIX를 네임스페이스에 동적으로 적용
 
-  const namespaceUrl = `${BASE_URL}${API_PREFIX}/chat`;
+  const namespaceUrl = `${BASE_URL}/chat`;
 
   socket = io(namespaceUrl, {
     // 환경 변수에서 읽어온 소켓 경로 사용
     path: SOCKET_PATH,
     transports: ["websocket"], // 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
-
     extraHeaders: { Authorization: `Bearer ${jwt}` },
     autoConnect: true,
     reconnection: true,

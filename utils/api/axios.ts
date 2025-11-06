@@ -7,7 +7,7 @@ import {
 } from "@/utils/util/auth";
 
 const instance = axios.create({
-  baseURL: `${process.env.EXPO_PUBLIC_API_URL}/api/v1`,
+  baseURL: `${process.env.EXPO_PUBLIC_API_URL}`,
   withCredentials: true,
 });
 
