@@ -21,7 +21,6 @@ const Timer = ({ style }: Props) => {
     intervalRef.current = setInterval(() => {
       setRemainingSeconds((prev) => {
         if (prev <= 1) {
-          // 0이 되면 타이머 정지
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
           }

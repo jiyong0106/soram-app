@@ -31,7 +31,6 @@ const Index = () => {
             <Description />
             <TermsNotice />
             <StartButton />
-            <LoginButton />
           </View>
         </View>
       </View>
