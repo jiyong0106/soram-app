@@ -1,6 +1,6 @@
 import QueryProvider from "@/utils/libs/QueryProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { Stack, usePathname, Redirect } from "expo-router";
+import { Stack, usePathname, Redirect, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
@@ -28,7 +28,7 @@ export default function RootLayout() {
   const hydrated = useAuthStore((s) => s.hydrated);
   const token = useAuthStore((s) => s.token);
   const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
-
+  const router = useRouter();
   // 한글 주석: Provider 내부에서 실행되도록 부트스트랩 컴포넌트를 사용합니다.
   const RealtimeBootstrap = ({ token }: { token: string | null }) => {
     useChatListRealtime(token ?? "");
@@ -80,11 +80,19 @@ export default function RootLayout() {
       }
     );
 
-    // 응답(클릭) 리스너
+    // 응답(클릭) 리스너, 라우팅 처리
     const responseListener =
-      Notifications.addNotificationResponseReceivedListener(() => {
-        // 필요 시 딥링크 라우팅 처리
+      Notifications.addNotificationResponseReceivedListener((res) => {
+        const url = (res.notification.request.content.data as any)?.url;
+        if (typeof url === "string") router.push(url as any);
       });
+
+    // 콜드스타트(앱이 알림으로 실행된 경우) 처리
+    (async () => {
+      const initial = await Notifications.getLastNotificationResponseAsync();
+      const url = (initial?.notification.request.content.data as any)?.url;
+      if (typeof url === "string") router.push(url as any);
+    })();
 
     return () => {
       notificationListener.remove();
