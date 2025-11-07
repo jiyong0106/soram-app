@@ -12,7 +12,6 @@ export function connectSocket(jwt: string) {
   const namespaceUrl = `${BASE_URL}/chat`;
 
   socket = io(namespaceUrl, {
-    // 환경 변수에서 읽어온 소켓 경로 사용
     path: SOCKET_PATH,
     transports: ["websocket"], // 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
     extraHeaders: { Authorization: `Bearer ${jwt}` },
