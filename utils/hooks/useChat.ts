@@ -36,8 +36,10 @@ export function useChat(
         // 상대가 보낸 메시지는 서버에서 온 isRead 값을 존중하거나, 없다면 true로 설정합니다.
         isRead: msg.senderId === myUserId ? false : msg.isRead ?? true,
       };
-      setMessages((prev) => [...prev, messageWithReadStatus]);
-
+      setMessages((prev) => {
+        const newState = [messageWithReadStatus, ...prev];
+        return newState;
+      });
       useChatUnreadStore.getState().resetUnread(connectionId);
     };
 

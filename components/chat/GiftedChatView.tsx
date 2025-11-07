@@ -114,28 +114,7 @@ const GiftedChatView = ({
     const lastMyReadMessage = messages.find(
       (m) => m.user._id === currentUser._id && m.isRead
     );
-    // 상대방이 보낸 마지막 메시지를 찾습니다.
-    const lastOpponentMessage = messages.find(
-      (m) => m.user._id !== currentUser._id
-    );
-
-    // 내가 보낸 읽힌 메시지가 없으면 '읽음'을 표시할 필요가 없습니다.
-    if (!lastMyReadMessage) {
-      return null;
-    }
-
-    // 상대방이 보낸 메시지가 아예 없거나,
-    // 내가 보낸 마지막 읽힌 메시지가 상대방의 마지막 메시지보다 최신인 경우에만 '읽음'을 표시합니다.
-    if (
-      !lastOpponentMessage ||
-      new Date(lastMyReadMessage.createdAt) >
-        new Date(lastOpponentMessage.createdAt)
-    ) {
-      return lastMyReadMessage._id;
-    }
-
-    // 그 외의 경우 (상대방이 더 최신 메시지를 보낸 경우)에는 '읽음'을 표시하지 않습니다.
-    return null;
+    return lastMyReadMessage?._id ?? null;
   }, [messages, currentUser._id]);
 
   /**
@@ -195,7 +174,8 @@ const GiftedChatView = ({
             // 내가 보낸 메시지 UI (우측 정렬)
             <View style={styles.myMessageWrapper}>
               <View style={styles.rightStatusContainer}>
-                {shouldShowReadReceipt && showTime && (
+                {/* '읽음'과 '시간' 로직 분리 */}
+                {shouldShowReadReceipt && (
                   <Text style={styles.readReceiptText}>읽음</Text>
                 )}
                 {showTime && <Text style={styles.timeText}>{timeText}</Text>}
