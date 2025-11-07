@@ -110,11 +110,31 @@ const GiftedChatView = ({
   const router = useRouter();
   // '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
   const messageIdToShowReceipt = useMemo(() => {
-    // 내가 보낸 마지막 읽힌 메시지를 찾습니다.
+    // 1. 내가 보낸 마지막 '읽음' 메시지를 찾습니다.
     const lastMyReadMessage = messages.find(
       (m) => m.user._id === currentUser._id && m.isRead
-    );
-    return lastMyReadMessage?._id ?? null;
+    ); // 2. 상대방이 보낸 마지막 메시지를 찾습니다. // (배열의 맨 위에서부터 찾으므로 가장 최신 메시지입니다)
+
+    const lastOpponentMessage = messages.find(
+      (m) => m.user._id !== currentUser._id
+    ); // 3. 조건 적용 // 3a. 내가 보낸 읽음 메시지가 없으면, 아무것도 표시하지 않습니다.
+
+    if (!lastMyReadMessage) {
+      return null;
+    } // 3b. 상대방이 보낸 메시지가 아예 없으면 (내가 마지막임), '읽음'을 표시합니다.
+
+    if (!lastOpponentMessage) {
+      return lastMyReadMessage._id;
+    } // 3c. [핵심] // 내가 보낸 '읽음' 메시지(A)가 상대방의 마지막 메시지(B)보다 // 최신인 경우에만 '읽음'을 표시합니다. // (즉, 상대방이 아직 내 메시지(A)를 보고 답장을 안 한 상태)
+
+    if (
+      new Date(lastMyReadMessage.createdAt) >
+      new Date(lastOpponentMessage.createdAt)
+    ) {
+      return lastMyReadMessage._id;
+    } // 3d. 그 외의 경우 (상대방이 내 '읽음' 메시지보다 나중에 답장을 보낸 경우) // '읽음'을 표시하지 않습니다.
+
+    return null;
   }, [messages, currentUser._id]);
 
   /**
