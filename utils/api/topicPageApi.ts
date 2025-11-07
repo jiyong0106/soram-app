@@ -7,6 +7,8 @@ import {
   TextBody,
   TextResponse,
   TextHeaderType,
+  HiddenContentBody,
+  HiddenContentResponse,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -45,6 +47,21 @@ export const getTopicRandom = async (excludeTopicId?: number) => {
   return data;
 };
 
+// 2-1. 여러개의 랜덤 주제 보여주기 api
+export const getRandomTopicSet = async (excludeTopicIds?: number[]) => {
+  const { data } = await instance.get("/topics/random-set", {
+    params: {
+      // excludeTopicIds가 존재할 때만 파라미터에 포함
+      ...(excludeTopicIds &&
+        excludeTopicIds.length > 0 && {
+          // 백엔드 DTO의 @Transform 로직에 맞게 배열을 쉼표로 구분된 '문자열'로 변환
+          excludeTopicIds: excludeTopicIds.join(","),
+        }),
+    },
+  });
+  return data;
+};
+
 // 3. 랜덤 주제에대한 답변 보여주기 api
 export const getUserAnswer = async ({ topicId }: { topicId: string }) => {
   const { data } = await instance.get<UserAnswerResponse[]>(
@@ -72,6 +89,15 @@ export const postText = async (body: TextBody) => {
 export const getTextHeader = async (topicBoxId: number) => {
   const { data } = await instance.get<TextHeaderType>(
     `/topics/${topicBoxId}/questions`
+  );
+  return data;
+};
+
+//7. 컨텐츠 숨기기 api
+export const postHideContent = async (body: HiddenContentBody) => {
+  const { data } = await instance.post<HiddenContentResponse>(
+    "/hidden-contents",
+    body
   );
   return data;
 };

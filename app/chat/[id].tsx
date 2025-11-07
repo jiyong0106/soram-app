@@ -1,31 +1,84 @@
-import React, { useCallback, useMemo, useRef, useEffect } from "react";
-import { TouchableOpacity, View, StyleSheet } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
+import {
+  TouchableOpacity,
+  View, //
+  StyleSheet,
+  ActivityIndicator,
+  Alert, // 임시 알너트 임포트
+  LayoutRectangle,
+} from "react-native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
-import { ChatMessageType } from "@/utils/types/chat";
+import { ChatItemType, ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
 import { IMessage } from "react-native-gifted-chat";
 import GiftedChatView from "@/components/chat/GiftedChatView";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import ChatTriggerBanner from "@/components/chat/ChatTriggerBanner";
+import { GetChatResponse } from "@/utils/types/chat";
+import { InfiniteData } from "@tanstack/react-query";
+import PendingRequestActions from "@/components/chat/PendingRequestActions";
+import {
+  postConnectionsAccept,
+  postConnectionsReject,
+} from "@/utils/api/connectionPageApi";
+import useAlert from "@/utils/hooks/useAlert";
+import ConnectionRequestGuideModal from "@/components/chat/ConnectionRequestGuideModal";
+import ReceiverRequestGuideModal from "@/components/chat/ReceiverRequestGuideModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChatIdPage = () => {
-  const { id, peerUserId, peerUserName, isLeave, isBlocked } =
-    useLocalSearchParams<{
-      id: string;
-      peerUserId: string;
-      peerUserName: string;
-      isLeave: string;
-      isBlocked: string;
-    }>();
-  //  라우트 파라미터 불리언 안전 변환 유틸
+  //임시
+  const handleTempResetGuide = async () => {
+    const storageKey = `@viewed_receiver_guide_${roomId}`;
+    try {
+      await AsyncStorage.removeItem(storageKey);
+      Alert.alert(
+        "초기화 완료",
+        `이 채팅방(${roomId})의 가이드 기록이 삭제되었습니채팅방에 다시 입장하면 모달이 나타납니다.`
+      );
+    } catch (e) {
+      Alert.alert("오류", "AsyncStorage 삭제에 실패했습니다.");
+    }
+  };
+  // 임시
+
+  const router = useRouter();
+  const { showAlert, showActionAlert } = useAlert();
+  const {
+    id,
+    peerUserId,
+    peerUserName,
+    isLeave,
+    isBlocked,
+    connectionInfo: connectionInfoParam, // 라우팅으로 전달받은 connection 정보
+    // 라우팅 파라미터를 추가로 받습니다.
+    isNewRequest,
+    topicTitle,
+  } = useLocalSearchParams<{
+    id: string;
+    peerUserId: string;
+    peerUserName: string;
+    isLeave: string;
+    isBlocked: string;
+    connectionInfo?: string;
+    isNewRequest?: string; // "true" or undefined
+    topicTitle?: string;
+  }>();
+  // 라우트 파라미터 불리언 안전 변환 유틸
   const toBoolParam = (param: string | string[] | undefined): boolean => {
     const raw = Array.isArray(param) ? param[0] : param;
     if (raw == null) return false;
@@ -38,16 +91,70 @@ const ChatIdPage = () => {
   const roomId = Number(id);
   const blockedId = Number(peerUserId);
   const token = useAuthStore((s) => s.token) ?? "";
+  const queryClient = useQueryClient();
+  const [actionLoading, setActionLoading] = useState(false);
+  const [localConnectionInfo, setLocalConnectionInfo] =
+    useState<ChatItemType | null>(null);
+
+  // 모달의 표시 여부를 관리할 state를 추가
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
+  const [isReceiverGuideVisible, setReceiverGuideVisible] = useState(false);
+
+  // 스포트라이트 효과를 위한 배너 레이아웃 state
+  const [bannerLayout, setBannerLayout] = useState<LayoutRectangle | undefined>(
+    undefined
+  );
+  //  bannerWrapper의 ref를 생성
+  const bannerRef = useRef<View>(null);
 
   const actionSheetRef = useRef<any>(null);
 
+  //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가
+  useEffect(() => {
+    if (isNewRequest === "true") {
+      setGuideModalVisible(true);
+    }
+  }, [isNewRequest]);
+
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
+
+  // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
+  const connectionInfo = useMemo(() => {
+    //  로컬 state를 최우선으로 사용
+    // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+    if (localConnectionInfo) {
+      return localConnectionInfo;
+    }
+
+    // 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
+    if (connectionInfoParam) {
+      try {
+        return JSON.parse(connectionInfoParam);
+      } catch (e) {
+        console.error("Failed to parse connectionInfo param:", e);
+      }
+    }
+
+    // 전달받은 정보가 없으면 캐시에서 탐색
+    const chatListData = queryClient.getQueryData<
+      InfiniteData<GetChatResponse>
+    >(["getChatKey"]);
+    if (!chatListData) return null;
+
+    for (const page of chatListData.pages) {
+      const found = page.data.find((item: ChatItemType) => item.id === roomId);
+      if (found) return found;
+    }
+    return null;
+  }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]);
+  const isPending = connectionInfo?.status === "PENDING";
+  const isRequester = connectionInfo?.requesterId === myUserId;
 
   // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
   const { setActiveConnection, resetUnread } = useChatUnreadStore();
   useEffect(() => {
     setActiveConnection(roomId);
-    // 진입 시 해당 방의 배지 제거
+    // 진입 시 해당 방의 배지 제거 (현재 사용자 버킷 기준)
     resetUnread(roomId);
     return () => setActiveConnection(null);
   }, [roomId, setActiveConnection, resetUnread]);
@@ -67,17 +174,16 @@ const ChatIdPage = () => {
       staleTime: 0,
       refetchOnMount: "always",
       refetchOnReconnect: true,
+      // enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
     });
   const historyItems: ChatMessageType[] =
     data?.pages.flatMap((item) => item.data) ?? [];
-
   // 2) 실시간 수신
   const {
     messages: realtimeItems,
     sendMessage,
     readUpTo,
   } = useChat(token, roomId, myUserId ?? undefined);
-
   // 서버 ChatMessageType -> GiftedChat IMessage 매핑
   const mapToIMessage = useCallback(
     (m: ChatMessageType): IMessage => ({
@@ -88,10 +194,13 @@ const ChatIdPage = () => {
         _id: m.senderId,
         name: m.sender?.nickname,
       },
-      // ✨ ADDED: isRead 상태를 IMessage 객체에 포함시켜 전달합니다.
-      isRead: m.isRead,
+      // isPending 상태가 true이면, 서버에서 온 isRead 값이 무엇이든 무조건 false로 덮어씁니다.
+      // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용
+      isRead: isPending ? false : m.isRead,
     }),
-    []
+    // isPending 값이 변경될 때마다 이 함수가 최신 값을 참조할 수 있도록
+    // useCallback의 의존성 배열에 isPending을 추가
+    [isPending]
   );
 
   // 이전 이력 + 실시간 합치기(중복 제거, 오름차순 정렬)
@@ -130,7 +239,7 @@ const ChatIdPage = () => {
     }
   }, [fetchNextPage]);
 
-  // ✨ ADDED: 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
+  // 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
   const handleViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: Array<{ item: IMessage }> }) => {
       if (!viewableItems || viewableItems.length === 0 || !myUserId) return;
@@ -153,6 +262,127 @@ const ChatIdPage = () => {
     [myUserId, readUpTo]
   );
 
+  const handleAccept = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "요청을 수락하시겠어요?", // 확인 메시지
+      "수락", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsAccept({ connectionId: roomId });
+          showAlert(
+            "요청을 수락했어요!\n\n두 분을 이어준 이야기로 첫마디를 건네면\n\n더욱 자연스러운 대화가 시작될 거예요.☺️"
+          );
+          if (connectionInfo) {
+            setLocalConnectionInfo({
+              ...connectionInfo,
+              status: "ACCEPTED",
+            });
+          }
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+          await queryClient.invalidateQueries({
+            queryKey: ["getMessagesKey", roomId],
+          });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
+  };
+
+  const handleReject = () => {
+    // 이미 로딩 중이면 중복 실행 방지
+    if (actionLoading) return;
+
+    showActionAlert(
+      "거절한 이야기는 다시 확인할 수 없어요.\n\n거절하시겠습니까?", // 확인 메시지 (요청하신 문구)
+      "거절", // 확인 버튼 텍스트
+      async () => {
+        // --- 기존 로직 ---
+        setActionLoading(true);
+        try {
+          await postConnectionsReject({ connectionId: roomId });
+          showAlert("대화 요청을 거절했어요.", () => {
+            router.back();
+          });
+          await queryClient.invalidateQueries({ queryKey: ["getChatKey"] });
+        } catch (e: any) {
+          showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
+        } finally {
+          setActionLoading(false);
+        }
+        // --- 기존 로직 끝 ---
+      }
+    );
+  };
+
+  if (!connectionInfo) {
+    return (
+      <PageContainer>
+        <ActivityIndicator style={{ marginTop: 20 }} />
+      </PageContainer>
+    );
+  }
+
+  // useEffect 로직 변경: measure() 사용
+  useEffect(() => {
+    const checkReceiverGuide = async () => {
+      // 유효한 connection 정보가 있고,
+      // 내가 요청자가 아닐 때 (즉, 수신자일 때)
+      if (connectionInfo && isPending && !isRequester) {
+        const storageKey = `@viewed_receiver_guide_${roomId}`;
+        try {
+          const hasViewed = await AsyncStorage.getItem(storageKey);
+          if (!hasViewed) {
+            // ref.current.measure()를 사용해 절대 좌표를 측정
+            //    측정이 완료될 때까지 잠시 대기 (setTimeout)
+            setTimeout(() => {
+              if (bannerRef.current) {
+                bannerRef.current.measure(
+                  (x, y, width, height, pageX, pageY) => {
+                    // state에 절대 좌표로 저장
+                    setBannerLayout({
+                      x: pageX,
+                      y: pageY,
+                      width: width,
+                      height: height,
+                    });
+                    // 측정이 완료된 후 모달을 띄움
+                    setReceiverGuideVisible(true);
+                  }
+                );
+                // '봤음'으로 저장 (measure 호출 직후)
+                AsyncStorage.setItem(storageKey, "true").catch((e) =>
+                  console.error("Failed to set AsyncStorage item", e)
+                );
+              } else {
+                // 혹시 ref가 준비되지 않았을 경우 (폴백)
+                console.warn(
+                  "[DEBUGGING] bannerRef.current is nul스포트라이트 없이 모달을 띄웁니다."
+                );
+                setReceiverGuideVisible(true); // 스포트라이트 없이 그냥 모달 띄우기
+                AsyncStorage.setItem(storageKey, "true").catch((e) =>
+                  console.error("Failed to set AsyncStorage item", e)
+                );
+              }
+            }, 100); // 100ms 대기 후 실행
+          }
+        } catch (e) {
+          console.error("Failed to access AsyncStorage for guide", e);
+        }
+      }
+    };
+
+    checkReceiverGuide(); // connectionInfo가 확정된 이후에 이 로직이 실행되어야 함
+  }, [connectionInfo, isPending, isRequester, roomId]);
+
   return (
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
@@ -162,6 +392,14 @@ const ChatIdPage = () => {
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
+              {/* ▼▼▼ 임시 리셋 버튼을 헤더에 추가 ▼▼▼ */}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={handleTempResetGuide}
+              >
+                <Ionicons name="refresh-circle" size={24} color="#FF6B3E" />
+              </TouchableOpacity>
+              {/* ▲▲▲ 임시 코드 끝 ▲▲▲ */}
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => actionSheetRef.current?.present?.()}
@@ -173,63 +411,88 @@ const ChatIdPage = () => {
           headerLeft: () => <BackButton />,
         }}
       />
-
-      {/* ChatTriggerBanner와 GiftedChatView를 새로운 View로 감싸 레이아웃을 제어 */}
       <View style={styles.chatContainer}>
         <GiftedChatView
           messages={giftedMessages}
           onSend={handleSendGifted}
           currentUser={{ _id: myUserId ?? "me" }}
+          opponent={{ id: peerUserId, nickname: peerUserName }}
           onLoadEarlier={handleLoadEarlier}
           canLoadEarlier={!!hasNextPage}
           isLoadingEarlier={!!isFetchingNextPage}
           isLeaveUser={isLeaveUser}
           isBlockedUser={isBlockedUser}
           leaveUserName={peerUserName}
-          // 🔧 MODIFIED: listViewProps에 '읽음' 처리 로직을 위한 콜백과 설정을 추가합니다.
           listViewProps={{
-            // 배너에 가려지는 첫 메시지를 위해 상단에 패딩 추가
-            contentContainerStyle: {
-              paddingBottom: 30, // 배너 높이만큼 여백 확보
-            },
-            // ✨ ADDED: 화면에 보이는 아이템이 변경될 때마다 콜백 함수를 호출합니다.
+            contentContainerStyle: { paddingBottom: 30 },
             onViewableItemsChanged: handleViewableItemsChanged,
-            // ✨ ADDED: 콜백이 언제 호출될지에 대한 설정
-            viewabilityConfig: {
-              // 아이템이 50% 이상 보여야 '보이는 것'으로 간주
-              itemVisiblePercentThreshold: 50,
-            },
+            viewabilityConfig: { itemVisiblePercentThreshold: 50 },
           }}
+          renderInputToolbar={
+            isPending && !isRequester
+              ? () => (
+                  <PendingRequestActions
+                    onAccept={handleAccept}
+                    onReject={handleReject}
+                    loading={actionLoading}
+                  />
+                )
+              : undefined
+          }
         />
 
-        {/* 배너를 절대 위치를 가진 View로 감싸 화면 위에 띄웁니다. */}
-        <View style={styles.bannerWrapper}>
+        {/* ref를 할당하고 onLayout을 제거 */}
+        <View style={styles.bannerWrapper} ref={bannerRef}>
           <ChatTriggerBanner roomId={roomId} />
         </View>
       </View>
-
       <ChatActionSheet
         ref={actionSheetRef}
         blockedId={blockedId}
         roomId={roomId}
         peerUserName={peerUserName}
       />
+      {/* 페이지의 최상단에 모달 컴포넌트를 렌더링 */}
+      <ConnectionRequestGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={peerUserName}
+        topicTitle={
+          Array.isArray(topicTitle) ? topicTitle[0] : topicTitle ?? ""
+        }
+      />
+      {/* [추가] 수신자용 가이드 모달 */}
+      <ReceiverRequestGuideModal
+        isVisible={isReceiverGuideVisible}
+        onClose={() => setReceiverGuideVisible(false)}
+        peerUserName={peerUserName}
+        // 측정된 배너 레이아웃을 prop으로 전달
+        bannerLayout={bannerLayout}
+      />
     </PageContainer>
   );
 };
 
-// 레이아웃을 위한 스타일 객체 추가
 const styles = StyleSheet.create({
   chatContainer: {
-    flex: 1, // 헤더를 제외한 모든 영역을 차지하도록 설정
-    backgroundColor: "#fff", // 채팅방 배경색 예시 (필요에 따라 수정)
+    flex: 1,
+    backgroundColor: "#fff",
   },
   bannerWrapper: {
-    position: "absolute", // 부모(chatContainer)를 기준으로 절대 위치 설정
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 1, // 다른 요소들보다 위에 보이도록 설정
+    zIndex: 1,
+  },
+  centeredInfo: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoText: {
+    fontSize: 16,
+    color: "#5C4B44",
   },
 });
 

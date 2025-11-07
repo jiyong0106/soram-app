@@ -39,7 +39,7 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
     enabled: !!authorId,
   });
 
-  // --- [수정 1] ---
+  // ---  1] ---
   // topic 객체를 해체하지 않고 그대로 전달하여 id, title, category 모두를 포함시킵니다.
   const mappedData = React.useMemo(() => {
     if (!data) return [];
@@ -50,6 +50,7 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
         textContent: item.textContent,
         createdAt: item.createdAt,
         author: item.user,
+        connectionStatus: item.connectionStatus,
       }))
     );
   }, [data]);
@@ -61,12 +62,9 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
       // TODO: 사용자에게 에러 알림 표시
       return;
     }
+    // API 응답의 meta 객체가 아닌, 클릭된 'item'에서 connectionStatus 값을 가져옵니다.
+    const connectionStatus = item.connectionStatus || null;
 
-    // [수정] API 응답의 meta 객체에서 connectionStatus 값을 가져옵니다.
-    // useInfiniteQuery의 data 구조에 따라 첫 번째 페이지의 메타 정보를 사용합니다.
-    const connectionStatus = data?.pages?.[0]?.meta?.connectionStatus || null;
-
-    // --- [수정 2] ---
     // mappedData의 구조가 변경되었으므로, params를 올바른 경로에서 가져옵니다.
     router.push({
       pathname: "/activity/user/response/[responseId]",
@@ -99,9 +97,8 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
   return (
     <FlatList
       data={mappedData}
-      // --- [수정 3] ---
       // MyResponseCard 컴포넌트는 이제 item.topic.title 등을 사용해야 합니다.
-      // (MyResponseCard 내부 코드도 이 구조에 맞게 수정 필요할 수 있습니다.)
+      // (MyResponseCard 내부 코드도 이 구조에 맞게 필요할 수 있습니다.)
       renderItem={({ item }) => {
         // MyResponseCard에 전달할 props를 재구성합니다.
         const cardItem = {

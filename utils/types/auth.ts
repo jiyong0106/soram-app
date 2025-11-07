@@ -42,3 +42,33 @@ export interface getTicketsResponse {
   CHAT: TicketBundle;
   VIEW_RESPONSE: TicketBundle;
 }
+
+// ---------------- 알림(Notifications) 타입 ----------------
+
+export type NotificationType =
+  | "NEW_CONNECTION_REQUEST"
+  | "CONNECTION_ACCEPTED"
+  | "NEW_CHAT_MESSAGE"
+  | "NEW_TOPIC_BOX";
+
+export interface NotificationListItem {
+  id: number; // 알림 ID
+  title: string; // 제목
+  body: string; // 본문
+  isRead: boolean; // 읽음 여부
+  type: NotificationType; // 알림 타입
+  referenceId: string; // 관련 리소스 식별자
+  createdAt: string; // ISO 문자열
+}
+
+export interface PageMeta {
+  take: number;
+  totalCount: number;
+  endCursor: number | null;
+  hasNextPage: boolean;
+}
+
+export interface PageDto<T> {
+  data: T[];
+  meta: PageMeta;
+}

@@ -60,11 +60,12 @@ const BlockItem = ({ item }: BlockItemProps) => {
 
   const handleUnblock = () => {
     showActionAlert(
-      `${user.nickname}님 차단을 해제하시나요?`,
+      `${user.nickname}님 차단을 해제할까요?`,
       "해제",
       async () => {
         try {
           unblock(user.id);
+          showAlert(`${user.nickname}님의 차단을 해제했습니다.`);
         } catch (e: any) {
           if (e)
             showAlert(e.response?.data?.message ?? "차단 해제에 실패했습니다.");
@@ -85,7 +86,7 @@ const BlockItem = ({ item }: BlockItemProps) => {
         <AppText style={styles.itemSubtitle}>{`차단일: ${dateText}`}</AppText>
       </View>
       <View style={styles.badgeWrap}>
-        <AppText style={styles.badge}>차단</AppText>
+        <AppText style={styles.badge}>차단중</AppText>
       </View>
     </ScalePressable>
   );
@@ -282,9 +283,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   itemTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "bold",
-    color: "#111827",
+    color: "#5C4B44",
   },
   itemSubtitle: {
     marginTop: 2,
@@ -297,8 +298,8 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: "#EEF2FF",
-    color: "#4F46E5",
+    backgroundColor: "#FFF1F2",
+    color: "#E63946",
     borderRadius: 999,
     overflow: "hidden",
     fontWeight: "bold",

@@ -27,6 +27,8 @@ const QuestionPage = () => {
 
   // 한글 주석: 앞 2개만 필수로 간주하고 모두 답변했는지 확인
   const requiredIds = useMemo(() => data.slice(0, 2).map((q) => q.id), [data]);
+  const optionalData = useMemo(() => data.slice(2), [data]);
+
   const disabled = useSignupDraftStore((s) =>
     requiredIds.length < 2
       ? true
@@ -62,7 +64,11 @@ const QuestionPage = () => {
         style={styles.button}
         onPress={() => router.push("/(signup)/interests")}
       />
-      <QuestionPageSheet ref={sheetRef} snapPoints={["90%"]} questions={data} />
+      <QuestionPageSheet
+        ref={sheetRef}
+        snapPoints={["90%"]}
+        questions={optionalData}
+      />
     </View>
   );
 };

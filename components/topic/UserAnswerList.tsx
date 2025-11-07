@@ -2,7 +2,9 @@ import { UserAnswerResponse, RequestConnectionBody } from "@/utils/types/topic";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Button from "../common/Button";
 import useAlert from "@/utils/hooks/useAlert";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ConnectionReminderGuideModal from "./ConnectionReminderGuideModal";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import Animated, {
   useSharedValue,
@@ -13,7 +15,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import AppText from "../common/AppText";
-import { useRouter } from "expo-router";
+// useFocusEffect 추가
+import { useRouter, useFocusEffect } from "expo-router";
+//  수정 완료
 import { useQueryClient } from "@tanstack/react-query";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -22,6 +26,10 @@ interface UserAnswerListProps {
   title: string | string[];
   showActions?: boolean; // 버튼 표시 여부를 제어하는 prop
 }
+
+// 스토리지 키 정의
+const STORAGE_KEY = "@show_connection_reminder_guide";
+//
 
 const UserAnswerList = ({
   item,
@@ -33,6 +41,10 @@ const UserAnswerList = ({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  // 새 가이드 모달 state 추가
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
+  //
 
   const translateY = useSharedValue(0);
   const scale = useSharedValue(0.8);
@@ -65,6 +77,30 @@ const UserAnswerList = ({
     return () => clearTimeout(animationTimer);
   }, []);
 
+  // 화면 포커스 시 깃발(flag) 검사
+  useFocusEffect(
+    useCallback(() => {
+      const checkGuideFlag = async () => {
+        try {
+          // 1. 스토리지에서 깃발을 확인
+          const flag = await AsyncStorage.getItem(STORAGE_KEY);
+
+          if (flag === "true") {
+            // 2. 깃발이 있으면, 모달을 띄움
+            setGuideModalVisible(true);
+            // 3. 깃발을 즉시 제거 (재방문 시 띄우지 않음)
+            await AsyncStorage.removeItem(STORAGE_KEY);
+          }
+        } catch (e) {
+          console.error("Failed to check connection guide flag", e);
+        }
+      };
+
+      checkGuideFlag();
+    }, []) // 의존성 배열은 비워둠
+  );
+  //
+
   const handlePress = () => {
     if (loading) return;
 
@@ -79,28 +115,71 @@ const UserAnswerList = ({
       async () => {
         try {
           setLoading(true);
-          await postRequestConnection(body);
-          showAlert(
-            `대화 요청 완료!\n\n${user.nickname}님이 수락하면\n\n알림을 보내드릴게요.`,
-            () => {
-              router.push("/(tabs)/topic/list");
-            }
-          );
+          const response = await postRequestConnection(body);
+          // API 성공 시, 응답 객체와 함께 상대방 정보도 파라미터로 전달
+          router.push({
+            pathname: "/chat/[id]",
+            params: {
+              id: response.id,
+              peerUserId: String(user.id),
+              peerUserName: user.nickname,
+              connectionInfo: JSON.stringify(response),
+              isNewRequest: "true", // 커스텀 모달 호출을 위한 플래그 추가
+              topicTitle: title,
+            },
+          });
           queryClient.invalidateQueries({
             queryKey: ["getSentConnectionsKey"],
           });
         } catch (e: any) {
+          const errorCode = e.response?.data?.errorCode;
           const msg =
             e?.response?.data?.message || "요청 중 오류가 발생했어요.";
-          showAlert(msg, () => {
-            if (e.response.data.statusCode === 403) {
-              router.push({
-                pathname: "/topic/list/[listId]",
-                params: { listId: String(topicBoxId), error: "forbidden" },
-              });
-              return;
-            }
-          });
+
+          if (errorCode === "RESPONSE_REQUIRED") {
+            // showActionAlert 콜백을 async로 변경 및 깃발 저장 로직 추가
+            showActionAlert(msg, `이야기 남기기`, async () => {
+              try {
+                // 1. 페이지 이동 전, 깃발(flag)을 스토리지에 저장
+                await AsyncStorage.setItem(STORAGE_KEY, "true");
+
+                // 2. 깃발 저장 후, 이야기 작성 페이지로 이동
+                router.push({
+                  pathname: "/topic/list/[listId]",
+                  params: {
+                    listId: String(topicBoxId), // '이야기 작성 후' 실행할 액션을 정의하는 플래그
+                    postSubmitAction: "REQUEST_CONNECTION", // 대화 요청에 필요한 모든 컨텍스트 전달
+                    addresseeId: String(userId),
+                    voiceResponseId: String(id),
+                    peerUserName: user.nickname,
+                    title: String(title),
+                  },
+                });
+              } catch (storageError) {
+                console.error(
+                  "Failed to set connection guide flag",
+                  storageError
+                );
+                // 깃발 저장이 실패해도, 일단 페이지는 이동시킴
+                router.push({
+                  pathname: "/topic/list/[listId]",
+                  params: {
+                    listId: String(topicBoxId),
+                    postSubmitAction: "REQUEST_CONNECTION",
+                    addresseeId: String(userId),
+                    voiceResponseId: String(id),
+                    peerUserName: user.nickname,
+                    title: String(title),
+                  },
+                });
+              }
+            });
+            //  수정 완료
+          } else if (errorCode === "INSUFFICIENT_TICKETS") {
+            showAlert(msg);
+          } else {
+            showAlert(msg);
+          }
         } finally {
           setLoading(false);
         }
@@ -160,7 +239,7 @@ const UserAnswerList = ({
               onPress={handlePress}
             />
             <Button
-              label={`${user.nickname}님의 \n 다른 이야기 보기`}
+              label={`${user.nickname}님의\n다른 이야기 보기`}
               color="#FFFFFF"
               textColor="#B0A6A0"
               style={styles.btnOutline}
@@ -168,6 +247,13 @@ const UserAnswerList = ({
           </View>
         </View>
       )}
+
+      {/* 새로 만든 가이드 모달 렌더링 */}
+      <ConnectionReminderGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={user.nickname}
+      />
     </View>
   );
 };
@@ -229,7 +315,7 @@ const styles = StyleSheet.create({
 
   content: {
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 30,
     color: "#5C4B44",
   },
 

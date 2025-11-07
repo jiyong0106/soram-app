@@ -10,7 +10,7 @@ import Button from "@/components/common/Button";
 import useAlert from "@/utils/hooks/useAlert";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import AppText from "@/components/common/AppText";
-import { getAgeFromBirthdate } from "@/utils/util/birthdate";
+import { formatBirthAndAge, getAgeFromBirthdate } from "@/utils/util/birthdate";
 import SignupHeader from "@/components/signup/SignupHeader";
 
 const FinishPage = () => {
@@ -70,6 +70,7 @@ const FinishPage = () => {
       setLoading(false);
     }
   };
+  const gender = draft.gender === "MALE" ? "남성" : "여성";
 
   return (
     <ScreenWithStickyAction
@@ -99,10 +100,13 @@ const FinishPage = () => {
           {/* 헤더/베이직 정보 */}
           <View style={{ gap: 8 }}>
             <AppText style={styles.brand}>SORAM</AppText>
-            <AppText style={styles.caption}>같은 생각으로 연결된 우리</AppText>
+            <AppText style={styles.caption}>
+              이야기와 목소리로 연결된 우리
+            </AppText>
             <AppText style={styles.name}>{draft.nickname || "-"}</AppText>
             <AppText style={styles.meta}>
               {formatBirthAndAge(draft.birthdate)}
+              <AppText style={styles.meta}>, {gender}</AppText>
             </AppText>
             <AppText style={styles.meta}>{draft.location || "미설정"}</AppText>
           </View>
@@ -158,7 +162,7 @@ const FinishPage = () => {
 
           {/* 관심사 태그 */}
           <View style={[styles.section, { paddingBottom: 8 }]}>
-            <AppText style={styles.sectionTitle}>관심있는 주제</AppText>
+            <AppText style={styles.sectionTitle}>관심있는 분야</AppText>
             <View style={styles.tagsRow}>
               {(draft.interestNames || []).map((name: any) => (
                 <AppText
@@ -200,33 +204,49 @@ const styles = StyleSheet.create({
     // Android를 위한 그림자
     elevation: 5,
   },
-  brand: { color: "#FF7D4A", fontWeight: "bold", fontSize: 18 },
-  caption: { color: "#9CA3AF", fontSize: 12, marginBottom: 20 },
-  name: { fontSize: 22, fontWeight: "bold", color: "#5C4B44", marginTop: 8 },
-  meta: { fontSize: 16, color: "#5C4B44" },
-  section: { paddingTop: 20 }, // 중복되는 paddingHorizontal 제거
+  brand: {
+    color: "#FF7D4A",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  caption: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#5C4B44",
+    marginTop: 8,
+  },
+  meta: {
+    fontSize: 16,
+    color: "#5C4B44",
+  },
+  section: {
+    paddingTop: 20,
+  }, // 중복되는 paddingHorizontal 제거
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#5C4B44",
     marginVertical: 10,
+    lineHeight: 24,
   },
   answerCard: {
     marginBottom: 10,
   },
-  answer: { color: "#5C4B44", lineHeight: 30, fontSize: 14 },
-  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingTop: 6 },
+  answer: {
+    color: "#5C4B44",
+    lineHeight: 30,
+    fontSize: 14,
+  },
+  tagsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 6,
+  },
   tag: { color: "#5C4B44" },
 });
-
-// 한글 주석: 생년 + 만 나이 포맷팅
-function formatBirthAndAge(birthdate?: string | null) {
-  if (!birthdate) return "-";
-  const age = getAgeFromBirthdate(birthdate);
-  try {
-    const [y] = birthdate.split("-");
-    return age !== undefined ? `${y}년생, 만 ${age}세` : `${y}년생`;
-  } catch {
-    return birthdate as string;
-  }
-}

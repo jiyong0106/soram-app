@@ -1,20 +1,24 @@
 import { View, Pressable, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 type Props = {
-  onPressNotification?: () => void;
   hasNotification?: boolean;
 };
 
-const AppHeader = ({ onPressNotification, hasNotification }: Props) => {
+const AppHeader = ({ hasNotification }: Props) => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <AppText style={styles.logo}>SORAM</AppText>
-        <AppText style={styles.slogan}>같은 생각으로 연결된 우리</AppText>
+        <AppText style={styles.slogan}>이야기와 목소리로 연결된 우리</AppText>
       </View>
-      <Pressable onPress={onPressNotification} style={styles.notificationBtn}>
+      <Pressable
+        onPress={() => router.push("/alerts")}
+        style={styles.notificationBtn}
+      >
         <Ionicons name="notifications-outline" size={24} color="#5C4B44" />
         {hasNotification && <View style={styles.badge} />}
       </Pressable>
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     color: "#FF6B3E",
   },
   logoContainer: {
-    flexDirection: "row", // 자식 요소들을 가로로 배열
+    flexDirection: "row",
     alignItems: "baseline",
     gap: 8, // 로고와 슬로건 사이의 간격
   },

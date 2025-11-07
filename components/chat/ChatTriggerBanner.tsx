@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Keyboard } from "react-native";
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getConnectionTrigger } from "@/utils/api/chatPageApi";
@@ -22,13 +22,33 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
     queryFn: () => getConnectionTrigger(roomId),
     staleTime: 5 * 60 * 1000,
   });
-  const title = "어떤 이야기가 우릴 연결해줬는지 확인해보세요";
+  const title = " 어떤 주제와 이야기가 우리를 연결해 줬을까요?";
 
   if (!data) return null;
 
   const handleTabChange = (t: "mine" | "opponent") => {
     setActiveTab(t);
-    actionSheetRef.current?.present?.(t);
+    // 키패드가 올라와 있으면 먼저 내리고, 내려간 뒤 바텀시트를 띄운다
+    Keyboard.dismiss();
+
+    const present = () => actionSheetRef.current?.present?.(t);
+
+    let handled = false;
+    const onHide = () => {
+      if (handled) return;
+      handled = true;
+      hideSub?.remove?.();
+      willHideSub?.remove?.();
+      clearTimeout(timerId);
+      present();
+    };
+
+    // iOS: keyboardWillHide, Android: keyboardDidHide 를 모두 감지
+    const hideSub = Keyboard.addListener?.("keyboardDidHide", onHide);
+    const willHideSub = Keyboard.addListener?.("keyboardWillHide", onHide);
+
+    // 키보드가 이미 없거나 이벤트가 오지 않는 환경을 대비한 짧은 타임아웃
+    const timerId = setTimeout(onHide, 200);
   };
 
   return (
@@ -40,7 +60,11 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
           <ChatTriggerHeader title={title} expanded={expanded} />
           {expanded && (
             <View style={s.body}>
-              <ChatTriggerTabs active={activeTab} onChange={handleTabChange} />
+              <ChatTriggerTabs
+                active={activeTab}
+                onChange={handleTabChange}
+                topicTitle={data.topic.title}
+              />
             </View>
           )}
         </View>
@@ -81,5 +105,6 @@ const s = StyleSheet.create({
   body: {
     padding: 12,
     backgroundColor: "#fff",
+    marginTop: -4,
   },
 });

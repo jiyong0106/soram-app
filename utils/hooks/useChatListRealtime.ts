@@ -70,7 +70,9 @@ export function useChatListRealtime(jwt: string) {
       // 안읽은 카운트 증가: 활성 방이 아니고, 내가 보낸 메시지가 아닐 때만 증가
       try {
         if (!myUserId || msg.senderId !== myUserId) {
-          useChatUnreadStore.getState().incrementUnread(connectionId, msg.id);
+          useChatUnreadStore
+            .getState()
+            .incrementUnread(connectionId, msg.id, myUserId);
         }
       } catch {}
     };

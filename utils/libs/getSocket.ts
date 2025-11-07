@@ -1,15 +1,19 @@
-// utils/socket.ts
 import { io, Socket } from "socket.io-client";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL!; // e.g. https://api.example.com
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
+// 환경 변수에서 API 접두사와 소켓 경로 읽어오기
+const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH || "/socket.io/"; // 기본값 /socket.io/
+
 let socket: Socket | null = null;
 
 export function connectSocket(jwt: string) {
-  if (socket?.connected) return socket;
+  if (socket?.connected) return socket; // API_PREFIX를 네임스페이스에 동적으로 적용
 
-  socket = io(`${BASE_URL}/chat`, {
-    transports: ["websocket"], // RN에선 websocket 권장
-    // ✅ 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
+  const namespaceUrl = `${BASE_URL}/chat`;
+
+  socket = io(namespaceUrl, {
+    path: SOCKET_PATH,
+    transports: ["websocket"], // 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
     extraHeaders: { Authorization: `Bearer ${jwt}` },
     autoConnect: true,
     reconnection: true,
@@ -17,17 +21,17 @@ export function connectSocket(jwt: string) {
     reconnectionDelay: 500, // 필요시 조절
   });
 
-  // 디버깅/로그
-  socket.on("connect", () => console.log("[socket] connected:", socket?.id));
-  socket.on("disconnect", (reason) =>
-    console.log("[socket] disconnected:", reason)
-  );
-  socket.on("connect_error", (err) =>
-    console.log("[socket] connect_error:", err.message)
-  );
+  socket.on("disconnect", (reason) => {
+    console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
+    // 연결이 끊겼으므로 전역 소켓 변수를 null로 설정
+    if (socket?.id === (socket as any).id) {
+      socket = null;
+    }
+  });
 
-  // 서버가 인증완료 시 내려줌
-  socket.on("authenticated", () => console.log("[socket] authenticated"));
+  socket.on("connect_error", (err) => {
+    console.error(`[getSocket] [connect_error] 소켓 연결 실패.`, err);
+  });
 
   return socket;
 }

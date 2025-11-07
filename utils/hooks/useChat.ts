@@ -25,7 +25,7 @@ export function useChat(
 
     const onJoined = (payload: any) => {
       joinedRef.current = true;
-      console.log("[socket] joinedRoom:", payload);
+      // console.log("[socket] joinedRoom:", payload);
     };
 
     const onNewMessage = (msg: ChatMessageType) => {
@@ -36,8 +36,10 @@ export function useChat(
         // 상대가 보낸 메시지는 서버에서 온 isRead 값을 존중하거나, 없다면 true로 설정합니다.
         isRead: msg.senderId === myUserId ? false : msg.isRead ?? true,
       };
-      setMessages((prev) => [...prev, messageWithReadStatus]);
-
+      setMessages((prev) => {
+        const newState = [messageWithReadStatus, ...prev];
+        return newState;
+      });
       useChatUnreadStore.getState().resetUnread(connectionId);
     };
 
@@ -81,7 +83,7 @@ export function useChat(
       s.off("newMessage", onNewMessage);
       s.off("chat:messages_read", onMessagesRead);
       s.emit("leaveRoom", { connectionId });
-      console.log("[socket] leaveRoom:", { connectionId });
+      // console.log("[socket] leaveRoom:", { connectionId });
     };
   }, [jwt, connectionId, myUserId]); // 🔧 MODIFIED: 의존성 배열에 myUserId 추가
 

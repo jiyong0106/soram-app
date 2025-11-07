@@ -17,11 +17,13 @@ import AppText from "@/components/common/AppText";
 import { useAuthStore } from "@/utils/store/useAuthStore";
 import SignupHeader from "@/components/signup/SignupHeader";
 import { usePushTokenStore } from "@/utils/store/usePushTokenStore";
+import Timer from "@/components/common/Timer";
 
 const VerifyCodeInputPage = () => {
   const [otp, setotp] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [timerKey, setTimerKey] = useState(0);
   const phoneNumber = usePhoneNumberStore((s) => s.phoneNumber);
   const clearPhoneNumber = usePhoneNumberStore((s) => s.clear);
   const setSignupToken = useSignupTokenStore((s) => s.setSignupToken);
@@ -88,6 +90,8 @@ const VerifyCodeInputPage = () => {
             try {
               setLoading(true);
               await postRequestOtp({ phoneNumber });
+              // 타이머 리스타트: key 변경으로 Timer 리마운트
+              setTimerKey((prev) => prev + 1);
               showAlert("인증번호가 전송되었습니다.");
             } catch (e: any) {
               if (e) {
@@ -123,19 +127,22 @@ const VerifyCodeInputPage = () => {
           title="인증번호를 입력해 주세요"
           subtitle={"받은 번호를 입력하면 인증이 완료돼요."}
         />
-        <TextInput
-          style={[styles.input, focused && styles.inputFocused]}
-          placeholder="4자리 숫자"
-          placeholderTextColor={"#B0A6A0"}
-          keyboardType="number-pad"
-          value={otp}
-          onChangeText={setotp}
-          maxLength={4}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, focused && styles.inputFocused]}
+            placeholder="4자리 숫자"
+            placeholderTextColor={"#B0A6A0"}
+            keyboardType="number-pad"
+            value={otp}
+            onChangeText={setotp}
+            maxLength={4}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+          />
+          <Timer key={timerKey} style={styles.timer} />
+        </View>
         <TouchableOpacity onPress={handleRequestOtp} activeOpacity={0.5}>
-          <AppText style={styles.desc}>{"\n인증번호 다시 요청하기 >"}</AppText>
+          <AppText style={styles.desc}>{"인증번호 다시 요청하기 >"}</AppText>
         </TouchableOpacity>
       </View>
     </ScreenWithStickyAction>
@@ -150,8 +157,6 @@ const styles = StyleSheet.create({
   },
   desc: {
     color: "#5C4B44",
-    marginBottom: 32,
-    marginRight: 10,
     fontSize: 12,
     textAlign: "right",
   },
@@ -167,5 +172,13 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: "#FF7D4A",
+  },
+  inputContainer: {
+    position: "relative",
+  },
+  timer: {
+    position: "absolute",
+    right: 10,
+    bottom: 25,
   },
 });

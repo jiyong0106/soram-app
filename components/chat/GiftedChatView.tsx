@@ -1,5 +1,3 @@
-// app/components/chat/GiftedChatView.tsx
-
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   View,
@@ -14,10 +12,12 @@ import {
   IMessage,
   InputToolbar,
   MessageProps,
+  InputToolbarProps,
 } from "react-native-gifted-chat";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { useRouter } from "expo-router";
 
 // GiftedChat의 타입 한계로 인해 ref를 직접 전달하기 위해 any로 캐스팅한 래퍼 컴포넌트를 사용합니다.
 const GiftedChatAny: any = GiftedChat as any;
@@ -82,6 +82,9 @@ export type GiftedChatViewProps = {
   leaveUserName?: string;
   // 스크롤 위치 유지 등 FlatList 관련 추가 props
   listViewProps?: any;
+  renderInputToolbar?: (props: InputToolbarProps<IMessage>) => React.ReactNode;
+  // 한글 주석: 상대 유저 정보(아이디/닉네임)를 상위에서 주입
+  opponent?: { id: number | string; nickname?: string };
 };
 
 /**
@@ -91,7 +94,7 @@ const GiftedChatView = ({
   messages,
   onSend,
   currentUser,
-  placeholder = "메시지 입력",
+  placeholder,
   onLoadEarlier,
   canLoadEarlier,
   isLoadingEarlier,
@@ -99,37 +102,38 @@ const GiftedChatView = ({
   isBlockedUser,
   leaveUserName,
   listViewProps,
+  renderInputToolbar,
+  opponent,
 }: GiftedChatViewProps) => {
   // GiftedChat의 내부 FlatList에 접근하기 위한 ref
   const chatRef = useRef<any>(null);
-
-  // ✨ ADDED: '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
+  const router = useRouter();
+  // '읽음'을 표시할 단 하나의 메시지 ID를 결정하는 최종 로직
   const messageIdToShowReceipt = useMemo(() => {
-    // 내가 보낸 마지막 읽힌 메시지를 찾습니다.
+    // 1. 내가 보낸 마지막 '읽음' 메시지를 찾습니다.
     const lastMyReadMessage = messages.find(
       (m) => m.user._id === currentUser._id && m.isRead
-    );
-    // 상대방이 보낸 마지막 메시지를 찾습니다.
+    ); // 2. 상대방이 보낸 마지막 메시지를 찾습니다. // (배열의 맨 위에서부터 찾으므로 가장 최신 메시지입니다)
+
     const lastOpponentMessage = messages.find(
       (m) => m.user._id !== currentUser._id
-    );
+    ); // 3. 조건 적용 // 3a. 내가 보낸 읽음 메시지가 없으면, 아무것도 표시하지 않습니다.
 
-    // 내가 보낸 읽힌 메시지가 없으면 '읽음'을 표시할 필요가 없습니다.
     if (!lastMyReadMessage) {
       return null;
-    }
+    } // 3b. 상대방이 보낸 메시지가 아예 없으면 (내가 마지막임), '읽음'을 표시합니다.
 
-    // 상대방이 보낸 메시지가 아예 없거나,
-    // 내가 보낸 마지막 읽힌 메시지가 상대방의 마지막 메시지보다 최신인 경우에만 '읽음'을 표시합니다.
+    if (!lastOpponentMessage) {
+      return lastMyReadMessage._id;
+    } // 3c. [핵심] // 내가 보낸 '읽음' 메시지(A)가 상대방의 마지막 메시지(B)보다 // 최신인 경우에만 '읽음'을 표시합니다. // (즉, 상대방이 아직 내 메시지(A)를 보고 답장을 안 한 상태)
+
     if (
-      !lastOpponentMessage ||
       new Date(lastMyReadMessage.createdAt) >
-        new Date(lastOpponentMessage.createdAt)
+      new Date(lastOpponentMessage.createdAt)
     ) {
       return lastMyReadMessage._id;
-    }
+    } // 3d. 그 외의 경우 (상대방이 내 '읽음' 메시지보다 나중에 답장을 보낸 경우) // '읽음'을 표시하지 않습니다.
 
-    // 그 외의 경우 (상대방이 더 최신 메시지를 보낸 경우)에는 '읽음'을 표시하지 않습니다.
     return null;
   }, [messages, currentUser._id]);
 
@@ -144,6 +148,13 @@ const GiftedChatView = ({
       minute: "2-digit",
     });
   }, []);
+
+  const handleAvatarPress = useCallback(() => {
+    router.push({
+      pathname: "/profile/[userId]",
+      params: { userId: String(opponent?.id), nickname: opponent?.nickname },
+    });
+  }, [opponent?.id, opponent?.nickname]);
 
   /**
    * 각 메시지 말풍선을 어떻게 렌더링할지 정의하는 함수입니다.
@@ -174,25 +185,17 @@ const GiftedChatView = ({
 
       const showAvatar = !isMe && !isContinuous;
 
-      // ✨ ADDED: 현재 메시지가 '읽음'을 표시해야 할 바로 그 메시지인지 확인합니다.
+      // 현재 메시지가 '읽음'을 표시해야 할 바로 그 메시지인지 확인합니다.
       const shouldShowReadReceipt = current._id === messageIdToShowReceipt;
 
       return (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-end",
-            justifyContent: isMe ? "flex-end" : "flex-start",
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-          }}
-        >
+        <View style={styles.messageRowContainer}>
           {isMe ? (
-            // 내가 보낸 메시지 UI
-            <>
+            // 내가 보낸 메시지 UI (우측 정렬)
+            <View style={styles.myMessageWrapper}>
               <View style={styles.rightStatusContainer}>
-                {/* 🔧 MODIFIED: 최종 결정된 조건으로 '읽음' 표시 여부를 판단합니다. */}
-                {shouldShowReadReceipt && showTime && (
+                {/* '읽음'과 '시간' 로직 분리 */}
+                {shouldShowReadReceipt && (
                   <Text style={styles.readReceiptText}>읽음</Text>
                 )}
                 {showTime && <Text style={styles.timeText}>{timeText}</Text>}
@@ -204,14 +207,18 @@ const GiftedChatView = ({
                 textStyle={BUBBLE_STYLES.textStyle}
                 containerStyle={BUBBLE_STYLES.containerStyle}
               />
-            </>
+            </View>
           ) : (
-            // 상대방이 보낸 메시지 UI
-            <>
+            // 상대방이 보낸 메시지 UI (좌측 정렬)
+            <View style={styles.peerMessageWrapper}>
               {showAvatar ? (
-                <View style={styles.avatar}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={styles.avatar}
+                  onPress={handleAvatarPress}
+                >
                   <Ionicons name="person" size={16} color="#fff" />
-                </View>
+                </TouchableOpacity>
               ) : (
                 <View style={styles.avatarPlaceholder} />
               )}
@@ -223,15 +230,13 @@ const GiftedChatView = ({
                 containerStyle={BUBBLE_STYLES.containerStyle}
               />
               {showTime && <Text style={styles.timeText}>{timeText}</Text>}
-            </>
+            </View>
           )}
         </View>
       );
     },
-    // 🔧 MODIFIED: 의존성 배열에 messageIdToShowReceipt를 추가합니다.
     [currentUser._id, formatTimeLabel, messageIdToShowReceipt]
   );
-
   /**
    * 시스템 메시지(예: 'OO님이 나갔습니다')를 렌더링하는 함수입니다.
    */
@@ -249,30 +254,26 @@ const GiftedChatView = ({
    * useMemo를 사용하여 불필요한 재연산을 방지합니다.
    */
   const decoratedMessages = useMemo(() => {
-    // 상대방이 나갔거나, 내가 상대방을 차단한 경우
-    const isPeerGone = !!isLeaveUser || !!isBlockedUser;
-    if (!isPeerGone) return messages; // 해당 없으면 원본 메시지 배열 반환
-
-    // 시스템 메시지가 이미 추가되었는지 확인하여 중복 추가를 방지합니다.
-    const alreadyHasSystemMessage = messages.some(
-      (m) => m.system && m._id === "system-leave"
-    );
-    if (alreadyHasSystemMessage) return messages;
-
-    // 시스템 메시지에 표시될 상대방 닉네임 설정
-    const name = leaveUserName ?? "상대방";
-    // 시스템 메시지 객체 생성
-    const sysMsg: IMessage = {
-      _id: "system-leave", // 고유 ID로 중복 확인에 사용
-      text: `${name}님이 채팅방을 나갔습니다`,
-      createdAt: new Date(),
-      system: true, // 시스템 메시지임을 명시
-      user: { _id: "system" }, // 시스템 메시지용 가상 유저
-    };
-
-    // 가장 마지막에 보이도록 원본 메시지 배열 뒤에 시스템 메시지를 추가하여 반환합니다.
-    return [...messages, sysMsg];
-  }, [messages, isLeaveUser, isBlockedUser, leaveUserName]);
+    // // 상대방이 나갔거나, 내가 상대방을 차단한 경우
+    // const isPeerGone = !!isLeaveUser || !!isBlockedUser;
+    // if (!isPeerGone) return messages;
+    // const alreadyHasSystemMessage = messages.some(
+    //   (m) => m.system && m._id === "system-leave"
+    // );
+    // if (alreadyHasSystemMessage) return messages;
+    // // 시스템 메시지에 표시될 상대방 닉네임 설정
+    // const name = leaveUserName ?? "상대방";
+    // // 시스템 메시지 객체 생성
+    // const sysMsg: IMessage = {
+    //   _id: "system-leave", // 고유 ID로 중복 확인에 사용
+    //   text: `${name}님이 채팅방을 나갔습니다`,
+    //   createdAt: new Date(),
+    //   system: true, // 시스템 메시지임을 명시
+    //   user: { _id: "system" }, // 시스템 메시지용 가상 유저
+    // };
+    // // 가장 마지막에 보이도록 원본 메시지 배열 뒤에 시스템 메시지를 추가하여 반환합니다.
+    return messages;
+  }, [messages]);
 
   /**
    * 날짜가 바뀔 때 표시되는 날짜 구분선(Day) UI를 커스터마이징하는 함수입니다.
@@ -307,15 +308,20 @@ const GiftedChatView = ({
 
   /**
    * 메시지 입력창과 전송 버튼을 감싸는 툴바의 UI를 커스터마이징하는 함수입니다.
+   * 이 함수는 외부에서 renderInputToolbar prop이 제공되지 않았을 때의 기본값으로 사용
    */
-  const renderInputToolbar = useCallback((props: any) => {
-    return (
-      <InputToolbar
-        {...props}
-        containerStyle={styles.inputToolbarContainer} // 상단 경계선 제거 등 스타일 적용
-      />
-    );
-  }, []);
+  const internalRenderInputToolbar = useCallback(
+    //  함수 이름을 변경하여 외부 prop과 충돌하지 않도록 합니다.
+    (props: InputToolbarProps<IMessage>) => {
+      return (
+        <InputToolbar
+          {...props}
+          containerStyle={styles.inputToolbarContainer} // 상단 경계선 제거 등 스타일 적용
+        />
+      );
+    },
+    []
+  );
 
   /**
    * 텍스트를 입력하는 Composer(TextInput) UI를 커스터마이징하는 함수입니다.
@@ -357,27 +363,83 @@ const GiftedChatView = ({
   /**
    * '이전 메시지 불러오기' UI를 커스터마이징하는 함수입니다.
    */
-  const renderLoadEarlier = useCallback(() => {
-    // 더 불러올 메시지가 없으면 아무것도 렌더링하지 않습니다.
-    if (!canLoadEarlier) return null;
-    return (
-      <View style={{ paddingVertical: 12, alignItems: "center" }}>
-        {/* 로딩 중일 때만 스피너를 표시합니다. */}
-        {isLoadingEarlier ? <LoadingSpinner color="#FF7D4A" /> : null}
-      </View>
-    );
-  }, [canLoadEarlier, isLoadingEarlier]);
+  const renderLoadEarlier = useCallback(
+    (_props: any) => {
+      // 로딩 중일 때만 스피너 표시, 평소엔 아무것도 렌더링하지 않음(버튼 제거)
+      if (isLoadingEarlier) {
+        return (
+          <View style={{ paddingVertical: 12, alignItems: "center" }}>
+            <LoadingSpinner color="#FF7D4A" />
+          </View>
+        );
+      }
+      return null;
+    },
+    [isLoadingEarlier]
+  );
 
   // 최종적으로 커스터마이징된 props들을 적용하여 GiftedChat 컴포넌트를 렌더링합니다.
+  const finalPlaceholder = useMemo(
+    () =>
+      placeholder ??
+      (opponent?.nickname ? `${opponent.nickname}에게 메시지` : "메시지 입력"),
+    [placeholder, opponent?.nickname]
+  );
+
+  // 상대방이 나갔을 때 표시할 '안내 바' 컴포넌트 UI
+  // useMemo를 사용해 관련 props가 변경될 때만 재생성하도록 최적화합니다.
+  const LeaveNotificationBar = useMemo(() => {
+    // leaveUserName이 없으면 "상대방"으로 기본값 처리
+    const name = leaveUserName ?? "상대방";
+    // 차단 여부에 따라 다른 메시지 표시
+    const message = isBlockedUser
+      ? `${name}님이 대화방을 나갔습니다`
+      : `${name}님이 대화방을 나갔습니다`;
+
+    return (
+      <View style={styles.leaveBarContainer}>
+        <AppText style={styles.leaveBarText}>{message}</AppText>
+      </View>
+    );
+  }, [isLeaveUser, isBlockedUser, leaveUserName]); // 💡 3가지 상태값에 의존
+
+  //  조건부로 입력창을 교체하는 핵심 로직
+  const customRenderInputToolbar = useCallback(
+    (props: InputToolbarProps<IMessage>) => {
+      // [조건] 상대방이 나갔거나, 내가 차단한 경우
+      if (isLeaveUser || isBlockedUser) {
+        // 1번에서 만든 '나감 안내 바' UI를 반환
+        return LeaveNotificationBar;
+      }
+
+      // [외부 Prop] 상위 컴포넌트(스크린)에서 renderInputToolbar prop을 주입한 경우
+      // (예: PENDING 상태일 때 다른 툴바를 보여주기 위함)
+      if (renderInputToolbar) {
+        return renderInputToolbar(props);
+      }
+
+      // [기본] 그 외 모든 정상적인 경우, 내부 기본 입력 툴바를 사용
+      return internalRenderInputToolbar(props);
+    },
+    [
+      isLeaveUser,
+      isBlockedUser,
+      LeaveNotificationBar, // 1번에서 만든 UI
+      renderInputToolbar, // 상위에서 받은 prop
+      internalRenderInputToolbar, // 기본 툴바
+    ]
+  );
+
   return (
     <GiftedChatAny
       ref={chatRef}
-      messages={decoratedMessages} // 시스템 메시지가 포함된 가공된 메시지 배열
-      onSend={handleSendWithScroll} // 전송 후 스크롤 기능이 포함된 핸들러
+      messages={decoratedMessages}
+      onSend={handleSendWithScroll}
       user={currentUser}
-      placeholder={placeholder}
+      placeholder={finalPlaceholder}
       alwaysShowSend // 입력 내용이 없어도 전송 버튼 영역을 항상 표시
       inverted={true} // 채팅 목록을 아래부터 위로 쌓음 (기본값)
+      infiniteScroll // 상단 도달 시 자동으로 onLoadEarlier 호출
       loadEarlier={!!canLoadEarlier}
       isLoadingEarlier={!!isLoadingEarlier}
       onLoadEarlier={onLoadEarlier}
@@ -388,9 +450,12 @@ const GiftedChatView = ({
       renderMessage={renderMessage}
       renderSystemMessage={renderSystemMessage}
       renderDay={renderDay}
-      renderInputToolbar={renderInputToolbar}
+      //  외부에서 받은 renderInputToolbar가 있으면 그것을 사용하고,
+      // 없으면 내부 기본 툴바를 사용하도록 조건부 로직을 적용합니다.
+      renderInputToolbar={customRenderInputToolbar}
       renderComposer={renderComposer}
-      listViewProps={listViewProps}
+      // listViewProps={listViewProps}
+      listViewProps={{ initialNumToRender: 30 }}
       // 전송 버튼 UI 커스터마이징
       renderSend={(props: any) => {
         const canSend = !!props.text?.trim(); // 입력된 텍스트가 있을 때만 활성화
@@ -494,6 +559,38 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     justifyContent: "center",
     alignItems: "center",
+  },
+  // ✨ 새로운 스타일들을 추가합니다.
+  messageRowContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  myMessageWrapper: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  peerMessageWrapper: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+  },
+  leaveBarContainer: {
+    minHeight: 50,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    marginTop: 12,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    // 상단 경계선
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  leaveBarText: {
+    // 시스템 메시지와 유사한 색상
+    color: "#B0A6A0",
+    fontSize: 14,
   },
 });
 

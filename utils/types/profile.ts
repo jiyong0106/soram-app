@@ -69,3 +69,38 @@ export interface UpdateTextResponsePayload {
   responseId: number; // 수정할 답변의 고유 ID
   textContent: string; // 새로 수정할 내용
 }
+
+//내 프로필 조회
+
+// --- 프로필 조회 공통 타입 ---
+export interface ProfileInterest {
+  id: number;
+  name: string;
+}
+
+export interface ProfileAnswerView {
+  questionId: number;
+  questionContent: string;
+  content: string;
+  isPrimary: boolean;
+}
+
+// 내 프로필 응답 타입 (stats/connectionStatus 제외)
+export interface MyProfileResponse {
+  id: number;
+  nickname: string;
+  gender: Gender;
+  birthdate: string;
+  location?: string | null;
+  interests: ProfileInterest[];
+  answers: ProfileAnswerView[];
+}
+
+// 타 사용자 프로필 응답 타입 (connectionStatus 포함)
+export type ConnectionStatus = "PENDING" | "ACCEPTED";
+
+export interface UserProfilePublicResponse extends MyProfileResponse {
+  connectionStatus: ConnectionStatus | null;
+}
+
+//상대 프로필 조회

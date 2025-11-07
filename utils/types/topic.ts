@@ -37,8 +37,6 @@ export interface UserAnswerResponse extends baseTopic {
 }
 
 // 3-1. 대화 요청에 들어가는 바디값값
-// addresseeId => 요청받는사람
-// voiceResponseId =>  답변 id?
 
 export interface RequestConnectionBody {
   addresseeId: number;
@@ -93,3 +91,18 @@ export const CATEGORIES = [
 export type Category = (typeof CATEGORIES)[number];
 
 export type RouteType = { key: Category; label: string };
+
+//컨텐츠 숨기기 api 타입 바디값
+export interface HiddenContentBody {
+  entityId: string;
+  entityType: "VOICE_RESPONSE";
+}
+
+//컨텐츠 숨기기 api 타입 응답값
+export interface HiddenContentResponse {
+  id: number;
+  userId: number;
+  entityType: "VOICE_RESPONSE";
+  entityId: string;
+  createdAt: string;
+}

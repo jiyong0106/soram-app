@@ -147,6 +147,7 @@ const PastResponsesList = () => {
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+    staleTime: 1000 * 30,
   });
 
   const mappedData = React.useMemo<

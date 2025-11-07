@@ -6,6 +6,9 @@ import {
   RequestOtpResponse,
   VerifyOtpBody,
   VerifyOtpResponse,
+  NotificationListItem,
+  NotificationType,
+  PageDto,
 } from "@/utils/types/auth";
 import { Interest } from "../types/signup";
 

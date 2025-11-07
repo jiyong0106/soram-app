@@ -6,6 +6,9 @@ import { View, Pressable, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // 👈 [추가] 그라데이션 라이브러리 import
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import Badge from "@/components/common/Badge";
+import { usePushTokenRegistration } from "@/utils/hooks/usePushTokenRegistration";
+import { useQueryClient } from "@tanstack/react-query";
+import { getChat } from "@/utils/api/chatPageApi";
 
 // 배지는 공용 컴포넌트 사용
 
@@ -34,11 +37,11 @@ const renderTabItem = ({
           color: isFocused ? "#FF7D4A" : "#B0A6A0",
           size: 28,
         })}
-      {route.name === "chat" ? (
+      {route.name === "chat" && badgeCount > 0 ? (
         <Badge
-          count={badgeCount}
-          style={styles.badge}
-          textStyle={styles.badgeText}
+          dot
+          style={styles.badgePosition}
+          accessibilityLabel="안읽은 메시지 있음"
         />
       ) : null}
     </View>
@@ -60,13 +63,30 @@ const CustomTabBar = ({
   descriptors,
   navigation,
 }: BottomTabBarProps) => {
-  // 전체 안읽은 수 합계 (스토어에서 파생값만 구독)
-  const totalUnread = useChatUnreadStore((s) =>
-    Object.values(s.unreadCountByConnectionId ?? {}).reduce(
-      (acc: number, v: number) => acc + (v || 0),
-      0
-    )
-  );
+  const qc = useQueryClient();
+  // 한글 주석: Chat 탭 데이터 프리패치 (최대 300ms 대기)
+  const prefetchChatWithTimeout = async () => {
+    try {
+      const timeout = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+      const prefetchPromise = qc.prefetchInfiniteQuery({
+        queryKey: ["getChatKey"],
+        queryFn: ({ pageParam }) =>
+          getChat({
+            take: 10,
+            cursor: pageParam,
+          }),
+        initialPageParam: undefined as number | undefined,
+      });
+      await Promise.race([prefetchPromise, timeout(300)]);
+    } catch {}
+  };
+  // 안읽은 메시지 존재 여부 (불리언 파생값만 구독하여 리렌더 최소화)
+  const hasUnread = useChatUnreadStore((s) => {
+    const uid = s.currentUserId;
+    const perUser = uid != null ? s.unreadCountByUserId[uid] ?? {} : {};
+    return Object.values(perUser).some((v) => (v || 0) > 0);
+  });
   const centerIndex = Math.floor(state.routes.length / 2);
 
   const leftRoutes = state.routes.slice(0, centerIndex);
@@ -76,11 +96,26 @@ const CustomTabBar = ({
 
   const isCenterFocused = state.index === centerIndex;
 
+  const handleCenterPress = () => {
+    const event = navigation.emit({
+      type: "tabPress",
+      target: centerRoute.key,
+      canPreventDefault: true,
+    });
+
+    if (event.defaultPrevented) {
+      return;
+    }
+    // isFocused 여부와 관계없이 navigate를 호출하여
+    // React Navigation의 기본 동작(활성 탭 클릭 시 popToTop)을 트리거합니다.
+    navigation.navigate(centerRoute.name);
+  };
+
   return (
     <View style={styles.tabBarOuterContainer}>
       <Pressable
         key={centerRoute.key}
-        onPress={() => navigation.navigate(centerRoute.name)}
+        onPress={handleCenterPress}
         style={styles.centerButtonWrapper}
       >
         {isCenterFocused ? (
@@ -125,13 +160,17 @@ const CustomTabBar = ({
           {leftRoutes.map((route) => {
             const options = descriptors[route.key].options;
             const isFocused = state.index === state.routes.indexOf(route);
-            const onPress = () => {
+            const onPress = async () => {
               const event = navigation.emit({
                 type: "tabPress",
                 target: route.key,
                 canPreventDefault: true,
               });
-              if (!isFocused && !event.defaultPrevented) {
+              if (event.defaultPrevented) return;
+              if (route.name === "chat") {
+                await prefetchChatWithTimeout();
+              }
+              if (!isFocused) {
                 navigation.navigate(route.name);
               }
             };
@@ -143,7 +182,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
-              badgeCount: route.name === "chat" ? totalUnread : 0,
+              badgeCount: route.name === "chat" ? (hasUnread ? 1 : 0) : 0,
             });
           })}
         </View>
@@ -154,13 +193,17 @@ const CustomTabBar = ({
           {rightRoutes.map((route) => {
             const options = descriptors[route.key].options;
             const isFocused = state.index === state.routes.indexOf(route);
-            const onPress = () => {
+            const onPress = async () => {
               const event = navigation.emit({
                 type: "tabPress",
                 target: route.key,
                 canPreventDefault: true,
               });
-              if (!isFocused && !event.defaultPrevented) {
+              if (event.defaultPrevented) return;
+              if (route.name === "chat") {
+                await prefetchChatWithTimeout();
+              }
+              if (!isFocused) {
                 navigation.navigate(route.name);
               }
             };
@@ -172,7 +215,7 @@ const CustomTabBar = ({
               options,
               onPress,
               onLongPress,
-              badgeCount: route.name === "chat" ? totalUnread : 0,
+              badgeCount: route.name === "chat" ? (hasUnread ? 1 : 0) : 0,
             });
           })}
         </View>
@@ -183,6 +226,9 @@ const CustomTabBar = ({
 
 const TabLayout = () => {
   const token = useAuthStore((s) => s.token);
+
+  // 로그인 상태에서만 푸시 토큰 등록
+  usePushTokenRegistration(token);
 
   if (!token) return <Redirect href="/" />;
 
@@ -203,24 +249,6 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="connection"
-        options={{
-          title: "요청",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="send" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="topic"
-        options={{
-          title: "홈",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="flame" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="activity/index"
         options={{
           title: "활동",
@@ -235,7 +263,25 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="topic"
+        options={{
+          title: "홈",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="flame" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "프로필",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="setting/index"
         options={{
           title: "더보기",
           tabBarIcon: ({ color, size }) => (
@@ -296,6 +342,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 10,
     fontWeight: "800",
+  },
+  badgePosition: {
+    position: "absolute",
+    top: 0,
+    right: -5,
   },
   centerButtonWrapper: {
     position: "absolute",

@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useLocalSearchParams,
+  useRouter,
+  useFocusEffect,
+} from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Animated, {
@@ -19,6 +24,15 @@ import { BackButton } from "@/components/common/backbutton";
 import useAlert from "@/utils/hooks/useAlert";
 import { postRequestConnection } from "@/utils/api/topicPageApi";
 import { ConnectionStatus } from "@/utils/types/common";
+import {
+  RequestConnectionBody,
+  RequestConnectionResponse,
+} from "@/utils/types/topic";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ConnectionReminderGuideModal from "@/components/topic/ConnectionReminderGuideModal";
+
+// 스토리지 키 정의 (UserAnswerList와 동일)
+const STORAGE_KEY = "@show_connection_reminder_guide";
 
 const UnlockedResponseDetailScreen = () => {
   const router = useRouter();
@@ -32,10 +46,10 @@ const UnlockedResponseDetailScreen = () => {
     topicTitle,
     textContent,
     createdAt,
-    connectionStatus, // [1단계] 이전 화면에서 전달받은 connectionStatus
+    connectionStatus, // 이전 화면에서 전달받은 connectionStatus (string | null)
     topicBoxId,
   } = useLocalSearchParams();
-
+  const [isGuideModalVisible, setGuideModalVisible] = useState(false);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
@@ -72,9 +86,36 @@ const UnlockedResponseDetailScreen = () => {
     return () => clearTimeout(animationTimer);
   }, []);
 
-  // [2단계] connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
+  // 화면 포커스 시 깃발(flag) 검사 (UserAnswerList와 동일)
+  useFocusEffect(
+    useCallback(() => {
+      const checkGuideFlag = async () => {
+        try {
+          // 1. 스토리지에서 깃발을 확인
+          const flag = await AsyncStorage.getItem(STORAGE_KEY);
+
+          if (flag === "true") {
+            // 2. 깃발이 있으면, 모달을 띄움
+            setGuideModalVisible(true);
+            // 3. 깃발을 즉시 제거 (재방문 시 띄우지 않음)
+            await AsyncStorage.removeItem(STORAGE_KEY);
+          }
+        } catch (e) {
+          console.error("Failed to check connection guide flag", e);
+        }
+      };
+
+      checkGuideFlag();
+    }, []) // 의존성 배열은 비워둠
+  );
+
+  // connectionStatus에 따라 버튼의 텍스트와 비활성화 여부를 결정
   const buttonState = React.useMemo(() => {
-    const status = connectionStatus as ConnectionStatus | "null" | null;
+    //  connectionStatus가 'string' 또는 'null' 타입임을 명시하고 'null' 문자열이 올 수 있으므로 'null'도 체크합니다.
+    const status =
+      connectionStatus === "null"
+        ? null
+        : (connectionStatus as ConnectionStatus | string | null); // string 타입을 허용
 
     if (status === "PENDING") {
       return {
@@ -88,17 +129,38 @@ const UnlockedResponseDetailScreen = () => {
         disabled: true,
       };
     }
+    if (status === "REJECTED") {
+      return {
+        text: "거절된 요청입니다",
+        disabled: true,
+      };
+    } // 'LEFT' 상태를 추가합니다.
+    if (status === "EXPIRED") {
+      return {
+        text: "상대방의 응답이 없어, 취소된 요청입니다", // 새로운 상태 메시지
+        disabled: true,
+      };
+    }
+    if (status === "LEFT") {
+      return {
+        text: "대화가 종료된 사용자입니다", // 원하는 텍스트로 변경 가능
+        disabled: true,
+      };
+    } // 기본값 (status === null)
     return {
       text: "대화 요청하기",
       disabled: false,
     };
   }, [connectionStatus]);
 
-  const { mutate: requestConnection, isPending } = useMutation({
+  const { mutate: requestConnection, isPending } = useMutation<
+    RequestConnectionResponse, // onSuccess의 data 타입
+    AxiosError<any>, // onError의 error 타입
+    RequestConnectionBody // requestConnection에 전달될 body 타입
+  >({
     mutationFn: postRequestConnection,
-    onSuccess: (data) => {
-      // 대화 요청 후에는 이전 화면의 연결 상태가 바뀌었을 것이므로,
-      // 관련 쿼리를 무효화하여 돌아갔을 때 최신 상태를 볼 수 있도록 합니다.
+    //  onSuccess의 data 타입을 API의 실제 반환 타입인 RequestConnectionResponse로 변경합니다.
+    onSuccess: (data: RequestConnectionResponse) => {
       queryClient.invalidateQueries({
         queryKey: ["getUnlockedResponsesByUser", Number(authorId)],
       });
@@ -106,12 +168,23 @@ const UnlockedResponseDetailScreen = () => {
         queryKey: ["getSentConnectionsKey"],
       });
 
-      const successMessage =
-        data.status === "ACCEPTED"
-          ? "이미 대화방이 있어요!"
-          : `대화 요청 완료!\n\n${authorNickname}님이 수락하면\n\n알림을 보내드릴게요.`;
-      showAlert(successMessage, () => {
-        router.back();
+      // UserAnswerList.tsx와 동일하게 router.push를 사용하여 채팅방으로 이동합니다.
+      router.push({
+        pathname: "/chat/[id]",
+        params: {
+          id: String(data.id),
+          peerUserId: String(authorId),
+          peerUserName: String(authorNickname),
+          connectionInfo: JSON.stringify({
+            ...data,
+            opponent: {
+              id: Number(authorId),
+              nickname: String(authorNickname),
+            },
+          }),
+          isNewRequest: "true",
+          topicTitle: topicTitle,
+        },
       });
     },
     onError: (error: AxiosError | any) => {
@@ -121,15 +194,46 @@ const UnlockedResponseDetailScreen = () => {
 
       // 1. errorCode에 따라 분기합니다.
       if (errorCode === "RESPONSE_REQUIRED") {
-        // 1-1. '답변 부재' 에러: 기존 로직과 동일하게 답변 작성 페이지로 유도
+        // 1-1. '답변 부재' 에러: 깃발 저장 로직으로 수정
+        //  깃발 저장 로직 적용 (UserAnswerList와 동일)
         showActionAlert(
           message, // 서버에서 온 메시지를 그대로 사용
           `이야기 남기기`,
-          () => {
-            router.push({
-              pathname: "/topic/list/[listId]",
-              params: { listId: String(topicBoxId), error: "forbidden" },
-            });
+          async () => {
+            try {
+              // 1. 페이지 이동 전, 깃발(flag)을 스토리지에 저장
+              await AsyncStorage.setItem(STORAGE_KEY, "true");
+
+              // 2. 깃발 저장 후, 이야기 작성 페이지로 이동
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: {
+                  listId: String(topicBoxId),
+                  postSubmitAction: "REQUEST_CONNECTION",
+                  addresseeId: String(authorId),
+                  voiceResponseId: String(responseId),
+                  peerUserName: String(authorNickname),
+                  title: String(topicTitle),
+                },
+              });
+            } catch (storageError) {
+              console.error(
+                "Failed to set connection guide flag",
+                storageError
+              );
+              // 깃발 저장이 실패해도, 일단 페이지는 이동시킴
+              router.push({
+                pathname: "/topic/list/[listId]",
+                params: {
+                  listId: String(topicBoxId),
+                  postSubmitAction: "REQUEST_CONNECTION",
+                  addresseeId: String(authorId),
+                  voiceResponseId: String(responseId),
+                  peerUserName: String(authorNickname),
+                  title: String(topicTitle),
+                },
+              });
+            }
           }
         );
       } else if (errorCode === "INSUFFICIENT_TICKETS") {
@@ -238,6 +342,14 @@ const UnlockedResponseDetailScreen = () => {
           </ScalePressable>
         </View>
       </View>
+
+      {/*   새로 만든 가이드 모달 렌더링  */}
+      <ConnectionReminderGuideModal
+        isVisible={isGuideModalVisible}
+        onClose={() => setGuideModalVisible(false)}
+        peerUserName={String(authorNickname)}
+      />
+      {/*  추가 완료  */}
     </PageContainer>
   );
 };
@@ -287,7 +399,7 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 30,
     color: "#5C4B44",
   },
   nick: {
@@ -328,12 +440,12 @@ const styles = StyleSheet.create({
   },
   // [4단계] 비활성화된 버튼을 위한 스타일 추가
   disabledButton: {
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "#E0E0E0",
   },
   disabledButtonText: {
     color: "#B0A6A0",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   speechBubbleContainer: {
     alignItems: "center",

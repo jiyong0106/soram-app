@@ -6,8 +6,6 @@ import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import SheetRow from "@/components/common/SheetRow";
 import { useRouter } from "expo-router";
 import { useSignupDraftStore } from "@/utils/store/useSignupDraftStore";
-import { getProfileQuestionsResponse } from "@/utils/types/signup";
-// 더미 데이터 제거: 카테고리/질문은 상위에서 API 응답을 내려받아 props로 전달
 
 interface QuestionItemProp {
   id: number;
@@ -22,12 +20,12 @@ interface Props {
 
 const COLORS = {
   bg: "#FFFFFF",
-  text: "#111827", // gray-900
+  text: "#111827",
   sub: "#6B7280", // gray-500
   border: "#E5E7EB", // gray-200
   fill: "#F9FAFB", // gray-50
   danger: "#EF4444", // red-500
-  icon: "#111827",
+  icon: "#5C4B44",
 };
 
 // 한글 주석: 카테고리/질문 더미 데이터(추후 API 연동 시 교체)
@@ -45,7 +43,6 @@ const QuestionPageSheet = (
   const setOptionalTitle = useSignupDraftStore((s) => s.setOptionalTitle);
 
   const onPress = (title: string, id: number) => {
-    // 한글 주석: 선택된 질문의 타이틀을 저장한 뒤 시트 닫기
     setOptionalTitle?.(title);
     setSelectedTitle(title);
     setSelectedId(id);
@@ -86,18 +83,19 @@ const QuestionPageSheet = (
             renderItem={({ item }) => (
               <SheetRow
                 icon={
-                  <Ionicons
-                    name="help-circle-outline"
-                    size={18}
-                    color={COLORS.icon}
-                  />
+                  <Ionicons name="add-outline" size={16} color={COLORS.icon} />
                 }
                 label={item.content}
                 onPress={() => onPress(item.content, item.id)}
+                labelStyle={{ lineHeight: 20 }}
               />
             )}
             ItemSeparatorComponent={() => <View style={s.divider} />}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingVertical: 5,
+            }}
           />
         </View>
       </View>
@@ -145,8 +143,6 @@ const s = StyleSheet.create({
   group: {
     backgroundColor: COLORS.fill,
     borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: COLORS.border,
     marginTop: 12,

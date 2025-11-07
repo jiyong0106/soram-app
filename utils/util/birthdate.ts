@@ -53,3 +53,15 @@ export const getAgeFromBirthdate = (birthdate: string) => {
 };
 
 export const prettyLocation = (location?: string) => location ?? "어딘가에서";
+
+// 한글 주석: 생년 + 만 나이 포맷팅
+export function formatBirthAndAge(birthdate?: string | null) {
+  if (!birthdate) return "-";
+  const age = getAgeFromBirthdate(birthdate);
+  try {
+    const [y] = birthdate.split("-");
+    return age !== undefined ? `${y}년생, 만 ${age}세` : `${y}년생`;
+  } catch {
+    return birthdate as string;
+  }
+}

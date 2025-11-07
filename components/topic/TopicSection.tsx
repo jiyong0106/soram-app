@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -9,7 +9,6 @@ import {
 } from "@/utils/types/topic";
 import { getTopicList } from "@/utils/api/topicPageApi";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { useFocusEffect } from "expo-router";
 
 const TopicSection = ({ category }: { category: Category }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -32,12 +31,6 @@ const TopicSection = ({ category }: { category: Category }) => {
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
       staleTime: 60 * 1000,
     });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
 
   // 받은 페이지들을 합치고, 클라이언트에서 카테고리만 필터
   const items: TopicListType[] = data?.pages.flatMap((p) => p.data) ?? [];

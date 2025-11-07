@@ -6,7 +6,7 @@ import AppText from "../common/AppText";
 const EmptyHistory = () => (
   <View style={styles.container}>
     <Ionicons name="file-tray-outline" size={60} color="#E0E0E0" />
-    <Text style={styles.text}>아직 재화 내역이 없어요.</Text>
+    <Text style={styles.text}>아직 내역이 없어요</Text>
   </View>
 );
 
