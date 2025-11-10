@@ -1,29 +1,56 @@
 import { io, Socket } from "socket.io-client";
+import { useAppInitStore } from "../store/useAppInitStore";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
-// 환경 변수에서 API 접두사와 소켓 경로 읽어오기
-const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH || "/socket.io/"; // 기본값 /socket.io/
+const SOCKET_PATH = process.env.EXPO_PUBLIC_SOCKET_PATH || "/socket.io/";
 
 let socket: Socket | null = null;
+let isAuthenticated = false;
+// 인증이 완료되기를 기다리는 Promise의 resolve 함수들을 저장하는 배열
+let authPromiseResolvers: (() => void)[] = [];
+
+/**
+ * 소켓이 연결되고 서버로부터 'authenticated' 이벤트를 받을 때까지 기다리는 Promise를 반환합니다.
+ * 이미 인증된 상태라면 즉시 resolve됩니다.
+ */
+export function ensureSocketAuthenticated(): Promise<void> {
+  if (socket?.connected && isAuthenticated) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    authPromiseResolvers.push(resolve);
+  });
+}
 
 export function connectSocket(jwt: string) {
-  if (socket?.connected) return socket; // API_PREFIX를 네임스페이스에 동적으로 적용
+  if (socket?.connected) return socket;
 
+  useAppInitStore.getState().setSocketStatus("CONNECTING");
   const namespaceUrl = `${BASE_URL}/chat`;
 
   socket = io(namespaceUrl, {
     path: SOCKET_PATH,
-    transports: ["websocket"], // 서버가 headers.authorization만 읽으므로 헤더로 전달해야 함
+    transports: ["websocket"],
     extraHeaders: { Authorization: `Bearer ${jwt}` },
     autoConnect: true,
     reconnection: true,
     reconnectionAttempts: Infinity,
-    reconnectionDelay: 500, // 필요시 조절
+    reconnectionDelay: 500,
+  });
+
+  socket.on("authenticated", () => {
+    console.log("[getSocket] 소켓 인증 성공. 대기열의 작업을 실행합니다.");
+    isAuthenticated = true;
+    useAppInitStore.getState().setSocketStatus("AUTHENTICATED");
+    // 기다리고 있던 모든 Promise들을 resolve 해줌
+    authPromiseResolvers.forEach((resolve) => resolve());
+    authPromiseResolvers = []; // 배열 비우기
   });
 
   socket.on("disconnect", (reason) => {
     console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
-    // 연결이 끊겼으므로 전역 소켓 변수를 null로 설정
+    isAuthenticated = false; // 인증 상태 초기화
+    useAppInitStore.getState().setSocketStatus("DISCONNECTED");
     if (socket?.id === (socket as any).id) {
       socket = null;
     }
@@ -42,6 +69,9 @@ export function getSocket() {
 
 export function disconnectSocket() {
   if (!socket) return;
+  isAuthenticated = false;
+  authPromiseResolvers = [];
+  useAppInitStore.getState().setSocketStatus("DISCONNECTED");
   socket.removeAllListeners();
   socket.disconnect();
   socket = null;
