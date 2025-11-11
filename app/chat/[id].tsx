@@ -19,7 +19,11 @@ import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatItemType, ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
@@ -32,6 +36,7 @@ import { GetChatResponse } from "@/utils/types/chat";
 import { InfiniteData } from "@tanstack/react-query";
 import PendingRequestActions from "@/components/chat/PendingRequestActions";
 import {
+  getConnectionById,
   postConnectionsAccept,
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
@@ -118,8 +123,8 @@ const ChatIdPage = () => {
 
   const myUserId = useMemo(() => getUserIdFromJWT(token), [token]);
 
-  // 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
-  const connectionInfo = useMemo(() => {
+  // 1) 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
+  const connectionInfoFromCache = useMemo(() => {
     //  로컬 state를 최우선으로 사용
     // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
     if (localConnectionInfo) {
@@ -147,6 +152,21 @@ const ChatIdPage = () => {
     }
     return null;
   }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]);
+
+  // 2) 캐시에 정보가 없을 경우 (딥링크 등) API로 직접 조회
+  const {
+    data: connectionInfoFromApi,
+    isLoading: isConnectionInfoLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["getConnectionById", roomId],
+    queryFn: () => getConnectionById(roomId),
+    enabled: !connectionInfoFromCache, // 캐시에 데이터가 없을 때만 실행
+  });
+
+  // 3) 최종 connectionInfo 확정 (API 결과 우선)
+  const connectionInfo = connectionInfoFromApi || connectionInfoFromCache;
+
   const isPending = connectionInfo?.status === "PENDING";
   const isRequester = connectionInfo?.requesterId === myUserId;
 
@@ -323,14 +343,6 @@ const ChatIdPage = () => {
     );
   };
 
-  if (!connectionInfo) {
-    return (
-      <PageContainer>
-        <ActivityIndicator style={{ marginTop: 20 }} />
-      </PageContainer>
-    );
-  }
-
   // useEffect 로직 변경: measure() 사용
   useEffect(() => {
     const checkReceiverGuide = async () => {
@@ -382,6 +394,15 @@ const ChatIdPage = () => {
 
     checkReceiverGuide(); // connectionInfo가 확정된 이후에 이 로직이 실행되어야 함
   }, [connectionInfo, isPending, isRequester, roomId]);
+
+  // 모든 Hook 호출 이후에 로딩 상태를 체크합니다.
+  if (isConnectionInfoLoading) {
+    return (
+      <PageContainer>
+        <ActivityIndicator style={{ marginTop: 20 }} />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer edges={["bottom"]} padded={false}>

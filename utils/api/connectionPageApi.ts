@@ -1,3 +1,4 @@
+import { ChatItemType } from "../types/chat";
 import {
   GetConnectionsResponse,
   GetSentConnectionsResponse,
@@ -11,6 +12,16 @@ interface PagenationParams {
   take: number;
   cursor?: any;
 }
+
+// 0. ID로 특정 커넥션 정보 조회
+export const getConnectionById = async (
+  connectionId: number
+): Promise<ChatItemType> => {
+  const { data } = await instance.get<ChatItemType>(
+    `/connections/${connectionId}`
+  );
+  return data;
+};
 
 // 1. 나한테 대화요청한 목록 조회 api
 export const getConnections = async ({ take, cursor }: PagenationParams) => {
