@@ -5,7 +5,6 @@ import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
-import useAlert from "@/utils/hooks/useAlert";
 import { Ionicons } from "@expo/vector-icons";
 import {
   keepPreviousData,
@@ -187,7 +186,7 @@ const TopicPage = () => {
                       <View
                         style={{
                           width: ITEM_WIDTH,
-                          marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                          marginRight: isLastItem ? 0 : ITEM_SPACING,
                         }}
                       >
                         <TopicListCTA />
