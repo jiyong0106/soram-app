@@ -32,9 +32,9 @@ function AppSetup() {
   useEffect(() => {
     const handleNotificationNavigation = (data: any) => {
       if (data?.url && typeof data.url === "string") {
-        const url = `${data.url}?peerUserName=${encodeURIComponent(
-          data.peerUserName || ""
-        )}`;
+        const url = `${data.url}?peerUserId=${
+          data.peerUserId
+        }&peerUserName=${encodeURIComponent(data.peerUserName || "")}`;
         const connectionId = Number(data.id);
         const peerUserId = Number(data.peerUserId);
         const peerUserName = data.peerUserName;
