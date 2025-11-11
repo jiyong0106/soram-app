@@ -1,7 +1,7 @@
 import QueryProvider from "@/utils/libs/QueryProvider";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack, usePathname, Redirect, useRouter } from "expo-router";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -167,6 +167,7 @@ function AppSetup() {
 }
 
 export default function RootLayout() {
+  const MIN_SPLASH_MS = 2000; // ***** 스플래시 최소 노출 시간(ms)
   const [fontsLoaded] = useFonts({
     nsReg: require("../assets/fonts/NanumSquareNeo-bRg.ttf"),
     nsBol: require("../assets/fonts/NanumSquareNeo-cBd.ttf"),
@@ -175,6 +176,13 @@ export default function RootLayout() {
   const hydrated = useAuthStore((s) => s.hydrated);
   const token = useAuthStore((s) => s.token);
   const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
+  const [minDelayPassed, setMinDelayPassed] = useState(false);
+
+  // ***** 앱 시작 후 스플래시 최소 2초 유지
+  useEffect(() => {
+    const t = setTimeout(() => setMinDelayPassed(true), MIN_SPLASH_MS);
+    return () => clearTimeout(t);
+  }, []);
 
   // 앱 레벨 소켓 생명주기 관리
   useEffect(() => {
@@ -203,13 +211,20 @@ export default function RootLayout() {
     useChatUnreadStore.getState().setCurrentUser(uid);
   }, [token]);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded && hydrated) await SplashScreen.hideAsync();
-  }, [fontsLoaded, hydrated]);
 
+  // ***** 스플래시 숨기기(minDelayPassed 조건 충족 시)
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded && hydrated && minDelayPassed) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, hydrated, minDelayPassed]);
+
+  // 한글 주석: onLayout 이전에도 모든 조건이 충족되면 안전하게 숨김 시도
   useEffect(() => {
-    if (fontsLoaded && hydrated) SplashScreen.hideAsync();
-  }, [fontsLoaded, hydrated]);
+    if (fontsLoaded && hydrated && minDelayPassed) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, hydrated, minDelayPassed]);
 
   useEffect(() => {
     Notifications.setNotificationHandler({
