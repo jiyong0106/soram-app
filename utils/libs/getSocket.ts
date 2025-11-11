@@ -28,7 +28,8 @@ export function connectSocket(jwt: string) {
   useAppInitStore.getState().setSocketStatus("CONNECTING");
   const namespaceUrl = `${BASE_URL}/chat`;
 
-  socket = io(namespaceUrl, {
+  // 'const'로 새 소켓 인스턴스를 명시적으로 선언
+  const newSocket = io(namespaceUrl, {
     path: SOCKET_PATH,
     transports: ["websocket"],
     extraHeaders: { Authorization: `Bearer ${jwt}` },
@@ -38,7 +39,7 @@ export function connectSocket(jwt: string) {
     reconnectionDelay: 500,
   });
 
-  socket.on("authenticated", () => {
+  newSocket.on("authenticated", () => {
     console.log("[getSocket] 소켓 인증 성공. 대기열의 작업을 실행합니다.");
     isAuthenticated = true;
     useAppInitStore.getState().setSocketStatus("AUTHENTICATED");
@@ -47,19 +48,26 @@ export function connectSocket(jwt: string) {
     authPromiseResolvers = []; // 배열 비우기
   });
 
-  socket.on("disconnect", (reason) => {
+  // 'newSocket'의 핸들러 등록합니다.
+  newSocket.on("disconnect", (reason) => {
     console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
-    isAuthenticated = false; // 인증 상태 초기화
+    isAuthenticated = false;
     useAppInitStore.getState().setSocketStatus("DISCONNECTED");
-    if (socket?.id === (socket as any).id) {
+
+    // 이 이벤트가 발생한 소켓(newSocket)이
+    // 현재 '전역 socket' 변수와 동일한 인스턴스일 때만 null로 설정
+    // 이렇게 하면 오래된 소켓의 disconnect 이벤트가
+    // 새로 활성화된 소켓을 null로 만드는 버그를 원천 차단
+    if (socket === newSocket) {
       socket = null;
     }
   });
 
-  socket.on("connect_error", (err) => {
+  newSocket.on("connect_error", (err) => {
     console.error(`[getSocket] [connect_error] 소켓 연결 실패.`, err);
   });
 
+  socket = newSocket;
   return socket;
 }
 
