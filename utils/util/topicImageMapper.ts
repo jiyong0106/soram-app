@@ -2,24 +2,38 @@ import { Category } from "@/utils/types/topic"; // 기존 Category 타입 활용
 
 // React Native는 require 경로가 정적이어야 하므로, 모든 이미지를 미리 로드합니다.
 const topicImageMap: Record<string | Category, any> = {
-  여행: require("@/assets/topicImages/travel.png"),
-  음식: require("@/assets/topicImages/food.png"),
-  영화: require("@/assets/topicImages/movie.png"),
-  음악: require("@/assets/topicImages/music.png"),
-  책: require("@/assets/topicImages/book.png"),
-  운동: require("@/assets/topicImages/health.png"),
-  일상: require("@/assets/topicImages/daily.png"),
-  미래: require("@/assets/topicImages/future.png"),
-  "밸런스 게임": require("@/assets/topicImages/balance.png"),
-  경험: require("@/assets/topicImages/experience.png"),
-  관계: require("@/assets/topicImages/relations.png"),
-  유머: require("@/assets/topicImages/humor.png"),
-  추억: require("@/assets/topicImages/memory.png"),
-  사랑: require("@/assets/topicImages/love.png"),
-  상상: require("@/assets/topicImages/imagination.png"),
-  생각: require("@/assets/topicImages/mind.png"),
+  "가치관 및 생각": require("@/assets/topicImages/value_thought.png"),
+  "경험 및 성장": require("@/assets/topicImages/experience_growth.png"),
+  "관계 및 사랑": require("@/assets/topicImages/relationship_love.png"),
+  "일과 커리어": require("@/assets/topicImages/work_career.png"),
+  "문화 및 취향": require("@/assets/topicImages/culture_taste.png"),
+  "여행 및 장소": require("@/assets/topicImages/travel_place.png"),
+  "추억 및 일상": require("@/assets/topicImages/memorie_daily.png"),
+  "꿈과 미래": require("@/assets/topicImages/dream_future.png"),
+  "취미 및 여가": require("@/assets/topicImages/hobby_leisure.png"),
+  "만약...": require("@/assets/topicImages/what_If.png"),
   default: require("@/assets/topicImages/default.png"),
 };
+
+// const topicImageMap: Record<string | Category, any> = {
+//   여행: require("@/assets/topicImages/travel.png"),
+//   음식: require("@/assets/topicImages/food.png"),
+//   영화: require("@/assets/topicImages/movie.png"),
+//   음악: require("@/assets/topicImages/music.png"),
+//   책: require("@/assets/topicImages/book.png"),
+//   운동: require("@/assets/topicImages/health.png"),
+//   일상: require("@/assets/topicImages/daily.png"),
+//   미래: require("@/assets/topicImages/future.png"),
+//   "밸런스 게임": require("@/assets/topicImages/balance.png"),
+//   경험: require("@/assets/topicImages/experience.png"),
+//   관계: require("@/assets/topicImages/relations.png"),
+//   유머: require("@/assets/topicImages/humor.png"),
+//   추억: require("@/assets/topicImages/memory.png"),
+//   사랑: require("@/assets/topicImages/love.png"),
+//   상상: require("@/assets/topicImages/imagination.png"),
+//   생각: require("@/assets/topicImages/mind.png"),
+//   default: require("@/assets/topicImages/default.png"),
+// };
 
 /**
  * 카테고리 문자열에 해당하는 정적 이미지 리소스를 반환합니다.
