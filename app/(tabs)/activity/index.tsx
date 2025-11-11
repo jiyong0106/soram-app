@@ -34,8 +34,22 @@ const ActivityScreen = () => {
   const TAB_WIDTH = (layout.width - H_PADDING * 2) / TAB_COUNT;
 
   return (
-    <PageContainer padded={false}>
-      <Stack.Screen options={{ title: "활동" }} />
+    <PageContainer edges={[]} padded={false}>
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: true,
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <View style={{ paddingHorizontal: 16 }}>
+              <AppText style={{ fontSize: 20, fontWeight: "bold" }}>
+                활동
+              </AppText>
+            </View>
+          ),
+        }}
+      />
       <TabView<Route>
         navigationState={{ index, routes: ROUTES }}
         renderScene={renderScene}

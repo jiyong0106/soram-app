@@ -117,7 +117,7 @@ const chatPage = () => {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerLeft: () => (
-            <AppText style={{ fontSize: 25, fontWeight: "bold" }}>대화</AppText>
+            <AppText style={{ fontSize: 20, fontWeight: "bold" }}>대화</AppText>
           ),
           //  iOS 네이티브 검색바 간단 적용
           headerSearchBarOptions: {
