@@ -17,7 +17,7 @@ const ChatTriggerBanner = ({ roomId }: ChatTriggerBannerProps) => {
   const [activeTab, setActiveTab] = useState<"mine" | "opponent">("mine");
   const actionSheetRef = useRef<any>(null);
 
-  const { data, isLoading, isError } = useQuery<GetTriggerResponse>({
+  const { data } = useQuery<GetTriggerResponse>({
     queryKey: ["connectionTrigger", roomId],
     queryFn: () => getConnectionTrigger(roomId),
     staleTime: 5 * 60 * 1000,

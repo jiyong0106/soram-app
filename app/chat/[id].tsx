@@ -12,6 +12,8 @@ import {
   ActivityIndicator,
   Alert, // 임시 알너트 임포트
   LayoutRectangle,
+  Keyboard,
+  InteractionManager,
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -113,6 +115,13 @@ const ChatIdPage = () => {
   const bannerRef = useRef<View>(null);
 
   const actionSheetRef = useRef<any>(null);
+  // 한글 주석: 단순/안정 전략 - 키보드 닫고 상호작용 종료 후 시트 오픈
+  const openActionSheet = useCallback(() => {
+    Keyboard.dismiss();
+    InteractionManager.runAfterInteractions(() => {
+      actionSheetRef.current?.present?.();
+    });
+  }, []);
 
   //  isNewRequest 파라미터에 따라 모달을 띄우는 useEffect를 추가
   useEffect(() => {
@@ -421,10 +430,7 @@ const ChatIdPage = () => {
                 <Ionicons name="refresh-circle" size={24} color="#FF6B3E" />
               </TouchableOpacity>
               {/* ▲▲▲ 임시 코드 끝 ▲▲▲ */}
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() => actionSheetRef.current?.present?.()}
-              >
+              <TouchableOpacity activeOpacity={0.5} onPress={openActionSheet}>
                 <Ionicons name="ellipsis-vertical" size={22} />
               </TouchableOpacity>
             </View>
