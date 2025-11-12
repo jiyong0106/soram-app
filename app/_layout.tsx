@@ -56,7 +56,7 @@ function AppSetup() {
                 id: connectionId,
                 status: data.status,
                 addresseeId: currentUserId,
-                requesterId: peerUserId, // 1번 Fix에서 가져온 ID
+                requesterId: peerUserId,
                 createdAt: now,
                 updatedAt: now,
                 lastMessage: null,
