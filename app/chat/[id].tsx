@@ -38,7 +38,6 @@ import { GetChatResponse } from "@/utils/types/chat";
 import { InfiniteData } from "@tanstack/react-query";
 import PendingRequestActions from "@/components/chat/PendingRequestActions";
 import {
-  getConnectionById,
   postConnectionsAccept,
   postConnectionsReject,
 } from "@/utils/api/connectionPageApi";
@@ -134,61 +133,74 @@ const ChatIdPage = () => {
 
   // 1) 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfoFromCache = useMemo(() => {
-    //  로컬 state를 최우선으로 사용
-    // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+    console.log(
+      `[채팅방 ${roomId}] 1. connectionInfo를 결정하는 로직을 시작합니다.`
+    );
+    console.log(
+      `[채팅방 ${roomId}] 전달받은 파라미터(connectionInfoParam):`,
+      connectionInfoParam
+    ); // 로컬 state를 최우선으로 사용 // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
+
     if (localConnectionInfo) {
+      console.log(
+        `[채팅방 ${roomId}] 로컬 상태(localConnectionInfo)가 존재하여 우선 사용합니다.`
+      );
       return localConnectionInfo;
     }
 
     // 라우팅 시 직접 전달받은 정보가 있으면 최우선으로 사용
     if (connectionInfoParam) {
       try {
-        return JSON.parse(connectionInfoParam);
+        const parsed = JSON.parse(connectionInfoParam);
+        console.log(
+          `[채팅방 ${roomId}] 라우팅 파라미터를 파싱하여 사용합니다.`
+        );
+        return parsed;
       } catch (e) {
         console.error("Failed to parse connectionInfo param:", e);
       }
     }
 
-    // 전달받은 정보가 없으면 캐시에서 탐색
+    console.log(
+      `[채팅방 ${roomId}] 라우팅 파라미터가 없어 React Query 캐시(getChatKey)를 탐색합니다.`
+    );
     const chatListData = queryClient.getQueryData<
       InfiniteData<GetChatResponse>
     >(["getChatKey"]);
-    if (!chatListData) return null;
+    if (!chatListData) {
+      console.log(`[채팅방 ${roomId}] 캐시에 데이터가 없습니다.`);
+      return null;
+    }
 
     for (const page of chatListData.pages) {
       const found = page.data.find((item: ChatItemType) => item.id === roomId);
-      if (found) return found;
+      if (found) {
+        console.log(`[채팅방 ${roomId}] 캐시에서 정보를 찾았습니다.`);
+        return found;
+      }
     }
+    console.log(
+      `[채팅방 ${roomId}] 캐시를 모두 탐색했지만 정보를 찾지 못했습니다.`
+    );
     return null;
-  }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]);
+  }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]); // 2) [제거됨] 캐시에 정보가 없을 경우 API로 직접 조회하는 useQuery 로직 // 3) 최종 connectionInfo 확정 (캐시/파라미터/로컬 state 우선)
 
-  // 2) 캐시에 정보가 없을 경우 (딥링크 등) API로 직접 조회
-  const {
-    data: connectionInfoFromApi,
-    isLoading: isConnectionInfoLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["getConnectionById", roomId],
-    queryFn: () => getConnectionById(roomId),
-    enabled: !connectionInfoFromCache, // 캐시에 데이터가 없을 때만 실행
-  });
-
-  // 3) 최종 connectionInfo 확정 (API 결과 우선)
-  const connectionInfo = connectionInfoFromApi || connectionInfoFromCache;
+  const connectionInfo = connectionInfoFromCache;
+  console.log(
+    `[채팅방 ${roomId}] 3. 최종 connectionInfo가 확정되었습니다.`,
+    connectionInfo
+  );
 
   const isPending = connectionInfo?.status === "PENDING";
-  const isRequester = connectionInfo?.requesterId === myUserId;
+  const isRequester = connectionInfo?.requesterId === myUserId; // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
 
-  // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
   const { setActiveConnection, resetUnread } = useChatUnreadStore();
   useEffect(() => {
-    setActiveConnection(roomId);
-    // 진입 시 해당 방의 배지 제거 (현재 사용자 버킷 기준)
+    setActiveConnection(roomId); // 진입 시 해당 방의 배지 제거 (현재 사용자 버킷 기준)
     resetUnread(roomId);
     return () => setActiveConnection(null);
-  }, [roomId, setActiveConnection, resetUnread]);
+  }, [roomId, setActiveConnection, resetUnread]); // 1) 이전 채팅 이력 (항상 최신 보장: staleTime 0, refetchOnMount always)
 
-  // 1) 이전 채팅 이력 (항상 최신 보장: staleTime 0, refetchOnMount always)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["getMessagesKey", roomId],
@@ -202,18 +214,15 @@ const ChatIdPage = () => {
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
       staleTime: 0,
       refetchOnMount: "always",
-      refetchOnReconnect: true,
-      // enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
+      refetchOnReconnect: true, // enabled: !isPending, // PENDING 상태에서는 메시지 조회 비활성화
     });
   const historyItems: ChatMessageType[] =
-    data?.pages.flatMap((item) => item.data) ?? [];
-  // 2) 실시간 수신
+    data?.pages.flatMap((item) => item.data) ?? []; // 2) 실시간 수신
   const {
     messages: realtimeItems,
     sendMessage,
     readUpTo,
-  } = useChat(token, roomId, myUserId ?? undefined);
-  // 서버 ChatMessageType -> GiftedChat IMessage 매핑
+  } = useChat(token, roomId, myUserId ?? undefined); // 서버 ChatMessageType -> GiftedChat IMessage 매핑
   const mapToIMessage = useCallback(
     (m: ChatMessageType): IMessage => ({
       _id: String(m.id),
@@ -222,17 +231,12 @@ const ChatIdPage = () => {
       user: {
         _id: m.senderId,
         name: m.sender?.nickname,
-      },
-      // isPending 상태가 true이면, 서버에서 온 isRead 값이 무엇이든 무조건 false로 덮어씁니다.
-      // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용
+      }, // isPending 상태가 true이면, 서버에서 온 isRead 값이 무엇이든 무조건 false로 덮어씁니다. // isPending이 false일 때만 서버에서 온 m.isRead 값을 그대로 사용
       isRead: isPending ? false : m.isRead,
-    }),
-    // isPending 값이 변경될 때마다 이 함수가 최신 값을 참조할 수 있도록
-    // useCallback의 의존성 배열에 isPending을 추가
+    }), // isPending 값이 변경될 때마다 이 함수가 최신 값을 참조할 수 있도록 // useCallback의 의존성 배열에 isPending을 추가
     [isPending]
-  );
+  ); // 이전 이력 + 실시간 합치기(중복 제거, 오름차순 정렬)
 
-  // 이전 이력 + 실시간 합치기(중복 제거, 오름차순 정렬)
   const giftedMessages = useMemo(() => {
     const merged = [...historyItems, ...realtimeItems];
     const dedupMap = new Map<number, ChatMessageType>();
@@ -243,9 +247,8 @@ const ChatIdPage = () => {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
     return unique.map(mapToIMessage);
-  }, [historyItems, realtimeItems, mapToIMessage]);
+  }, [historyItems, realtimeItems, mapToIMessage]); // GiftedChat onSend -> 소켓 전송만 수행(낙관적 추가는 서버 에코로 처리)
 
-  // GiftedChat onSend -> 소켓 전송만 수행(낙관적 추가는 서버 에코로 처리)
   const handleSendGifted = useCallback(
     (newMessages?: IMessage[]) => {
       const t = newMessages?.[0]?.text?.trim();
@@ -253,9 +256,8 @@ const ChatIdPage = () => {
       sendMessage(t);
     },
     [sendMessage]
-  );
+  ); // 스크롤 최상단 자동 로드 시 다중 호출 방지용 락
 
-  // 스크롤 최상단 자동 로드 시 다중 호출 방지용 락
   const loadingEarlierRef = useRef(false);
   const handleLoadEarlier = useCallback(async () => {
     // 이미 로딩 중이면 추가 호출 무시
@@ -266,26 +268,22 @@ const ChatIdPage = () => {
     } finally {
       loadingEarlierRef.current = false;
     }
-  }, [fetchNextPage]);
+  }, [fetchNextPage]); // 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
 
-  // 화면에 보이는 메시지가 변경될 때 '읽음' 이벤트를 전송하는 콜백 함수
   const handleViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: Array<{ item: IMessage }> }) => {
-      if (!viewableItems || viewableItems.length === 0 || !myUserId) return;
+      if (!viewableItems || viewableItems.length === 0 || !myUserId) return; // 화면에 보이는 '상대방' 메시지들만 필터링
 
-      // 화면에 보이는 '상대방' 메시지들만 필터링
       const opponentMessages = viewableItems
         .map((viewable) => viewable.item)
         .filter((msg) => msg.user._id !== myUserId);
 
-      if (opponentMessages.length === 0) return;
+      if (opponentMessages.length === 0) return; // 상대방 메시지 중 ID가 가장 큰 (가장 최신) 메시지를 찾음
 
-      // 상대방 메시지 중 ID가 가장 큰 (가장 최신) 메시지를 찾음
       const lastVisibleOpponentMessage = opponentMessages.reduce(
         (latest, msg) => (Number(msg._id) > Number(latest._id) ? msg : latest)
-      );
+      ); // 이 메시지까지 읽었다고 서버에 알림 (IMessage의 _id는 string이므로 숫자로 변환)
 
-      // 이 메시지까지 읽었다고 서버에 알림 (IMessage의 _id는 string이므로 숫자로 변환)
       readUpTo(Number(lastVisibleOpponentMessage._id));
     },
     [myUserId, readUpTo]
@@ -320,8 +318,7 @@ const ChatIdPage = () => {
           showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
         } finally {
           setActionLoading(false);
-        }
-        // --- 기존 로직 끝 ---
+        } // --- 기존 로직 끝 ---
       }
     );
   };
@@ -346,13 +343,11 @@ const ChatIdPage = () => {
           showAlert(e?.response?.data?.message || "오류가 발생했습니다.");
         } finally {
           setActionLoading(false);
-        }
-        // --- 기존 로직 끝 ---
+        } // --- 기존 로직 끝 ---
       }
     );
-  };
+  }; // useEffect 로직 변경: measure() 사용
 
-  // useEffect 로직 변경: measure() 사용
   useEffect(() => {
     const checkReceiverGuide = async () => {
       // 유효한 connection 정보가 있고,
@@ -363,7 +358,7 @@ const ChatIdPage = () => {
           const hasViewed = await AsyncStorage.getItem(storageKey);
           if (!hasViewed) {
             // ref.current.measure()를 사용해 절대 좌표를 측정
-            //    측정이 완료될 때까지 잠시 대기 (setTimeout)
+            //  측정이 완료될 때까지 잠시 대기 (setTimeout)
             setTimeout(() => {
               if (bannerRef.current) {
                 bannerRef.current.measure(
@@ -374,12 +369,10 @@ const ChatIdPage = () => {
                       y: pageY,
                       width: width,
                       height: height,
-                    });
-                    // 측정이 완료된 후 모달을 띄움
+                    }); // 측정이 완료된 후 모달을 띄움
                     setReceiverGuideVisible(true);
                   }
-                );
-                // '봤음'으로 저장 (measure 호출 직후)
+                ); // '봤음'으로 저장 (measure 호출 직후)
                 AsyncStorage.setItem(storageKey, "true").catch((e) =>
                   console.error("Failed to set AsyncStorage item", e)
                 );
@@ -402,16 +395,7 @@ const ChatIdPage = () => {
     };
 
     checkReceiverGuide(); // connectionInfo가 확정된 이후에 이 로직이 실행되어야 함
-  }, [connectionInfo, isPending, isRequester, roomId]);
-
-  // 모든 Hook 호출 이후에 로딩 상태를 체크합니다.
-  if (isConnectionInfoLoading) {
-    return (
-      <PageContainer>
-        <ActivityIndicator style={{ marginTop: 20 }} />
-      </PageContainer>
-    );
-  }
+  }, [connectionInfo, isPending, isRequester, roomId]); // [제거됨] isConnectionInfoLoading 로딩 상태 체크
 
   return (
     <PageContainer edges={["bottom"]} padded={false}>
@@ -423,6 +407,7 @@ const ChatIdPage = () => {
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
               {/* ▼▼▼ 임시 리셋 버튼을 헤더에 추가 ▼▼▼ */}
+
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={handleTempResetGuide}
@@ -467,7 +452,6 @@ const ChatIdPage = () => {
               : undefined
           }
         />
-
         {/* ref를 할당하고 onLayout을 제거 */}
         <View style={styles.bannerWrapper} ref={bannerRef}>
           <ChatTriggerBanner roomId={roomId} />
@@ -492,8 +476,7 @@ const ChatIdPage = () => {
       <ReceiverRequestGuideModal
         isVisible={isReceiverGuideVisible}
         onClose={() => setReceiverGuideVisible(false)}
-        peerUserName={peerUserName}
-        // 측정된 배너 레이아웃을 prop으로 전달
+        peerUserName={peerUserName} // 측정된 배너 레이아웃을 prop으로 전달
         bannerLayout={bannerLayout}
       />
     </PageContainer>
