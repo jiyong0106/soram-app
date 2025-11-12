@@ -43,7 +43,7 @@ const VerifyCodeInputPage = () => {
         pushToken: pushToken || undefined,
       });
 
-      // 1. 토큰 메모리 저장 후 프로필 입력으로
+      // 토큰 메모리 저장 후 프로필 입력으로
       if (res.signupToken) {
         setSignupToken(res.signupToken);
         clearPhoneNumber(); // PII 정리
@@ -51,9 +51,11 @@ const VerifyCodeInputPage = () => {
         return;
       }
 
-      // 2. 기존 유저 accessToken → SecureStore 저장 후 홈으로
-      if (res.accessToken) {
-        useAuthStore.getState().setToken(res.accessToken);
+      // 기존 유저 accessToken → SecureStore 저장 후 홈으로
+      if (res.accessToken && res.refreshToken) {
+        // setToken (X) -> setTokens (O)
+        // 올바른 함수를 사용하여 두 토큰을 모두 저장합니다.
+        useAuthStore.getState().setTokens(res.accessToken, res.refreshToken);
         clearPhoneNumber();
         router.replace("/(tabs)/topic");
         router.dismissAll();

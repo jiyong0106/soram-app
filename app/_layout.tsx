@@ -21,14 +21,13 @@ import { GetChatResponse, ChatItemType } from "@/utils/types/chat";
 
 SplashScreen.preventAutoHideAsync();
 
-// 💥 NEW: 앱 초기화 로직을 담당하는 컴포넌트
+// 앱 초기화 로직을 담당하는 컴포넌트
 function AppSetup() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const token = useAuthStore((s) => s.token);
-  const { socketStatus, consumePendingNavigation } = useAppInitStore();
+  const { socketStatus, consumePendingNavigation } = useAppInitStore(); // 알림 및 캐시 관리
 
-  // 알림 및 캐시 관리
   useEffect(() => {
     const handleNotificationNavigation = (data: any) => {
       if (data?.url && typeof data.url === "string") {
@@ -40,18 +39,17 @@ function AppSetup() {
         const peerUserName = data.peerUserName;
 
         if (connectionId && peerUserId && peerUserName) {
-          // 🔻🔻🔻 FIX: currentUserId는 여기서 선언 🔻🔻🔻
           const currentUserId = getUserIdFromJWT(token);
 
           queryClient.setQueryData<InfiniteData<GetChatResponse>>(
             ["getChatKey"],
             (oldData) => {
-              // 🔻🔻🔻 FIX: null 체크는 콜백 내부 최상단에서 수행 🔻🔻🔻
+              // [유지] 캐시 업데이트 실패는 중요한 오류 로그
               if (currentUserId === null) {
                 console.error(
                   "[AppSetup] 유효한 유저 ID가 없어 캐시를 업데이트할 수 없습니다."
                 );
-                return oldData; // ✅ 이제 'oldData'에 접근 가능
+                return oldData;
               }
               const now = new Date().toISOString();
               const newItem: ChatItemType = {
@@ -64,18 +62,14 @@ function AppSetup() {
                 lastMessage: null,
                 isBlocked: toBoolParam(data.isBlocked),
                 isLeave: toBoolParam(data.isLeave),
-
-                // --- chat.ts에 맞춰 추가된 속성 ---
-                voiceResponseId: 0, // 🚨 기본값 (또는 data에서 받아야 함)
-                isMuted: false, // 🚨 기본값 (또는 data에서 받아야 함)
+                voiceResponseId: 0,
+                isMuted: false,
                 opponent: {
                   id: peerUserId,
                   nickname: peerUserName,
-                  // 🚨 UserType에 필요한 다른 속성이 있다면 추가해야 함
                 },
               };
 
-              // 기존 데이터가 없으면 새로운 구조 생성
               if (!oldData) {
                 return {
                   pageParams: [undefined],
@@ -93,7 +87,6 @@ function AppSetup() {
                 };
               }
 
-              // 기존 데이터가 있으면, 중복을 확인하고 맨 앞에 추가
               const itemExists = oldData.pages.some((page) =>
                 page.data.some((item) => item.id === connectionId)
               );
@@ -103,7 +96,6 @@ function AppSetup() {
               }
 
               const newData = { ...oldData };
-              // unshift는 배열 자체를 변경하므로, 새로운 배열을 만들어 불변성 유지
               const firstPageData = [newItem, ...newData.pages[0].data];
               newData.pages[0] = { ...newData.pages[0], data: firstPageData };
 
@@ -123,10 +115,10 @@ function AppSetup() {
 
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((res) => {
-        console.log(
-          "알림 응답 페이로드 (앱 실행 중):",
-          JSON.stringify(res, null, 2)
-        );
+        // console.log(
+        //   "알림 응답 페이로드 (앱 실행 중):",
+        //   JSON.stringify(res, null, 2)
+        // );
         const data = res.notification.request.content.data as any;
         const url = handleNotificationNavigation(data);
         if (url) router.push(url as any);
@@ -135,10 +127,10 @@ function AppSetup() {
     (async () => {
       const initial = await Notifications.getLastNotificationResponseAsync();
       if (initial) {
-        console.log(
-          "알림 응답 페이로드 (콜드 스타트):",
-          JSON.stringify(initial, null, 2)
-        );
+        // console.log(
+        //   "알림 응답 페이로드 (콜드 스타트):",
+        //   JSON.stringify(initial, null, 2)
+        // );
         const data = initial?.notification.request.content.data as any;
         const url = handleNotificationNavigation(data);
         if (url) useAppInitStore.getState().setPendingNavigation(url);
@@ -148,22 +140,21 @@ function AppSetup() {
     return () => {
       responseListener.remove();
     };
-  }, [token, queryClient, router]);
+  }, [token, queryClient, router]); // 보류된 내비게이션 실행
 
-  // 보류된 내비게이션 실행
   useEffect(() => {
     if (socketStatus === "AUTHENTICATED") {
       const pendingUrl = consumePendingNavigation();
       if (pendingUrl) {
-        console.log(
-          `[Navigation] 소켓 인증 완료. 보류된 URL로 이동: ${pendingUrl}`
-        );
+        // console.log(
+        //   `[Navigation] 소켓 인증 완료. 보류된 URL로 이동: ${pendingUrl}`
+        // );
         setTimeout(() => router.push(pendingUrl as any), 0);
       }
     }
   }, [socketStatus, consumePendingNavigation, router]);
 
-  return null; // 이 컴포넌트는 UI를 렌더링하지 않음
+  return null;
 }
 
 export default function RootLayout() {
@@ -175,28 +166,24 @@ export default function RootLayout() {
   const pathname = usePathname();
   const hydrated = useAuthStore((s) => s.hydrated);
   const token = useAuthStore((s) => s.token);
-  const needsRedirect = !!token && (pathname === "/" || pathname === "/index");
-  const [minDelayPassed, setMinDelayPassed] = useState(false);
+  const [minDelayPassed, setMinDelayPassed] = useState(false); // [제거] 렌더링, Hydration 완료 로그 등 디버깅 로그 모두 제거
+
+  const needsRedirect = !!token && (pathname === "/" || pathname === "/index"); // 스플래시 최소 2초 유지
 
   // ***** 앱 시작 후 스플래시 최소 2초 유지
   useEffect(() => {
     const t = setTimeout(() => setMinDelayPassed(true), MIN_SPLASH_MS);
     return () => clearTimeout(t);
-  }, []);
+  }, []); // 앱 레벨 소켓 생명주기 관리
 
-  // 앱 레벨 소켓 생명주기 관리
   useEffect(() => {
     if (token) {
-      console.log("[SocketManager] 토큰 확인, 소켓 연결을 시작합니다.");
+      // [제거] 소켓 연결 시도/해제는 정상 흐름이므로 로그 제거
       connectSocket(token);
     } else {
-      console.log("[SocketManager] 토큰 없음, 소켓 연결을 해제합니다.");
       disconnectSocket();
     }
     return () => {
-      console.log(
-        "[SocketManager] RootLayout 언마운트, 소켓 연결을 해제합니다."
-      );
       disconnectSocket();
     };
   }, [token]);
@@ -209,8 +196,7 @@ export default function RootLayout() {
   useReactEffect(() => {
     const uid = getUserIdFromJWT(token);
     useChatUnreadStore.getState().setCurrentUser(uid);
-  }, [token]);
-
+  }, [token]); // 스플래시 숨기기(minDelayPassed 조건 충족 시)
 
   // ***** 스플래시 숨기기(minDelayPassed 조건 충족 시)
   const onLayoutRootView = useCallback(async () => {
@@ -224,7 +210,7 @@ export default function RootLayout() {
     if (fontsLoaded && hydrated && minDelayPassed) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, hydrated, minDelayPassed]);
+  }, [fontsLoaded, hydrated, minDelayPassed]); // 알림 핸들러 설정
 
   useEffect(() => {
     Notifications.setNotificationHandler({
@@ -243,6 +229,7 @@ export default function RootLayout() {
   }, []);
 
   if (!fontsLoaded || !hydrated) return null;
+
   if (needsRedirect) return <Redirect href="/topic" />;
 
   return (

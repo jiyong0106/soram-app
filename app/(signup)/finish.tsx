@@ -46,13 +46,12 @@ const FinishPage = () => {
       };
       const res = await postSignupSumbit(body);
 
-      if (!res?.accessToken) {
+      if (!res?.accessToken || !res?.refreshToken) {
         showAlert(" 다시 시도해 주세요.");
         return;
-      }
+      } // 두 토큰을 모두 저장
 
-      // 3) 토큰 저장 → 인터셉터가 이후 요청부터 자동 주입
-      useAuthStore.getState().setToken(res.accessToken);
+      useAuthStore.getState().setTokens(res.accessToken, res.refreshToken);
 
       // 4) 임시 스토어 정리
       useSignupDraftStore.getState().reset?.();
