@@ -13,7 +13,7 @@ const SettingPage = () => {
     <PageContainer edges={["bottom"]} padded={false}>
       <Stack.Screen
         options={{
-          title: "",
+          headerTitle: "",
           headerShown: true,
           headerBackVisible: false,
           headerShadowVisible: false,
