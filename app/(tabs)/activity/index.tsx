@@ -37,7 +37,7 @@ const ActivityScreen = () => {
     <PageContainer edges={[]} padded={false}>
       <Stack.Screen
         options={{
-          headerTitle: "",
+          title: "",
           headerShown: true,
           headerBackVisible: false,
           headerShadowVisible: false,
