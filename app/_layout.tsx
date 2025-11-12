@@ -54,9 +54,9 @@ function AppSetup() {
               const now = new Date().toISOString();
               const newItem: ChatItemType = {
                 id: connectionId,
-                status: "ACCEPTED",
-                addresseeId: peerUserId,
-                requesterId: currentUserId, // 1번 Fix에서 가져온 ID
+                status: data.status,
+                addresseeId: currentUserId,
+                requesterId: peerUserId, // 1번 Fix에서 가져온 ID
                 createdAt: now,
                 updatedAt: now,
                 lastMessage: null,
