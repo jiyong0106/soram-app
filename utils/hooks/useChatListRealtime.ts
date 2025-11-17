@@ -82,9 +82,52 @@ export function useChatListRealtime(jwt: string) {
 
     socket.on("updateChatList", onUpdateChatList);
 
+    const onConnectionLeft = ({ connectionId }: { connectionId: number }) => {
+      if (!connectionId) return;
+      queryClient.setQueryData<InfiniteData<GetChatResponse>>(
+        ["getChatKey"],
+        (old) => {
+          if (!old) return old;
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              item.id === connectionId ? { ...item, isLeave: true } : item
+            ),
+          }));
+          return { ...old, pages: newPages };
+        }
+      );
+    };
+
+    const onConnectionBlocked = ({
+      connectionId,
+    }: {
+      connectionId: number;
+    }) => {
+      if (!connectionId) return;
+      queryClient.setQueryData<InfiniteData<GetChatResponse>>(
+        ["getChatKey"],
+        (old) => {
+          if (!old) return old;
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              item.id === connectionId ? { ...item, isBlocked: true } : item
+            ),
+          }));
+          return { ...old, pages: newPages };
+        }
+      );
+    };
+
+    socket.on("connection:left", onConnectionLeft);
+    socket.on("connection:blocked", onConnectionBlocked);
+
     return () => {
       // 💥 NEW: socket이 존재할 때만 off를 호출하도록 방어
       socket?.off("updateChatList", onUpdateChatList);
+      socket?.off("connection:left", onConnectionLeft);
+      socket?.off("connection:blocked", onConnectionBlocked);
     };
   }, [jwt, queryClient, myUserId]); // 💥 MODIFIED: myUserId 의존성 추가
 }

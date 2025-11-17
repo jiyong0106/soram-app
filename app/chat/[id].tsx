@@ -133,18 +133,8 @@ const ChatIdPage = () => {
 
   // 1) 채팅 목록 캐시에서 현재 채팅방 정보 찾기 (라우팅 파라미터 우선)
   const connectionInfoFromCache = useMemo(() => {
-    console.log(
-      `[채팅방 ${roomId}] 1. connectionInfo를 결정하는 로직을 시작합니다.`
-    );
-    console.log(
-      `[채팅방 ${roomId}] 전달받은 파라미터(connectionInfoParam):`,
-      connectionInfoParam
-    ); // 로컬 state를 최우선으로 사용 // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
-
+    // 로컬 state를 최우선으로 사용 // 로컬 상태 오버라이드 (수락/거절 시 즉시 UI 반영용)
     if (localConnectionInfo) {
-      console.log(
-        `[채팅방 ${roomId}] 로컬 상태(localConnectionInfo)가 존재하여 우선 사용합니다.`
-      );
       return localConnectionInfo;
     }
 
@@ -152,9 +142,6 @@ const ChatIdPage = () => {
     if (connectionInfoParam) {
       try {
         const parsed = JSON.parse(connectionInfoParam);
-        console.log(
-          `[채팅방 ${roomId}] 라우팅 파라미터를 파싱하여 사용합니다.`
-        );
         return parsed;
       } catch (e) {
         console.error("Failed to parse connectionInfo param:", e);
@@ -175,21 +162,13 @@ const ChatIdPage = () => {
     for (const page of chatListData.pages) {
       const found = page.data.find((item: ChatItemType) => item.id === roomId);
       if (found) {
-        console.log(`[채팅방 ${roomId}] 캐시에서 정보를 찾았습니다.`);
         return found;
       }
     }
-    console.log(
-      `[채팅방 ${roomId}] 캐시를 모두 탐색했지만 정보를 찾지 못했습니다.`
-    );
     return null;
   }, [queryClient, roomId, connectionInfoParam, localConnectionInfo]); // 2) [제거됨] 캐시에 정보가 없을 경우 API로 직접 조회하는 useQuery 로직 // 3) 최종 connectionInfo 확정 (캐시/파라미터/로컬 state 우선)
 
   const connectionInfo = connectionInfoFromCache;
-  console.log(
-    `[채팅방 ${roomId}] 3. 최종 connectionInfo가 확정되었습니다.`,
-    connectionInfo
-  );
 
   const isPending = connectionInfo?.status === "PENDING";
   const isRequester = connectionInfo?.requesterId === myUserId; // 방 진입/이탈에 따른 읽음 처리(활성 방 추적)
@@ -222,6 +201,7 @@ const ChatIdPage = () => {
     messages: realtimeItems,
     sendMessage,
     readUpTo,
+    isChatActive,
   } = useChat(token, roomId, myUserId ?? undefined); // 서버 ChatMessageType -> GiftedChat IMessage 매핑
   const mapToIMessage = useCallback(
     (m: ChatMessageType): IMessage => ({
@@ -432,8 +412,8 @@ const ChatIdPage = () => {
           onLoadEarlier={handleLoadEarlier}
           canLoadEarlier={!!hasNextPage}
           isLoadingEarlier={!!isFetchingNextPage}
-          isLeaveUser={isLeaveUser}
-          isBlockedUser={isBlockedUser}
+          isLeaveUser={!isChatActive || isLeaveUser}
+          isBlockedUser={!isChatActive || isBlockedUser}
           leaveUserName={peerUserName}
           listViewProps={{
             contentContainerStyle: { paddingBottom: 30 },

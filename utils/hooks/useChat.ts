@@ -16,6 +16,7 @@ export function useChat(
   myUserId: number | undefined
 ) {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [isChatActive, setIsChatActive] = useState(true);
   const joinedRef = useRef(false);
   const lastReadMessageIdRef = useRef<number | null>(null);
 
@@ -68,9 +69,23 @@ export function useChat(
       );
     };
 
+    const onConnectionLeft = (payload: { connectionId: number }) => {
+      if (payload.connectionId === connectionId) {
+        setIsChatActive(false);
+      }
+    };
+
+    const onConnectionBlocked = (payload: { connectionId: number }) => {
+      if (payload.connectionId === connectionId) {
+        setIsChatActive(false);
+      }
+    };
+
     s.on("joinedRoom", onJoined);
     s.on("newMessage", onNewMessage);
     s.on("chat:messages_read", onMessagesRead);
+    s.on("connection:left", onConnectionLeft);
+    s.on("connection:blocked", onConnectionBlocked);
 
     // 비동기 IIFE (즉시 실행 함수 표현식)를 사용하여 join 처리
     (async () => {
@@ -90,6 +105,8 @@ export function useChat(
       s.off("joinedRoom", onJoined);
       s.off("newMessage", onNewMessage);
       s.off("chat:messages_read", onMessagesRead);
+      s.off("connection:left", onConnectionLeft);
+      s.off("connection:blocked", onConnectionBlocked);
       s.emit("leaveRoom", { connectionId });
       // console.log("[socket] leaveRoom:", { connectionId });
     };
@@ -123,5 +140,5 @@ export function useChat(
     [connectionId]
   );
 
-  return { messages, sendMessage, readUpTo };
+  return { messages, sendMessage, readUpTo, isChatActive };
 }
