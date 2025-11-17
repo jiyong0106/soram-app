@@ -64,7 +64,7 @@ export function connectSocket(jwt: string) {
   });
 
   newSocket.on("connect_error", (err) => {
-    console.error(`[getSocket] [connect_error] 소켓 연결 실패.`, err);
+    if (__DEV__) console.error(`소켓 연결 실패.`);
   });
 
   socket = newSocket;

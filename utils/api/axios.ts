@@ -71,11 +71,6 @@ const refreshToken = async (): Promise<string | null> => {
     return newAccessToken ?? null;
   } catch (e: any) {
     // [유지] 404, 500 등 API 실패 시 오류 로그
-    console.error(
-      "[AUTH] 토큰 재발급 중 API 오류 발생:",
-      e.response?.data || e.message
-    );
-    console.warn("[AUTH] 재발급 API 실패로 강제 로그아웃을 실행합니다.");
     useAuthStore.getState().logout();
     return null;
   } finally {

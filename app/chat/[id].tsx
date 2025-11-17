@@ -7,10 +7,9 @@ import React, {
 } from "react";
 import {
   TouchableOpacity,
-  View, //
+  View,
   StyleSheet,
-  ActivityIndicator,
-  Alert, // 임시 알너트 임포트
+  Alert,
   LayoutRectangle,
   Keyboard,
   InteractionManager,
@@ -21,11 +20,7 @@ import PageContainer from "@/components/common/PageContainer";
 import ChatActionSheet from "@/components/chat/ChatActionSheet";
 import { BackButton } from "@/components/common/backbutton";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/utils/api/chatPageApi";
 import { ChatItemType, ChatMessageType } from "@/utils/types/chat";
 import { useChat } from "@/utils/hooks/useChat";
@@ -144,18 +139,14 @@ const ChatIdPage = () => {
         const parsed = JSON.parse(connectionInfoParam);
         return parsed;
       } catch (e) {
-        console.error("Failed to parse connectionInfo param:", e);
+        if (__DEV__) console.error("Failed to parse connectionInfo param");
       }
     }
 
-    console.log(
-      `[채팅방 ${roomId}] 라우팅 파라미터가 없어 React Query 캐시(getChatKey)를 탐색합니다.`
-    );
     const chatListData = queryClient.getQueryData<
       InfiniteData<GetChatResponse>
     >(["getChatKey"]);
     if (!chatListData) {
-      console.log(`[채팅방 ${roomId}] 캐시에 데이터가 없습니다.`);
       return null;
     }
 
@@ -354,7 +345,7 @@ const ChatIdPage = () => {
                   }
                 ); // '봤음'으로 저장 (measure 호출 직후)
                 AsyncStorage.setItem(storageKey, "true").catch((e) =>
-                  console.error("Failed to set AsyncStorage item", e)
+                  console.error("Failed to set AsyncStorage item")
                 );
               } else {
                 // 혹시 ref가 준비되지 않았을 경우 (폴백)
@@ -363,13 +354,13 @@ const ChatIdPage = () => {
                 );
                 setReceiverGuideVisible(true); // 스포트라이트 없이 그냥 모달 띄우기
                 AsyncStorage.setItem(storageKey, "true").catch((e) =>
-                  console.error("Failed to set AsyncStorage item", e)
+                  console.error("Failed to set AsyncStorage item")
                 );
               }
             }, 100); // 100ms 대기 후 실행
           }
         } catch (e) {
-          console.error("Failed to access AsyncStorage for guide", e);
+          if (__DEV__) console.error("Failed to access AsyncStorage for guide");
         }
       }
     };

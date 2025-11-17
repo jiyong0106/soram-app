@@ -100,7 +100,6 @@ const VerifyCodeInputPage = () => {
                 showAlert(e.response.data.message);
                 return;
               }
-              console.error("");
             } finally {
               setLoading(false);
             }

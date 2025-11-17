@@ -60,7 +60,7 @@ const TopicPage = () => {
         );
         setHasUnread(hasUnreadNotification);
       } catch (error) {
-        console.error("읽지 않은 알림을 확인하지 못했습니다:", error);
+        if (__DEV__) console.error("읽지 않은 알림을 확인하지 못했습니다:");
       }
     };
 
@@ -75,7 +75,7 @@ const TopicPage = () => {
         const unreadCounts = await getUnreadCounts();
         syncChatUnread(unreadCounts);
       } catch (error) {
-        console.error("Failed to sync unread chat counts:", error);
+        if (__DEV__) console.error("Failed to sync unread chat counts:");
       }
     };
     syncChatState();
@@ -113,7 +113,6 @@ const TopicPage = () => {
         const newData = await getRandomTopicSet(currentTopicIds);
         return newData;
       } catch (error) {
-        console.error("Failed to fetch new topics:", error);
         return null; // 실패 시 null 반환
       }
     })(); // 4. Promise.all 대신 fetchPromise만 await 합니다.

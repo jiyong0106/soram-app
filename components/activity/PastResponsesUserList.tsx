@@ -58,7 +58,6 @@ const PastResponsesUserList = ({ authorId }: PastResponsesUserListProps) => {
   // 카드 클릭 시 상세 페이지로 이동하는 핸들러
   const handleCardPress = (item: (typeof mappedData)[0]) => {
     if (!item.author) {
-      console.error("Author information is missing.");
       // TODO: 사용자에게 에러 알림 표시
       return;
     }

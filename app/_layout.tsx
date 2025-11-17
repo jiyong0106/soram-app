@@ -46,9 +46,6 @@ function AppSetup() {
             (oldData) => {
               // [유지] 캐시 업데이트 실패는 중요한 오류 로그
               if (currentUserId === null) {
-                console.error(
-                  "[AppSetup] 유효한 유저 ID가 없어 캐시를 업데이트할 수 없습니다."
-                );
                 return oldData;
               }
               const now = new Date().toISOString();
