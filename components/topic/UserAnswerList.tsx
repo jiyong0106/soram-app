@@ -92,7 +92,7 @@ const UserAnswerList = ({
             await AsyncStorage.removeItem(STORAGE_KEY);
           }
         } catch (e) {
-          console.error("Failed to check connection guide flag", e);
+          if (__DEV__) console.error("Failed to check connection guide flag");
         }
       };
 
@@ -156,10 +156,6 @@ const UserAnswerList = ({
                   },
                 });
               } catch (storageError) {
-                console.error(
-                  "Failed to set connection guide flag",
-                  storageError
-                );
                 // 깃발 저장이 실패해도, 일단 페이지는 이동시킴
                 router.push({
                   pathname: "/topic/list/[listId]",

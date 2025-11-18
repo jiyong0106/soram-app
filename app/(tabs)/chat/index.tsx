@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import SearchBar from "@/components/chat/SearchBar";
 import ChatItem from "@/components/chat/ChatItem";
 import {
   keepPreviousData,
@@ -18,8 +17,9 @@ import { ChatItemType, GetChatResponse } from "@/utils/types/chat";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AppText from "@/components/common/AppText";
 import EmptyState from "@/components/common/EmptyState";
-import { useFocusEffect } from "expo-router";
+import { Stack, useFocusEffect } from "expo-router";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
+import PageContainer from "@/components/common/PageContainer";
 
 const chatPage = () => {
   const [query, setQuery] = useState("");
@@ -62,7 +62,6 @@ const chatPage = () => {
     placeholderData: keepPreviousData,
   });
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
-  const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
   // 한글 주석: 초기 마운트 직후 onEndReached 자동 호출을 방지하기 위한 가드
   const didScrollRef = useRef(false);
 
@@ -109,45 +108,55 @@ const chatPage = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <AppText style={styles.title}>대화</AppText>
-        {/* <SearchBar value={query} onChangeText={setQuery} /> */}
-      </View>
-      <FlatList
-        data={items}
-        renderItem={({ item }) => <ChatItem item={item} />}
-        keyExtractor={(item) => String(item.id)}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          isLoading || isFetching ? (
-            <LoadingSpinner />
-          ) : (
-            <EmptyState title={"아직 진행중인 대화가 없어요"} />
-          )
-        }
-        onMomentumScrollBegin={() => {
-          didScrollRef.current = true;
+    <PageContainer edges={[]} padded={false}>
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: true,
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <AppText style={{ fontSize: 20, fontWeight: "bold" }}>대화</AppText>
+          ),
         }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#FF6B3E"]}
-            tintColor="#FF6B3E"
-          />
-        }
-        contentContainerStyle={{ paddingBottom: 100 }}
-        onEndReached={() => {
-          if (!didScrollRef.current) return; // 한글 주석: 사용자 스크롤 발생 전에는 불러오지 않음
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
-        }}
-        onEndReachedThreshold={0.2}
-        ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
       />
-    </View>
+      <View style={styles.container}>
+        <FlatList
+          data={items}
+          renderItem={({ item }) => <ChatItem item={item} />}
+          keyExtractor={(item) => String(item.id)}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            isLoading || isFetching ? (
+              <LoadingSpinner />
+            ) : (
+              <EmptyState title={"아직 진행중인 대화가 없어요"} />
+            )
+          }
+          onMomentumScrollBegin={() => {
+            didScrollRef.current = true;
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#FF6B3E"]}
+              tintColor="#FF6B3E"
+            />
+          }
+          contentContainerStyle={{ paddingBottom: 100 }}
+          onEndReached={() => {
+            if (!didScrollRef.current) return; // 한글 주석: 사용자 스크롤 발생 전에는 불러오지 않음
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.2}
+          ListFooterComponent={isFetchingNextPage ? <LoadingSpinner /> : null}
+          contentInsetAdjustmentBehavior="automatic"
+        />
+      </View>
+    </PageContainer>
   );
 };
 
@@ -157,24 +166,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  header: {
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#5C4B44",
-  },
-  rowTextWrap: {
-    flex: 1,
-  },
-  rowTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 4,
   },
   empty: {
     textAlign: "center",

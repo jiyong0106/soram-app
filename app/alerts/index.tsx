@@ -39,10 +39,8 @@ const AlertsPage = () => {
             );
             setHasUnread(hasUnreadNotification);
           } catch (error) {
-            console.error(
-              "Failed to re-check for unread notifications:",
-              error
-            );
+            if (__DEV__)
+              console.error("Failed unread notifications");
           }
         };
         checkUnread();

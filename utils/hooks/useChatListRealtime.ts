@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useQueryClient, InfiniteData } from "@tanstack/react-query";
-import { connectSocket } from "../libs/getSocket";
+import { getSocket } from "../libs/getSocket"; // 💥 MODIFIED: connectSocket -> getSocket
 import { ChatItemType, GetChatResponse, ChatMessageType } from "../types/chat";
 import { useChatUnreadStore } from "../store/useChatUnreadStore";
 import { getUserIdFromJWT } from "../util/getUserIdFromJWT";
@@ -16,8 +16,11 @@ export function useChatListRealtime(jwt: string) {
   useEffect(() => {
     if (!jwt) return;
 
-    // 소켓 연결 (이미 연결되어 있으면 재사용)
-    const socket = connectSocket(jwt);
+    // 💥 MODIFIED: 소켓을 연결하는 대신, 이미 생성된 소켓을 가져옴
+    const socket = getSocket();
+
+    // 💥 NEW: 소켓이 아직 준비되지 않았으면 아무것도 하지 않음
+    if (!socket) return;
 
     // 개인 채널(user-<id>)에서 수신되는 목록 갱신 신호
     const onUpdateChatList = (msg: ChatMessageType) => {
@@ -79,8 +82,52 @@ export function useChatListRealtime(jwt: string) {
 
     socket.on("updateChatList", onUpdateChatList);
 
-    return () => {
-      socket.off("updateChatList", onUpdateChatList);
+    const onConnectionLeft = ({ connectionId }: { connectionId: number }) => {
+      if (!connectionId) return;
+      queryClient.setQueryData<InfiniteData<GetChatResponse>>(
+        ["getChatKey"],
+        (old) => {
+          if (!old) return old;
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              item.id === connectionId ? { ...item, isLeave: true } : item
+            ),
+          }));
+          return { ...old, pages: newPages };
+        }
+      );
     };
-  }, [jwt, queryClient]);
+
+    const onConnectionBlocked = ({
+      connectionId,
+    }: {
+      connectionId: number;
+    }) => {
+      if (!connectionId) return;
+      queryClient.setQueryData<InfiniteData<GetChatResponse>>(
+        ["getChatKey"],
+        (old) => {
+          if (!old) return old;
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              item.id === connectionId ? { ...item, isBlocked: true } : item
+            ),
+          }));
+          return { ...old, pages: newPages };
+        }
+      );
+    };
+
+    socket.on("connection:left", onConnectionLeft);
+    socket.on("connection:blocked", onConnectionBlocked);
+
+    return () => {
+      // 💥 NEW: socket이 존재할 때만 off를 호출하도록 방어
+      socket?.off("updateChatList", onUpdateChatList);
+      socket?.off("connection:left", onConnectionLeft);
+      socket?.off("connection:blocked", onConnectionBlocked);
+    };
+  }, [jwt, queryClient, myUserId]); // 💥 MODIFIED: myUserId 의존성 추가
 }

@@ -11,14 +11,14 @@ export const setAuthToken = (t: string | null) => {
   memAccessToken = t;
 };
 
-export const getAuthToken = () => memAccessToken;
+// export const getAuthToken = () => memAccessToken; //axios.ts가 이제 사용 안하므로 주석처리
 
 // 리프레시 토큰 설정/조회 (재발급 요청에만 사용)
 export const setRefreshToken = (t: string | null) => {
   memRefreshToken = t;
 };
 
-export const getRefreshToken = () => memRefreshToken;
+// export const getRefreshToken = () => memRefreshToken; //axios.ts가 이제 사용 안하므로 주석처리
 
 export const isTokenExpired = (t?: string | null) => {
   if (!t) return true;

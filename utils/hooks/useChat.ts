@@ -1,7 +1,11 @@
 // app/utils/hooks/useChat.ts
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { connectSocket, getSocket } from "../libs/getSocket";
+import {
+  connectSocket,
+  getSocket,
+  ensureSocketAuthenticated,
+} from "../libs/getSocket";
 import { ChatMessageType } from "../types/chat";
 import { useChatUnreadStore } from "../store/useChatUnreadStore";
 
@@ -12,6 +16,7 @@ export function useChat(
   myUserId: number | undefined
 ) {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [isChatActive, setIsChatActive] = useState(true);
   const joinedRef = useRef(false);
   const lastReadMessageIdRef = useRef<number | null>(null);
 
@@ -64,24 +69,45 @@ export function useChat(
       );
     };
 
-    s.on("joinedRoom", onJoined);
-    s.on("newMessage", onNewMessage);
-    s.on("chat:messages_read", onMessagesRead);
-
-    const tryJoin = () => {
-      if (!joinedRef.current) {
-        s.emit("joinRoom", { connectionId });
+    const onConnectionLeft = (payload: { connectionId: number }) => {
+      if (payload.connectionId === connectionId) {
+        setIsChatActive(false);
       }
     };
 
-    if (s.connected) tryJoin();
-    s.on("authenticated", tryJoin);
-    s.on("connect", tryJoin);
+    const onConnectionBlocked = (payload: { connectionId: number }) => {
+      if (payload.connectionId === connectionId) {
+        setIsChatActive(false);
+      }
+    };
+
+    s.on("joinedRoom", onJoined);
+    s.on("newMessage", onNewMessage);
+    s.on("chat:messages_read", onMessagesRead);
+    s.on("connection:left", onConnectionLeft);
+    s.on("connection:blocked", onConnectionBlocked);
+
+    // 비동기 IIFE (즉시 실행 함수 표현식)를 사용하여 join 처리
+    (async () => {
+      try {
+        // 소켓이 연결되고 인증될 때까지 기다립니다.
+        await ensureSocketAuthenticated();
+        // 아직 방에 참여하지 않았다면 참여 이벤트를 보냅니다.
+        if (!joinedRef.current) {
+          s.emit("joinRoom", { connectionId });
+        }
+      } catch (error) {
+        if (__DEV__)
+          console.error("소켓 인증 또는 방 참여 중 오류 발생:", error);
+      }
+    })();
 
     return () => {
       s.off("joinedRoom", onJoined);
       s.off("newMessage", onNewMessage);
       s.off("chat:messages_read", onMessagesRead);
+      s.off("connection:left", onConnectionLeft);
+      s.off("connection:blocked", onConnectionBlocked);
       s.emit("leaveRoom", { connectionId });
       // console.log("[socket] leaveRoom:", { connectionId });
     };
@@ -115,5 +141,5 @@ export function useChat(
     [connectionId]
   );
 
-  return { messages, sendMessage, readUpTo };
+  return { messages, sendMessage, readUpTo, isChatActive };
 }

@@ -52,7 +52,7 @@ const renderTabItem = ({
         marginTop: 2,
       }}
     >
-      {options.title}
+      {options.tabBarLabel}
     </Text>
   </Pressable>
 );
@@ -243,6 +243,7 @@ const TabLayout = () => {
         name="chat"
         options={{
           title: "대화",
+          tabBarLabel: "대화",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles" size={size} color={color} />
           ),
@@ -252,6 +253,7 @@ const TabLayout = () => {
         name="activity/index"
         options={{
           title: "활동",
+          tabBarLabel: "활동",
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="compass"
@@ -266,6 +268,7 @@ const TabLayout = () => {
         name="topic"
         options={{
           title: "홈",
+          tabBarLabel: "홈",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="flame" size={size} color={color} />
           ),
@@ -275,6 +278,7 @@ const TabLayout = () => {
         name="profile"
         options={{
           title: "프로필",
+          tabBarLabel: "프로필",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
@@ -284,6 +288,7 @@ const TabLayout = () => {
         name="setting/index"
         options={{
           title: "더보기",
+          tabBarLabel: "더보기",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="grid" size={size} color={color} />
           ),

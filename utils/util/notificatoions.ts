@@ -67,16 +67,14 @@ export async function registerForPushNotificationsAsync(
 
     // 기존 토큰과 동일하면 서버 전송 생략 (변경 시에만 전송)
     if (existingToken && existingToken === token) {
-      console.log("서버 전송 생략");
+      // console.log("서버 전송 생략");
     } else {
       // 백엔드에 토큰 전송
       try {
         await postRegisterDeviceToken({ pushToken: token });
-        console.log(" 서버 전송 성공");
+        // console.log(" 서버 전송 성공");
       } catch (error) {
-        console.error("서버 전송 실패:");
-        // 여기서 에러를 어떻게 처리할지 정책에 따라 추가 구현 가능
-        // (예: 재시도 로직, 에러 리포팅 등)
+        if (__DEV__) console.error("서버 전송 실패:");
       }
     }
   } catch (e) {

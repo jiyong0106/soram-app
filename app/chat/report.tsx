@@ -38,9 +38,14 @@ const ReportPage = () => {
     };
     showActionAlert("신고하시겠습니까?", "신고", async () => {
       try {
-        const res = await posetUserReport(body);
+        await posetUserReport(body);
         router.dismissAll();
-        router.replace("/chat/reportres");
+        router.replace({
+          pathname: "/chat/reportres",
+          params: {
+            peerUserId: peerUserId,
+          },
+        });
       } catch (e: any) {
         if (e) {
           showAlert(e.response.data.message);

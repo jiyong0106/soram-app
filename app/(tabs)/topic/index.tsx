@@ -1,12 +1,9 @@
 import AppHeader from "@/components/common/AppHeader";
-import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
 import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
-import useAlert from "@/utils/hooks/useAlert";
-import { Ionicons } from "@expo/vector-icons";
 import {
   keepPreviousData,
   useQuery,
@@ -14,13 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  FlatList,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, FlatList, Dimensions } from "react-native";
 import TopicListCTA from "@/components/topic/TopicListCTA";
 import GuideModal from "@/components/common/GuideModal";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
@@ -30,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNotificationStore } from "@/utils/store/useNotificationStore";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { getUnreadCounts } from "@/utils/api/chatPageApi";
+import UserBanModal from "@/components/common/UserBanModal";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -61,7 +53,7 @@ const TopicPage = () => {
         );
         setHasUnread(hasUnreadNotification);
       } catch (error) {
-        console.error("읽지 않은 알림을 확인하지 못했습니다:", error);
+        if (__DEV__) console.error("읽지 않은 알림을 확인하지 못했습니다:");
       }
     };
 
@@ -76,7 +68,7 @@ const TopicPage = () => {
         const unreadCounts = await getUnreadCounts();
         syncChatUnread(unreadCounts);
       } catch (error) {
-        console.error("Failed to sync unread chat counts:", error);
+        if (__DEV__) console.error("Failed to sync unread chat counts:");
       }
     };
     syncChatState();
@@ -114,7 +106,6 @@ const TopicPage = () => {
         const newData = await getRandomTopicSet(currentTopicIds);
         return newData;
       } catch (error) {
-        console.error("Failed to fetch new topics:", error);
         return null; // 실패 시 null 반환
       }
     })(); // 4. Promise.all 대신 fetchPromise만 await 합니다.
@@ -187,7 +178,7 @@ const TopicPage = () => {
                       <View
                         style={{
                           width: ITEM_WIDTH,
-                          marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                          marginRight: isLastItem ? 0 : ITEM_SPACING,
                         }}
                       >
                         <TopicListCTA />
@@ -225,26 +216,11 @@ const TopicPage = () => {
                 }}
               />
             </View>
-
-            <TouchableOpacity
-              onPress={() => router.push("/topic/list")}
-              activeOpacity={0.5}
-              //  styles.moreTopic과 함께 내부 패딩 10px 적용
-              style={[styles.moreTopic, { paddingHorizontal: 10 }]}
-            >
-              <AppText style={styles.moreTopicText}>
-                더 다양한 주제 보러가기
-              </AppText>
-              <Ionicons
-                name="chevron-forward-outline"
-                size={14}
-                color="#5C4B44"
-              />
-            </TouchableOpacity>
           </>
         )
       )}
       <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
+      {/* <UserBanModal isVisible={true} /> */}
     </View>
   );
 };
@@ -259,20 +235,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  wrap: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-  },
-  moreTopic: {
-    alignSelf: "center",
-    marginVertical: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  moreTopicText: {
-    fontSize: 14,
-    color: "#5C4B44",
   },
 });

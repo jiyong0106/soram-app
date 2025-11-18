@@ -44,6 +44,7 @@ export type SignupSumbitBody = {
 // 1-2 회원가입 후 내려올 응답값
 export interface SignupSumbitResponse {
   accessToken: string;
+  refreshToken: string;
 }
 
 // 2 닉네임 중복 체크 응답값

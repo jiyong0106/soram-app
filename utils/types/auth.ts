@@ -16,6 +16,7 @@ export interface VerifyOtpBody {
 }
 //1-2 핸드폰 인증번호 전송 응답값
 export interface VerifyOtpResponse {
+  refreshToken: string;
   signupToken: string;
   accessToken: string;
 }
