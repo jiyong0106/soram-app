@@ -1,11 +1,9 @@
 import AppHeader from "@/components/common/AppHeader";
-import AppText from "@/components/common/AppText";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
 import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
-import { Ionicons } from "@expo/vector-icons";
 import {
   keepPreviousData,
   useQuery,
@@ -13,13 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  FlatList,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, FlatList, Dimensions } from "react-native";
 import TopicListCTA from "@/components/topic/TopicListCTA";
 import GuideModal from "@/components/common/GuideModal";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
@@ -224,26 +216,11 @@ const TopicPage = () => {
                 }}
               />
             </View>
-
-            <TouchableOpacity
-              onPress={() => router.push("/topic/list")}
-              activeOpacity={0.5}
-              style={[styles.moreTopic, { paddingHorizontal: 10 }]}
-            >
-              <AppText style={styles.moreTopicText}>
-                더 다양한 주제 보러가기
-              </AppText>
-              <Ionicons
-                name="chevron-forward-outline"
-                size={14}
-                color="#5C4B44"
-              />
-            </TouchableOpacity>
           </>
         )
       )}
-      {/* <GuideModal isVisible={isVisible} onClose={handleCloseGuide} /> */}
-      <UserBanModal isVisible={true} />
+      <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
+      {/* <UserBanModal isVisible={true} /> */}
     </View>
   );
 };
@@ -258,20 +235,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  wrap: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-  },
-  moreTopic: {
-    alignSelf: "center",
-    marginVertical: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  moreTopicText: {
-    fontSize: 14,
-    color: "#5C4B44",
   },
 });
