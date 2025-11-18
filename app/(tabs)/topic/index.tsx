@@ -29,6 +29,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNotificationStore } from "@/utils/store/useNotificationStore";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { getUnreadCounts } from "@/utils/api/chatPageApi";
+import UserBanModal from "@/components/common/UserBanModal";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -227,7 +228,6 @@ const TopicPage = () => {
             <TouchableOpacity
               onPress={() => router.push("/topic/list")}
               activeOpacity={0.5}
-              //  styles.moreTopic과 함께 내부 패딩 10px 적용
               style={[styles.moreTopic, { paddingHorizontal: 10 }]}
             >
               <AppText style={styles.moreTopicText}>
@@ -242,7 +242,8 @@ const TopicPage = () => {
           </>
         )
       )}
-      <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
+      {/* <GuideModal isVisible={isVisible} onClose={handleCloseGuide} /> */}
+      <UserBanModal isVisible={true} />
     </View>
   );
 };
