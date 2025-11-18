@@ -9,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ScalePressable from "@/components/common/ScalePressable";
 import { postUserBlock } from "@/utils/api/chatPageApi";
 import useAlert from "@/utils/hooks/useAlert";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Reportres = () => {
   // 체크 상태 관리 (UI만, 실제 차단 로직 없음)
@@ -19,10 +20,12 @@ const Reportres = () => {
   const blockedId = Number(peerUserId);
   const router = useRouter();
   const { showAlert } = useAlert();
+  const qc = useQueryClient();
   const handlePress = async () => {
     if (isBlockedSelected) {
       try {
         await postUserBlock(blockedId);
+        await qc.invalidateQueries({ queryKey: ["getChatKey"] });
       } catch (error: any) {
         showAlert(error.response?.data?.message || "차단 실패");
       }

@@ -62,7 +62,6 @@ const chatPage = () => {
     placeholderData: keepPreviousData,
   });
   const items: ChatItemType[] = data?.pages.flatMap((item) => item.data) ?? [];
-  const connectionIds = useMemo(() => items.map((i) => i.id), [items]);
   // 한글 주석: 초기 마운트 직후 onEndReached 자동 호출을 방지하기 위한 가드
   const didScrollRef = useRef(false);
 
@@ -119,19 +118,6 @@ const chatPage = () => {
           headerLeft: () => (
             <AppText style={{ fontSize: 20, fontWeight: "bold" }}>대화</AppText>
           ),
-          //  iOS 네이티브 검색바 간단 적용
-          // headerSearchBarOptions: {
-          //   placeholder: "대화 검색",
-          //   hideWhenScrolling: false,
-          //   tintColor: "#FF6B3E", // Cancel 텍스트/커서 색
-          //   cancelButtonText: "취소", // Cancel 버튼 텍스트
-          //   headerIconColor: "#FF6B3E",
-          //   // * 텍스트 변경 시 로컬 상태에 반영
-          //   onChangeText: (e: any) => {
-          //     const text = e?.nativeEvent?.text ?? "";
-          //     setQuery(text);
-          //   },
-          // },
         }}
       />
       <View style={styles.container}>
