@@ -8,7 +8,7 @@ type Props = {
 };
 
 const messages = [
-  { until: 0, text: "질문에 대한 이야기를 자유롭게 작성해 보세요!" },
+  { until: 20, text: "최소 20자 이상 입력해 주세요." },
   { until: 100, text: "좋아요! 이야기가 더 듣고 싶어요!" },
   {
     until: 200,
@@ -32,7 +32,7 @@ const ProgressFooter = ({ length, max }: Props) => {
 
   return (
     <View style={styles.wrap}>
-      <AppText style={styles.message}>{msg}</AppText>
+      <AppText style={styles.message}>{msg} </AppText>
 
       {/* ✅ 구간형 프로그레스 바 */}
       <View style={styles.segments}>
