@@ -1,12 +1,11 @@
-import { Modal, StyleSheet, View, ScrollView } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import AppText from "./AppText";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useUserBanStore } from "@/utils/store/useUserBanStore";
 
-interface Props {
-  isVisible: boolean;
-}
-
-const UserBanModal = ({ isVisible }: Props) => {
+const UserBanModal = () => {
+  const isVisible = useUserBanStore((s) => s.isVisible);
+  const message = useUserBanStore((s) => s.message);
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.modalBackdrop}>
@@ -18,12 +17,7 @@ const UserBanModal = ({ isVisible }: Props) => {
           </View>
 
           {/* 사유 텍스트 */}
-          <ScrollView style={styles.reasonContainer}>
-            <AppText style={styles.reasonText}>
-              이 사용자는 커뮤니티 가이드라인을 위반했습니다. 반복 시 계정이
-              일시 정지될 수 있습니다.
-            </AppText>
-          </ScrollView>
+          <AppText style={styles.reasonText}>{message}</AppText>
         </View>
       </View>
     </Modal>
@@ -35,7 +29,7 @@ export default UserBanModal;
 const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
