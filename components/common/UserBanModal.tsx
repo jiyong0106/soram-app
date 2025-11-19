@@ -41,15 +41,15 @@ const UserBanModal = () => {
               {message ||
                 "제재 사유에 대한 자세한 내용은 고객센터로 문의해주세요."}
             </AppText>
-            <Button
-              label="문의하기"
-              onPress={() =>
-                Linking.openURL(`${process.env.EXPO_PUBLIC_FORM_URL}`)
-              }
-              color="#FF4D4F"
-              textColor="#fff"
-            />
           </View>
+          <Button
+            label="문의하기"
+            onPress={() =>
+              Linking.openURL(`${process.env.EXPO_PUBLIC_FORM_URL}`)
+            }
+            color="#FF4D4F"
+            textColor="#fff"
+          />
         </View>
       </View>
     </Modal>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   content: {
-    marginTop: 16,
+    marginVertical: 16,
     alignItems: "center",
   },
   date: {
