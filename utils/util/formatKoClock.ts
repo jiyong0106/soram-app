@@ -59,9 +59,10 @@ export const makeMinuteKey = (
 
 // 한국 시간(기본 Asia/Seoul) 기준으로 YYYY-MM-DD만 반환
 export function formatKoDateOnly(
-  input: string | number | Date,
+  input: string | number | Date | null,
   timeZone: string = "Asia/Seoul"
 ) {
+  if (input === null) return "";
   const d = new Date(input);
   if (isNaN(d.getTime())) return "";
   try {
@@ -75,7 +76,7 @@ export function formatKoDateOnly(
     return `${m.year}-${m.month}-${m.day}`;
   } catch {
     // 폴백: 로컬 타임존 기준
-    return `${d.getFullYear()} - ${String(d.getMonth() + 1).padStart(
+    return `~ ${d.getFullYear()} - ${String(d.getMonth() + 1).padStart(
       2,
       "0"
     )} - ${String(d.getDate()).padStart(2, "0")}`;

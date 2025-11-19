@@ -5,7 +5,7 @@ type UserBanState = {
   show: (message: string) => void;
   hide: () => void;
   message: string;
-  expiresAt: Date;
+  expiresAt: Date | null;
   setExpiresAt: (expiresAt: Date) => void;
 };
 

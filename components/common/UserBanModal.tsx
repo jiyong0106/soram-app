@@ -17,11 +17,14 @@ const UserBanModal = () => {
             <MaterialIcons name="block" size={40} color="#FF4D4F" />
             <AppText style={styles.banTitle}>사용자 제재 안내</AppText>
           </View>
-
-          <AppText style={styles.banDate}>
-            ~ {formatKoDateOnly(expiresAt)}
-          </AppText>
-          <AppText style={styles.banContent}>{message}</AppText>
+          <View style={styles.banContentContainer}>
+            {expiresAt != null && (
+              <AppText style={styles.banDate}>
+                {formatKoDateOnly(expiresAt)}
+              </AppText>
+            )}
+            <AppText style={styles.banContent}>{message}</AppText>
+          </View>
         </View>
       </View>
     </Modal>
@@ -50,6 +53,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 8,
+    gap: 20,
   },
   header: {
     alignItems: "center",
@@ -62,6 +66,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FF4D4F",
   },
+  banContentContainer: {
+    alignItems: "center",
+    gap: 15,
+    marginBottom: 15,
+  },
   banContent: {
     fontSize: 16,
     color: "#333",
@@ -71,6 +80,5 @@ const styles = StyleSheet.create({
   banDate: {
     fontSize: 14,
     fontWeight: "bold",
-    marginVertical: 20,
   },
 });
