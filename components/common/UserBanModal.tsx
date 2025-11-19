@@ -1,29 +1,54 @@
-import { Modal, StyleSheet, View } from "react-native";
+import { Linking, Modal, StyleSheet, View } from "react-native";
 import AppText from "./AppText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useUserBanStore } from "@/utils/store/useUserBanStore";
 import { formatKoDateOnly } from "@/utils/util/formatKoClock";
+import Button from "./Button";
 
 const UserBanModal = () => {
   const isVisible = useUserBanStore((s) => s.isVisible);
   const message = useUserBanStore((s) => s.message);
   const expiresAt = useUserBanStore((s) => s.expiresAt);
+
   return (
     <Modal visible={isVisible} transparent animationType="fade">
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalContainer}>
-          {/* 아이콘 + 타이틀 */}
-          <View style={styles.header}>
-            <MaterialIcons name="block" size={40} color="#FF4D4F" />
-            <AppText style={styles.banTitle}>사용자 제재 안내</AppText>
+      <View style={styles.backdrop}>
+        <View style={styles.container}>
+          <View style={styles.topRow}>
+            <View style={styles.iconWrap}>
+              <MaterialIcons name="block" size={34} color="#fff" />
+            </View>
+            <View style={styles.titleWrap}>
+              <AppText style={styles.title}>사용자 제재 안내</AppText>
+              <AppText style={styles.subtitle}>
+                소람 가이드라인 위반으로 인한 조치
+              </AppText>
+            </View>
           </View>
-          <View style={styles.banContentContainer}>
+
+          <View style={styles.content}>
             {expiresAt != null && (
-              <AppText style={styles.banDate}>
-                {formatKoDateOnly(expiresAt)}
+              <AppText style={styles.date}>
+                제재 해제 예정: {formatKoDateOnly(expiresAt)}
               </AppText>
             )}
-            <AppText style={styles.banContent}>{message}</AppText>
+
+            <AppText
+              style={styles.message}
+              numberOfLines={8}
+              ellipsizeMode="tail"
+            >
+              {message ||
+                "제재 사유에 대한 자세한 내용은 고객센터로 문의해주세요."}
+            </AppText>
+            <Button
+              label="문의하기"
+              onPress={() =>
+                Linking.openURL(`${process.env.EXPO_PUBLIC_FORM_URL}`)
+              }
+              color="#FF4D4F"
+              textColor="#fff"
+            />
           </View>
         </View>
       </View>
@@ -34,51 +59,67 @@ const UserBanModal = () => {
 export default UserBanModal;
 
 const styles = StyleSheet.create({
-  modalBackdrop: {
+  backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 24,
   },
-  modalContainer: {
-    width: "90%",
+  container: {
+    width: "100%",
+    maxWidth: 520,
     backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingVertical: 25,
-    paddingHorizontal: 20,
-    alignItems: "center",
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 8,
-    gap: 20,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 20,
   },
-  header: {
-    alignItems: "center",
+  topRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    gap: 5,
+    alignItems: "center",
   },
-  banTitle: {
-    fontSize: 22,
+  iconWrap: {
+    width: 54,
+    height: 54,
+    borderRadius: 54,
+    backgroundColor: "#FF4D4F",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  titleWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#222",
+  },
+  subtitle: {
+    marginTop: 2,
+    fontSize: 13,
+    color: "#666",
+  },
+  content: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+  date: {
+    fontSize: 13,
     fontWeight: "700",
     color: "#FF4D4F",
+    marginBottom: 8,
   },
-  banContentContainer: {
-    alignItems: "center",
-    gap: 15,
-    marginBottom: 15,
-  },
-  banContent: {
-    fontSize: 16,
+  message: {
+    fontSize: 15,
     color: "#333",
     textAlign: "center",
     lineHeight: 22,
-  },
-  banDate: {
-    fontSize: 14,
-    fontWeight: "bold",
+    marginBottom: 16,
   },
 });
