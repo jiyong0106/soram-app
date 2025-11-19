@@ -349,9 +349,7 @@ const ChatIdPage = () => {
                 );
               } else {
                 // 혹시 ref가 준비되지 않았을 경우 (폴백)
-                console.warn(
-                  "[DEBUGGING] bannerRef.current is nul스포트라이트 없이 모달을 띄웁니다."
-                );
+
                 setReceiverGuideVisible(true); // 스포트라이트 없이 그냥 모달 띄우기
                 AsyncStorage.setItem(storageKey, "true").catch((e) =>
                   console.error("Failed to set AsyncStorage item")

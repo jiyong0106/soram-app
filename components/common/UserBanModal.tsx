@@ -2,10 +2,12 @@ import { Modal, StyleSheet, View } from "react-native";
 import AppText from "./AppText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useUserBanStore } from "@/utils/store/useUserBanStore";
+import { formatKoDateOnly } from "@/utils/util/formatKoClock";
 
 const UserBanModal = () => {
   const isVisible = useUserBanStore((s) => s.isVisible);
   const message = useUserBanStore((s) => s.message);
+  const expiresAt = useUserBanStore((s) => s.expiresAt);
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.modalBackdrop}>
@@ -13,11 +15,13 @@ const UserBanModal = () => {
           {/* 아이콘 + 타이틀 */}
           <View style={styles.header}>
             <MaterialIcons name="block" size={40} color="#FF4D4F" />
-            <AppText style={styles.modalTitle}>사용자 제재 안내</AppText>
+            <AppText style={styles.banTitle}>사용자 제재 안내</AppText>
           </View>
 
-          {/* 사유 텍스트 */}
-          <AppText style={styles.reasonText}>{message}</AppText>
+          <AppText style={styles.banDate}>
+            ~ {formatKoDateOnly(expiresAt)}
+          </AppText>
+          <AppText style={styles.banContent}>{message}</AppText>
         </View>
       </View>
     </Modal>
@@ -49,34 +53,24 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 5,
   },
-  modalTitle: {
+  banTitle: {
     fontSize: 22,
     fontWeight: "700",
     color: "#FF4D4F",
-    marginTop: 10,
   },
-  reasonContainer: {
-    maxHeight: 120,
-    marginBottom: 20,
-  },
-  reasonText: {
+  banContent: {
     fontSize: 16,
     color: "#333",
     textAlign: "center",
     lineHeight: 22,
   },
-  button: {
-    backgroundColor: "#FF4D4F",
-    borderRadius: 15,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
+  banDate: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 20,
   },
 });

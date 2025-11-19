@@ -56,3 +56,28 @@ export const makeMinuteKey = (
     )}:${String(d.getMinutes()).padStart(2, "0")}`;
   }
 };
+
+// 한국 시간(기본 Asia/Seoul) 기준으로 YYYY-MM-DD만 반환
+export function formatKoDateOnly(
+  input: string | number | Date,
+  timeZone: string = "Asia/Seoul"
+) {
+  const d = new Date(input);
+  if (isNaN(d.getTime())) return "";
+  try {
+    const parts = new Intl.DateTimeFormat("ko-KR", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(d);
+    const m = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+    return `${m.year}-${m.month}-${m.day}`;
+  } catch {
+    // 폴백: 로컬 타임존 기준
+    return `${d.getFullYear()} - ${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )} - ${String(d.getDate()).padStart(2, "0")}`;
+  }
+}

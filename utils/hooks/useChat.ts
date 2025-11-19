@@ -117,7 +117,7 @@ export function useChat(
     (content: string) => {
       const s = getSocket();
       if (!s?.connected) {
-        console.warn("socket not connected");
+        // console.warn("socket not connected");
         return;
       }
       s.emit("sendMessage", { connectionId, content });
@@ -131,7 +131,7 @@ export function useChat(
 
       const s = getSocket();
       if (!s?.connected) {
-        console.warn("socket not connected for read event");
+        // console.warn("socket not connected for read event");
         return;
       }
 
