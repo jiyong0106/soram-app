@@ -204,10 +204,11 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    lineHeight: 36,
+    lineHeight: 27,
     color: "#000000",
     fontWeight: "bold",
     paddingLeft: 12,
+    marginBottom: 10,
   },
   participants: {
     fontSize: 12,
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     width: "100%", // 카드 너비에 맞춤
-    height: 330, // 적절한 높이 설정 (조절 가능)
+    height: 300, // 적절한 높이 설정 (조절 가능)
     borderTopLeftRadius: 24, // card borderRadius와 일치
     borderTopRightRadius: 24, // card borderRadius와 일치
     borderBottomLeftRadius: 0,
