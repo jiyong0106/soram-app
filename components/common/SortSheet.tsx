@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef } from "react";
-import { View, StyleSheet, InteractionManager } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AppBottomSheetModal from "@/components/common/AppBottomSheetModal";
 import ScalePressable from "./ScalePressable";
