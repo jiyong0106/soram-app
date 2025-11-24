@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Keyboard, StyleSheet, View } from "react-native";
 import TopTabBar from "@/components/common/TopTabBar";
 import { CATEGORIES, RouteType, SortByType } from "@/utils/types/topic";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -36,6 +36,13 @@ const TopicListPage = () => {
     [sortBy, debouncedSearchName]
   );
 
+  const handleSort = () => {
+    Keyboard.dismiss();
+
+    setTimeout(() => {
+      sortSheetRef.current?.present?.();
+    }, 150);
+  };
   return (
     <>
       <Stack.Screen
@@ -49,10 +56,7 @@ const TopicListPage = () => {
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <View>
-              <ScalePressable
-                onPress={() => sortSheetRef.current?.present?.()}
-                style={styles.sortButton}
-              >
+              <ScalePressable onPress={handleSort} style={styles.sortButton}>
                 <Ionicons name="chevron-down" size={20} color="#FF6B3E" />
                 <AppText style={styles.sortText}>
                   {sortBy === "popular" ? "인기순" : "최신순"}
