@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import AppText from "../common/AppText";
 import { Ionicons } from "@expo/vector-icons";
-import { SearchBar } from "react-native-screens";
 
 interface BannerLayout {
   x: number;

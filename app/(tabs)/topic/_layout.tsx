@@ -16,13 +16,6 @@ const TopicLayout = () => {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="list/index"
-          options={{
-            title: "주제 둘러보기",
-            headerLeft: () => <BackButton />,
-          }}
-        />
       </Stack>
     </PageContainer>
   );

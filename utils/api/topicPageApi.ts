@@ -9,6 +9,7 @@ import {
   TextHeaderType,
   HiddenContentBody,
   HiddenContentResponse,
+  SortByType,
 } from "../types/topic";
 
 // 1. 주제 목록 리스트 api
@@ -17,6 +18,7 @@ interface GetTopicListTypeParams {
   search?: string;
   cursor?: any;
   category?: string;
+  sortBy?: SortByType;
 }
 
 export const getTopicList = async ({
@@ -24,12 +26,14 @@ export const getTopicList = async ({
   search,
   cursor,
   category,
+  sortBy,
 }: GetTopicListTypeParams) => {
   const params: Record<string, any> = {};
   if (take) params.take = take;
   if (cursor !== undefined) params.cursor = cursor;
   if (search) params.search = search;
   if (category && category !== "전체") params.category = category;
+  if (sortBy) params.sortBy = sortBy;
   const { data } = await instance.get<GetTopicListResponse>("/topics", {
     params,
   });
