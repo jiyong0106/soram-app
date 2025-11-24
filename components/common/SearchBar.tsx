@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    // height: 40, 일단 이거 예비
+    height: 40,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#B0A6A0",
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     paddingRight: 40,
-    paddingVertical: 12, //일단 이거 예비
+    // paddingVertical: 12, //일단 이거 예비
   },
   searchWrapFocused: {
     borderColor: "#FF6B3E",

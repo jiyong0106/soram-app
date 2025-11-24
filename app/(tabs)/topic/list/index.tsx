@@ -4,7 +4,6 @@ import { CATEGORIES, RouteType, SortByType } from "@/utils/types/topic";
 import { useCallback, useMemo, useRef, useState } from "react";
 import TopicSection from "@/components/topic/TopicSection";
 import SortSheet from "@/components/common/SortSheet";
-import PageContainer from "@/components/common/PageContainer";
 import { BackButton } from "@/components/common/backbutton";
 import { Stack } from "expo-router";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -12,10 +11,13 @@ import AppText from "@/components/common/AppText";
 import ScalePressable from "@/components/common/ScalePressable";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import SearchBar from "@/components/common/SearchBar";
+import useDebounce from "@/utils/hooks/useDebounce";
 
 const TopicListPage = () => {
+  const sortSheetRef = useRef<BottomSheetModal>(null);
   const [sortBy, setSortBy] = useState<SortByType>("popular");
   const [searchName, setSearchName] = useState("");
+  const debouncedSearchName = useDebounce(searchName, 500);
   const routes: RouteType[] = useMemo(
     () => CATEGORIES.map((c) => ({ key: c, label: c })),
     []
@@ -23,12 +25,16 @@ const TopicListPage = () => {
 
   const renderScene = useCallback(
     ({ route }: { route: RouteType }) => {
-      return <TopicSection category={route.key} sortBy={sortBy} />;
+      return (
+        <TopicSection
+          category={route.key}
+          sortBy={sortBy}
+          debouncedSearchName={debouncedSearchName}
+        />
+      );
     },
-    [sortBy]
+    [sortBy, debouncedSearchName]
   );
-
-  const sortSheetRef = useRef<BottomSheetModal>(null);
 
   return (
     <>
@@ -57,7 +63,6 @@ const TopicListPage = () => {
         }}
       />
       <View style={styles.container}>
-        {/* <SearchBar value={searchName} onChangeText={setSearchName} /> */}
         <TopTabBar routes={routes} renderScene={renderScene} />
       </View>
       <SortSheet ref={sortSheetRef} sortBy={sortBy} setSortBy={setSortBy} />
