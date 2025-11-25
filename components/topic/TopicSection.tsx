@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import TopicSectionLists from "./TopicSectionLists";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import {
   TopicListType,
   GetTopicListResponse,
@@ -14,22 +14,22 @@ import LoadingSpinner from "../common/LoadingSpinner";
 interface Props {
   category: Category;
   sortBy: SortByType;
+  debouncedSearchName: string;
 }
 
-const TopicSection = ({ category, sortBy }: Props) => {
+const TopicSection = ({ category, sortBy, debouncedSearchName }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [searchName, setSearchName] = useState("");
   const isAll = !category || category === "전체";
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useInfiniteQuery<GetTopicListResponse>({
       // 카테고리를 key에 포함해서 탭별 캐시를 분리
-      queryKey: ["getTopicListKey", searchName, category, sortBy],
+      queryKey: ["getTopicListKey", debouncedSearchName, category, sortBy],
       queryFn: ({ pageParam }) =>
         getTopicList({
           take: 10,
           cursor: pageParam,
-          search: searchName || "",
+          search: debouncedSearchName || "",
           category: isAll ? undefined : category,
           sortBy,
         }),
@@ -37,6 +37,7 @@ const TopicSection = ({ category, sortBy }: Props) => {
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.endCursor : undefined,
       staleTime: 60 * 1000,
+      placeholderData: keepPreviousData,
     });
   // 받은 페이지들을 합치고, 클라이언트에서 카테고리만 필터
   const items: TopicListType[] = data?.pages.flatMap((p) => p.data) ?? [];
@@ -77,7 +78,6 @@ const TopicSection = ({ category, sortBy }: Props) => {
 export default TopicSection;
 
 const styles = StyleSheet.create({});
-
 
 // import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 // import { useState } from "react";

@@ -5,9 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 type SearchBarProps = {
   value: string;
   onChangeText: (text: string) => void;
+  placeholder?: string;
 };
 
-const SearchBar = ({ value, onChangeText }: SearchBarProps) => {
+const SearchBar = ({
+  value,
+  onChangeText,
+  placeholder = "검색",
+}: SearchBarProps) => {
   const [focused, setFocused] = useState(false);
   return (
     <View style={[styles.container, focused && styles.searchWrapFocused]}>
@@ -39,7 +44,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    // height: 40, 일단 이거 예비
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#B0A6A0",
@@ -49,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     paddingRight: 40,
-    paddingVertical: 12, //일단 이거 예비
+    paddingVertical: 12, //높이 조절 패딩
   },
   searchWrapFocused: {
     borderColor: "#FF6B3E",
