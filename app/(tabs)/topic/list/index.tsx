@@ -41,7 +41,7 @@ const TopicListPage = () => {
 
     setTimeout(() => {
       sortSheetRef.current?.present?.();
-    }, 150);
+    }, 120);
   };
   return (
     <>
@@ -50,9 +50,7 @@ const TopicListPage = () => {
           headerBackVisible: false,
           headerShadowVisible: false,
           title: "",
-          headerTitle: () => (
-            <SearchBar value={searchName} onChangeText={setSearchName} />
-          ),
+          headerTitle: () => <SearchBar onChangeText={setSearchName} />,
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <View>
