@@ -10,7 +10,7 @@ const PolicySection = () => {
   const routes: Record<string, string> = {
     "개인정보 처리방침": "/privacyPolicy",
     이용약관: "/terms",
-    삭제약관: "/deletionPolicy",
+    "커뮤니티 가이드라인": "/communityGuidelines",
   };
 
   const handleSupport = (title: string) => {
@@ -34,9 +34,9 @@ const PolicySection = () => {
         onPress={() => handleSupport("이용약관")}
       />
       <SettingRow
-        title="삭제약관"
+        title="커뮤니티 가이드라인"
         variant="link"
-        onPress={() => handleSupport("삭제약관")}
+        onPress={() => handleSupport("커뮤니티 가이드라인")}
       />
       <View style={styles.divider} />
     </SettingSection>
