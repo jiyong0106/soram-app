@@ -220,7 +220,6 @@ const TopicPage = () => {
         )
       )}
       <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
-      {/* <UserBanModal isVisible={true} /> */}
     </View>
   );
 };

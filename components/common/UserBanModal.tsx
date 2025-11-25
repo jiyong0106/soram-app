@@ -1,29 +1,55 @@
-import { Modal, StyleSheet, View, ScrollView } from "react-native";
+import { Linking, Modal, StyleSheet, View } from "react-native";
 import AppText from "./AppText";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useUserBanStore } from "@/utils/store/useUserBanStore";
+import { formatKoDateOnly } from "@/utils/util/formatKoClock";
+import Button from "./Button";
 
-interface Props {
-  isVisible: boolean;
-}
+const UserBanModal = () => {
+  const isVisible = useUserBanStore((s) => s.isVisible);
+  const message = useUserBanStore((s) => s.message);
+  const expiresAt = useUserBanStore((s) => s.expiresAt);
 
-const UserBanModal = ({ isVisible }: Props) => {
   return (
     <Modal visible={isVisible} transparent animationType="fade">
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalContainer}>
-          {/* 아이콘 + 타이틀 */}
-          <View style={styles.header}>
-            <MaterialIcons name="block" size={40} color="#FF4D4F" />
-            <AppText style={styles.modalTitle}>사용자 제재 안내</AppText>
+      <View style={styles.backdrop}>
+        <View style={styles.container}>
+          <View style={styles.topRow}>
+            <View style={styles.iconWrap}>
+              <MaterialIcons name="block" size={34} color="#fff" />
+            </View>
+            <View style={styles.titleWrap}>
+              <AppText style={styles.title}>사용자 제재 안내</AppText>
+              <AppText style={styles.subtitle}>
+                소람 가이드라인 위반으로 인한 조치
+              </AppText>
+            </View>
           </View>
 
-          {/* 사유 텍스트 */}
-          <ScrollView style={styles.reasonContainer}>
-            <AppText style={styles.reasonText}>
-              이 사용자는 커뮤니티 가이드라인을 위반했습니다. 반복 시 계정이
-              일시 정지될 수 있습니다.
+          <View style={styles.content}>
+            {expiresAt != null && (
+              <AppText style={styles.date}>
+                제재 해제 예정: {formatKoDateOnly(expiresAt)}
+              </AppText>
+            )}
+
+            <AppText
+              style={styles.message}
+              numberOfLines={8}
+              ellipsizeMode="tail"
+            >
+              {message ||
+                "제재 사유에 대한 자세한 내용은 고객센터로 문의해주세요."}
             </AppText>
-          </ScrollView>
+          </View>
+          <Button
+            label="문의하기"
+            onPress={() =>
+              Linking.openURL(`${process.env.EXPO_PUBLIC_FORM_URL}`)
+            }
+            color="#FF4D4F"
+            textColor="#fff"
+          />
         </View>
       </View>
     </Modal>
@@ -33,56 +59,67 @@ const UserBanModal = ({ isVisible }: Props) => {
 export default UserBanModal;
 
 const styles = StyleSheet.create({
-  modalBackdrop: {
+  backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 24,
   },
-  modalContainer: {
-    width: "90%",
+  container: {
+    width: "100%",
+    maxWidth: 520,
     backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingVertical: 25,
-    paddingHorizontal: 20,
-    alignItems: "center",
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 20,
   },
-  header: {
+  topRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
   },
-  modalTitle: {
-    fontSize: 22,
+  iconWrap: {
+    width: 54,
+    height: 54,
+    borderRadius: 54,
+    backgroundColor: "#FF4D4F",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  titleWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#222",
+  },
+  subtitle: {
+    marginTop: 2,
+    fontSize: 13,
+    color: "#666",
+  },
+  content: {
+    marginVertical: 16,
+    alignItems: "center",
+  },
+  date: {
+    fontSize: 13,
     fontWeight: "700",
     color: "#FF4D4F",
-    marginTop: 10,
+    marginBottom: 8,
   },
-  reasonContainer: {
-    maxHeight: 120,
-    marginBottom: 20,
-  },
-  reasonText: {
-    fontSize: 16,
+  message: {
+    fontSize: 15,
     color: "#333",
     textAlign: "center",
     lineHeight: 22,
-  },
-  button: {
-    backgroundColor: "#FF4D4F",
-    borderRadius: 15,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
+    marginBottom: 16,
   },
 });

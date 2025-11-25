@@ -25,7 +25,7 @@ export function usePushTokenRegistration(token: string | null) {
         // 변경이 없는 경우(t가 falsy 또는 기존과 동일해 서버 전송 생략한 경우) setPushToken 생략
         if (!cancelled && t && t !== existingPushToken) setPushToken(t);
       } catch (e) {
-        console.warn("registerForPushNotificationsAsync failed", e);
+        console.warn("registerForPushNotificationsAsync failed");
       }
     };
 

@@ -1,5 +1,6 @@
 import axios, { AxiosHeaders } from "axios";
 import { useAuthStore } from "@/utils/store/useAuthStore";
+import { useUserBanStore } from "@/utils/store/useUserBanStore";
 
 const instance = axios.create({
   baseURL: `${process.env.EXPO_PUBLIC_API_URL}`,
@@ -42,7 +43,7 @@ const refreshToken = async (): Promise<string | null> => {
     const rt = useAuthStore.getState().refreshToken; // [유지] RT가 없는 치명적 오류는 로그를 남기고 강제 로그아웃
 
     if (!rt) {
-      console.warn("[AUTH] RT가 없어 재발급을 중단하고 강제 로그아웃합니다.");
+      // console.warn("[AUTH] RT가 없어 재발급을 중단하고 강제 로그아웃합니다.");
       useAuthStore.getState().logout();
       return null;
     }
@@ -60,8 +61,7 @@ const refreshToken = async (): Promise<string | null> => {
 
     if (!newAccessToken || !newRefreshToken) {
       console.warn(
-        "[AUTH] API는 성공했으나, 응답 데이터에 토큰이 없습니다. 응답:",
-        res.data
+        "[AUTH] API는 성공했으나, 응답 데이터에 토큰이 없습니다. 응답:"
       );
     } // Zustand 스토어에 새로운 토큰 저장
 
@@ -90,9 +90,7 @@ instance.interceptors.response.use(
 
       if (!newToken) {
         // [유지] 토큰 갱신에 실패하여, 원래 요청도 최종 실패 처리됨을 알림
-        console.warn(
-          `[AUTH] 새 토큰 발급 실패. '${config.url}' 요청을 최종 실패 처리합니다.`
-        );
+
         return Promise.reject(error);
       }
 
@@ -110,6 +108,16 @@ instance.interceptors.response.use(
       */
 
       return instance(config);
+    }
+    if (
+      response?.status === 403 &&
+      response?.data?.errorCode === "USER_SUSPENDED"
+    ) {
+      // 전역 제재 모달 표시
+      try {
+        useUserBanStore.getState().show(response?.data?.message);
+        useUserBanStore.getState().setExpiresAt(response?.data?.expiresAt);
+      } catch {}
     }
 
     return Promise.reject(error);

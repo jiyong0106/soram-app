@@ -40,7 +40,7 @@ export function connectSocket(jwt: string) {
   });
 
   newSocket.on("authenticated", () => {
-    console.log("[getSocket] 소켓 인증 성공. 대기열의 작업을 실행합니다.");
+    // console.log("[getSocket] 소켓 인증 성공. 대기열의 작업을 실행합니다.");
     isAuthenticated = true;
     useAppInitStore.getState().setSocketStatus("AUTHENTICATED");
     // 기다리고 있던 모든 Promise들을 resolve 해줌
@@ -50,7 +50,7 @@ export function connectSocket(jwt: string) {
 
   // 'newSocket'의 핸들러 등록합니다.
   newSocket.on("disconnect", (reason) => {
-    console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
+    // console.warn(`[getSocket] [disconnect] 소켓 연결 끊김. 사유: ${reason}`);
     isAuthenticated = false;
     useAppInitStore.getState().setSocketStatus("DISCONNECTED");
 

@@ -14,6 +14,9 @@ export interface baseTopic {
 }
 
 // 1. 주제함 목록 조회 api 타입 및 랜덤 주제 보여주기 api 타입
+
+export type SortByType = "popular" | "latest";
+
 export interface TopicListType {
   id: number;
   title: string;
