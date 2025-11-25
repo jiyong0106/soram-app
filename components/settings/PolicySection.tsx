@@ -1,4 +1,3 @@
-import React from "react";
 import { View, StyleSheet } from "react-native";
 import SettingSection from "@/components/settings/SettingSection";
 import SettingRow from "@/components/settings/SettingRow";
@@ -34,7 +33,7 @@ const PolicySection = () => {
         onPress={() => handleSupport("이용약관")}
       />
       <SettingRow
-        title="커뮤니티 가이드라인"
+        title="커뮤니티 가이드 라인"
         variant="link"
         onPress={() => handleSupport("커뮤니티 가이드라인")}
       />
