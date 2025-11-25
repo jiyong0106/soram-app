@@ -97,8 +97,7 @@ export function useChat(
           s.emit("joinRoom", { connectionId });
         }
       } catch (error) {
-        if (__DEV__)
-          console.error("소켓 인증 또는 방 참여 중 오류 발생:", error);
+        if (__DEV__) console.error("소켓 인증 또는 방 참여 중 오류 발생:");
       }
     })();
 
