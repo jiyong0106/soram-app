@@ -10,7 +10,8 @@ const PolicySection = () => {
   const routes: Record<string, string> = {
     "개인정보 처리방침": "/privacyPolicy",
     이용약관: "/terms",
-    삭제약관: "/deletionPolicy",
+    "커뮤니티 가이드 라인": "/communityGuidelines",
+    // 삭제약관: "/deletionPolicy",
   };
 
   const handleSupport = (title: string) => {
@@ -34,10 +35,15 @@ const PolicySection = () => {
         onPress={() => handleSupport("이용약관")}
       />
       <SettingRow
+        title="커뮤니티 가이드 라인"
+        variant="link"
+        onPress={() => handleSupport("커뮤니티 가이드 라인")}
+      />
+      {/* <SettingRow
         title="삭제약관"
         variant="link"
         onPress={() => handleSupport("삭제약관")}
-      />
+      /> */}
       <View style={styles.divider} />
     </SettingSection>
   );
