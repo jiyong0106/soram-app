@@ -11,7 +11,13 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
-import { StyleSheet, View, FlatList, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import TopicListCTA from "@/components/topic/TopicListCTA";
 import GuideModal from "@/components/common/GuideModal";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
@@ -143,7 +149,10 @@ const TopicPage = () => {
 
   const isTotalLoading = isFetching || isShuffling;
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={{ paddingHorizontal: 10 }}>
         <AppHeader hasNotification={hasUnread} />
         {!showInitSkeleton && topics && (
@@ -210,12 +219,13 @@ const TopicPage = () => {
             decelerationRate="fast"
             contentContainerStyle={{
               paddingHorizontal: HORIZONTAL_PADDING, // 40px
+              paddingBottom: 200, //예비 패딩 높이
             }}
           />
         )
       )}
       <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -223,6 +233,6 @@ export default TopicPage;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
   },
 });
