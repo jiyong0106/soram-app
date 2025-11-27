@@ -44,6 +44,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA",
   },
   scroll: {
-    paddingBottom: 60,
+    paddingBottom: 100,
   },
 });
