@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 20, // paddingHorizontal: 20,
     alignItems: "center",
-    height: 450,
+    // height: 450,
     justifyContent: "space-between", // 이미지를 카드 모서리에 맞게 자르기 위해 overflow: "hidden" 추가
     overflow: "hidden", // 그림자를 잘라내던 주범이지만, 여기서는(안쪽 View) 이미지 클리핑을 위해 필요합니다.
   },
@@ -199,29 +199,26 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     alignItems: "flex-start",
-    gap: 4,
     width: "100%",
+    gap: 5,
+    padding: 10,
   },
   cardTitle: {
     fontSize: 18,
     lineHeight: 27,
     color: "#000000",
     fontWeight: "bold",
-    paddingLeft: 12,
-    marginBottom: 10,
   },
   participants: {
     fontSize: 12,
     color: "#B0A6A0",
     fontWeight: "bold",
-    paddingLeft: 12,
   },
   touch: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     paddingBottom: 8,
-    paddingLeft: 12,
   },
   ctaText: {
     fontSize: 14,

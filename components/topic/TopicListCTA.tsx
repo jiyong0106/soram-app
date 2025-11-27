@@ -1,5 +1,5 @@
 import AppText from "@/components/common/AppText";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     padding: scale(24),
     justifyContent: "center",
     alignItems: "center",
-    minHeight: 450,
+    minHeight: 410,
     marginVertical: 10,
     marginHorizontal: 12,
   },
