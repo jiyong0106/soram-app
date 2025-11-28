@@ -2,6 +2,9 @@ import { View, Pressable, StyleSheet } from "react-native";
 import AppText from "@/components/common/AppText";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useRef } from "react";
+import TicketsSheet from "../topic/TicketsSheet";
 
 type Props = {
   hasNotification?: boolean;
@@ -9,19 +12,26 @@ type Props = {
 
 const AppHeader = ({ hasNotification }: Props) => {
   const router = useRouter();
+  const actionSheetRef = useRef<BottomSheetModal>(null);
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <AppText style={styles.logo}>SORAM</AppText>
-        <AppText style={styles.slogan}>이야기와 목소리로 연결된 우리</AppText>
+        <AppText style={styles.brand}>SORAM</AppText>
+        <AppText style={styles.caption}>이야기와 목소리로 연결된 우리</AppText>
       </View>
-      <Pressable
-        onPress={() => router.push("/alerts")}
-        style={styles.notificationBtn}
-      >
-        <Ionicons name="notifications-outline" size={24} color="#5C4B44" />
-        {hasNotification && <View style={styles.badge} />}
-      </Pressable>
+      <View style={styles.buttonContainer}>
+        {/* 티켓 버튼 */}
+        <Pressable onPress={() => actionSheetRef.current?.present?.()}>
+          <Ionicons name="ticket-outline" size={24} color="black" />
+        </Pressable>
+        {/* 알림 버튼 */}
+        <Pressable onPress={() => router.push("/alerts")}>
+          <Ionicons name="notifications-outline" size={24} color="#5C4B44" />
+          {hasNotification && <View style={styles.badge} />}
+        </Pressable>
+      </View>
+      <TicketsSheet ref={actionSheetRef} snapPoints={["50%"]} />
     </View>
   );
 };
@@ -34,23 +44,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  logo: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FF6B3E",
+    paddingVertical: 5,
   },
   logoContainer: {
-    flexDirection: "row",
     alignItems: "baseline",
     gap: 8, // 로고와 슬로건 사이의 간격
   },
-  slogan: {
-    fontSize: 12,
-    color: "#5C4B44",
+  brand: {
+    color: "#FF7D4A",
+    fontWeight: "bold",
+    fontSize: 18,
   },
-  notificationBtn: {},
+  caption: {
+    fontSize: 12,
+    color: "#9CA3AF",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
   badge: {
     position: "absolute",
     top: 2,
@@ -59,11 +72,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "red",
-  },
-  tickets: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 2,
   },
 });

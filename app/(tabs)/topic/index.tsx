@@ -1,6 +1,5 @@
 import AppHeader from "@/components/common/AppHeader";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
-import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
@@ -11,13 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, View, FlatList, Dimensions } from "react-native";
 import TopicListCTA from "@/components/topic/TopicListCTA";
 import GuideModal from "@/components/common/GuideModal";
 import { getUserIdFromJWT } from "@/utils/util/getUserIdFromJWT";
@@ -149,22 +142,15 @@ const TopicPage = () => {
 
   const isTotalLoading = isFetching || isShuffling;
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={styles.container}>
       <View style={{ paddingHorizontal: 10 }}>
         <AppHeader hasNotification={hasUnread} />
         {!showInitSkeleton && topics && (
-          <>
-            <TicketsView />
-
-            <TopicTitle
-              onShuffle={onShuffle}
-              loading={isTotalLoading}
-              disabled={isTotalLoading}
-            />
-          </>
+          <TopicTitle
+            onShuffle={onShuffle}
+            loading={isTotalLoading}
+            disabled={isTotalLoading}
+          />
         )}
       </View>
 
@@ -225,7 +211,7 @@ const TopicPage = () => {
         )
       )}
       <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
-    </ScrollView>
+    </View>
   );
 };
 
