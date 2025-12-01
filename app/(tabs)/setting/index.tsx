@@ -39,11 +39,7 @@ const SettingPage = () => {
 export default SettingPage;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F7FA",
-  },
   scroll: {
-    paddingBottom: 60,
+    paddingBottom: 100,
   },
 });

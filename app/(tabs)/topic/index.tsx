@@ -1,6 +1,5 @@
 import AppHeader from "@/components/common/AppHeader";
 import TopicSkeleton from "@/components/skeleton/TopicSkeleton";
-import TicketsView from "@/components/topic/TicketsView";
 import TopicCard from "@/components/topic/TopicCard";
 import TopicTitle from "@/components/topic/TopicTitle";
 import { getRandomTopicSet } from "@/utils/api/topicPageApi";
@@ -21,7 +20,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNotificationStore } from "@/utils/store/useNotificationStore";
 import { useChatUnreadStore } from "@/utils/store/useChatUnreadStore";
 import { getUnreadCounts } from "@/utils/api/chatPageApi";
-import UserBanModal from "@/components/common/UserBanModal";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -148,15 +146,11 @@ const TopicPage = () => {
       <View style={{ paddingHorizontal: 10 }}>
         <AppHeader hasNotification={hasUnread} />
         {!showInitSkeleton && topics && (
-          <>
-            <TicketsView />
-
-            <TopicTitle
-              onShuffle={onShuffle}
-              loading={isTotalLoading}
-              disabled={isTotalLoading}
-            />
-          </>
+          <TopicTitle
+            onShuffle={onShuffle}
+            loading={isTotalLoading}
+            disabled={isTotalLoading}
+          />
         )}
       </View>
 
@@ -166,57 +160,54 @@ const TopicPage = () => {
         </View>
       ) : (
         topics && (
-          <>
-            <View style={styles.flatListContainer}>
-              <FlatList
-                data={listData}
-                renderItem={({ item, index }) => {
-                  const isLastItem = index === listData.length - 1;
+          <FlatList
+            data={listData}
+            renderItem={({ item, index }) => {
+              const isLastItem = index === listData.length - 1;
 
-                  if (item.isCTA) {
-                    return (
-                      <View
-                        style={{
-                          width: ITEM_WIDTH,
-                          marginRight: isLastItem ? 0 : ITEM_SPACING,
-                        }}
-                      >
-                        <TopicListCTA />
-                      </View>
-                    );
-                  }
-                  return (
-                    <View
-                      style={{
-                        width: ITEM_WIDTH,
-                        marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
-                      }}
-                    >
-                      <TopicCard
-                        item={item}
-                        // isFetching 대신 isTotalLoading 전달
-                        loading={isTotalLoading}
-                        isActive={index === currentIndex}
-                      />
-                    </View>
-                  );
-                }}
-                keyExtractor={(item: any) => item.id.toString()}
-                horizontal
-                pagingEnabled={false}
-                showsHorizontalScrollIndicator={false}
-                bounces={false}
-                onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={viewabilityConfig}
-                snapToInterval={ITEM_WIDTH + ITEM_SPACING}
-                snapToAlignment="start"
-                decelerationRate="fast"
-                contentContainerStyle={{
-                  paddingHorizontal: HORIZONTAL_PADDING, // 40px
-                }}
-              />
-            </View>
-          </>
+              if (item.isCTA) {
+                return (
+                  <View
+                    style={{
+                      width: ITEM_WIDTH,
+                      marginRight: isLastItem ? 0 : ITEM_SPACING,
+                    }}
+                  >
+                    <TopicListCTA />
+                  </View>
+                );
+              }
+              return (
+                <View
+                  style={{
+                    width: ITEM_WIDTH,
+                    marginRight: isLastItem ? 0 : ITEM_SPACING, // 마지막 아이템엔 마진 제거
+                  }}
+                >
+                  <TopicCard
+                    item={item}
+                    // isFetching 대신 isTotalLoading 전달
+                    loading={isTotalLoading}
+                    isActive={index === currentIndex}
+                  />
+                </View>
+              );
+            }}
+            keyExtractor={(item: any) => item.id.toString()}
+            horizontal
+            pagingEnabled={false}
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            contentContainerStyle={{
+              paddingHorizontal: HORIZONTAL_PADDING, // 40px
+              paddingBottom: 200, //예비 패딩 높이
+            }}
+          />
         )
       )}
       <GuideModal isVisible={isVisible} onClose={handleCloseGuide} />
@@ -228,11 +219,6 @@ export default TopicPage;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  flatListContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    // flex: 1,
   },
 });
