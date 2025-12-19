@@ -7,7 +7,7 @@ const PolicySection = () => {
   const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL;
 
   const routes: Record<string, string> = {
-    "개인정보 처리방침": "/privacyPolicy",
+    "개인정보 처리방침": "/privacy",
     이용약관: "/terms",
     "커뮤니티 가이드라인": "/communityGuidelines",
   };
