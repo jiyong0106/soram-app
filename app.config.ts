@@ -5,7 +5,7 @@ export default ({ config }: any) => {
     expo: {
       name: "소람", // 앱 이름 (기기에서 표시됨)
       slug: "soram", // Expo에서 사용하는 고유 ID (프로젝트 슬러그)
-      version: "1.0.0", // 앱 버전
+      version: "1.0.1", // 앱 버전
       orientation: "portrait", // 화면 방향 고정 (세로)
       icon: "./assets/icons/logos/logo.png", // 앱 아이콘 경로
       scheme: "soram", // 딥링크를 위한 URL 스킴 (ex: soram://)
