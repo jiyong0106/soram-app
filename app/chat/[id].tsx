@@ -42,21 +42,6 @@ import ReceiverRequestGuideModal from "@/components/chat/ReceiverRequestGuideMod
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChatIdPage = () => {
-  //임시
-  const handleTempResetGuide = async () => {
-    const storageKey = `@viewed_receiver_guide_${roomId}`;
-    try {
-      await AsyncStorage.removeItem(storageKey);
-      Alert.alert(
-        "초기화 완료",
-        `이 채팅방(${roomId})의 가이드 기록이 삭제되었습니채팅방에 다시 입장하면 모달이 나타납니다.`
-      );
-    } catch (e) {
-      Alert.alert("오류", "AsyncStorage 삭제에 실패했습니다.");
-    }
-  };
-  // 임시
-
   const router = useRouter();
   const { showAlert, showActionAlert } = useAlert();
   const {
@@ -375,15 +360,6 @@ const ChatIdPage = () => {
           headerBackVisible: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
-              {/* ▼▼▼ 임시 리셋 버튼을 헤더에 추가 ▼▼▼ */}
-
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={handleTempResetGuide}
-              >
-                <Ionicons name="refresh-circle" size={24} color="#FF6B3E" />
-              </TouchableOpacity>
-              {/* ▲▲▲ 임시 코드 끝 ▲▲▲ */}
               <TouchableOpacity activeOpacity={0.5} onPress={openActionSheet}>
                 <Ionicons name="ellipsis-vertical" size={22} />
               </TouchableOpacity>
