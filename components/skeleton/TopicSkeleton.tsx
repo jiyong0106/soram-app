@@ -26,16 +26,7 @@ const TopicSkeleton = () => {
       {/* ===== tickets Skeleton ===== */}
       <View style={[styles.line, styles.ticketsRow]} />
       {/* ===== Title Skeleton ===== */}
-      <View style={styles.titleRow}>
-        <View style={[styles.line, styles.titleText]} />
-        <View style={[styles.line, styles.shufflePill]} />
-        {/* Shimmer Overlay for Title */}
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.shimmerTitle, { transform: [{ translateX }] }]}
-        />
-      </View>
-
+      <View style={[styles.line, styles.refreshBtn]} />
       {/* ===== Card Skeleton ===== */}
       <View style={styles.card}>
         {/* Shimmer Overlay for Card */}
@@ -66,12 +57,14 @@ export default TopicSkeleton;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
+    gap: 10,
   },
   ticketsRow: {
     width: "65%",
     borderRadius: 8,
     marginHorizontal: "auto",
     height: 30,
+    paddingTop: 10,
   },
   /* ===== Title Skeleton ===== */
   titleRow: {
@@ -82,6 +75,11 @@ const styles = StyleSheet.create({
 
     overflow: "hidden",
     gap: 8,
+  },
+  refreshBtn: {
+    marginLeft: "auto",
+    width: 150,
+    height: 28,
   },
   titleText: {
     width: "100%",

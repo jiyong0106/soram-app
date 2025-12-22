@@ -6,7 +6,6 @@ import TermsNotice from "../components/index/TermsNotice";
 import WelcomeImage from "../components/index/WelcomeImage";
 import PageContainer from "@/components/common/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
-import LoginButton from "@/components/index/LoginButton";
 
 const Index = () => {
   return (

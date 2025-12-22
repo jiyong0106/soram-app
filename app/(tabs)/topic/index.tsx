@@ -155,7 +155,11 @@ const TopicPage = () => {
       </View>
 
       {showInitSkeleton ? (
-        <View style={{ paddingHorizontal: 10, flex: 1 }}>
+        <View
+          style={{
+            padding: 10,
+          }}
+        >
           <TopicSkeleton />
         </View>
       ) : (
