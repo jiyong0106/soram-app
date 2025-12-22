@@ -120,6 +120,7 @@ const VerifyCodeInputPage = () => {
           disabled={!isValid || loading}
           onPress={handlePress}
           style={styles.button}
+          loading={loading}
         />
       }
     >
