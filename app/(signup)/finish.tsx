@@ -82,6 +82,7 @@ const FinishPage = () => {
           textColor="#fff"
           disabled={loading}
           onPress={handlePress}
+          loading={loading}
         />
       }
     >
