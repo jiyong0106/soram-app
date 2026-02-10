@@ -8,11 +8,11 @@
 
 ### 🛠️ 기술 스택
 
-- **React Native** (0.79.5) - 크로스플랫폼 프레임워크
-- **Expo** (SDK 53) - 개발 도구 및 빌드 시스템
+- **React Native** - 크로스플랫폼 프레임워크
+- **Expo** - 개발 도구 및 빌드 시스템
 - **TypeScript** - 타입 안정성
 - **Expo Router** - 파일 기반 라우팅
-- **React Query** (@tanstack/react-query) - 서버 상태 관리
+- **tanstack query** - 서버 상태 관리
 - **Zustand** - 전역 상태 관리
 - **Socket.io Client** - 실시간 통신
 - **React Hook Form** - 폼 관리
